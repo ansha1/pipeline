@@ -14,7 +14,8 @@ pipeline {
             steps {
                 cleanWs()
 
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl]]])
+//                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl]]])
+                git branch: 'dev', credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl
             }
         }
         stage('Collecting current version') {
