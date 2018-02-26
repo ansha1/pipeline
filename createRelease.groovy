@@ -96,8 +96,6 @@ def prepareVersion(String projectType) {
             }
             break
     }
-    println("Release version: " + releaseVersion);
-    println("Next development version: " + developmentVersion);
 }
 
 def bumpReleaseVersion(String projectType) {
