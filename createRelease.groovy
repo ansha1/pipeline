@@ -96,7 +96,7 @@ def prepareVersion(String projectType) {
             }
             break
         case 'javascript':
-            releaseVersion = sh(script: 'npm view calendar-ui version', returnStdout: true)
+            releaseVersion = sh(script: 'node -p "require(\'./package.json\').version"', returnStdout: true)
             break
     }
 }
@@ -119,7 +119,7 @@ def bumpNextDevelopmentVersion(String projectType) {
             break
         case 'javascript':
             sh "npm --no-git-tag-version version patch"
-            developmentVersion = sh(script: 'npm view calendar-ui version', returnStdout: true)
+            developmentVersion = sh(script: 'node -p "require(\'./package.json\').version"', returnStdout: true)
             break
     }
 }
