@@ -30,9 +30,13 @@ pipeline {
                 script {
                     sh """
                           git checkout -b release-${releaseVersion}
-                          mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false
-                          git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
                        """
+                    bumpReleaseVersion(env.projectType)
+                    if (!env.projectType.equals('javascript')) {
+                        sh """
+                              git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
+                           """
+                    }
                 }
             }
         }
@@ -41,7 +45,9 @@ pipeline {
                 script {
                     sh """
                           git checkout dev
-                          mvn versions:set -DnewVersion=${developmentVersion} -DgenerateBackupPoms=false
+                       """
+                    bumpNextDevelopmentVersion(env.projectType)
+                    sh """
                           git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
                        """
                 }
@@ -91,7 +97,30 @@ def prepareVersion(String projectType) {
                 currentBuild.currentResult = 'FAILED'
             }
             break
+        case 'javascript':
+            releaseVersion = sh(script: 'node -p "require(\'./package.json\').version"', returnStdout: true)
+            break
     }
-    println("Release version: " + releaseVersion);
-    println("Next development version: " + developmentVersion);
+}
+
+def bumpReleaseVersion(String projectType) {
+    switch (projectType) {
+        case 'java':
+            sh "mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
+            break
+        case 'javascript':
+            break
+    }
+}
+
+def bumpNextDevelopmentVersion(String projectType) {
+    switch (projectType) {
+        case 'java':
+            sh "mvn versions:set -DnewVersion=${developmentVersion} -DgenerateBackupPoms=false"
+            break
+        case 'javascript':
+            sh "npm --no-git-tag-version version patch"
+            developmentVersion = sh(script: 'node -p "require(\'./package.json\').version"', returnStdout: true)
+            break
+    }
 }
