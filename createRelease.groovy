@@ -106,7 +106,7 @@ def prepareVersion(String projectType) {
 def bumpReleaseVersion(String projectType) {
     switch (projectType) {
         case 'java':
-            maven("versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false")
+            sh "mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
             break
         case 'javascript':
             break
@@ -116,7 +116,7 @@ def bumpReleaseVersion(String projectType) {
 def bumpNextDevelopmentVersion(String projectType) {
     switch (projectType) {
         case 'java':
-            maven("versions: set - DnewVersion = ${developmentVersion} - DgenerateBackupPoms = false")
+            sh "mvn versions:set -DnewVersion=${developmentVersion} -DgenerateBackupPoms=false"
             break
         case 'javascript':
             sh "npm --no-git-tag-version version patch"
