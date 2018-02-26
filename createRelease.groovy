@@ -95,6 +95,9 @@ def prepareVersion(String projectType) {
                 currentBuild.currentResult = 'FAILED'
             }
             break
+        case 'javascript':
+            releaseVersion = sh('npm view calendar-ui version', returnStdout: true)
+            break
     }
 }
 
@@ -116,6 +119,7 @@ def bumpNextDevelopmentVersion(String projectType) {
             break
         case 'javascript':
             sh "npm --no-git-tag-version version patch"
+            developmentVersion = sh('npm view calendar-ui version', returnStdout: true)
             break
     }
 }
