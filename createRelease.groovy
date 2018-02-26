@@ -18,6 +18,7 @@ pipeline {
                 git branch: 'dev', credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl
             }
         }
+
         stage('Collecting current version') {
             steps {
                 script {
@@ -58,7 +59,6 @@ pipeline {
         }
     }
 }
-
 
 def prepareVersion(String projectType) {
 
