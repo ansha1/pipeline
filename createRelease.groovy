@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'Debian Slave 3' }
+    agent { label 'Debian Slave 4' }
     tools {
         jdk 'Java 8 Install automatically'
         maven 'Maven 3.3.3 Install automatically'
