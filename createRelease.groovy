@@ -32,9 +32,11 @@ pipeline {
                           git checkout -b release-${releaseVersion}
                        """
                     bumpReleaseVersion(env.projectType)
-                    sh """
-                          git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
-                       """
+                    if (!env.projectType.equals('javascript')) {
+                        sh """
+                              git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
+                           """
+                    }
                 }
             }
         }
