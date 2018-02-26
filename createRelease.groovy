@@ -30,7 +30,9 @@ pipeline {
                 script {
                     sh """
                           git checkout -b release-${releaseVersion}
-                          mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false
+                       """
+                    bumpReleaseVersion(env.projectType)
+                    sh """
                           git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
                        """
                 }
@@ -41,9 +43,11 @@ pipeline {
                 script {
                     sh """
                           git checkout dev
-                          mvn versions:set -DnewVersion=${developmentVersion} -DgenerateBackupPoms=false
-                          git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
                        """
+                    bumpNextDevelopmentVersion(env.projectType)
+                    sh """
+                        git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
+                    """
                 }
             }
         }
@@ -51,8 +55,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                          git push --all
-                       """
+                    git push-- all
+                    """
                 }
             }
         }
@@ -94,4 +98,26 @@ def prepareVersion(String projectType) {
     }
     println("Release version: " + releaseVersion);
     println("Next development version: " + developmentVersion);
+}
+
+def bumpReleaseVersion(String projectType) {
+    switch (projectType) {
+        case 'java':
+            maven("versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false")
+            break
+        case 'javascript':
+            sh "npm --no-git-tag-version version patch"
+            break
+    }
+}
+
+def bumpNextDevelopmentVersion(String projectType) {
+    switch (projectType) {
+        case 'java':
+            maven("versions: set - DnewVersion = ${developmentVersion} - DgenerateBackupPoms = false")
+            break
+        case 'javascript':
+            sh "npm --no-git-tag-version version patch"
+            break
+    }
 }
