@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    git push-- all
+                    git push --all
                     """
                 }
             }
