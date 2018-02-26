@@ -107,7 +107,6 @@ def bumpReleaseVersion(String projectType) {
             maven("versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false")
             break
         case 'javascript':
-            sh "npm --no-git-tag-version version patch"
             break
     }
 }
