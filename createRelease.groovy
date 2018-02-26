@@ -46,8 +46,8 @@ pipeline {
                        """
                     bumpNextDevelopmentVersion(env.projectType)
                     sh """
-                        git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
-                    """
+                          git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
+                       """
                 }
             }
         }
@@ -55,8 +55,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                    git push --all
-                    """
+                          git push --all
+                       """
                 }
             }
         }
