@@ -14,7 +14,6 @@ pipeline {
             steps {
                 cleanWs()
 
-//                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl]]])
                 git branch: 'dev', credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl
             }
         }
@@ -30,9 +29,9 @@ pipeline {
             steps {
                 script {
                     sh """
-                          git checkout -b release/${releaseVersion}
+                          git checkout -b release-${releaseVersion}
                           mvn versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false
-                          git commit -a -m "RELEASE ENGINEERING - Created release/${releaseVersion} branch"
+                          git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
                        """
                 }
             }
