@@ -28,24 +28,21 @@ pipeline {
         stage('Create release branch') {
             steps {
                 script {
-                    sh """
-                          git checkout -b release-${releaseVersion}
-                       """
                     bumpReleaseVersion(env.projectType)
                     if (!env.projectType.equals('javascript')) {
                         sh """
-                              git commit -a -m "RELEASE ENGINEERING - Created release-${releaseVersion} branch"
+                              git commit -a -m "RELEASE ENGINEERING - bumped to ${releaseVersion} release candidate version "
                            """
                     }
+                    sh """
+                          git branch release-${releaseVersion}
+                       """
                 }
             }
         }
         stage('Next development version bump') {
             steps {
                 script {
-                    sh """
-                          git checkout dev
-                       """
                     bumpNextDevelopmentVersion(env.projectType)
                     sh """
                           git commit -a -m "RELEASE ENGINEERING - bumped to ${developmentVersion} next development version"
