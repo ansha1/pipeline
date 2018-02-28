@@ -85,11 +85,11 @@ def prepareVersion(String projectType) {
             }
 
             def tokens = releaseVersion.tokenize('.')
-            def lastToken = tokens.last()
-            if (lastToken.isNumber()) {
-                def nextBuild = (lastToken.toInteger() + 1).toString()
-                def prefix = releaseVersion - lastToken;
-                developmentVersion = prefix + nextBuild + "-SNAPSHOT"
+            def major = tokens.get(0)
+            def minor = tokens.get(1)
+            def patch = tokens.get(2)
+            if (patch.isNumber()) {
+                developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1) + "-SNAPSHOT"
             } else {
                 print "ERROR: Invalid version: " + projectVersion
                 currentBuild.currentResult = 'FAILED'
