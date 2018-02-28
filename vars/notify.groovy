@@ -9,5 +9,5 @@ def call(String slackChannel = '@evgeniy.sakhnyuk') {
     def details = "Check console output at ${env.BUILD_URL}console\n" + commitinfo + "\n" + currentBuild.fullDisplayName + "\n" +
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
-    slackSend (channel: "@evgeniy.sakhnyuk", color: notifyColor.get(buildStatus), message: subject + ' ' + details, tokenCredentialId: "slackToken")
+    slackSend (channel: "@evgeniy.sakhnyuk", color: notifyColor.get(buildStatus), message: subject + ' ' + details, tokenCredentialId: "slackToken", botUser: true)
 }
