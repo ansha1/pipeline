@@ -11,32 +11,47 @@ def call(String slackChannel = '#testchannel') {
 //    def builder = new groovy.json.JsonBuilder()
 //    def root = builder.people {
 //attachment
-    test = "'{\n' +
-    '    "text": "<@W1A2BC3DD> approved your travel request. Book any airline you like by continuing below.",\n' +
-            '    "channel": "C061EG9SL",\n' +
-            '    "attachments": [\n' +
-            '        {\n' +
-            '            "fallback": "Book your flights at https://flights.example.com/book/r123456",\n' +
-            '            "actions": [\n' +
-            '                {\n' +
-            '                    "type": "button",\n' +
-            '                    "name": "travel_request_123456",\n' +
-            '                    "text": "Book flights 🛫",\n' +
-            '                    "url": "https://flights.example.com/book/r123456",\n' +
-            '                    "style": "primary",\n' +
-            '                    "confirm": "Really?"\n' +
-            '                },\n' +
-            '                {\n' +
-            '                    "type": "button",\n' +
-            '                    "name": "travel_cancel_123456",\n' +
-            '                    "text": "Cancel travel request",\n' +
-            '                    "url": "https://requests.example.com/cancel/r123456",\n' +
-            '                    "style": "danger"\n' +
-            '                }\n' +
-            '            ]\n' +
-            '        }\n' +
-            '    ]\n' +
-            '}'
+    test = """
+            {
+                "text": "Would you like to play a game?",
+                "attachments": [
+                    {
+                        "text": "Choose a game to play",
+                        "fallback": "You are unable to choose a game",
+                        "callback_id": "wopr_game",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": [
+                            {
+                                "name": "game",
+                                "text": "Chess",
+                                "type": "button",
+                                "value": "chess"
+                            },
+                            {
+                                "name": "game",
+                                "text": "Falken's Maze",
+                                "type": "button",
+                                "value": "maze"
+                            },
+                            {
+                                "name": "game",
+                                "text": "Thermonuclear War",
+                                "style": "danger",
+                                "type": "button",
+                                "value": "war",
+                                "confirm": {
+                                "title": "Are you sure?",
+                                "text": "Wouldn't you prefer a good game of chess?",
+                                "ok_text": "Yes",
+                                "dismiss_text": "No"
+                            }
+                            }
+                    ]
+                    }
+            ]
+            }
+    """
     attachments.add(test);
 
     buildStatus='SUCCESS'
