@@ -7,5 +7,7 @@ def call(String slackChannel = '@evgeniy.sakhnyuk') {
     def commitinfo = sh returnStdout: true, script: "git show --pretty=format:'The author of %h was %an, %ar%nThe title was >>%s<<%n' | sed -n 1,2p"
     def details = "Check console output at ${env.BUILD_URL}console\n" + commitinfo + "\n" + currentBuild.fullDisplayName + "\n" +
             "Test results: ${env.BUILD_URL}testReport"
+    echo(details)
+    echo(slackChannel)
     slackSend channel: slackChannel, color: notifyColor.get(buildStatus), message: subject + ' ' + details, tokenCredentialId: 'slackToken'
 }
