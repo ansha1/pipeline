@@ -64,7 +64,7 @@ def call(String slackChannel = '#testchannel') {
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
 //    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), attachments: test.toString(), tokenCredentialId: "slackToken")
-    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), message: subject.toString(), attachments: attachments.toString(), tokenCredentialId: "slackToken")
+    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), attachments: attachments.toString(), tokenCredentialId: "slackToken")
 }
 
 
