@@ -1,6 +1,6 @@
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-def call(String slackChannel = '#_devops_kyiv') {
+def call(String slackChannel = '#testchannel') {
     JSONArray attachments = new JSONArray();
     JSONObject attachment = new JSONObject();
     attachment.put('text','I find your lack of faith disturbing!');
@@ -46,7 +46,7 @@ def call(String slackChannel = '#_devops_kyiv') {
     def details = "Check console output at ${env.BUILD_URL}console\n" + commitinfo + "\n" + currentBuild.fullDisplayName + "\n" +
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
-    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: test.toString(), tokenCredentialId: "slackToken")
+    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), message: test, tokenCredentialId: "slackToken")
 //    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: subject.toString(), attachments: attachments.toString(), tokenCredentialId: "slackToken")
 }
 
