@@ -9,6 +9,34 @@ def call(String slackChannel = '#_devops_kyiv') {
 
     attachments.add(attachment);
 //    buildStatus=currentBuild.currentResult
+
+
+    test = '{\n' +
+            '    "text": "<@W1A2BC3DD> approved your travel request. Book any airline you like by continuing below.",\n' +
+            '    "channel": "C061EG9SL",\n' +
+            '    "attachments": [\n' +
+            '        {\n' +
+            '            "fallback": "Book your flights at https://flights.example.com/book/r123456",\n' +
+            '            "actions": [\n' +
+            '                {\n' +
+            '                    "type": "button",\n' +
+            '                    "name": "travel_request_123456",\n' +
+            '                    "text": "Book flights 🛫",\n' +
+            '                    "url": "https://flights.example.com/book/r123456",\n' +
+            '                    "style": "primary",\n' +
+            '                    "confirm": "Really?"\n' +
+            '                },\n' +
+            '                {\n' +
+            '                    "type": "button",\n' +
+            '                    "name": "travel_cancel_123456",\n' +
+            '                    "text": "Cancel travel request",\n' +
+            '                    "url": "https://requests.example.com/cancel/r123456",\n' +
+            '                    "style": "danger"\n' +
+            '                }\n' +
+            '            ]\n' +
+            '        }\n' +
+            '    ]\n' +
+            '}'
     buildStatus='SUCCESS'
     notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
 
@@ -18,8 +46,10 @@ def call(String slackChannel = '#_devops_kyiv') {
     def details = "Check console output at ${env.BUILD_URL}console\n" + commitinfo + "\n" + currentBuild.fullDisplayName + "\n" +
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
-    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: subject,attachments: attachments.toString(), tokenCredentialId: "slackToken")
+    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: test.toString(), tokenCredentialId: "slackToken")
+//    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: subject.toString(), attachments: attachments.toString(), tokenCredentialId: "slackToken")
 }
+
 
 //
 //{
