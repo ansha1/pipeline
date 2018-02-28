@@ -1,6 +1,7 @@
 def call(String slackChannel = '@evgeniy.sakhnyuk') {
 
-    buildStatus=currentBuild.currentResult
+//    buildStatus=currentBuild.currentResult
+    buildStatus='SUCCESS'
     notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
 
     def subject = "${buildStatus}: Job '${env.JOB_NAME}' #${env.BUILD_NUMBER}"
