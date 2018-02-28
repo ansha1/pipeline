@@ -1,6 +1,6 @@
-def call(String slackChannel = '#devops_kyiv') {
+def call(String slackChannel = '#devops_kyiv', String buildStatus) {
     echo '1'
-    buildStatus=currentBuild.currentResult
+//    buildStatus=currentBuild.currentResult
     notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     echo '2'
     def subject = "${buildStatus}: Job '${env.JOB_NAME}' #${env.BUILD_NUMBER}"
