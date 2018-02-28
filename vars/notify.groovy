@@ -3,16 +3,16 @@ import net.sf.json.JSONObject;
 def call(String slackChannel = '#testchannel') {
     JSONArray attachments = new JSONArray();
     JSONObject attachment = new JSONObject();
-    attachment.put('text','I find your lack of faith disturbing!');
-    attachment.put('fallback','Hey, Vader seems to be mad at you.');
-    attachment.put('color','#ff0000');
+//    attachment.put('text','I find your lack of faith disturbing!');
+//    attachment.put('fallback','Hey, Vader seems to be mad at you.');
+//    attachment.put('color','#ff0000');
 
-    attachments.add(attachment);
 //    buildStatus=currentBuild.currentResult
-
-
-    test = '{\n' +
-            '    "text": "<@W1A2BC3DD> approved your travel request. Book any airline you like by continuing below.",\n' +
+//    def builder = new groovy.json.JsonBuilder()
+//    def root = builder.people {
+//attachment
+    test = "'{\n' +
+    '    "text": "<@W1A2BC3DD> approved your travel request. Book any airline you like by continuing below.",\n' +
             '    "channel": "C061EG9SL",\n' +
             '    "attachments": [\n' +
             '        {\n' +
@@ -37,6 +37,8 @@ def call(String slackChannel = '#testchannel') {
             '        }\n' +
             '    ]\n' +
             '}'
+    attachments.add(test);
+
     buildStatus='SUCCESS'
     notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
 
@@ -46,8 +48,8 @@ def call(String slackChannel = '#testchannel') {
     def details = "Check console output at ${env.BUILD_URL}console\n" + commitinfo + "\n" + currentBuild.fullDisplayName + "\n" +
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
-    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), attachments: test.toString(), tokenCredentialId: "slackToken")
-//    slackSend (channel: "#_devops_kyiv", color: notifyColor.get(buildStatus), message: subject.toString(), attachments: attachments.toString(), tokenCredentialId: "slackToken")
+//    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), attachments: test.toString(), tokenCredentialId: "slackToken")
+    slackSend (channel: "#testchannel", color: notifyColor.get(buildStatus), message: subject.toString(), attachments: attachments.toString(), tokenCredentialId: "slackToken")
 }
 
 
