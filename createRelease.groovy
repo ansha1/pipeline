@@ -1,3 +1,4 @@
+//noinspection GroovyAssignabilityCheck
 pipeline {
     agent any
     tools {
