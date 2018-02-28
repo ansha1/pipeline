@@ -10,5 +10,5 @@ def call(String slackChannel = '@evgeniy.sakhnyuk') {
             "Test results: ${env.BUILD_URL}testReport"
     echo(notifyColor.get(buildStatus))
     echo()
-    slackSend channel: '@evgeniy.sakhnyuk', color: notifyColor.get(buildStatus), message: subject + ' ' + details, tokenCredentialId: 'slackToken'
+    slackSend(channel: '@evgeniy.sakhnyuk', color: notifyColor.get(buildStatus), message: subject + ' ' + details, tokenCredentialId: 'slackToken')
 }
