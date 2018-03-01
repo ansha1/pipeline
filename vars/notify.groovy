@@ -1,4 +1,4 @@
-def call(String notifyChannel = "testchannel") {
+def call(String notifyChannel) {
     buildStatus = currentBuild.currentResult
     notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     commitinforaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
