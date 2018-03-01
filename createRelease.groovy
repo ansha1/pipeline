@@ -36,7 +36,7 @@ pipeline {
                            """
                     }
                     sh """
-                          git branch release-${releaseVersion}
+                          git branch release/${releaseVersion}
                        """
                 }
             }
