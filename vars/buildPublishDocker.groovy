@@ -4,6 +4,5 @@ def call(String APP_NAME, String BUILD_VERSION, String EXTRA_PATH = '.') {
         customImage.push()
         customImage.push("latest")
         sh "docker rmi ${customImage.id} repository.nextiva.xyz/${customImage.id}"
-        sh 'docker rmi $(docker images -f "dangling=true" -q)'
     }
 }
