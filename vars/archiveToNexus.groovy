@@ -18,6 +18,6 @@ def call(def deployEnvironment/*, def assetDir, def version, def packageName*/) 
         }
    }
    else {
-	throw new IllegalArgumentException('Not valid environment exception')
+	throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${listOfEnvs}")
    }
 }
