@@ -1,13 +1,14 @@
-def call(def deployEnvironment, def assetDir, def version, def upstreamJobName, def packageName) {
+def call(def deployEnvironment, def assetDir, def version, def packageName) {
   
 
    def assetPath = "${env.EXECUTOR_NUMBER}" + '.bzip'
-   def jobName = upstreamJobName ?: "${env.JOB_NAME}"
+   def jobName = "${env.JOB_NAME}"
    def listOfEnvs = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
    def nexusRepoUrl = "http://repository.nextiva.xyz/repository/static-assets-" + deployEnvironment
 
    if (deployEnvironment in listOfEnvs) {
         if (assetDir != null) {
+	generateBuildProperties()
         sh '''
            cd ${assetDir}
            tar -czvf ${assetPath} ./
@@ -18,6 +19,6 @@ def call(def deployEnvironment, def assetDir, def version, def upstreamJobName, 
 
    }
    else {
-        return 1
+        throw new Exception("Not valid environment exception")
    }
 }
