@@ -1,4 +1,4 @@
-def call(def deployEnvironment, def assetDir, def version, def packageName) {
+def call(def deployEnvironment/*, def assetDir, def version, def packageName*/) {
   
 
    def assetPath = "${env.EXECUTOR_NUMBER}" + '.bzip'
