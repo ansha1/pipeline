@@ -1,6 +1,5 @@
 def call(def deployEnvironment/*, def assetDir, def version, def packageName*/) {
   
-
    def assetPath = "${env.EXECUTOR_NUMBER}" + '.bzip'
    def jobName = "${env.JOB_NAME}"
    def listOfEnvs = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
@@ -18,6 +17,6 @@ def call(def deployEnvironment/*, def assetDir, def version, def packageName*/) 
         }
    }
    else {
-	throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${listOfEnvs}")
+       throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${listOfEnvs}")
    }
 }
