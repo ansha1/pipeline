@@ -12,6 +12,6 @@ def call(def deployEnvironment, /*def assetDir, def version,*/ def upstreamJobNa
 	sh "echo ${jobName}"
    }
    else {
-   	exit 1
+   	System.exit(1)
    }
 }
