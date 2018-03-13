@@ -5,7 +5,7 @@ def call(def deployEnvironment, /*def assetDir, def version,*/ def upstreamJobNa
    def listOfEnvs = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
    def NEXUS_REPO_URL = "http://repository.nextiva.xyz/repository/static-assets-" + deployEnvironment
 
-   if (!listOfEnvs.containts(deployEnvironment)) {
+   if (deployEnvironment in listOfEnvs) {
 	sh "echo ${env.WORKSPACE}"
  	sh "echo ${NEXUS_REPO_URL}"
 	sh "echo ${assetPath}"
