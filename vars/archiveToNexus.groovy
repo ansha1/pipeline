@@ -19,6 +19,6 @@ def call(def deployEnvironment/*, def assetDir, def version, def packageName*/) 
 
    }
    else {
-        throw new Exception("Not valid environment exception")
+	throw new IllegalArgumentException('Not valid environment exception')
    }
 }
