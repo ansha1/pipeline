@@ -1,6 +1,10 @@
 def call(){
-    BUILD_FILENAME="build.properties"
-
+    def buildFileName = "${env.WORKSPACE}" + "/" + "build.properties"
+    def createBuildFileName = new File(buildFileName)
+    def writeToFile = createBuildFileName.newWriter()
+    
     sh "echo writing build info to ${BUILD_FILENAME} to ${env.WORKSPACE}"
-    new File("${env.WORKSPACE}", BUILD_FILENAME) << generateBuildInfo()
+    writeToFile << generateBuildInfo()
+
+    writeToFile.close()
 }
