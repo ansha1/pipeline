@@ -7,7 +7,7 @@ def call(def deployEnvironment, def assetDir, def version, def packageName) {
 
    if (deployEnvironment in listOfEnvs) {
         if (assetDir != null) {
-        generateBuildProperties(deployEnvironment, version, jobName)
+        generateBuildProperties()
 
 /*
         sh """
