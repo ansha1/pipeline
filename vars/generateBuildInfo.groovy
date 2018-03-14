@@ -1,10 +1,10 @@
 def call(def deployEnvironment, def version, def jobName) {
 
     def toReturn = """
-	deploy_environment=${deployEnvironment}
-	build_version=${version}
-	job_name=${jobName}
-    """    
+deploy_environment=${deployEnvironment}
+build_version=${version}
+job_name=${jobName}
+"""    
 
     toReturn += sh returnStdout: true, script: '''
     echo ""
