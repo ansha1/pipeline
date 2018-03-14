@@ -10,11 +10,11 @@ def call() {
 */
 
 if(build.workspace.isRemote()){
-channel = build.workspace.channel
+def channel = build.workspace.channel
 println "we definately are running on slave"
 }
 String fp = build.workspace.toString() + "/" + "newfile.txt"
-newFile = new hudson.FilePath(channel, fp)
+def newFile = new hudson.FilePath(channel, fp)
 newFile.write("xyz", null)
 
 }
