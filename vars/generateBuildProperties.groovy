@@ -3,5 +3,5 @@ def call() {
     def buildPropertiesVar = '/* build properties /*'
     buildPropertiesVar << generateBuildInfo()
     println buildPropertiesVar
-    //writeFile file: buildFileName, text: path
+    writeFile file: buildFileName, text: buildPropertiesVar
 }
