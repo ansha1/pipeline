@@ -3,7 +3,7 @@ def call(){
 //    sh "echo ${buildFileName}"
     sh "touch ${buildFileName}"
 
-//    def createBuildFileName = new File(buildFileName)
+    def createBuildFileName = new File(buildFileName)
     
     sh "echo writing build info to ${buildFileName} to ${env.WORKSPACE}"
     createBuildFileName.newWriter().withWriter { w ->
