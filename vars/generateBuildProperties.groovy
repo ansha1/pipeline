@@ -1,6 +1,6 @@
 def call(){
     def buildFileName = "build.properties"
-    sh "echo ${buildFileName} && cd ${env.WORKSPACE} && touch ${buildFileName}"
+    sh "echo ${buildFileName} && cd ${env.WORKSPACE}"
     sh "echo writing build info to ${buildFileName} to ${env.WORKSPACE}"
 
 targetFile = new File(buildFileName);
