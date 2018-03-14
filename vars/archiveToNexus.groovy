@@ -10,14 +10,14 @@ def call(def deployEnvironment, def assetDir, def version, def packageName) {
 //        generateBuildProperties()
 
 
-	sh '''
-	    echo "build_version=${version}" > build.properties
-	    echo "commit=$(git rev-parse HEAD)" >> build.properties
-	    echo "deploy_environment=${deployEnvironment}" >> build.properties
-	    echo "job_name=${jobName}" >> build.properties
-	    echo "build_date_time=$(date)" >> build.properties
-	    echo "repository_url=$(git config --get remote.origin.url)" >> build.properties
-    	'''
+	sh """
+	    echo \"build_version=${version}\" > build.properties
+	    echo \"commit=$(git rev-parse HEAD)\" >> build.properties
+	    echo \"deploy_environment=${deployEnvironment}\" >> build.properties
+	    echo \"job_name=${jobName}\" >> build.properties
+	    echo \"build_date_time=$(date)\" >> build.properties
+	    echo \"repository_url=$(git config --get remote.origin.url)\" >> build.properties
+    	"""
 /*
         sh """
            cd ${assetDir} && tar -czvf ${assetPath} ./
