@@ -1,5 +1,7 @@
-import hudson.FilePath;
-import jenkins.model.Jenkins;
+import jenkins.*
+import jenkins.model.*
+import hudson.*
+import hudson.model.*
 
 def call() {
     def buildFileName = "build.properties"
@@ -8,21 +10,15 @@ def call() {
     //sh "echo writing build info to ${buildFileName} to ${env.WORKSPACE}"
     //writeFile file: 'build.properties', text: '/* build.properties */'
 
-if(build.workspace.isRemote())
-{
-    channel = build.workspace.channel;
-    fp = new FilePath(channel, build.workspace.toString() + "/node_details.txt")
-} else {
-    fp = new FilePath(new File(build.workspace.toString() + "/node_details.txt"))
-}
+	if(manager.build.workspace.isRemote())
+	{
+    	channel = manager.build.workspace.channel;
+	}
 
-if(fp != null)
-{
-    fp.write("test data", null); //writing to file
-} 
+	// get build workspace path
+	fp = new hudson.FilePath(channel, manager.build.workspace.toString())
 
-    }
-
+	println fp
 
 //    buildFileName << generateBuildInfo()
 /*
