@@ -5,6 +5,7 @@ def call(){
 
 targetFile = new File(buildFileName);
 println "attempting to create file: $targetFile"
+println "the result: " + targetFile.createNewFile()
 
 if (targetFile.createNewFile()) {
     println "Successfully created file $targetFile"
