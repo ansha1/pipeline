@@ -9,12 +9,6 @@ def call() {
     w.close()
 */
 
-if(build.workspace.isRemote()){
-def channel = build.workspace.channel
-println "we definately are running on slave"
-}
-String fp = build.workspace.toString() + "/" + "newfile.txt"
-def newFile = new hudson.FilePath(channel, fp)
-newFile.write("xyz", null)
+println Jenkins.getInstance().getComputer(env['NODE_NAME']).getChannel()
 
 }
