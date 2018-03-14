@@ -8,11 +8,13 @@ def call(def deployEnvironment, def assetDir, def version, def packageName) {
    if (deployEnvironment in listOfEnvs) {
         if (assetDir != null) {
         generateBuildProperties()
+/*
         sh """
            cd ${assetDir} && tar -czvf ${assetPath} ./
            curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
            curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
         """
+*/
         }
    }
    else {
