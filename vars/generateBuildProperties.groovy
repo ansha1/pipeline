@@ -1,5 +1,5 @@
 def call(){
     BUILD_FILENAME="build.properties"
     sh "echo writing build info to ${BUILD_FILENAME}"
-    BUILD_FILENAME << generateBuildInfo()
+    new File("${env.WORKSPACE}", BUILD_FILENAME) << generateBuildInfo()
 }
