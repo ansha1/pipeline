@@ -1,5 +1,7 @@
 def call(def deployEnvironment, def version, def jobName) {
 
+    println deployEnvironment + " - " + version + " - " + jobName    
+
     def toReturn = sh returnStdout: true, script: '''
     echo ""
     echo "build_version=${version}"
