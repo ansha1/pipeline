@@ -9,15 +9,14 @@ def call(def deployEnvironment, def assetDir, def version, def packageName) {
         if (assetDir != null) {
 //        generateBuildProperties()
 	sh """
-	cat <<EOF > build.properties
-    	build_version=${version}
-    	commit=$(git rev-parse HEAD)
-   	deploy_environment=${deployEnvironment}
-    	job_name=${jobName}"
-    	build_date_time=$(date)
-    	repository_url=$(git config --get remote.origin.url)
-	EOF
-	"""
+cat<<EOF > build.properties
+build_version=${version}
+deploy_environment=${deployEnvironment}
+job_name=${jobName}
+build_date_time=$(date)
+repository_url=$(git config --get remote.origin.url)
+EOF
+"""
 
 /*
         sh """
