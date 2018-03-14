@@ -1,7 +1,6 @@
 def call(){
-    def buildFileName = "${env.WORKSPACE}" + "/" + "build.properties"
-//    sh "echo ${buildFileName}"
-    sh "touch ${buildFileName}"
+    def buildFileName = "build.properties"
+    sh "echo ${buildFileName} && cd ${env.WORKSPACE} && touch ${buildFileName}"
 
     def createBuildFileName = new File(buildFileName)
     
