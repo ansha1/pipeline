@@ -1,4 +1,5 @@
 def call(){
+/*
     sh '''
     echo "build_version=${VERSION}"
     echo "commit=$(git rev-parse HEAD)"
@@ -7,4 +8,7 @@ def call(){
     echo "build_date_time=$(date)"
     echo "repository_url=$(git config --get remote.origin.url)"
     '''
+*/
+
+return "Just for test" 
 }
