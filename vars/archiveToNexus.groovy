@@ -1,5 +1,6 @@
 def call(def deployEnvironment, def assetDir, def version, def packageName) {
   
+   def buildFileName = 'build.properties'
    def jobName = "${env.JOB_NAME}"
    def listOfEnvs = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
    def nexusRepoUrl = "http://repository.nextiva.xyz/repository/static-assets-" + deployEnvironment
@@ -10,7 +11,7 @@ def call(def deployEnvironment, def assetDir, def version, def packageName) {
         generateBuildProperties(deployEnvironment, version, jobName)
 
         sh """
-           cd ${assetDir} && tar -czvf ${assetPath} ./
+           cd ${assetDir} && cp ${env.WORKSPACE}/${buildFileName} ./ && tar -czvf ${assetPath} ./
            curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
            curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
         """
