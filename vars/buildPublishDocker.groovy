@@ -3,6 +3,9 @@ def call(String APP_NAME, String BUILD_VERSION, String EXTRA_PATH = '.') {
         def customImage = docker.build("${APP_NAME}:${BUILD_VERSION}", "-f ${EXTRA_PATH}/Dockerfile --build-arg build_version=${BUILD_VERSION} ${EXTRA_PATH}")
         customImage.push()
         customImage.push("latest")
-        sh "docker rmi ${customImage.id} repository.nextiva.xyz/${customImage.id}"
+
+        sh "echo `docker images ${customImage.id} | awk '{print $3}' |sed 1d)`"
+
+        sh "docker rmi ${customImage.id} repository.nextiva.xyz/${customImage.id} repository.nextiva.xyz/${APP_NAME}:latest"
     }
 }
