@@ -5,7 +5,7 @@ def call(def deployEnvironment, def version, def jobName) {
     build_version=${version}
     job_name=${jobName}
     """
-    toReturn.replaceAll("\\s", "")
+    toReturn = toReturn.replaceAll(" ", "")
 
     toReturn += sh returnStdout: true, script: '''
     echo "commit=$(git rev-parse HEAD)"
