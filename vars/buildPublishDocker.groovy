@@ -2,7 +2,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def call(String appName, String buildVersion, String extraPath='.') {
-    docker.withRegistry(DOCKER_REGISTRY_URL, 'nextivaRegistry') {
+    docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS_ID) {
         def customImage = docker.build("${appName}:${buildVersion}", "-f ${extraPath}/Dockerfile --build-arg build_version=${buildVersion} ${extraPath}")
         customImage.push()
         customImage.push("latest")

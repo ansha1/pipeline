@@ -9,4 +9,5 @@ class SharedJobsStaticVars {
     static final VENV_DIR = '.env'
     static final DOCKER_REGISTRY = 'repository.nextiva.xyz'
     static final DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
+    static final DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
 }
