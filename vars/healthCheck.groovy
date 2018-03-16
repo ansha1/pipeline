@@ -1,4 +1,4 @@
-def call(String healthcheckUrl, Integer time = 2) {
+def call(String healthcheckUrl, Integer time=2) {
     timeout(time) {   //default 2 minutes for starting
         waitUntil {
             try {

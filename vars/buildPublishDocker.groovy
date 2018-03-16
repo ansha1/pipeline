@@ -1,11 +1,12 @@
-def call(String APP_NAME, String BUILD_VERSION, String EXTRA_PATH = '.') {
-    docker.withRegistry('https://repository.nextiva.xyz', 'nextivaRegistry') {
-        def customImage = docker.build("${APP_NAME}:${BUILD_VERSION}", "-f ${EXTRA_PATH}/Dockerfile --build-arg build_version=${BUILD_VERSION} ${EXTRA_PATH}")
+import static com.nextiva.SharedJobsStaticVars.*
+
+
+def call(String appName, String buildVersion, String extraPath='.') {
+    docker.withRegistry(DOCKER_REGISTRY_URL, 'nextivaRegistry') {
+        def customImage = docker.build("${appName}:${buildVersion}", "-f ${extraPath}/Dockerfile --build-arg build_version=${buildVersion} ${extraPath}")
         customImage.push()
         customImage.push("latest")
 
-//        sh "echo `docker images ${customImage.id} | awk '{print $3}' |sed 1d)`"
-
-        sh "docker rmi ${customImage.id} repository.nextiva.xyz/${customImage.id} repository.nextiva.xyz/${APP_NAME}:latest"
+        sh "docker rmi ${customImage.id} ${DOCKER_REGISTRY}/${customImage.id} ${DOCKER_REGISTRY}/${appName}:latest"
     }
 }
