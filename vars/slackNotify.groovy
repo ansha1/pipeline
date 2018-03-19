@@ -6,7 +6,6 @@ def call(String notifyChannel) {
     def subject = "Build status: ${buildStatus} Job: ${env.JOB_NAME} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
-                            
             "title": "${subject}",
             "text": "${commitinfo}",
             "color": "${notifyColor.get(buildStatus)}",
