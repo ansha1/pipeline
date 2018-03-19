@@ -1,11 +1,8 @@
-import com.nextiva.PythonUtils
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def call(String extraPath='.', String deployEnvironment='dev', String pythonVersion='python3.6') {
-    PythonUtils pythonUtils = new PythonUtils()
-    
-    pythonUtils.createVirtualEnv(pythonVersion)
+def call(String extraPath='.', String deployEnvironment='test', String pythonName='python') {
+    pythonUtils.createVirtualEnv(pythonName)
     pythonUtils.venvSh("""
         pip install -U wheel
         cd ${extraPath}

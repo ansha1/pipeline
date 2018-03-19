@@ -1,17 +1,17 @@
-package com.nextiva;
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def createVirtualEnv(String pythonVersion='python3.6') {
+def createVirtualEnv(String pythonName='python') {
     println 'Create virtualenv.'
-    sh(script: "virtualenv --python=${pythonVersion} ${VENV_DIR}")
+    sh(script: "virtualenv --python=${pythonName} ${VENV_DIR}")
 }
 
-def venvSh(String cmd, String venvDir=VENV_DIR) {
+def venvSh(String cmd, String venvDir=VENV_DIR, returnStdout=false) {
     println 'Activate virtualenv.'
     withEnv(getVirtualEnv()) {
-        sh(script: cmd)
+        output = sh(returnStdout: returnStdout, script: cmd)
     }
+    return output
 }
 
 def getVirtualEnv(String venvDir=VENV_DIR) {
@@ -21,5 +21,3 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
         "PATH=${WORKSPACE}/${venvDir}/bin:${env.PATH}"
     ]
 }
-
-return this
