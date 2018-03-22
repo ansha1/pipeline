@@ -21,11 +21,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 def build(String packageName, String version, String deployEnvironment, String extraPath = "./") {
 
     def buildLocation = "${env.WORKSPACE}" + "/" + extraPath
-
-    def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
-    def setPackageMessage = 'autoincremented from git revision ' + gitCommit
-
-    println "GIT commit - " + gitCommit
+    def setPackageMessage = 'autoincremented from git revision ' + GIT_COMMIT
 
     generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
     sh """

@@ -6,7 +6,7 @@ def createVirtualEnv(String pythonName='python', String venvDir=VENV_DIR) {
     sh(script: "virtualenv --python=${pythonName} ${venvDir}")
 }
 
-def venvSh(String cmd, returnStdout=false, String venvDir=VENV_DIR) {
+def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
     println 'Activate virtualenv.'
     withEnv(getVirtualEnv()) {
         output = sh(returnStdout: returnStdout, script: cmd)

@@ -16,4 +16,10 @@ class SharedJobsStaticVars {
     static final PIP_EXTRA_INDEX_URL_SUFFIX = 'group/simple'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'
+    static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'
+    static final RELEASE_MANAGEMENT_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/release-management.git'
+    static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
+    static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
+    static final ANSIBLE_NODE_LABEL = 'ansible'
+    static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
 }
