@@ -48,8 +48,10 @@ def execute(String repoDir, String playbookContext, String playbookPath) {
 def checkRCState() {
     
     // check if RC in locked state
+    // should be used with options { skipStagesAfterUnstable() } in Jenkins file
     if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
-        currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("All RC deploy jobs are locked !!!\nPlease contact QA Core Team.")
+        echo 'All RC deploy jobs are locked !!!\n' +
+           'Please contact QA Core Team.'
+        currentBuild.result = 'UNSTABLE'
     }
 }
