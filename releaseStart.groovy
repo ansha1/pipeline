@@ -1,3 +1,7 @@
+#!groovy
+@Library('pipelines') _
+import static com.nextiva.SharedJobsStaticVars.*
+
 //noinspection GroovyAssignabilityCheck
 pipeline {
     agent any
@@ -15,7 +19,7 @@ pipeline {
             steps {
                 cleanWs()
 
-                git branch: 'dev', credentialsId: 'jenkinsbitbucket', url: env.repositoryUrl
+                git branch: 'dev', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: env.repositoryUrl
             }
         }
 
@@ -74,13 +78,11 @@ def prepareVersion(String projectType) {
                 if (projectVersion.endsWith("-SNAPSHOT")) {
                     releaseVersion = projectVersion - "-SNAPSHOT"
                 } else {
-                    print "ERROR: Branch contains non-snapshot version: " + projectVersion
-                    currentBuild.currentResult = 'FAILED'
+                    error("ERROR: Branch contains non-snapshot version: " + projectVersion)
                 }
             } else {
                 if (!releaseVersion =~ (/^\d+\.\d+\.\d+$/)) {
-                    print "ERROR: Invalid release version: " + releaseVersion
-                    currentBuild.currentResult = 'FAILED'
+                    error("ERROR: Invalid release version: " + releaseVersion)
                 }
             }
 
@@ -89,10 +91,9 @@ def prepareVersion(String projectType) {
             def minor = tokens.get(1)
             def patch = tokens.get(2)
             if (patch.isNumber()) {
-                developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1) + "-SNAPSHOT"
+                developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0" + "-SNAPSHOT"
             } else {
-                print "ERROR: Invalid version: " + projectVersion
-                currentBuild.currentResult = 'FAILED'
+                error("ERROR: Invalid version: " + projectVersion)
             }
             break
         case 'javascript':
