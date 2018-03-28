@@ -52,8 +52,8 @@ def build(String packageName, String version, String deployEnvironment, String e
         """   
     }
     else {
-        currentBuild.result = 'UNSTABLE'
-        println "there is no 'debian' folder within ${buildLocation}"
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("there is no 'debian' folder within ${buildLocation}.")
     }
 }
 
@@ -74,20 +74,20 @@ def publish(String packageName, String deployEnvironment, String extraPath = 'de
 
     if (deployEnvironment in LIST_OF_ENVS) {
         println "Deploy deb-package to Nexus (repo: " + deployEnvironment + ")"
-        sh "cd ${buildLocation}"
 
+        // get build version from build.properties file
         def getBuildVersion = sh(returnStdout: true, script: """cat ${BUILD_PROPERTIES_FILENAME} |grep build_version|awk -F'=' '{print \$2}'""").trim()
         println getBuildVersion
-        def debName = sh(returnStdout: true, script: """ls -1 ../${packageName}_${getBuildVersion}*.deb""").trim()
+        def debName = sh(returnStdout: true, script: """cd ${buildLocation} && ls -1 ../${packageName}_${getBuildVersion}*.deb""").trim()
         println "FOUND deb-package: " + debName
 
-        //upload deb-package to Nexus 3
-        def isDeployedToNexus = sh(returnStatus: true, script: """curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+        // upload deb-package to Nexus 3
+        def isDeployedToNexus = sh(returnStatus: true, script: """cd ${buildLocation} && curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
                                 --data-binary @${debName} ${nexusDebRepoUrl}""")
         println "Deployment to Nexus finished with status: " + isDeployedToNexus
         if ( isDeployedToNexus != 0 ) {
-            currentBuild.result = 'UNSTABLE'
-            println "there was a problem with pushing ${debName} to ${nexusDebRepoUrl}"
+            currentBuild.rawBuild.result = Result.ABORTED
+            throw new hudson.AbortException("there was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
         } 
     }
     else {
