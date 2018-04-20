@@ -18,24 +18,28 @@ def call(body) {
             ANSIBLE_ENV = 'dev'
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
+            DEPLOY_ENVIRONMENT = 'dev'
             DEPLOY_ON_K8S = true
             break
         case 'develop':
             ANSIBLE_ENV = 'dev'
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop')
+            DEPLOY_ENVIRONMENT = 'dev'
             DEPLOY_ON_K8S = true
             break
         case ~/^release\/.+$/:
             ANSIBLE_ENV = 'qa'
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
+            DEPLOY_ENVIRONMENT = 'production'
             DEPLOY_ON_K8S = false
             break
         case 'master':
             ANSIBLE_ENV = 'production'
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
+            DEPLOY_ENVIRONMENT = 'production'
             DEPLOY_ON_K8S = false
             break
         default:
