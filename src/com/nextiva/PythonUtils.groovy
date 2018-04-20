@@ -1,5 +1,5 @@
 package com.nextiva
-
+import static com.nextiva.SharedJobsStaticVars.*
 
 String getVersion(String pathToSetupPy='.'){
     def buildProperties = readProperties  file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
