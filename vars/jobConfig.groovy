@@ -44,14 +44,17 @@ def call(body) {
             break
         default:
             ANSIBLE_ENV = 'none'
-            healthCheckUrl = ['none']
+            healthCheckUrl = ["none"]
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ON_K8S = false
             break
     }
     INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
     branchProperties = ['hudson.model.Item.Read:authenticated']
-    branchPermissions.each { branchProperties.add("hudson.model.Item.Build:${it}") }
+    branchPermissions.each {
+        branchProperties.add("hudson.model.Item.Build:${it}")
+        branchProperties.add("hudson.model.Item.Cancel:${it}")
+    }
 
     echo('\n\n==============Job config complete ====================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
