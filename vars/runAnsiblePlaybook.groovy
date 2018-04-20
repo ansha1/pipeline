@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def call(String repoDir, String inventoryPath, String playbookPath, Map extraVars) {
 
     node(NODE_NAME) {
@@ -34,10 +35,9 @@ def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars)
 }
 
 def execute(String repoDir, String playbookContext, String playbookPath) {
-
     script {
+      	checkRCState()
         stage('Run ansible playbook ' + playbookPath) {
-            checkRCState()
             sh """
                 cd ${repoDir} && ansible-playbook ${playbookContext}
             """
@@ -46,12 +46,9 @@ def execute(String repoDir, String playbookContext, String playbookPath) {
 }
 
 def checkRCState() {
-    
     // check if RC in locked state
-    // should be used with options { skipStagesAfterUnstable() } in Jenkins file
     if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
-        echo 'All RC deploy jobs are locked !!!\n' +
-           'Please contact QA Core Team.'
-        currentBuild.result = 'UNSTABLE'
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("\nAll RC deploy jobs are locked !!!\nPlease contact QA Core Team.\n")
     }
 }

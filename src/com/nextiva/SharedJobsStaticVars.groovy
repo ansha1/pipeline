@@ -20,6 +20,10 @@ class SharedJobsStaticVars {
     static final RELEASE_MANAGEMENT_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/release-management.git'
     static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
+    static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final ANSIBLE_NODE_LABEL = 'ansible'
+    static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
+    static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
+    static final KUBERNETES_REPO_BRANCH = 'develop'
 }

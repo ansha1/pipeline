@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_REPO_DIR) {
 
     // get exact repo name from the full URL
@@ -14,7 +15,7 @@ def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_
     
     dir(finalRepoDir) {
         git branch: branch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repo
-	}
+    }
 
-	return finalRepoDir
+    return finalRepoDir
 }
