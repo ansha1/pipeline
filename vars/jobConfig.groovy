@@ -44,6 +44,7 @@ def call(body) {
             break
         default:
             ANSIBLE_ENV = 'none'
+            healthCheckUrl = 'none'
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ON_K8S = false
             break
