@@ -20,6 +20,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
             DEPLOY_ON_K8S = true
+            echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
             break
         case 'develop':
             ANSIBLE_ENV = 'dev'
