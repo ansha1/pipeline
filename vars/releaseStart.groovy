@@ -111,7 +111,7 @@ def call(body) {
                                 developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0"
                         }
 
-                        utils.setVersion(developmentVersion)
+                        utils.setVersion(developmentVersion, versionPath)
 
                         sh """
                           git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"

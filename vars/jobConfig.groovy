@@ -18,35 +18,43 @@ def call(body) {
             ANSIBLE_ENV = 'dev'
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
+            DEPLOY_ENVIRONMENT = 'dev'
             DEPLOY_ON_K8S = true
             break
         case 'develop':
             ANSIBLE_ENV = 'dev'
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop')
+            DEPLOY_ENVIRONMENT = 'dev'
             DEPLOY_ON_K8S = true
             break
         case ~/^release\/.+$/:
             ANSIBLE_ENV = 'qa'
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
+            DEPLOY_ENVIRONMENT = 'production'
             DEPLOY_ON_K8S = false
             break
         case 'master':
             ANSIBLE_ENV = 'production'
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
+            DEPLOY_ENVIRONMENT = 'production'
             DEPLOY_ON_K8S = false
             break
         default:
             ANSIBLE_ENV = 'none'
+            healthCheckUrl = ["none"]
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ON_K8S = false
             break
     }
     INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
     branchProperties = ['hudson.model.Item.Read:authenticated']
-    branchPermissions.each { branchProperties.add("hudson.model.Item.Build:${it}") }
+    branchPermissions.each {
+        branchProperties.add("hudson.model.Item.Build:${it}")
+        branchProperties.add("hudson.model.Item.Cancel:${it}")
+    }
 
     echo('\n\n==============Job config complete ====================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
