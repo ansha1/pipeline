@@ -1,4 +1,4 @@
 def call(String notifyChannel) {
-    echo('DEPRECATED, use slackNotify() method')
+    echo('\nDEPRECATED: Use slackNotify() method.\n')
     slackNotify(notifyChannel)
 }
