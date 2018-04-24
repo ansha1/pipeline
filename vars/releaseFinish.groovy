@@ -64,6 +64,7 @@ def call(body) {
                         }
 
                         releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "^  origin/release/" | wc -l', trim: true
+                        releaseBranchCount = releaseBranchCount.trim()
                         echo("Release branch count: <<${releaseBranchCount}>>")
                         switch (releaseBranchCount) {
                             case '0':
