@@ -40,6 +40,7 @@ def call(body) {
             stage('Prepare for starting release') {
                 steps {
                     script {
+
                         switch (projectLanguage) {
                             case 'java':
                                 utils = new JavaUtils()
@@ -67,7 +68,7 @@ def call(body) {
                 steps {
                     script {
                         echo "\nUserDefinedReleaseVersion: ${userDefinedReleaseVersion}\n"
-                        releaseVersion = userDefinedReleaseVersion.equals(null) ? utils.getVersion(versionPath) : userDefinedReleaseVersion
+                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion(versionPath) : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+.\d+)$/) {
