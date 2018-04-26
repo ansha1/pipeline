@@ -10,9 +10,11 @@ def deploy(String serviceName, String nameSpace, String configSet, String buildV
 
     node(nodeLabel) {
         def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
-        withEnv(["BUILD_VERSION=${buildVersion}"]) {
-            sh "/bin/bash ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"
-        }
+        try {
+            withEnv(["BUILD_VERSION=${buildVersion}"]) {
+                sh "/bin/bash ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"
+            }
+        } catch (e) {}
 
         echo "Deploy to Kubernetes namespace ${nameSpace} has been complited."
     }
