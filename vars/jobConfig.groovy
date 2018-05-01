@@ -33,7 +33,7 @@ def call(body) {
             ANSIBLE_ENV = 'qa'
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
-            DEPLOY_ENVIRONMENT = 'production'
+            DEPLOY_ENVIRONMENT = 'qa'
             DEPLOY_ON_K8S = false
             break
         case 'master':
