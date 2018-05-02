@@ -42,6 +42,13 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             DEPLOY_ON_K8S = false
             break
+        case ~/^hotfix\/.+$/:
+            ANSIBLE_ENV = 'none'
+            healthCheckUrl = ["none"]
+            branchPermissions = branchPermissionsMap.get('qa')
+            DEPLOY_ENVIRONMENT = 'production'
+            DEPLOY_ON_K8S = false
+            break
         case 'master':
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
