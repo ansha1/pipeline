@@ -26,4 +26,6 @@ class SharedJobsStaticVars {
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
     static final KUBERNETES_REPO_BRANCH = 'develop'
+    static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
+    static final SONAR_QUBE_ENV = 'SonarQube'
 }
