@@ -9,9 +9,14 @@ String getVersion(String pathToSetupPy = '.') {
 }
 
 def setVersion(String version, String pathToSetupPy = '.') {
+    String propsToWrite = ''
     def buildProperties = readProperties file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
+
     buildProperties.version = version
-    writeFile file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}", text: buildProperties
+    buildProperties.each {
+        propsToWrite = propsToWrite + it.toString() + '\n'
+    }
+    writeFile file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}", text: propsToWrite
 }
 
 String createReleaseVersion(String version) {
