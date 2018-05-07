@@ -145,7 +145,7 @@ def call(body) {
                                                             }
                                                         ]
                                                     }]"""
-                                slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+                                slackSend(channel: CHANNEL_TO_NOTIFY, attachments: uploadSpec, tokenCredentialId: "slackToken")
                                 currentBuild.result = 'UNSTABLE'
                                 error("\n\nCan`t merge ${releaseBranch} to ${developBranch} \n You need to resolve merge conflicts in branch: ${tmpBranch} pull request: ${pullRequestLink} and restart ReleaseFinish Job\n\n")
                             } else {
