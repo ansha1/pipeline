@@ -8,27 +8,18 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    healthCheckMap = pipelineParams.healthCheckMap
-    branchPermissionsMap = pipelineParams.branchPermissionsMap
-//    ansibleEnvMap = pipelineParams.ansibleEnvMap
     projectLanguage = 'java'
-    APP_NAME = pipelineParams.APP_NAME
-    BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
-    PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
-    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-
 
     jobConfig {
-        healthCheckMap = this.healthCheckMap
-        branchPermissionsMap = this.branchPermissionsMap
+        healthCheckMap = pipelineParams.healthCheckMap
+        branchPermissionsMap = pipelineParams.branchPermissionsMap
         projectLanguage = this.projectLanguage
         ansibleEnvMap = pipelineParams.ansibleEnvMap
-        APP_NAME = this.APP_NAME
-        BASIC_INVENTORY_PATH = this.BASIC_INVENTORY_PATH
-        PLAYBOOK_PATH = this.PLAYBOOK_PATH
-        DEPLOY_APPROVERS = this.DEPLOY_APPROVERS
-        CHANNEL_TO_NOTIFY = this.CHANNEL_TO_NOTIFY
+        APP_NAME = pipelineParams.APP_NAME
+        BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
+        PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
+        DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
+        CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     }
     def securityPermissions = jobConfig.branchProperties
     def DEPLOY_ON_SSO_SANDBOX = jobConfig.DEPLOY_ON_K8S
@@ -99,7 +90,7 @@ def call(body) {
                     stage('Sonar analyzing') {
                         steps {
                             script {
-                                utils.runSonarScanner(utils.version)
+                                utils.runSonarScanner('213')
                             }
                         }
                     }
