@@ -66,7 +66,7 @@ def call(body) {
             stage('Set additional properties') {
                 steps {
                     script {
-                        utils = jobConfig.getUtils()
+//                        utils = jobConfig.getUtils()
                         utils.setBuildVersion(params.deploy_version)
                         DEPLOY_ONLY = jobConfig.DEPLOY_ONLY
                         DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
