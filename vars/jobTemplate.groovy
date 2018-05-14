@@ -69,7 +69,7 @@ def call(body) {
                                 break
                         }
                         utils.setBuildVersion(params.deploy_version)
-                        DEPLOY_ONLY = jobConfig.DEPLOY_ONLY
+                        DEPLOY_ONLY = utils.DEPLOY_ONLY
                         DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
                     }
                 }
