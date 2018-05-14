@@ -10,7 +10,7 @@ def call(body) {
 
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
-    ansibleEnvMap = pipelineParams.ansibleEnvMap
+//    ansibleEnvMap = pipelineParams.ansibleEnvMap
     projectLanguage = 'java'
     APP_NAME = pipelineParams.APP_NAME
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
@@ -23,7 +23,7 @@ def call(body) {
         healthCheckMap = this.healthCheckMap
         branchPermissionsMap = this.branchPermissionsMap
         projectLanguage = this.projectLanguage
-        ansibleEnvMap = this.ansibleEnvMap
+        ansibleEnvMap = pipelineParams.ansibleEnvMap
         APP_NAME = this.APP_NAME
         BASIC_INVENTORY_PATH = this.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = this.PLAYBOOK_PATH
