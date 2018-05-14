@@ -129,7 +129,7 @@ def call(body) {
 //                        //always approve for dev branch
 //                        isApproved = true
 //                    }
-                }
+//                }
                 parallel {
                     stage('Deploy in kubernetes') {
                         when {
