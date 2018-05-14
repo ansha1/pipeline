@@ -21,25 +21,25 @@ def call(body) {
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
 
-    switch (projectLanguage) {
-        case 'java':
-            utils = new JavaUtils()
-            break
-        case 'python':
-            utils = new PythonUtils()
-            break
-        case 'js':
-            utils = new JsUtils()
-            break
-        default:
-            error("Incorrent programming language\n" +
-                    "please set one of the\n" +
-                    "supported languages:\n" +
-                    "java\n" +
-                    "python\n" +
-                    "js\n")
-            break
-    }
+//    switch (projectLanguage) {
+//        case 'java':
+//            utils = new JavaUtils()
+//            break
+//        case 'python':
+//            utils = new PythonUtils()
+//            break
+//        case 'js':
+//            utils = new JsUtils()
+//            break
+//        default:
+//            error("Incorrent programming language\n" +
+//                    "please set one of the\n" +
+//                    "supported languages:\n" +
+//                    "java\n" +
+//                    "python\n" +
+//                    "js\n")
+//            break
+//    }
 
 
     switch (env.BRANCH_NAME) {
@@ -104,6 +104,6 @@ def call(body) {
     echo('\n======================================================\n')
 }
 
-def getUtils(){
-    return utils
-}
+//def getUtils(){
+//    return utils
+//}
