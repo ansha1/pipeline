@@ -75,97 +75,97 @@ def call(body) {
                 }
             }
 
-            stage('Test') {
-                when {
-                    expression { DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
-                }
-                parallel {
-                    stage('Unit tests') {
-                        steps {
-                            script {
-                                utils.test()
-                            }
-                        }
-                    }
-                    stage('Sonar analyzing') {
-                        steps {
-                            script {
-                                utils.runSonarScanner('213')
-                            }
-                        }
-                    }
-                }
-            }
-            stage('Build') {
-                when {
-                    expression { DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
-                }
-                parallel {
-                    stage('Publish build artifacts') {
-                        steps {
-                            script {
-                                utils.buildPublish()
-                            }
-                        }
-                    }
-                    stage('Publish docker image') {
-                        steps {
-                            script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
-                            }
-                        }
-                    }
-                }
-            }
-            stage('Deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
-//                script {
-//                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
-//                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
-//
-//                        isApproved = true //    = approve.isApproved()
-//                    } else {
-//                        //always approve for dev branch
-//                        isApproved = true
+//            stage('Test') {
+//                when {
+//                    expression { DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
+//                }
+//                parallel {
+//                    stage('Unit tests') {
+//                        steps {
+//                            script {
+//                                utils.test()
+//                            }
+//                        }
+//                    }
+//                    stage('Sonar analyzing') {
+//                        steps {
+//                            script {
+//                                utils.runSonarScanner('213')
+//                            }
+//                        }
 //                    }
 //                }
-                parallel {
-                    stage('Deploy in kubernetes') {
-                        when {
-                            expression { DEPLOY_ON_K8S ==~ true }
-                        }
-                        steps {
-                            script {
-                                echo("\n\nBUILD_VERSION: ${BUILD_VERSION}\n\n")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', 'dev', jobConfig.BUILD_VERSION)
-                            }
-                        }
-                    }
-                    stage('Deploy on environment') {
-                        when {
-                            expression { isApproved ==~ true }
-                        }
-                        steps {
-                            script {
-                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, ANSIBLE_EXTRA_VARS)
-
-                                stage('Wait until service is up') {
-                                    try {
-                                        for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
-                                            healthCheck(jobConfig.healthCheckUrl[i])
-                                        }
-                                    }
-                                    catch (e) {
-                                        error('Service startup failed ' + e)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+//            }
+//            stage('Build') {
+//                when {
+//                    expression { DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
+//                }
+//                parallel {
+//                    stage('Publish build artifacts') {
+//                        steps {
+//                            script {
+//                                utils.buildPublish()
+//                            }
+//                        }
+//                    }
+//                    stage('Publish docker image') {
+//                        steps {
+//                            script {
+//                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            stage('Deploy') {
+//                when {
+//                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+//                }
+////                script {
+////                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+////                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
+////
+////                        isApproved = true //    = approve.isApproved()
+////                    } else {
+////                        //always approve for dev branch
+////                        isApproved = true
+////                    }
+////                }
+//                parallel {
+//                    stage('Deploy in kubernetes') {
+//                        when {
+//                            expression { DEPLOY_ON_K8S ==~ true }
+//                        }
+//                        steps {
+//                            script {
+//                                echo("\n\nBUILD_VERSION: ${BUILD_VERSION}\n\n")
+//                                kubernetes.deploy(jobConfig.APP_NAME, 'default', 'dev', jobConfig.BUILD_VERSION)
+//                            }
+//                        }
+//                    }
+//                    stage('Deploy on environment') {
+//                        when {
+//                            expression { isApproved ==~ true }
+//                        }
+//                        steps {
+//                            script {
+//                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, ANSIBLE_EXTRA_VARS)
+//
+//                                stage('Wait until service is up') {
+//                                    try {
+//                                        for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
+//                                            healthCheck(jobConfig.healthCheckUrl[i])
+//                                        }
+//                                    }
+//                                    catch (e) {
+//                                        error('Service startup failed ' + e)
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
         post {
             always {
