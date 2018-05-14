@@ -8,15 +8,15 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    healthCheckMap = pipelineParams.healthCheckMap
-    branchPermissionsMap = pipelineParams.branchPermissionsMap
-    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-    APP_NAME = pipelineParams.APP_NAME
-    BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
-    PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
-    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-
+//    healthCheckMap = pipelineParams.healthCheckMap
+//    branchPermissionsMap = pipelineParams.branchPermissionsMap
+//    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
+//    APP_NAME = pipelineParams.APP_NAME
+//    BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
+//    PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
+//    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
+//    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+//
 
     jobConfig {
         healthCheckMap = [dev       : ["http://192.168.51.120:9020/LicenseService/health",
@@ -29,11 +29,14 @@ def call(body) {
         branchPermissionsMap = [dev       : ["authenticated"],
                                 qa        : ["rdavis", "avelichko", "avama", "skompanets", "sadgaonkar", "mkhunt"],
                                 production: ["rdavis", "avelichko", "avama", "skompanets", "sadgaonkar", "mkhunt"]]
-        APP_NAME = 'license-service'
-        BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/license/'
-        PLAYBOOK_PATH = 'ansible/role-based_playbooks/license-service.yml'
-        DEPLOY_APPROVERS = 'rdavis,ama,avelichko,sadgaonkar'
-        CHANNEL_TO_NOTIFY = 'iam_team_channel'
+
+        projectLanguage = 'java'
+
+        APP_NAME = 'test-service'
+        BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/test/'
+        PLAYBOOK_PATH = 'ansible/role-based_playbooks/test-service.yml'
+        DEPLOY_APPROVERS = 'esakhnyuk,ifishchuk,mvasilets'
+        CHANNEL_TO_NOTIFY = 'testchannel'
     }
     def securityPermissions = jobConfig.branchProperties
     def DEPLOY_ON_SSO_SANDBOX = jobConfig.DEPLOY_ON_K8S
@@ -79,14 +82,14 @@ def call(body) {
                     stage('Unit tests') {
                         steps {
                             script {
-                                utils.test
+                                utils.test()
                             }
                         }
                     }
                     stage('Sonar analyzing') {
                         steps {
                             script {
-                                utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                                utils.runSonarScanner(utils.version)
                             }
                         }
                     }
@@ -94,7 +97,7 @@ def call(body) {
             }
             stage('Build') {
                 when {
-                    expression { DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|hotfix\/.+|release\/.+)$/ }
+                    expression { DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
                 }
                 parallel {
                     stage('Publish build artifacts') {
@@ -106,7 +109,9 @@ def call(body) {
                     }
                     stage('Publish docker image') {
                         steps {
-                            buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                            script {
+                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                            }
                         }
                     }
                 }
@@ -121,7 +126,7 @@ def call(body) {
 
                         isApproved = true //    = approve.isApproved()
                     } else {
-                        //always approve dev deploy
+                        //always approve for dev branch
                         isApproved = true
                     }
                 }
@@ -133,7 +138,7 @@ def call(body) {
                         steps {
                             script {
                                 echo("\n\nBUILD_VERSION: ${BUILD_VERSION}\n\n")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', 'dev', BUILD_VERSION)
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', 'dev', jobConfig.BUILD_VERSION)
                             }
                         }
                     }

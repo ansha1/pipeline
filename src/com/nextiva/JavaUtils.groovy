@@ -54,6 +54,8 @@ def setBuildVersion(String userDefinedBuildVersion, String pathToPom = '.') {
     if (!userDefinedBuildVersion) {
         version = utils.getVersion(pathToPom)
         DEPLOY_ONLY = false
+        echo('===========================')
+        echo('Sorce Defined Version = ' + version)
     } else {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
