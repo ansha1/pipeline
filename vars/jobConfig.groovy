@@ -103,3 +103,7 @@ def call(body) {
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n')
 }
+
+def getUtills(){
+    return utils
+}
