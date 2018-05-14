@@ -104,6 +104,6 @@ def call(body) {
     echo('\n======================================================\n')
 }
 
-def getUtills(){
+def getUtils(){
     return utils
 }
