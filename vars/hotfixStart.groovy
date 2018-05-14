@@ -51,7 +51,7 @@ def call(body) {
                                 utils = new JsUtils()
                                 break
                             default:
-                                error("""Incorrent programming language
+                                error("""Incorrect programming language
                                         please set one of the
                                         supported languages:
                                         java

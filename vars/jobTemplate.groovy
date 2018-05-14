@@ -8,35 +8,26 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-//    healthCheckMap = pipelineParams.healthCheckMap
-//    branchPermissionsMap = pipelineParams.branchPermissionsMap
-//    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-//    APP_NAME = pipelineParams.APP_NAME
-//    BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
-//    PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
-//    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-//    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-//
+    healthCheckMap = pipelineParams.healthCheckMap
+    branchPermissionsMap = pipelineParams.branchPermissionsMap
+    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
+    projectLanguage = 'java'
+    APP_NAME = pipelineParams.APP_NAME
+    BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
+    PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
+    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+
 
     jobConfig {
-        healthCheckMap = [dev       : ["http://192.168.51.120:9020/LicenseService/health",
-                                       "http://192.168.51.121:9020/LicenseService/health"],
-                          qa        : ["http://10.103.50.50:9020/LicenseService/health",
-                                       "http://10.103.50.51:9020/LicenseService/health"],
-                          production: ["http://192.168.202.129:9020/LicenseService/health",
-                                       "http://192.168.202.130:9020/LicenseService/health",
-                                       "http://192.168.202.131:9020/LicenseService/health"]]
-        branchPermissionsMap = [dev       : ["authenticated"],
-                                qa        : ["rdavis", "avelichko", "avama", "skompanets", "sadgaonkar", "mkhunt"],
-                                production: ["rdavis", "avelichko", "avama", "skompanets", "sadgaonkar", "mkhunt"]]
-
-        projectLanguage = 'java'
-
-        APP_NAME = 'test-service'
-        BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/test/'
-        PLAYBOOK_PATH = 'ansible/role-based_playbooks/test-service.yml'
-        DEPLOY_APPROVERS = 'esakhnyuk,ifishchuk,mvasilets'
-        CHANNEL_TO_NOTIFY = 'testchannel'
+        healthCheckMap = this.healthCheckMap
+        branchPermissionsMap = this.branchPermissionsMap
+        projectLanguage = this.projectLanguage
+        APP_NAME = this.APP_NAME
+        BASIC_INVENTORY_PATH = this.BASIC_INVENTORY_PATH
+        PLAYBOOK_PATH = this.PLAYBOOK_PATH
+        DEPLOY_APPROVERS = this.DEPLOY_APPROVERS
+        CHANNEL_TO_NOTIFY = this.CHANNEL_TO_NOTIFY
     }
     def securityPermissions = jobConfig.branchProperties
     def DEPLOY_ON_SSO_SANDBOX = jobConfig.DEPLOY_ON_K8S
@@ -66,7 +57,25 @@ def call(body) {
             stage('Set additional properties') {
                 steps {
                     script {
-//                        utils = jobConfig.getUtils()
+                        switch (projectLanguage) {
+                            case 'java':
+                                utils = new JavaUtils()
+                                break
+                            case 'python':
+                                utils = new PythonUtils()
+                                break
+                            case 'js':
+                                utils = new JsUtils()
+                                break
+                            default:
+                                error("""Incorrect programming language
+                                        please set one of the
+                                        supported languages:
+                                        java
+                                        python
+                                        js""")
+                                break
+                        }
                         utils.setBuildVersion(params.deploy_version)
                         DEPLOY_ONLY = jobConfig.DEPLOY_ONLY
                         DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
