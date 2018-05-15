@@ -42,7 +42,7 @@ def build(String packageName, String version, String deployEnvironment, String e
 
     if ( isDebDirPath == 0 ) {
         def setPackageMessage = 'autoincremented from git revision ' + GIT_COMMIT
-        generateBuildProperties(deployEnvironment, version, JOB_NAME)
+        generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
         sh """
             {
               cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
