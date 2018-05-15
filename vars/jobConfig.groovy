@@ -7,39 +7,19 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    ansibleEnvMapDefault = [dev : "dev",
-                            qa: "qa",
-                            production : "production"]
+    ansibleEnvMapDefault = [dev       : "dev",
+                            qa        : "qa",
+                            production: "production"]
 
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-    projectLanguage = pipelineParams.projectLanguage
+    projectLanguages = pipelineParams.projectLanguages
     APP_NAME = pipelineParams.APP_NAME
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-
-//    switch (projectLanguage) {
-//        case 'java':
-//            utils = new JavaUtils()
-//            break
-//        case 'python':
-//            utils = new PythonUtils()
-//            break
-//        case 'js':
-//            utils = new JsUtils()
-//            break
-//        default:
-//            error("Incorrent programming language\n" +
-//                    "please set one of the\n" +
-//                    "supported languages:\n" +
-//                    "java\n" +
-//                    "python\n" +
-//                    "js\n")
-//            break
-//    }
 
 
     switch (env.BRANCH_NAME) {
@@ -104,6 +84,36 @@ def call(body) {
     echo('\n======================================================\n')
 }
 
-//def getUtils(){
-//    return utils
-//}
+List getUtils(List projectLanguages) {
+    def utils = []
+    projectLanguages.each {
+
+        switch (it.key) {
+            case 'java':
+                print(it.key)
+                javaUtils = new JavaUtils()
+                javaUtils.pathToSrc = it.value
+                utils.add(javaUtils)
+                break
+            case 'python':
+                pyUtils = new PythonUtils()
+                pyUtils.pathToSrc = it.value
+                utils.add(pyUtils)
+                break
+            case 'js':
+                jsUtils = new JsUtils()
+                jsUtils.pathToSrc = it.value
+                utils.add(jsUtils)
+                break
+            default:
+                error("""Incorrect programming language
+                                        please set one of the
+                                        supported languages:
+                                        java
+                                        python
+                                        js""")
+                break
+        }
+    }
+    return utils
+}
