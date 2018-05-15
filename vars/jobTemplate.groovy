@@ -8,12 +8,10 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    projectLanguage = 'java'
-
     jobConfig {
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
-        projectLanguage = this.projectLanguage
+        projectLanguage = pipelineParams.projectLanguage
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         APP_NAME = pipelineParams.APP_NAME
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
