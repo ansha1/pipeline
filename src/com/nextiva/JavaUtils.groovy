@@ -1,6 +1,7 @@
 package com.nextiva
 
-import static com.nextiva.SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_ENV
+import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
 
 class JavaUtils implements Utils {
 
@@ -14,6 +15,7 @@ class JavaUtils implements Utils {
         this.pathToSrc = '.'
     }
 
+    @Override
     String getVersion() {
         dir(pathToSrc) {
             def rootPom = readMavenPom file: "pom.xml"
@@ -21,17 +23,20 @@ class JavaUtils implements Utils {
         return rootPom.version
     }
 
+    @Override
     void setVersion(String version) {
         dir(pathToSrc) {
             sh "mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
         }
     }
 
+    @Override
     String createReleaseVersion(String version) {
         def releaseVersion = version.replaceAll("-SNAPSHOT", "")
         return releaseVersion
     }
 
+    @Override
     def runSonarScanner(String projectVersion) {
         scannerHome = tool SONAR_QUBE_SCANNER
         withSonarQubeEnv(SONAR_QUBE_ENV) {
@@ -39,6 +44,7 @@ class JavaUtils implements Utils {
         }
     }
 
+    @Override
     void runTests() {
         print("\n\n Start unit tests Java \n\n")
         dir(pathToSrc) {
@@ -54,6 +60,7 @@ class JavaUtils implements Utils {
         }
     }
 
+    @Override
     void buildPublish() {
         print("\n\n build and publish Java \n\n")
         dir(pathToSrc) {
@@ -66,6 +73,7 @@ class JavaUtils implements Utils {
         }
     }
 
+    @Override
     void setBuildVersion(String userDefinedBuildVersion) {
 
         if (!userDefinedBuildVersion) {

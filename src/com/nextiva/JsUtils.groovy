@@ -1,6 +1,7 @@
 package com.nextiva
 
-import static com.nextiva.SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_ENV
+import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
 
 class JsUtils implements Utils {
 
@@ -14,6 +15,7 @@ class JsUtils implements Utils {
         this.pathToSrc = '.'
     }
 
+    @Override
     String getVersion() {
         dir(pathToSrc) {
             def packageJson = readJSON file: "package.json"
@@ -21,6 +23,7 @@ class JsUtils implements Utils {
         return packageJson.version
     }
 
+    @Override
     def setVersion(String version) {
         dir(pathToSrc) {
             def packageJson = readJSON file: "package.json"
@@ -36,11 +39,13 @@ class JsUtils implements Utils {
         }
     }
 
+    @Override
     String createReleaseVersion(String version) {
 
         return version
     }
 
+    @Override
     def runSonarScanner(String projectVersion) {
         scannerHome = tool SONAR_QUBE_SCANNER
 
