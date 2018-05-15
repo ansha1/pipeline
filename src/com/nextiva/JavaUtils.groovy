@@ -17,17 +17,15 @@ class JavaUtils implements Utils {
 
     @Override
     String getVersion() {
-        dir(pathToSrc) {
-            def rootPom = readMavenPom file: "pom.xml"
-        }
+        def rootPom = readMavenPom file: "${pathToSrc}/pom.xml"
         return rootPom.version
     }
 
     @Override
     void setVersion(String version) {
-        dir(pathToSrc) {
-            sh "mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
-        }
+
+        sh "cd ${pathToSrc} && mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
+
     }
 
     @Override

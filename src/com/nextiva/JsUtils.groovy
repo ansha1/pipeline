@@ -17,9 +17,9 @@ class JsUtils implements Utils {
 
     @Override
     String getVersion() {
-        dir(pathToSrc) {
-            def packageJson = readJSON file: "package.json"
-        }
+
+        def packageJson = readJSON file: "${pathToSrc}/package.json"
+
         return packageJson.version
     }
 
