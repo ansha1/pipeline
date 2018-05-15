@@ -24,7 +24,7 @@ class JsUtils implements Utils {
     }
 
     @Override
-    def setVersion(String version) {
+    void setVersion(String version) {
         dir(pathToSrc) {
             def packageJson = readJSON file: "package.json"
             def packageLockJson = readJSON file: "package-lock.json"

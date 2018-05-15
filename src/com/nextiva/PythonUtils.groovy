@@ -23,7 +23,7 @@ class PythonUtils implements Utils {
     }
 
     @Override
-    def setVersion(String version) {
+    void setVersion(String version) {
         dir(pathToSrc) {
             String propsToWrite = ''
             def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
