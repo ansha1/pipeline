@@ -3,17 +3,17 @@ package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_ENV
 import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
 
-class JavaUtils implements Utils {
+//class JavaUtils implements Utils {
 
     final String pathToSrc
 
-    JavaUtils(String pathToSrc) {
-        this.pathToSrc = pathToSrc
-    }
-
-    JavaUtils() {
-        this.pathToSrc = '.'
-    }
+//    JavaUtils(String pathToSrc) {
+//        this.pathToSrc = pathToSrc
+//    }
+//
+//    JavaUtils() {
+//        this.pathToSrc = '.'
+//    }
 
     @Override
     String getVersion() {
@@ -97,4 +97,4 @@ class JavaUtils implements Utils {
         print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
         echo('===============================')
     }
-}
+//}
