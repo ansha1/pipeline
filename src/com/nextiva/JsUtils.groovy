@@ -10,8 +10,8 @@ final String pathToSrc
 String getVersion() {
     dir(pathToSrc) {
         def packageJson = readJSON file: "package.json"
+        return packageJson.version
     }
-    return packageJson.version
 }
 
 

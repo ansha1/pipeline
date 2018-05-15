@@ -9,8 +9,8 @@ final String pathToSrc
 String getVersion() {
     dir(pathToSrc) {
         def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        return buildProperties.version
     }
-    return buildProperties.version
 }
 
 
