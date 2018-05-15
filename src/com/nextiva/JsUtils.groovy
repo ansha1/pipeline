@@ -2,35 +2,65 @@ package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
 
+class JsUtils implements Utils {
 
-String getVersion(String pathToPackageJs = '.') {
-    packageJson = readJSON file: "${pathToPackageJs}/package.json"
-    return packageJson.version
+    final String pathToSrc
 
-}
+    JsUtils(String pathToSrc) {
+        this.pathToSrc = pathToSrc
+    }
 
-def setVersion(String version, String pathToPackageJs = '.') {
-    packageJson = readJSON file: "${pathToPackageJs}/package.json"
-    packageLockJson = readJSON file: "${pathToPackageJs}/package-lock.json"
+    JsUtils() {
+        this.pathToSrc = '.'
+    }
 
-    packageJson.version = version
-    packageLockJson.version = version
+    String getVersion() {
+        dir(pathToSrc) {
+            def packageJson = readJSON file: "package.json"
+        }
+        return packageJson.version
+    }
 
-    writeJSON file: "${pathToPackageJs}/package.json", json: packageJson, pretty: 1
-    writeJSON file: "${pathToPackageJs}/package-lock.json", json: packageLockJson, pretty: 1
+    def setVersion(String version) {
+        dir(pathToSrc) {
+            def packageJson = readJSON file: "package.json"
+            def packageLockJson = readJSON file: "package-lock.json"
 
-    print("\n Seted version: ${packageJson.version}\n")
-}
+            packageJson.version = version
+            packageLockJson.version = version
 
-String createReleaseVersion(String version) {
+            writeJSON file: "package.json", json: packageJson, pretty: 1
+            writeJSON file: "package-lock.json", json: packageLockJson, pretty: 1
 
-    return version
-}
+            print("\n Seted version: ${packageJson.version}\n")
+        }
+    }
 
-def runSonarScanner(String projectVersion) {
-    scannerHome = tool SONAR_QUBE_SCANNER
+    String createReleaseVersion(String version) {
 
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+        return version
+    }
+
+    def runSonarScanner(String projectVersion) {
+        scannerHome = tool SONAR_QUBE_SCANNER
+
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+        }
+    }
+
+    @Override
+    void runTests() {
+
+    }
+
+    @Override
+    void buildPublish() {
+
+    }
+
+    @Override
+    void setBuildVersion(String userDefinedBuildVersion) {
+
     }
 }

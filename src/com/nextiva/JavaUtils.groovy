@@ -2,75 +2,93 @@ package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
 
-String getVersion(String pathToPom = '.') {
-    rootPom = readMavenPom file: "${pathToPom}/pom.xml"
-    return rootPom.version
-}
+class JavaUtils implements Utils {
 
-def setVersion(String version, String pathToPom = '.') {
-    sh "cd ${pathToPom} && mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
-}
+    final String pathToSrc
 
-String createReleaseVersion(String version) {
-    releaseVersion = version.replaceAll("-SNAPSHOT", "")
-    return releaseVersion
-}
-
-def runSonarScanner(String projectVersion) {
-    scannerHome = tool SONAR_QUBE_SCANNER
-
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    JavaUtils(String pathToSrc) {
+        this.pathToSrc = pathToSrc
     }
-}
 
-def test(String pathToSrc = '.') {
-    dir(pathToSrc) {
-        try {
-            sh 'mvn clean install jacoco:report'
-            sh 'mvn checkstyle:checkstyle'
-        } catch (e) {
-            error("Unit test fail ${e}")
-        } finally {
-            junit '**/target/surefire-reports/*.xml'
-            checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
+    JavaUtils() {
+        this.pathToSrc = '.'
+    }
+
+    String getVersion() {
+        dir(pathToSrc) {
+            def rootPom = readMavenPom file: "pom.xml"
+        }
+        return rootPom.version
+    }
+
+    void setVersion(String version) {
+        dir(pathToSrc) {
+            sh "mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
         }
     }
-}
 
-def buildPublish(String pathToSrc = '.') {
-    dir(pathToSrc) {
-        try {
-            sh 'mvn deploy --batch-mode -DskipTests'
-        } catch (e) {
-            error("buildPublish  fail ${e}")
+    String createReleaseVersion(String version) {
+        def releaseVersion = version.replaceAll("-SNAPSHOT", "")
+        return releaseVersion
+    }
 
+    def runSonarScanner(String projectVersion) {
+        scannerHome = tool SONAR_QUBE_SCANNER
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
         }
     }
-}
 
-def setBuildVersion(String userDefinedBuildVersion, String pathToPom = '.') {
-
-    if (!userDefinedBuildVersion) {
-        version = getVersion(pathToPom)
-        DEPLOY_ONLY = false
-        echo('===========================')
-        echo('Sorce Defined Version = ' + version)
-    } else {
-        version = userDefinedBuildVersion.trim()
-        DEPLOY_ONLY = true
-        echo('===========================')
-        echo('User Defined Version = ' + version)
+    void runTests() {
+        print("\n\n Start unit tests Java \n\n")
+        dir(pathToSrc) {
+            try {
+                sh 'mvn clean install jacoco:report'
+                sh 'mvn checkstyle:checkstyle'
+            } catch (e) {
+                error("Unit test fail ${e}")
+            } finally {
+                junit '**/target/surefire-reports/*.xml'
+                checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
+            }
+        }
     }
 
-    ANSIBLE_EXTRA_VARS = ['application_version': version,
-                          'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+    void buildPublish() {
+        print("\n\n build and publish Java \n\n")
+        dir(pathToSrc) {
+            try {
+                sh 'mvn deploy --batch-mode -DskipTests'
+            } catch (e) {
+                error("buildPublish  fail ${e}")
 
-    BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
-    echo('===============================')
-    echo('POM VERSION ' + version)
-    echo('BUILD_VERSION ' + BUILD_VERSION)
-    echo('===============================')
-    print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
-    echo('===============================')
+            }
+        }
+    }
+
+    void setBuildVersion(String userDefinedBuildVersion) {
+
+        if (!userDefinedBuildVersion) {
+            version = getVersion()
+            DEPLOY_ONLY = false
+            echo('===========================')
+            echo('Source Defined Version = ' + version)
+        } else {
+            version = userDefinedBuildVersion.trim()
+            DEPLOY_ONLY = true
+            echo('===========================')
+            echo('User Defined Version = ' + version)
+        }
+
+        ANSIBLE_EXTRA_VARS = ['application_version': version,
+                              'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+
+        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+        echo('===============================')
+        echo('POM VERSION ' + version)
+        echo('BUILD_VERSION ' + BUILD_VERSION)
+        echo('===============================')
+        print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
+        echo('===============================')
+    }
 }

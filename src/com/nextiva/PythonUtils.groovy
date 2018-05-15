@@ -2,32 +2,62 @@ package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
 
+class PythonUtils implements Utils {
 
-String getVersion(String pathToSetupPy = '.') {
-    def buildProperties = readProperties file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
-    return buildProperties.version
-}
+    final String pathToSrc
 
-def setVersion(String version, String pathToSetupPy = '.') {
-    String propsToWrite = ''
-    def buildProperties = readProperties file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
-
-    buildProperties.version = version
-    buildProperties.each {
-        propsToWrite = propsToWrite + it.toString() + '\n'
+    PythonUtils(String pathToSrc) {
+        this.pathToSrc = pathToSrc
     }
-    writeFile file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}", text: propsToWrite
-}
 
-String createReleaseVersion(String version) {
-    def releaseVersion = version.tokenize('-')[0]
-    return releaseVersion
-}
+    PythonUtils() {
+        this.pathToSrc = '.'
+    }
 
-def runSonarScanner(String projectVersion) {
-    scannerHome = tool SONAR_QUBE_SCANNER
+    String getVersion() {
+        dir(pathToSrc) {
+            def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        }
+        return buildProperties.version
+    }
 
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    def setVersion(String version) {
+        dir(pathToSrc) {
+            String propsToWrite = ''
+            def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+            buildProperties.version = version
+            buildProperties.each {
+                propsToWrite = propsToWrite + it.toString() + '\n'
+            }
+            writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
+        }
+    }
+
+    String createReleaseVersion(String version) {
+        def releaseVersion = version.tokenize('-')[0]
+        return releaseVersion
+    }
+
+    def runSonarScanner(String projectVersion) {
+        scannerHome = tool SONAR_QUBE_SCANNER
+
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+        }
+    }
+
+    @Override
+    void runTests() {
+
+    }
+
+    @Override
+    void buildPublish() {
+
+    }
+
+    @Override
+    void setBuildVersion(String userDefinedBuildVersion) {
+
     }
 }
