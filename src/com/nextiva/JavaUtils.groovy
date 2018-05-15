@@ -15,35 +15,35 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
 //        this.pathToSrc = '.'
 //    }
 
-    @Override
-    String getVersion() {
+
+String getVersion() {
         def rootPom = readMavenPom file: "${pathToSrc}/pom.xml"
         return rootPom.version
     }
 
-    @Override
-    void setVersion(String version) {
+
+void setVersion(String version) {
 
         sh "cd ${pathToSrc} && mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false"
 
     }
 
-    @Override
-    String createReleaseVersion(String version) {
+
+String createReleaseVersion(String version) {
         def releaseVersion = version.replaceAll("-SNAPSHOT", "")
         return releaseVersion
     }
 
-    @Override
-    def runSonarScanner(String projectVersion) {
+
+def runSonarScanner(String projectVersion) {
         scannerHome = tool SONAR_QUBE_SCANNER
         withSonarQubeEnv(SONAR_QUBE_ENV) {
             sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
         }
     }
 
-    @Override
-    void runTests() {
+
+void runTests() {
         print("\n\n Start unit tests Java \n\n")
         dir(pathToSrc) {
             try {
@@ -58,8 +58,8 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
         }
     }
 
-    @Override
-    void buildPublish() {
+
+void buildPublish() {
         print("\n\n build and publish Java \n\n")
         dir(pathToSrc) {
             try {
@@ -71,8 +71,8 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
         }
     }
 
-    @Override
-    void setBuildVersion(String userDefinedBuildVersion) {
+
+void setBuildVersion(String userDefinedBuildVersion) {
 
         if (!userDefinedBuildVersion) {
             version = getVersion()

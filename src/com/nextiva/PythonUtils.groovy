@@ -14,7 +14,7 @@ class PythonUtils implements Utils {
         this.pathToSrc = '.'
     }
 
-    @Override
+
     String getVersion() {
         dir(pathToSrc) {
             def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
@@ -22,7 +22,7 @@ class PythonUtils implements Utils {
         return buildProperties.version
     }
 
-    @Override
+
     void setVersion(String version) {
         dir(pathToSrc) {
             String propsToWrite = ''
@@ -35,13 +35,13 @@ class PythonUtils implements Utils {
         }
     }
 
-    @Override
+
     String createReleaseVersion(String version) {
         def releaseVersion = version.tokenize('-')[0]
         return releaseVersion
     }
 
-    @Override
+
     def runSonarScanner(String projectVersion) {
         scannerHome = tool SONAR_QUBE_SCANNER
 
@@ -50,17 +50,17 @@ class PythonUtils implements Utils {
         }
     }
 
-    @Override
+
     void runTests() {
 
     }
 
-    @Override
+
     void buildPublish() {
 
     }
 
-    @Override
+
     void setBuildVersion(String userDefinedBuildVersion) {
 
     }

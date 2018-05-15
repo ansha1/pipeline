@@ -15,16 +15,16 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
 //        this.pathToSrc = '.'
 //    }
 
-    @Override
-    String getVersion() {
+
+String getVersion() {
 
         def packageJson = readJSON file: "${pathToSrc}/package.json"
 
         return packageJson.version
     }
 
-    @Override
-    void setVersion(String version) {
+
+void setVersion(String version) {
         dir(pathToSrc) {
             def packageJson = readJSON file: "package.json"
             def packageLockJson = readJSON file: "package-lock.json"
@@ -39,14 +39,14 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
         }
     }
 
-    @Override
-    String createReleaseVersion(String version) {
+
+String createReleaseVersion(String version) {
 
         return version
     }
 
-    @Override
-    def runSonarScanner(String projectVersion) {
+
+def runSonarScanner(String projectVersion) {
         scannerHome = tool SONAR_QUBE_SCANNER
 
         withSonarQubeEnv(SONAR_QUBE_ENV) {
@@ -54,18 +54,18 @@ import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
         }
     }
 
-    @Override
-    void runTests() {
+
+void runTests() {
 
     }
 
-    @Override
-    void buildPublish() {
+
+void buildPublish() {
 
     }
 
-    @Override
-    void setBuildVersion(String userDefinedBuildVersion) {
+
+void setBuildVersion(String userDefinedBuildVersion) {
 
     }
 //}
