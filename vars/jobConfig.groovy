@@ -84,7 +84,7 @@ def call(body) {
     echo('\n======================================================\n')
 }
 
-List getUtils(List projectLanguages) {
+def getUtils() {
     def utils = []
     projectLanguages.each {
 
