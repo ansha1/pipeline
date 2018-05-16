@@ -36,6 +36,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            disableConcurrentBuilds()
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
         }
 
