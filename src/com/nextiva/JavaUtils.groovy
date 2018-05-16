@@ -35,7 +35,7 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-void runTests() {
+void runTests(Map args) {
     print("\n\n Start unit tests Java \n\n")
     dir(pathToSrc) {
         try {
@@ -51,8 +51,9 @@ void runTests() {
 }
 
 
-void buildPublish() {
-    print("\n\n build and publish Java \n\n")
+void buildPublish(String appName, String buildVersion, String environment) {
+    print("\n\n build and publish Java \n\n ")
+    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
     dir(pathToSrc) {
         try {
             sh 'mvn deploy --batch-mode -DskipTests'
@@ -77,12 +78,16 @@ void setBuildVersion(String userDefinedBuildVersion) {
         echo('User Defined Version = ' + version)
     }
 
+    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+    } else {
+        BUILD_VERSION = version
+    }
+
     ANSIBLE_EXTRA_VARS = ['application_version': version,
                           'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
 
-    BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
     echo('===============================')
-    echo('POM VERSION ' + version)
     echo('BUILD_VERSION ' + BUILD_VERSION)
     echo('===============================')
     print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)

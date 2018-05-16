@@ -46,16 +46,54 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-void runTests() {
+void runTests(Map args) {
+    try {
+        print("\n\n Start unit tests Js \n\n")
+        def languageVersion = args.get('languageVersion')
+        def testArgs = args.get('testArgs')
 
+        dir(pathToSrc) {
+            sh(returnStdout: true, script: testArgs)
+        }
+    } catch (e) {
+        error("Unit test fail ${e}")
+    }
 }
 
 
-void buildPublish() {
+void buildPublish(String appName, String buildVersion, String environment) {
+    print("\n\n build and publish Js \n\n ")
+    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+
 
 }
 
 
 void setBuildVersion(String userDefinedBuildVersion) {
 
+    if (!userDefinedBuildVersion) {
+        version = getVersion()
+        DEPLOY_ONLY = false
+        echo('===========================')
+        echo('Source Defined Version = ' + version)
+    } else {
+        version = userDefinedBuildVersion.trim()
+        DEPLOY_ONLY = true
+        echo('===========================')
+        echo('User Defined Version = ' + version)
+    }
+
+    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+        BUILD_VERSION = version + "-" + env.BUILD_ID
+    } else {
+        BUILD_VERSION = version
+    }
+
+    ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
+
+    echo('===============================')
+    echo('BUILD_VERSION ' + BUILD_VERSION)
+    echo('===============================')
+    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    echo('===============================')
 }

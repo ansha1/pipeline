@@ -11,6 +11,7 @@ def call(body) {
                             qa        : "qa",
                             production: "production"]
 
+    projectFlow = pipelineParams.projectFlow
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
@@ -85,35 +86,30 @@ def call(body) {
 }
 
 def getUtils() {
-    def utils = []
-    projectLanguages.each {
 
-        switch (it.key) {
-            case 'java':
-                print(it.key)
-                javaUtils = new JavaUtils()
-                javaUtils.pathToSrc = it.value
-                utils.add(javaUtils)
-                break
-            case 'python':
-                pyUtils = new PythonUtils()
-                pyUtils.pathToSrc = it.value
-                utils.add(pyUtils)
-                break
-            case 'js':
-                jsUtils = new JsUtils()
-                jsUtils.pathToSrc = it.value
-                utils.add(jsUtils)
-                break
-            default:
-                error("""Incorrect programming language
+    switch (projectFlow.get('language')) {
+        case 'java':
+            utils = new JavaUtils()
+            utils.pathToSrc = projectFlow.get('pathToSrc')
+
+            break
+        case 'python':
+            utils = new PythonUtils()
+            utils.pathToSrc = projectFlow.get('pathToSrc')
+            break
+        case 'js':
+            utils = new JsUtils()
+            utils.pathToSrc = projectFlow.get('pathToSrc')
+            break
+        default:
+            error("""Incorrect programming language
                                         please set one of the
                                         supported languages:
                                         java
                                         python
                                         js""")
-                break
-        }
+            break
     }
     return utils
 }
+

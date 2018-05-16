@@ -9,9 +9,10 @@ def call(body) {
     body()
 
     jobConfig {
+        projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
-        projectLanguage = pipelineParams.projectLanguage
+        projectLanguages = pipelineParams.projectLanguages
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         APP_NAME = pipelineParams.APP_NAME
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
@@ -47,26 +48,10 @@ def call(body) {
             stage('Set additional properties') {
                 steps {
                     script {
-                        switch (projectLanguage) {
-                            case 'java':
-                                utils = new JavaUtils()
-                                break
-                            case 'python':
-                                utils = new PythonUtils()
-                                break
-                            case 'js':
-                                utils = new JsUtils()
-                                break
-                            default:
-                                error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
-                                break
-                        }
+                        utils = jobConfig.getUtils()
                         utils.setBuildVersion(params.deploy_version)
+                        version = utils.version
+                        BUILD_VERSION = utils.BUILD_VERSION
                         DEPLOY_ONLY = utils.DEPLOY_ONLY
                         DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
                     }
@@ -81,14 +66,14 @@ def call(body) {
                     stage('Unit tests') {
                         steps {
                             script {
-                                utils.test()
+                                utils.runTests(jobConfig.projectFlow)
                             }
                         }
                     }
                     stage('Sonar analyzing') {
                         steps {
                             script {
-                                utils.runSonarScanner('213')
+                                utils.runSonarScanner(version)
                             }
                         }
                     }
@@ -102,14 +87,14 @@ def call(body) {
                     stage('Publish build artifacts') {
                         steps {
                             script {
-                                utils.buildPublish()
+                                utils.buildPublish(jobConfig.APP_NAME, BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
                             }
                         }
                     }
                     stage('Publish docker image') {
                         steps {
                             script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                                buildPublishDockerImage(jobConfig.APP_NAME, BUILD_VERSION)
                             }
                         }
                     }
