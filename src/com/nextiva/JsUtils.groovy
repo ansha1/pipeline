@@ -58,11 +58,11 @@ void runTests(Map args) {
     } catch (e) {
         error("Unit test fail ${e}")
     } finally {
-        publishHTML([allowMissing         : false,
+        publishHTML([allowMissing         : true,
                      alwaysLinkToLastBuild: false,
                      keepAll              : false,
                      reportDir            : pathToSrc + '/coverage/lcov-report',
-                     reportFiles          : 'index.html',
+                     reportFiles          : 'test-report.html',
                      reportName           : 'Test Report',
                      reportTitles         : ''])
     }
