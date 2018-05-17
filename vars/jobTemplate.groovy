@@ -96,6 +96,9 @@ def call(body) {
                         }
                     }
                     stage('Publish docker image') {
+                        when {
+                            expression { Denv.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                        }
                         steps {
                             script {
                                 buildPublishDockerImage(jobConfig.APP_NAME, BUILD_VERSION)
@@ -108,16 +111,16 @@ def call(body) {
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
-//                script {
-//                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                script {
+                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
-//
-//                        isApproved = true //    = approve.isApproved()
-//                    } else {
-//                        //always approve for dev branch
-//                        isApproved = true
-//                    }
-//                }
+
+                        isApproved = true //    = approve.isApproved()
+                    } else {
+                        //always approve for dev branch
+                        isApproved = true
+                    }
+                }
                 parallel {
                     stage('Deploy in kubernetes') {
                         when {
@@ -136,7 +139,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, ANSIBLE_EXTRA_VARS)
+                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, utils.ANSIBLE_EXTRA_VARS)
 
                                 stage('Wait until service is up') {
                                     try {

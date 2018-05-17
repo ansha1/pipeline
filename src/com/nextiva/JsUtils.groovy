@@ -50,7 +50,7 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Js \n\n")
         def languageVersion = args.get('languageVersion')
-        def testArgs = args.get('testArgs')
+        def testArgs = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
             sh(returnStdout: true, script: testArgs)
@@ -61,7 +61,7 @@ void runTests(Map args) {
         publishHTML([allowMissing         : true,
                      alwaysLinkToLastBuild: false,
                      keepAll              : false,
-                     reportDir            : pathToSrc + '/coverage/lcov-report',
+                     reportDir            : pathToSrc,
                      reportFiles          : 'test-report.html',
                      reportName           : 'Test Report',
                      reportTitles         : ''])
@@ -79,7 +79,7 @@ void buildPublish(String appName, String buildVersion, String environment) {
             npm install
             npm run dist
             """
-        archiveToNexus(environment, '/dist/static', buildVersion, appName)
+        archiveToNexus(environment, 'dist/static', buildVersion, appName)
     }
 }
 

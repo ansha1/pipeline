@@ -47,7 +47,7 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Python \n\n")
         def languageVersion = args.get('languageVersion', 'python3.6')
-        def testArgs = args.get('testArgs')
+        def testArgs = args.get('testCmds')
 
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)
