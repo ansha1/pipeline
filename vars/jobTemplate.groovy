@@ -73,7 +73,7 @@ def call(body) {
                     }
                     stage('Sonar analyzing') {
                         when {
-                            expression { !(env.BRANCH_NAME ==~ /^(dev|develop)$/) }
+                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ }
                         }
                         steps {
                             script {
