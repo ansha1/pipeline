@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 /** 
 *
-* build Deb pkg without deploying to Nexus
+* build Deb pkg with deploy to Nexus
 *
 * deployEnvironment - The environment to build for. Examples: "dev", "staging". If there isn't 
 *                     an existing repo for the specified environment, one will be created.
