@@ -74,7 +74,7 @@ def call(body) {
                     stage('Sonar analyzing') {
                         steps {
                             script {
-                                utils.runSonarScanner(version)
+                                utils.runSonarScanner(BUILD_VERSION)
                             }
                         }
                     }
