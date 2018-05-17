@@ -111,14 +111,16 @@ def call(body) {
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
-                script {
-                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                steps {
+                    script {
+                        if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
 
-                        isApproved = true //    = approve.isApproved()
-                    } else {
-                        //always approve for dev branch
-                        isApproved = true
+                            isApproved = true //    = approve.isApproved()
+                        } else {
+                            //always approve for dev branch
+                            isApproved = true
+                        }
                     }
                 }
                 parallel {
