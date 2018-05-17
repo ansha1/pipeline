@@ -107,11 +107,11 @@ def call(body) {
                     }
                 }
             }
-            stage('Deploy') {
+            stage('Check approvemets for deploy'){
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
-                steps {
+                steps{
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
@@ -122,6 +122,11 @@ def call(body) {
                             isApproved = true
                         }
                     }
+                }
+            }
+            stage('Deploy') {
+                when {
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
                 parallel {
                     stage('Deploy in kubernetes') {
