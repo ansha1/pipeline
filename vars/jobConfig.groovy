@@ -90,16 +90,16 @@ def getUtils() {
     switch (projectFlow.get('language')) {
         case 'java':
             utils = new JavaUtils()
-            utils.pathToSrc = projectFlow.get('pathToSrc')
+            utils.pathToSrc = projectFlow.get('pathToSrc', '.')
 
             break
         case 'python':
             utils = new PythonUtils()
-            utils.pathToSrc = projectFlow.get('pathToSrc')
+            utils.pathToSrc = projectFlow.get('pathToSrc', '.')
             break
         case 'js':
             utils = new JsUtils()
-            utils.pathToSrc = projectFlow.get('pathToSrc')
+            utils.pathToSrc = projectFlow.get('pathToSrc', '.')
             break
         default:
             error("""Incorrect programming language

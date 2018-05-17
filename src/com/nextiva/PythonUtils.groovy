@@ -46,7 +46,7 @@ void runTests(Map args) {
     //TODO: add publish test report step
     try {
         print("\n\n Start unit tests Python \n\n")
-        def languageVersion = args.get('languageVersion')
+        def languageVersion = args.get('languageVersion', 'python3.6')
         def testArgs = args.get('testArgs')
 
         dir(pathToSrc) {
