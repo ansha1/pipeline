@@ -72,6 +72,9 @@ def call(body) {
                         }
                     }
                     stage('Sonar analyzing') {
+                        when {
+                            expression { !(env.BRANCH_NAME ==~ /^(dev|develop)$/) }
+                        }
                         steps {
                             script {
                                 utils.runSonarScanner(BUILD_VERSION)
