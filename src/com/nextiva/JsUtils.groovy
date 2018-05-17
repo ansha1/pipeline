@@ -57,6 +57,14 @@ void runTests(Map args) {
         }
     } catch (e) {
         error("Unit test fail ${e}")
+    } finally {
+        publishHTML([allowMissing         : false,
+                     alwaysLinkToLastBuild: false,
+                     keepAll              : false,
+                     reportDir            : pathToSrc + '/coverage/lcov-report',
+                     reportFiles          : 'index.html',
+                     reportName           : 'Test Report',
+                     reportTitles         : ''])
     }
 }
 
@@ -65,7 +73,14 @@ void buildPublish(String appName, String buildVersion, String environment) {
     print("\n\n build and publish Js \n\n ")
     print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
 
-
+    dir(pathToSrc) {
+        sh """
+            export OUTPUT_PATH=dist/static
+            npm install
+            npm run dist
+            """
+        archiveToNexus(environment, '/dist/static', buildVersion, appName)
+    }
 }
 
 
