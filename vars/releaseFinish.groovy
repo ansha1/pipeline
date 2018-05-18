@@ -42,10 +42,10 @@ def call(body) {
             stage('Prepare to finishing release') {
                 steps {
                     script {
-
                         switch (projectLanguage) {
                             case 'java':
                                 utils = new JavaUtils()
+
                                 break
                             case 'python':
                                 utils = new PythonUtils()
@@ -62,6 +62,7 @@ def call(body) {
                                         "js\n")
                                 break
                         }
+                        utils.pathToSrc = versionPath
 
                         releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "^  origin/release/" | wc -l', trim: true
                         releaseBranchCount = releaseBranchCount.trim()
@@ -91,7 +92,7 @@ def call(body) {
                                 git fetch
                                 git checkout ${releaseBranch}
                             """
-                            releaseVersion = utils.getVersion(versionPath)
+                            releaseVersion = utils.getVersion()
                             echo("\n\nFind release version: ${releaseVersion} \n\n")
                         } else {
                             error('\n\nWrong release branch name: ' + releaseBranch +

@@ -54,14 +54,15 @@ def call(body) {
                                 utils = new JsUtils()
                                 break
                             default:
-                                error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
+                                error("Incorrect programming language\n" +
+                                        "please set one of the\n" +
+                                        "supported languages:\n" +
+                                        "java\n" +
+                                        "python\n" +
+                                        "js\n")
                                 break
                         }
+                        utils.pathToSrc = versionPath
 
                         def hotfixBranches = sh(script: 'git branch -r', returnStdout: true)
                                 .tokenize('\n')
@@ -93,7 +94,7 @@ def call(body) {
                                 git fetch
                                 git checkout ${hotfixBranch}
                             """
-                            hotfixVersion = utils.getVersion(versionPath)
+                            hotfixVersion = utils.getVersion()
                             echo("\n\nFind hotfix version: ${hotfixVersion} \n\n")
                         } else {
                             error("""\n\nWrong hotfix branch name: ${hotfixBranch}
