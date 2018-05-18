@@ -62,6 +62,8 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('dev')
             break
     }
+    utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
+
     INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
@@ -82,26 +84,6 @@ def call(body) {
 }
 
 def getUtils() {
-    switch (projectFlow.get('language')) {
-        case 'java':
-            utils = new JavaUtils()
-            break
-        case 'python':
-            utils = new PythonUtils()
-            break
-        case 'js':
-            utils = new JsUtils()
-            break
-        default:
-            error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
-            break
-    }
-    utils.pathToSrc = projectFlow.get('pathToSrc', '.')
     return utils
 }
 
