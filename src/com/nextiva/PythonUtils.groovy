@@ -47,11 +47,11 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Python \n\n")
         def languageVersion = args.get('languageVersion', 'python3.6')
-        def testArgs = args.get('testCmds')
+        def testCommands = args.get('testCommands', 'python setup.py test')
 
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)
-            pythonUtils.venvSh(testArgs)
+            pythonUtils.venvSh(testCommands)
         }
     } catch (e) {
         error("Unit test fail ${e}")

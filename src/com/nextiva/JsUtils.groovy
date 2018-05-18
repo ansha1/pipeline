@@ -48,10 +48,10 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Js \n\n")
         def languageVersion = args.get('languageVersion')
-        def testArgs = args.get('testCommands', 'npm install && npm run test && npm run lint')
+        def testCommands = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
-            sh(returnStdout: true, script: testArgs)
+            sh(returnStdout: true, script: testCommands)
         }
     } catch (e) {
         error("Unit test fail ${e}")
