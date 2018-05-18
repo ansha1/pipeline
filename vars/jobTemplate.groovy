@@ -53,40 +53,37 @@ def call(body) {
                     }
                 }
             }
-
-            stage('Test') {
+            stage('Unit tests') {
                 when {
                     expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
                 }
-                parallel {
-                    stage('Unit tests') {
-                        steps {
-                            script {
-                                utils.runTests(jobConfig.projectFlow)
-                            }
-                        }
+                steps {
+                    script {
+                        utils.runTests(jobConfig.projectFlow)
                     }
-                    stage('Sonar analyzing') {
-                        when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ }
-                        }
-                        steps {
-                            script {
-                                utils.runSonarScanner( jobConfig.BUILD_VERSION)
-                            }
-                        }
+                }
+            }
+            stage('Sonar analyzing') {
+                when {
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                }
+                steps {
+                    script {
+                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
                     }
                 }
             }
             stage('Build') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                    }
                 }
                 parallel {
                     stage('Publish build artifacts') {
                         steps {
                             script {
-                                utils.buildPublish(jobConfig.APP_NAME,  jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
+                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
                             }
                         }
                     }
@@ -96,17 +93,17 @@ def call(body) {
                         }
                         steps {
                             script {
-                                buildPublishDockerImage(jobConfig.APP_NAME,  jobConfig.BUILD_VERSION)
+                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
                             }
                         }
                     }
                 }
             }
-            stage('Check approvemets for deploy'){
+            stage('Check approvemets for deploy') {
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
-                steps{
+                steps {
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
@@ -165,4 +162,5 @@ def call(body) {
             }
         }
     }
+
 }
