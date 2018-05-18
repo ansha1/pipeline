@@ -50,10 +50,9 @@ def call(body) {
                 steps {
                     script {
                         utils = jobConfig.getUtils()
-                        utils.setBuildVersion(params.deploy_version)
-                        version = utils.version
-                        BUILD_VERSION = utils.BUILD_VERSION
-                        DEPLOY_ONLY = utils.DEPLOY_ONLY
+                        jobConfig.setBuildVersion(params.deploy_version)
+                        BUILD_VERSION = jobConfig.BUILD_VERSION
+                        DEPLOY_ONLY = jobConfig.DEPLOY_ONLY
                         DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
                     }
                 }
@@ -97,7 +96,7 @@ def call(body) {
                     }
                     stage('Publish docker image') {
                         when {
-                            expression { Denv.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ }
                         }
                         steps {
                             script {
@@ -146,7 +145,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, utils.ANSIBLE_EXTRA_VARS)
+                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 stage('Wait until service is up') {
                                     try {

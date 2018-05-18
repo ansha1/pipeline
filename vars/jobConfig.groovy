@@ -113,3 +113,58 @@ def getUtils() {
     return utils
 }
 
+void setBuildVersion(String userDefinedBuildVersion) {
+
+    if (!userDefinedBuildVersion) {
+        version = utils.getVersion()
+        DEPLOY_ONLY = false
+        echo('===========================')
+        echo('Source Defined Version = ' + version)
+    } else {
+        version = userDefinedBuildVersion.trim()
+        DEPLOY_ONLY = true
+        echo('===========================')
+        echo('User Defined Version = ' + version)
+    }
+
+    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+    } else {
+        BUILD_VERSION = version
+    }
+
+    echo('===============================')
+    echo('BUILD_VERSION ' + BUILD_VERSION)
+    echo('===============================')
+    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    echo('===============================')
+}
+
+
+Map getAnsibleExtraVars() {
+
+    switch (projectFlow.get('language')) {
+        case 'java':
+            ANSIBLE_EXTRA_VARS = ['application_version': version,
+                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            break
+        case 'python':
+            ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
+            break
+        case 'js':
+            ANSIBLE_EXTRA_VARS = ['version'            : BUILD_VERSION,
+                                  'component_name'     : APP_NAME,
+                                  'static_assets_files': APP_NAME]
+            break
+        default:
+            error("""Incorrect programming language
+                                        please set one of the
+                                        supported languages:
+                                        java
+                                        python
+                                        js""")
+            break
+    }
+
+    return ANSIBLE_EXTRA_VARS
+}

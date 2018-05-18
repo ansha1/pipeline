@@ -64,32 +64,31 @@ void buildPublish(String appName, String buildVersion, String environment) {
     }
 }
 
-
-void setBuildVersion(String userDefinedBuildVersion) {
-    if (!userDefinedBuildVersion) {
-        version = getVersion()
-        DEPLOY_ONLY = false
-        echo('===========================')
-        echo('Source Defined Version = ' + version)
-    } else {
-        version = userDefinedBuildVersion.trim()
-        DEPLOY_ONLY = true
-        echo('===========================')
-        echo('User Defined Version = ' + version)
-    }
-
-    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
-    } else {
-        BUILD_VERSION = version
-    }
-
-    ANSIBLE_EXTRA_VARS = ['application_version': version,
-                          'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
-
-    echo('===============================')
-    echo('BUILD_VERSION ' + BUILD_VERSION)
-    echo('===============================')
-    print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
-    echo('===============================')
-}
+//void setBuildVersion(String userDefinedBuildVersion) {
+//    if (!userDefinedBuildVersion) {
+//        version = getVersion()
+//        DEPLOY_ONLY = false
+//        echo('===========================')
+//        echo('Source Defined Version = ' + version)
+//    } else {
+//        version = userDefinedBuildVersion.trim()
+//        DEPLOY_ONLY = true
+//        echo('===========================')
+//        echo('User Defined Version = ' + version)
+//    }
+//
+//    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+//        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+//    } else {
+//        BUILD_VERSION = version
+//    }
+//
+//    ANSIBLE_EXTRA_VARS = ['application_version': version,
+//                          'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+//
+//    echo('===============================')
+//    echo('BUILD_VERSION ' + BUILD_VERSION)
+//    echo('===============================')
+//    print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
+//    echo('===============================')
+//}
