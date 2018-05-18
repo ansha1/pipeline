@@ -125,9 +125,9 @@ def call(body) {
                 }
             }
             stage('Deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
+//                when {
+//                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+//                }
                 parallel {
                     stage('Deploy in kubernetes') {
                         when {
@@ -136,7 +136,7 @@ def call(body) {
                         steps {
                             script {
                                 echo("\n\nBUILD_VERSION: ${BUILD_VERSION}\n\n")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', 'dev', jobConfig.BUILD_VERSION)
+                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
                             }
                         }
                     }
