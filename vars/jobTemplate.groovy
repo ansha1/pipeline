@@ -84,7 +84,7 @@ def call(body) {
                     stage('Publish build artifacts') {
                         steps {
                             script {
-                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
+                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
                             }
                         }
                     }
