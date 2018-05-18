@@ -104,7 +104,9 @@ void setBuildVersion(String userDefinedBuildVersion) {
         BUILD_VERSION = version
     }
 
-    ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
+    ANSIBLE_EXTRA_VARS = ['version'            : BUILD_VERSION,
+                          'component_name'     : APP_NAME,
+                          'static_assets_files': APP_NAME]
 
     echo('===============================')
     echo('BUILD_VERSION ' + BUILD_VERSION)
