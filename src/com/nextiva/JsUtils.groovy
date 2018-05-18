@@ -1,7 +1,6 @@
 package com.nextiva
 
-import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_ENV
-import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
+import static com.nextiva.SharedJobsStaticVars.*
 
 
 final String pathToSrc
@@ -26,13 +25,12 @@ void setVersion(String version) {
         writeJSON file: "package.json", json: packageJson, pretty: 1
         writeJSON file: "package-lock.json", json: packageLockJson, pretty: 1
 
-        print("\n Seted version: ${packageJson.version}\n")
+        print("\n Set version: ${packageJson.version}\n")
     }
 }
 
 
 String createReleaseVersion(String version) {
-
     return version
 }
 

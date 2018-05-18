@@ -1,7 +1,6 @@
 package com.nextiva
 
-import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_ENV
-import static com.nextiva.SharedJobsStaticVars.getSONAR_QUBE_SCANNER
+import static com.nextiva.SharedJobsStaticVars.*
 
 
 final String pathToSrc
