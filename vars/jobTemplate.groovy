@@ -21,7 +21,6 @@ def call(body) {
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     }
     def securityPermissions = jobConfig.branchProperties
-    def DEPLOY_ON_SSO_SANDBOX = jobConfig.DEPLOY_ON_K8S
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -51,16 +50,13 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
-                        BUILD_VERSION = jobConfig.BUILD_VERSION
-                        DEPLOY_ONLY = jobConfig.DEPLOY_ONLY
-                        DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
                     }
                 }
             }
 
             stage('Test') {
                 when {
-                    expression { DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
                 }
                 parallel {
                     stage('Unit tests') {
@@ -76,7 +72,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                utils.runSonarScanner(BUILD_VERSION)
+                                utils.runSonarScanner( jobConfig.BUILD_VERSION)
                             }
                         }
                     }
@@ -84,13 +80,13 @@ def call(body) {
             }
             stage('Build') {
                 when {
-                    expression { DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ }
                 }
                 parallel {
                     stage('Publish build artifacts') {
                         steps {
                             script {
-                                utils.buildPublish(jobConfig.APP_NAME, BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
+                                utils.buildPublish(jobConfig.APP_NAME,  jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
                             }
                         }
                     }
@@ -100,7 +96,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, BUILD_VERSION)
+                                buildPublishDockerImage(jobConfig.APP_NAME,  jobConfig.BUILD_VERSION)
                             }
                         }
                     }
@@ -124,17 +120,17 @@ def call(body) {
                 }
             }
             stage('Deploy') {
-//                when {
-//                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-//                }
+                when {
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                }
                 parallel {
                     stage('Deploy in kubernetes') {
                         when {
-                            expression { DEPLOY_ON_K8S ==~ true }
+                            expression { jobConfig.DEPLOY_ON_K8S ==~ true }
                         }
                         steps {
                             script {
-                                echo("\n\nBUILD_VERSION: ${BUILD_VERSION}\n\n")
+                                echo("\n\nBUILD_VERSION: ${jobConfig.BUILD_VERSION}\n\n")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
                             }
                         }
