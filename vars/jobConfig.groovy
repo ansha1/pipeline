@@ -21,6 +21,7 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
 
 
     switch (env.BRANCH_NAME) {
@@ -29,7 +30,6 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
-            DEPLOY_ON_K8S = true
             echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
             break
         case 'develop':
@@ -37,34 +37,29 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop')
             DEPLOY_ENVIRONMENT = 'dev'
-            DEPLOY_ON_K8S = true
             break
         case ~/^release\/.+$/:
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
-            DEPLOY_ON_K8S = false
             break
         case ~/^hotfix\/.+$/:
             ANSIBLE_ENV = 'none'
             healthCheckUrl = ["none"]
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
-            DEPLOY_ON_K8S = false
             break
         case 'master':
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
-            DEPLOY_ON_K8S = false
             break
         default:
             ANSIBLE_ENV = 'none'
             healthCheckUrl = ["none"]
             branchPermissions = branchPermissionsMap.get('dev')
-            DEPLOY_ON_K8S = false
             break
     }
     INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
@@ -79,6 +74,7 @@ def call(body) {
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
+    echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }

@@ -17,6 +17,7 @@ def call(body) {
         APP_NAME = pipelineParams.APP_NAME
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
+        DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     }
@@ -89,7 +90,7 @@ def call(body) {
                     }
                     stage('Publish docker image') {
                         when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
                         }
                         steps {
                             script {
