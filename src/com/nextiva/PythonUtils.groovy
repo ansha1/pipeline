@@ -59,7 +59,7 @@ void runTests(Map args) {
 }
 
 
-void buildPublish(String appName, String buildVersion, String environment) {
+void buildPublish(String appName, String buildVersion, String environment, Map args) {
     print("\n\n build and publish Python \n\n ")
     print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
 

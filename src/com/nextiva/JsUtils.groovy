@@ -67,16 +67,13 @@ void runTests(Map args) {
 }
 
 
-void buildPublish(String appName, String buildVersion, String environment) {
+void buildPublish(String appName, String buildVersion, String environment, Map args) {
     print("\n\n build and publish Js \n\n ")
     print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    def buildCommands = args.get('buildCommands', 'export OUTPUT_PATH=dist/static && npm install && npm run dist')
 
     dir(pathToSrc) {
-        sh """
-            export OUTPUT_PATH=dist/static
-            npm install
-            npm run dist
-            """
+        sh(returnStdout: true, script: buildCommands)
         archiveToNexus(environment, 'dist/static', buildVersion, appName)
     }
 }
