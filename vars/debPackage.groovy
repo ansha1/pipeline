@@ -18,7 +18,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 **/
 
 
-def build(String packageName, String version, String deployEnvironment, String extraPath = 'default') {
+def build(String packageName, String version, String deployEnvironment, def dockerImage = null, String extraPath = 'default') {
 
     def pathToDebianFolder = ''
     def buildLocation = ''
@@ -28,6 +28,7 @@ def build(String packageName, String version, String deployEnvironment, String e
         buildLocation = WORKSPACE
     }
     else {
+        println "We are going to build within " + extraPath
         pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
         buildLocation = WORKSPACE + "/" + extraPath
     }
@@ -44,7 +45,7 @@ def build(String packageName, String version, String deployEnvironment, String e
         def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
         def setPackageMessage = 'autoincremented from git revision ' + gitCommit
         generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
-        sh """
+        def generateDebBuildString = """
             {
                 export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
                 export PIP_INDEX_URL=http://${PIP_TRUSTED_HOST}/repository/pypi-${deployEnvironment}-group/simple
@@ -53,6 +54,21 @@ def build(String packageName, String version, String deployEnvironment, String e
                 dpkg-buildpackage -us -uc -b
             }
         """
+
+        if (! dockerImage ) {
+            sh "${generateDebBuildString}"
+        }
+        else {
+            dockerImage.inside('-u root') {
+                sh """
+                {
+                    apt-get update
+                    apt-get install -y dh-virtualenv devscripts dh-systemd
+                    ${generateDebBuildString}
+                }
+                """
+            }
+        }
     }
     else {
         currentBuild.rawBuild.result = Result.ABORTED
