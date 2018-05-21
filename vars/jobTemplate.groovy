@@ -12,7 +12,6 @@ def call(body) {
         projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
-        projectLanguages = pipelineParams.projectLanguages
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         APP_NAME = pipelineParams.APP_NAME
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
@@ -124,7 +123,7 @@ def call(body) {
                 parallel {
                     stage('Deploy in kubernetes') {
                         when {
-                            expression { jobConfig.DEPLOY_ON_K8S ==~ true }
+                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
                         }
                         steps {
                             script {

@@ -15,7 +15,6 @@ def call(body) {
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-    projectLanguages = pipelineParams.projectLanguages
     APP_NAME = pipelineParams.APP_NAME
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
