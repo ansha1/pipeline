@@ -18,7 +18,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 **/
 
 
-def build(String packageName, String version, String deployEnvironment, def dockerImage = null, String extraPath = 'default') {
+def build(String packageName, String version, String deployEnvironment, String extraPath = 'default', def dockerImage = null) {
 
     def pathToDebianFolder = ''
     def buildLocation = ''
