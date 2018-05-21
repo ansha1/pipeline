@@ -3,22 +3,18 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def call(String deployEnvironment, String version, String jobName) {
 
-    def buildPropertiesVar = "/* build properties /*"
+    def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
 
-    buildPropertiesVar += """
-        deploy_environment=${deployEnvironment}
-        build_version=${version}
-        job_name=${jobName}
-    """
+    buildProperties.deploy_environment = deployEnvironment
+    buildProperties.build_version = version
+    buildProperties.job_name = jobName
+    buildProperties.commit = sh returnStdout: true, script: 'git rev-parse HEAD'
+    buildProperties.build_date_time = sh returnStdout: true, script: 'date'
+    buildProperties.repository_url = sh returnStdout: true, script: 'git config --get remote.origin.url'
 
-    buildPropertiesVar = buildPropertiesVar.replaceAll(" ", "")
-
-    buildPropertiesVar += sh returnStdout: true, script: '''
-        echo "commit=$(git rev-parse HEAD)"
-        echo "build_date_time=$(date)"
-        echo "repository_url=$(git config --get remote.origin.url)"
-    '''
-
-    println buildPropertiesVar
-    writeFile file: BUILD_PROPERTIES_FILENAME, text: buildPropertiesVar
+    String propsToWrite = ''
+    buildProperties.each {
+        propsToWrite = propsToWrite + it.toString().trim() + '\n'
+    }
+    writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
 }

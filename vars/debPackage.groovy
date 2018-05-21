@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 /** 
 *
-* build Deb pkg without deploying to Nexus
+* build Deb pkg with deploy to Nexus
 *
 * deployEnvironment - The environment to build for. Examples: "dev", "staging". If there isn't 
 *                     an existing repo for the specified environment, one will be created.
@@ -41,13 +41,16 @@ def build(String packageName, String version, String deployEnvironment, String e
                             """)
 
     if ( isDebDirPath == 0 ) {
-        def setPackageMessage = 'autoincremented from git revision ' + GIT_COMMIT
-        generateBuildProperties(deployEnvironment, version, JOB_NAME)
+        def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
+        def setPackageMessage = 'autoincremented from git revision ' + gitCommit
+        generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
         sh """
             {
-              cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
-              dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
-              dpkg-buildpackage -us -uc -b
+                export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
+                export PIP_INDEX_URL=http://${PIP_TRUSTED_HOST}/repository/pypi-${deployEnvironment}-group/simple
+                cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
+                dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
+                dpkg-buildpackage -us -uc -b
             }
         """
     }
