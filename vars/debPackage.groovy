@@ -46,9 +46,11 @@ def build(String packageName, String version, String deployEnvironment, String e
         generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
         sh """
             {
-              cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
-              dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
-              dpkg-buildpackage -us -uc -b
+                export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
+                export PIP_INDEX_URL=http://${PIP_TRUSTED_HOST}/repository/pypi-${deployEnvironment}-group/simple
+                cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
+                dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
+                dpkg-buildpackage -us -uc -b
             }
         """
     }
