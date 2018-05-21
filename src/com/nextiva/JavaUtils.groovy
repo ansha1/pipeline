@@ -36,10 +36,10 @@ def runSonarScanner(String projectVersion) {
 
 void runTests(Map args) {
     print("\n\n Start unit tests Java \n\n")
+    def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
-            sh 'mvn clean install jacoco:report'
-            sh 'mvn checkstyle:checkstyle'
+            sh(returnStdout: true, script: testCommands)
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
@@ -53,41 +53,12 @@ void runTests(Map args) {
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     print("\n\n build and publish Java \n\n ")
     print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    def buildCommands = args.get('buildCommands', 'mvn deploy --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
-            sh 'mvn deploy --batch-mode -DskipTests'
+            sh(returnStdout: true, script: buildCommands)
         } catch (e) {
             error("buildPublish  fail ${e}")
-
         }
     }
 }
-
-//void setBuildVersion(String userDefinedBuildVersion) {
-//    if (!userDefinedBuildVersion) {
-//        version = getVersion()
-//        DEPLOY_ONLY = false
-//        echo('===========================')
-//        echo('Source Defined Version = ' + version)
-//    } else {
-//        version = userDefinedBuildVersion.trim()
-//        DEPLOY_ONLY = true
-//        echo('===========================')
-//        echo('User Defined Version = ' + version)
-//    }
-//
-//    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-//        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
-//    } else {
-//        BUILD_VERSION = version
-//    }
-//
-//    ANSIBLE_EXTRA_VARS = ['application_version': version,
-//                          'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
-//
-//    echo('===============================')
-//    echo('BUILD_VERSION ' + BUILD_VERSION)
-//    echo('===============================')
-//    print('DEPLOY_ONLY:  ' + DEPLOY_ONLY)
-//    echo('===============================')
-//}

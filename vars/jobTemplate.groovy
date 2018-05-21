@@ -107,8 +107,8 @@ def call(body) {
                 steps {
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+//TODO: add approve step, check CR step
 //                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
-
                             isApproved = true //    = approve.isApproved()
                         } else {
                             //always approve for dev branch
@@ -163,5 +163,4 @@ def call(body) {
             }
         }
     }
-
 }

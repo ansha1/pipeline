@@ -77,35 +77,3 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
         archiveToNexus(environment, 'dist/static', buildVersion, appName)
     }
 }
-
-//
-//void setBuildVersion(String userDefinedBuildVersion) {
-//
-//    if (!userDefinedBuildVersion) {
-//        version = getVersion()
-//        DEPLOY_ONLY = false
-//        echo('===========================')
-//        echo('Source Defined Version = ' + version)
-//    } else {
-//        version = userDefinedBuildVersion.trim()
-//        DEPLOY_ONLY = true
-//        echo('===========================')
-//        echo('User Defined Version = ' + version)
-//    }
-//
-//    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-//        BUILD_VERSION = version + "-" + env.BUILD_ID
-//    } else {
-//        BUILD_VERSION = version
-//    }
-//
-//    ANSIBLE_EXTRA_VARS = ['version'            : BUILD_VERSION,
-//                          'component_name'     : jobConfig.APP_NAME,
-//                          'static_assets_files': jobConfig.APP_NAME]
-//
-//    echo('===============================')
-//    echo('BUILD_VERSION ' + BUILD_VERSION)
-//    echo('===============================')
-//    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-//    echo('===============================')
-//}

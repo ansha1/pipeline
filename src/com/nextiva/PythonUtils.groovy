@@ -66,32 +66,3 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     debPackage.build(appName, buildVersion, environment, pathToSrc)
     debPackage.publish(appName, environment, pathToSrc)
 }
-
-//void setBuildVersion(String userDefinedBuildVersion) {
-//
-//    if (!userDefinedBuildVersion) {
-//        version = getVersion()
-//        DEPLOY_ONLY = false
-//        echo('===========================')
-//        echo('Source Defined Version = ' + version)
-//    } else {
-//        version = userDefinedBuildVersion.trim()
-//        DEPLOY_ONLY = true
-//        echo('===========================')
-//        echo('User Defined Version = ' + version)
-//    }
-//
-//    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-//        BUILD_VERSION = version + "-" + env.BUILD_ID
-//    } else {
-//        BUILD_VERSION = version
-//    }
-//
-//    ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
-//
-//    echo('===============================')
-//    echo('BUILD_VERSION ' + BUILD_VERSION)
-//    echo('===============================')
-//    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-//    echo('===============================')
-//}
