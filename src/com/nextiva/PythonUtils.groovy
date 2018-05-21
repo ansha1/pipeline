@@ -3,26 +3,35 @@ package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-String getVersion(String pathToSetupPy = '.') {
-    def buildProperties = readProperties file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
-    return buildProperties.version
-}
+final String pathToSrc
 
-def setVersion(String version, String pathToSetupPy = '.') {
-    String propsToWrite = ''
-    def buildProperties = readProperties file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}"
 
-    buildProperties.version = version
-    buildProperties.each {
-        propsToWrite = propsToWrite + it.toString() + '\n'
+String getVersion() {
+    dir(pathToSrc) {
+        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        return buildProperties.version
     }
-    writeFile file: "${pathToSetupPy}/${BUILD_PROPERTIES_FILENAME}", text: propsToWrite
 }
+
+
+void setVersion(String version) {
+    dir(pathToSrc) {
+        String propsToWrite = ''
+        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        buildProperties.version = version
+        buildProperties.each {
+            propsToWrite = propsToWrite + it.toString() + '\n'
+        }
+        writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
+    }
+}
+
 
 String createReleaseVersion(String version) {
     def releaseVersion = version.tokenize('-')[0]
     return releaseVersion
 }
+
 
 def runSonarScanner(String projectVersion) {
     scannerHome = tool SONAR_QUBE_SCANNER
@@ -30,4 +39,30 @@ def runSonarScanner(String projectVersion) {
     withSonarQubeEnv(SONAR_QUBE_ENV) {
         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
     }
+}
+
+
+void runTests(Map args) {
+    //TODO: add publish test report step
+    try {
+        print("\n\n Start unit tests Python \n\n")
+        def languageVersion = args.get('languageVersion', 'python3.6')
+        def testCommands = args.get('testCommands', 'python setup.py test')
+
+        dir(pathToSrc) {
+            pythonUtils.createVirtualEnv(languageVersion)
+            pythonUtils.venvSh(testCommands)
+        }
+    } catch (e) {
+        error("Unit test fail ${e}")
+    }
+}
+
+
+void buildPublish(String appName, String buildVersion, String environment, Map args) {
+    print("\n\n build and publish Python \n\n ")
+    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+
+    debPackage.build(appName, buildVersion, environment, pathToSrc)
+    debPackage.publish(appName, environment, pathToSrc)
 }

@@ -43,25 +43,8 @@ def call(body) {
             stage('Prepare to finishing hotfix') {
                 steps {
                     script {
-                        switch (projectLanguage) {
-                            case 'java':
-                                utils = new JavaUtils()
-                                break
-                            case 'python':
-                                utils = new PythonUtils()
-                                break
-                            case 'js':
-                                utils = new JsUtils()
-                                break
-                            default:
-                                error("""Incorrent programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
-                                break
-                        }
+
+                        utils = getUtils(projectLanguage, versionPath)
 
                         def hotfixBranches = sh(script: 'git branch -r', returnStdout: true)
                                 .tokenize('\n')
@@ -93,7 +76,7 @@ def call(body) {
                                 git fetch
                                 git checkout ${hotfixBranch}
                             """
-                            hotfixVersion = utils.getVersion(versionPath)
+                            hotfixVersion = utils.getVersion()
                             echo("\n\nFind hotfix version: ${hotfixVersion} \n\n")
                         } else {
                             error("""\n\nWrong hotfix branch name: ${hotfixBranch}

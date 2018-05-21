@@ -39,26 +39,7 @@ def call(body) {
             stage('Prepare for starting release') {
                 steps {
                     script {
-
-                        switch (projectLanguage) {
-                            case 'java':
-                                utils = new JavaUtils()
-                                break
-                            case 'python':
-                                utils = new PythonUtils()
-                                break
-                            case 'js':
-                                utils = new JsUtils()
-                                break
-                            default:
-                                error("""Incorrent programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
-                                break
-                        }
+                        utils = getUtils(projectLanguage, versionPath)
                     }
                 }
             }
@@ -66,7 +47,7 @@ def call(body) {
                 steps {
                     script {
                         echo "\nUserDefinedHotfixVersion: ${hotfixVersion}\n"
-                        hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils, versionPath) : hotfixVersion
+                        hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
                             echo("\n\nSelected hotfix version: ${hotfixVersion}")
@@ -80,7 +61,7 @@ def call(body) {
             stage('Create hotfix branch') {
                 steps {
                     script {
-                        utils.setVersion(hotfixVersion, versionPath)
+                        utils.setVersion(hotfixVersion)
                         sh """
                           git checkout -b hotfix/${hotfixVersion}
                           git commit -a -m "Release engineering - bumped to ${hotfixVersion} patch version "
@@ -101,8 +82,8 @@ def call(body) {
     }
 }
 
-String getNextVersion(utils, versionPath) {
-    def version = utils.getVersion(versionPath)
+String getNextVersion(utils) {
+    def version = utils.getVersion()
     if (!(version ==~ /^(\d+.\d+.\d+)$/)) {
         error("Wrong hotfix version: '${version}'")
     }
