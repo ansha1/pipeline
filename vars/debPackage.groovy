@@ -3,34 +3,33 @@ import static com.nextiva.SharedJobsStaticVars.*
 *
 * build Deb pkg with deploy to Nexus
 *
+* packageName - What should the name of the built package be? Examples: "analytics", "realtalk".
+*
+* version - The version that should be used as a default value for the packages that will be 
+*           created first-time.
+*
 * deployEnvironment - The environment to build for. Examples: "dev", "staging". If there isn't 
 *                     an existing repo for the specified environment, one will be created.
-*
-* packageName - What should the name of the built package be? Examples: "analytics", "realtalk".
 *
 * extraPath -  Any extra path we need to `cd` into before we can begin running `dpkg` commands. 
 *              For example, analytics requires us to be in the "backend" dir, not the root of 
 *              the project.
 *
-* version - The version that should be used as a default value for the packages that will be 
-*           created first-time.
+* dockerImage - The docker image object.
 *
 **/
 
 
-def build(String packageName, String version, String deployEnvironment, String extraPath = 'default', def dockerImage = null) {
+def build(String packageName, String version, String deployEnvironment, String extraPath = null, def dockerImage = null) {
 
-    def pathToDebianFolder = ''
-    def buildLocation = ''
-
-    if ( extraPath == 'default' ) { 
-        pathToDebianFolder = WORKSPACE + "/" + "debian"
-        buildLocation = WORKSPACE
+    if ( extraPath ) {
+        println "We are going to build within " + extraPath
+        def pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
+        def buildLocation = WORKSPACE + "/" + extraPath
     }
     else {
-        println "We are going to build within " + extraPath
-        pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
-        buildLocation = WORKSPACE + "/" + extraPath
+        def pathToDebianFolder = WORKSPACE + "/" + "debian"
+        def buildLocation = WORKSPACE
     }
 
     def isDebDirPath = sh(returnStatus: true, script: """
@@ -48,14 +47,14 @@ def build(String packageName, String version, String deployEnvironment, String e
         def generateDebBuildString = """
             {
                 export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
-                export PIP_INDEX_URL=http://${PIP_TRUSTED_HOST}/repository/pypi-${deployEnvironment}-group/simple
+                export PIP_INDEX_URL=${PIP_EXTRA_INDEX_URL}${deployEnvironment}${PIP_EXTRA_INDEX_URL_SUFFIX}
                 cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
                 dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
                 dpkg-buildpackage -us -uc -b
             }
         """
 
-        if (! dockerImage ) {
+        if ( ! dockerImage ) {
             sh "${generateDebBuildString}"
         }
         else {
@@ -76,15 +75,13 @@ def build(String packageName, String version, String deployEnvironment, String e
     }
 }
 
-def publish(String packageName, String deployEnvironment, String extraPath = 'default') {
+def publish(String packageName, String deployEnvironment, String extraPath = null) {
 
-    def buildLocation = ''
-
-    if ( extraPath == 'default' ) {
-        buildLocation = WORKSPACE
+    if ( extraPath ) {
+        def buildLocation = WORKSPACE + "/" + extraPath
     }
     else {
-        buildLocation = WORKSPACE + "/" + extraPath
+        def buildLocation = WORKSPACE
     }
 
     def nexusDebRepoUrl = NEXUS_DEB_PKG_REPO_URL + deployEnvironment + "/"
@@ -106,7 +103,7 @@ def publish(String packageName, String deployEnvironment, String extraPath = 'de
         if ( isDeployedToNexus != 0 ) {
             currentBuild.rawBuild.result = Result.ABORTED
             throw new hudson.AbortException("there was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
-        } 
+        }
     }
     else {
         throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
