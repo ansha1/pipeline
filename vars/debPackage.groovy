@@ -15,7 +15,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 *              For example, analytics requires us to be in the "backend" dir, not the root of 
 *              the project.
 *
-* dockerImage - The docker image object.
+* dockerImage - The docker image object created with "docker.build()"
 *
 **/
 
