@@ -1,6 +1,6 @@
 #!groovy
 package com.nextiva
-import static com.nextiva.SharedJobsStaticVars.*
+import static SharedJobsStaticVars.*
 
 
 def call(body) {
