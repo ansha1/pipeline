@@ -1,6 +1,6 @@
 package com.nextiva
 
-import static com.nextiva.SharedJobsStaticVars.*
+import static SharedJobsStaticVars.*
 
 
 final String pathToSrc
@@ -8,7 +8,7 @@ final String pathToSrc
 
 String getVersion() {
     dir(pathToSrc) {
-        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        def buildProperties = readProperties file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         return buildProperties.version
     }
 }
@@ -17,12 +17,12 @@ String getVersion() {
 void setVersion(String version) {
     dir(pathToSrc) {
         String propsToWrite = ''
-        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        def buildProperties = readProperties file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         buildProperties.version = version
         buildProperties.each {
             propsToWrite = propsToWrite + it.toString() + '\n'
         }
-        writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
+        writeFile file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME, text: propsToWrite
     }
 }
 
@@ -34,9 +34,9 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    scannerHome = tool SONAR_QUBE_SCANNER
+    scannerHome = tool SharedJobsStaticVars.SONAR_QUBE_SCANNER
 
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
+    withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
     }
 }

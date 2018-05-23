@@ -1,0 +1,88 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.11'
+    }
+}
+
+apply plugin: "application"
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'jacoco'
+apply plugin: 'org.asciidoctor.convert'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+group = "com.nextiva"
+archivesBaseName = "pipelines"
+version = "0.2.0-SNAPSHOT"
+
+//// Grape configuration is used to test @Grape annotation in unit tests using grapeConfig.xml
+//configurations {
+//    grape { // Note our simple use case does not use or support transitive dependencies
+//        transitive = false
+//    }
+//}
+
+ext { snippetsDir = file('build/generated-snippets') }
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+    backends = ['html5', 'pdf']
+    options doctype: 'book'
+    outputDir "build/asciidoc"
+    sourceDir 'src/main/docs/asciidocs'
+    sources {
+        'cpa.adoc'
+    }
+
+    attributes = [
+            'source-highlighter': 'highlightjs',
+            'toc'               : 'left',
+            'toclevels'         : 3,
+            'numbered'          : '',
+            'icons'             : 'font',
+            'setanchors'        : '',
+            'idprefix'          : '',
+            'idseparator'       : '-',
+            'docinfo1'          : '',
+            'safe-mode-unsafe'  : '',
+            'allow-uri-read'    : '',
+            'snippets'          : snippetsDir,
+            linkattrs           : true,
+            encoding            : 'utf-8'
+    ]
+}
+
+dependencies {
+    compile 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.4.1'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'com.lesfurets', name: 'jenkins-pipeline-unit', version: '1.1'
+}
+
+
+defaultTasks 'test'
+
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from groovydoc
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
