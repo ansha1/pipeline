@@ -24,12 +24,12 @@ def build(String packageName, String version, String deployEnvironment, String e
 
     if ( extraPath ) {
         println "We are going to build within " + extraPath
-        def pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
-        def buildLocation = WORKSPACE + "/" + extraPath
+        pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
+        buildLocation = WORKSPACE + "/" + extraPath
     }
     else {
-        def pathToDebianFolder = WORKSPACE + "/" + "debian"
-        def buildLocation = WORKSPACE
+        pathToDebianFolder = WORKSPACE + "/" + "debian"
+        buildLocation = WORKSPACE
     }
 
     def isDebDirPath = sh(returnStatus: true, script: """
@@ -78,10 +78,10 @@ def build(String packageName, String version, String deployEnvironment, String e
 def publish(String packageName, String deployEnvironment, String extraPath = null) {
 
     if ( extraPath ) {
-        def buildLocation = WORKSPACE + "/" + extraPath
+        buildLocation = WORKSPACE + "/" + extraPath
     }
     else {
-        def buildLocation = WORKSPACE
+        buildLocation = WORKSPACE
     }
 
     def nexusDebRepoUrl = NEXUS_DEB_PKG_REPO_URL + deployEnvironment + "/"
