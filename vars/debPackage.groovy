@@ -46,7 +46,11 @@ def build(String packageName, String version, String deployEnvironment, String e
     if ( isDebDirPath == 0 ) {
         def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
         def setPackageMessage = 'autoincremented from git revision ' + gitCommit
-        generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
+
+        dir(buildLocation) {
+            generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
+        }
+
         def generateDebBuildString = """
             {
                 export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
