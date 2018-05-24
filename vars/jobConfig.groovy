@@ -59,6 +59,7 @@ def call(body) {
             ANSIBLE_ENV = 'none'
             healthCheckUrl = ["none"]
             branchPermissions = branchPermissionsMap.get('dev')
+            DEPLOY_ENVIRONMENT = 'none'
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
@@ -75,6 +76,7 @@ def call(body) {
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
+    echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
     echo("healthCheckUrl:")

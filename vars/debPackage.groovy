@@ -22,6 +22,9 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def build(String packageName, String version, String deployEnvironment, String extraPath = null, def dockerImage = null) {
 
+    def pathToDebianFolder = ''
+    def buildLocation = ''
+
     if ( extraPath ) {
         println "We are going to build within " + extraPath
         pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
@@ -43,7 +46,11 @@ def build(String packageName, String version, String deployEnvironment, String e
     if ( isDebDirPath == 0 ) {
         def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
         def setPackageMessage = 'autoincremented from git revision ' + gitCommit
-        generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
+
+        dir(buildLocation) {
+            generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
+        }
+
         def generateDebBuildString = """
             {
                 export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
@@ -76,6 +83,8 @@ def build(String packageName, String version, String deployEnvironment, String e
 }
 
 def publish(String packageName, String deployEnvironment, String extraPath = null) {
+
+    def buildLocation = ''
 
     if ( extraPath ) {
         buildLocation = WORKSPACE + "/" + extraPath
