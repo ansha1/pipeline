@@ -12,6 +12,7 @@ def call(body) {
                             production: "production"]
 
     projectFlow = pipelineParams.projectFlow
+    extraEnvs = pipelineParams.extraEnvs.equals(null) ? [:] : pipelineParams.extraEnvs
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap

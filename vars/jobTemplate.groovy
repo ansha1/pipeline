@@ -9,6 +9,7 @@ def call(body) {
     body()
 
     jobConfig {
+        extraEnvs = pipelineParams.extraEnvs
         projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
@@ -59,6 +60,8 @@ def call(body) {
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
+
+                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
 
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
                         sh "printenv"
