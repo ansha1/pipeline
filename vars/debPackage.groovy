@@ -100,18 +100,21 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
         println "Deploy deb-package to Nexus (repo: " + deployEnvironment + ")"
 
         // get build version from build.properties file
-        def getBuildVersion = sh(returnStdout: true, script: """cat ${BUILD_PROPERTIES_FILENAME} |grep build_version|awk -F'=' '{print \$2}'""").trim()
-        println getBuildVersion
-        def debName = sh(returnStdout: true, script: """cd ${buildLocation} && ls -1 ../${packageName}_${getBuildVersion}*.deb""").trim()
-        println "FOUND deb-package: " + debName
+        dir(buildLocation) {
+            def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+            def getBuildVersion = buildProperties.build_version
+            println getBuildVersion
+            def debName = sh(returnStdout: true, script: """ls -1 ../${packageName}_${getBuildVersion}*.deb""").trim()
+            println "FOUND deb-package: " + debName
 
-        // upload deb-package to Nexus 3
-        def isDeployedToNexus = sh(returnStatus: true, script: """cd ${buildLocation} && curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
-                                --data-binary @${debName} ${nexusDebRepoUrl}""")
-        println "Deployment to Nexus finished with status: " + isDeployedToNexus
-        if ( isDeployedToNexus != 0 ) {
-            currentBuild.rawBuild.result = Result.ABORTED
-            throw new hudson.AbortException("there was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
+            // upload deb-package to Nexus 3
+            def isDeployedToNexus = sh(returnStatus: true, script: """curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+                                    --data-binary @${debName} ${nexusDebRepoUrl}""")
+            println "Deployment to Nexus finished with status: " + isDeployedToNexus
+            if ( isDeployedToNexus != 0 ) {
+                currentBuild.rawBuild.result = Result.ABORTED
+                throw new hudson.AbortException("there was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
+            }
         }
     }
     else {
