@@ -11,10 +11,16 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
         currentBuild.rawBuild.result = Result.ABORTED
         throw new hudson.AbortException("ERROR: There is no virtualenv dir - ${venvDir}.")
     }
+    
+    // get the absolute path of a env dir
+    dir(venvDir){
+        absoluteVenvDir = pwd()
+    }
+
     return [
-        "VIRTUAL_ENV=${venvDir}",
+        "VIRTUAL_ENV=${absoluteVenvDir}",
         "PYTHONDONTWRITEBYTECODE=1",
-        "PATH=${venvDir}/bin:${env.PATH}"
+        "PATH=${absoluteVenvDir}/bin:${env.PATH}"
     ]
 }
 
