@@ -26,7 +26,7 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent { label 'debian' }
+        agent { label DEFAULT_NODE_LABEL }
 
         tools {
             jdk 'Java 8 Install automatically'
