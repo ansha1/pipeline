@@ -29,4 +29,5 @@ class SharedJobsStaticVars {
     static final KUBERNETES_REPO_BRANCH = 'develop'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
+    static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
 }

@@ -1,4 +1,6 @@
 import com.nextiva.*
+import static com.nextiva.SharedJobsStaticVars.*
+
 
 def call(body) {
 
@@ -16,6 +18,7 @@ def call(body) {
     healthCheckMap = pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
+    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
     APP_NAME = pipelineParams.APP_NAME
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH

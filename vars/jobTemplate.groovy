@@ -2,6 +2,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
+
 def call(body) {
     def pipelineParams = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -14,6 +15,7 @@ def call(body) {
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
+        jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
         APP_NAME = pipelineParams.APP_NAME
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
@@ -22,6 +24,7 @@ def call(body) {
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     }
     def securityPermissions = jobConfig.branchProperties
+    def jobTimeout = jobConfig.jobTimeoutMinutes
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -38,6 +41,7 @@ def call(body) {
             skipStagesAfterUnstable()
             disableConcurrentBuilds()
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
+            timeout(time: jobTimeout, unit: 'MINUTES')
         }
 
         parameters {
@@ -163,7 +167,7 @@ def call(body) {
                                         }
                                     }
                                     catch (e) {
-                                        error('Service startup failed ' + e)
+                                        error('ERROR: Service startup failed ' + e)
                                     }
                                 }
                             }
