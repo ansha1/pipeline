@@ -51,10 +51,10 @@ void runTests(Map args) {
         def testCommands = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
-            sh(returnStdout: true, script: testCommands)
+            sh testCommands
         }
     } catch (e) {
-        error("Unit test fail ${e}")
+        error("ERROR: Unit test fail ${e}")
     } finally {
         publishHTML([allowMissing         : true,
                      alwaysLinkToLastBuild: false,

@@ -39,9 +39,9 @@ void runTests(Map args) {
     def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
-            sh(returnStdout: true, script: testCommands)
+            sh testCommands
         } catch (e) {
-            error("Unit test fail ${e}")
+            error("ERROR: Unit test fail ${e}")
         } finally {
             junit '**/target/surefire-reports/*.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
@@ -58,7 +58,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
         try {
             sh(returnStdout: true, script: buildCommands)
         } catch (e) {
-            error("buildPublish  fail ${e}")
+            error("ERROR: buildPublish fail ${e}")
         }
     }
 }

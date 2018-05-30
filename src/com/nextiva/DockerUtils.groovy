@@ -13,8 +13,8 @@ def build(String appName, String buildVersion, String extraPath='.') {
 }
 
 def execute(def customImage, def commandToRun, String args='-u root') {
-	customImage.inside("${args}") {
-		echo "Running command ${commandToRun}"
-		sh "${commandToRun}"
-	}
+    customImage.inside("${args}") {
+        echo "Running command ${commandToRun}"
+        sh "${commandToRun}"
+    }
 }
