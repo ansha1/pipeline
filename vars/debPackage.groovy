@@ -35,15 +35,7 @@ def build(String packageName, String version, String deployEnvironment, String e
         buildLocation = WORKSPACE
     }
 
-    def isDebDirPath = sh(returnStatus: true, script: """
-                            if [ -d ${pathToDebianFolder} ]; then
-                                return 0
-                            else
-                                return 1
-                            fi
-                            """)
-
-    if ( isDebDirPath == 0 ) {
+    if ( fileExists(pathToDebianFolder) ) {
         def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
         def setPackageMessage = 'autoincremented from git revision ' + gitCommit
 
@@ -78,7 +70,7 @@ def build(String packageName, String version, String deployEnvironment, String e
     }
     else {
         currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("there is no 'debian' folder within ${buildLocation}.")
+        throw new hudson.AbortException("ERROR: There is no 'debian' folder within ${buildLocation}.")
     }
 }
 
@@ -96,7 +88,7 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
     def nexusDebRepoUrl = NEXUS_DEB_PKG_REPO_URL + deployEnvironment + "/"
     println "nexusDebRepoUrl: " + nexusDebRepoUrl
 
-    if (deployEnvironment in LIST_OF_ENVS) {
+    if ( deployEnvironment in LIST_OF_ENVS ) {
         println "Deploy deb-package to Nexus (repo: " + deployEnvironment + ")"
 
         // get build version from build.properties file
@@ -113,11 +105,11 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
             println "Deployment to Nexus finished with status: " + isDeployedToNexus
             if ( isDeployedToNexus != 0 ) {
                 currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("there was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
+                throw new hudson.AbortException("ERROR: There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
             }
         }
     }
     else {
-        throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
+        throw new IllegalArgumentException("ERROR: Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
     }
 }
