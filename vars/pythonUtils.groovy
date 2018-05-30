@@ -7,15 +7,19 @@ def createVirtualEnv(String pythonName='python', String venvDir=VENV_DIR) {
 }
 
 def getVirtualEnv(String venvDir=VENV_DIR) {
+    if ( ! fileExists(venvDir) ) {
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("ERROR: There is no virtualenv dir - ${venvDir}.")
+    }
     return [
-        "VIRTUAL_ENV=${WORKSPACE}/${venvDir}/",
+        "VIRTUAL_ENV=${venvDir}",
         "PYTHONDONTWRITEBYTECODE=1",
-        "PATH=${WORKSPACE}/${venvDir}/bin:${env.PATH}"
+        "PATH=${venvDir}/bin:${env.PATH}"
     ]
 }
 
 def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
-    println 'Activate virtualenv and run command.'
+    println "Activate virtualenv and run command (${venvDir})."
     withEnv(getVirtualEnv(venvDir)) {
         output = sh(returnStdout: returnStdout, script: cmd)
     }

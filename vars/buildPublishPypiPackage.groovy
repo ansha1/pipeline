@@ -2,16 +2,14 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def call(String extraPath='.', String deployEnvironment=null, String pythonName='python3') {
-    //dir(extraPath) {
+    dir(extraPath) {
         pythonUtils.createVirtualEnv(pythonName)
         pythonUtils.venvSh("""
-            cd ${extraPath}
             pip install -U wheel
             python setup.py sdist bdist bdist_egg bdist_wheel
         """)
 
         pythonUtils.venvSh("""
-            cd ${extraPath}
             echo 'DEPRECATED: publishing pypi-package to old repo - pypi.nextiva.xyz'
             pip install -U devpi-client
             devpi use http://pypi.nextiva.xyz
@@ -22,14 +20,12 @@ def call(String extraPath='.', String deployEnvironment=null, String pythonName=
 
         if ( deployEnvironment ) {
             pythonUtils.venvSh("""
-                cd ${extraPath}
                 echo 'Publishing pypi-package to Nexus'
                 twine upload --config-file /etc/nexus_pypi_config_${deployEnvironment} dist/*
             """)
         }
         else {
             pythonUtils.venvSh("""
-                cd ${extraPath}
                 echo 'Publishing pypi-package to Nexus'
                 twine upload --config-file /etc/nexus_pypi_config_dev dist/*
                 twine upload --config-file /etc/nexus_pypi_config_production dist/*
