@@ -31,5 +31,5 @@ def call(String extraPath='.', String deployEnvironment=null, String pythonName=
                 twine upload --config-file /etc/nexus_pypi_config_production dist/*
             """)
         }
-    //}
+    }
 }
