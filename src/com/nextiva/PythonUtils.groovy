@@ -63,6 +63,8 @@ void runTests(Map args) {
 
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)
+            pythonUtils.venvSh("printenv")
+            pythonUtils.venvSh("pip freeze")
             pythonUtils.venvSh(testCommands)
         }
     } catch (e) {
