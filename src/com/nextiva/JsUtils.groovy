@@ -75,6 +75,6 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
 
     dir(pathToSrc) {
         sh(returnStdout: true, script: buildCommands)
-        archiveToNexus(environment, 'dist/static', buildVersion, appName)
+        archiveToNexus(environment, distPath, buildVersion, appName)
     }
 }
