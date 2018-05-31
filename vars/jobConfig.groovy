@@ -61,7 +61,7 @@ def call(body) {
             break
         default:
             ANSIBLE_ENV = 'none'
-            healthCheckUrl = ["none"]
+            healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'none'
             break
@@ -75,6 +75,15 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
+    version = utils.getVersion()
+    DEPLOY_ONLY = false
+
+    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+    } else {
+        BUILD_VERSION = version
+    }
+
     echo('\n\n==============Job config complete ====================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
@@ -83,6 +92,7 @@ def call(body) {
     echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
+    echo("Source Defined Version: ' + ${version}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n')
@@ -95,30 +105,15 @@ def getUtils() {
 
 
 void setBuildVersion(String userDefinedBuildVersion) {
-
-    if (!userDefinedBuildVersion) {
-        version = utils.getVersion()
-        DEPLOY_ONLY = false
-        echo('===========================')
-        echo('Source Defined Version = ' + version)
-    } else {
+    if(userDefinedBuildVersion){
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
-        echo('===========================')
-        echo('User Defined Version = ' + version)
-    }
 
-    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
-    } else {
-        BUILD_VERSION = version
+        echo('===============================')
+        echo('User Defined Version: ' + BUILD_VERSION)
+        echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+        echo('===============================')
     }
-
-    echo('===============================')
-    echo('BUILD_VERSION ' + BUILD_VERSION)
-    echo('===============================')
-    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-    echo('===============================')
 }
 
 
