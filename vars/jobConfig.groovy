@@ -75,7 +75,7 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    echo('\n\n==============Job config complete ====================\n\n')
+    echo('\n\n==============Job config complete ==================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
@@ -85,7 +85,7 @@ def call(body) {
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
-    echo('\n======================================================\n')
+    echo('\n======================================================\n\n')
 }
 
 
@@ -93,8 +93,10 @@ def getUtils() {
     // utils requires context
     version = utils.getVersion()
     DEPLOY_ONLY = false
-    echo("Source Defined Version: ' + ${version}\n")
-    
+    echo('==================================')
+    echo("Source Defined Version: ${version}")
+    echo('==================================')
+
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
         BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
     } else {
@@ -110,10 +112,10 @@ void setBuildVersion(String userDefinedBuildVersion) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
 
-        echo('===============================')
+        echo('==================================')
         echo('User Defined Version: ' + BUILD_VERSION)
         echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-        echo('===============================')
+        echo('==================================')
     }
 }
 
@@ -134,12 +136,7 @@ Map getAnsibleExtraVars() {
                                   'static_assets_files': APP_NAME]
             break
         default:
-            error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
+            error("Incorrect programming language please set one of the supported languages: java, python, js")
             break
     }
 
