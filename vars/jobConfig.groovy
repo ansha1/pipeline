@@ -75,15 +75,6 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    version = utils.getVersion()
-    DEPLOY_ONLY = false
-
-    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
-    } else {
-        BUILD_VERSION = version
-    }
-
     echo('\n\n==============Job config complete ====================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
@@ -100,6 +91,16 @@ def call(body) {
 
 
 def getUtils() {
+    // utils requires context
+    version = utils.getVersion()
+    DEPLOY_ONLY = false
+
+    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+    } else {
+        BUILD_VERSION = version
+    }
+
     return utils
 }
 
