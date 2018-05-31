@@ -60,7 +60,7 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            ANSIBLE_ENV = 'none'
+            ANSIBLE_ENV = null
             healthCheckUrl = null
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'none'
