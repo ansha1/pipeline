@@ -109,7 +109,7 @@ void setBuildVersion(String userDefinedBuildVersion) {
     }
 
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+        BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
     } else {
         BUILD_VERSION = version
     }
