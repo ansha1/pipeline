@@ -61,7 +61,7 @@ def call(body) {
             break
         default:
             ANSIBLE_ENV = 'none'
-            healthCheckUrl = []
+            healthCheckUrl = null
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'none'
             break
