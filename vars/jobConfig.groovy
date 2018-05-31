@@ -94,7 +94,7 @@ def getUtils() {
 }
 
 
-void setBuildVersion(String userDefinedBuildVersion) {
+void setBuildVersion(String userDefinedBuildVersion = null) {
     if ( userDefinedBuildVersion ) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
