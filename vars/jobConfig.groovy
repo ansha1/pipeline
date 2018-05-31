@@ -133,7 +133,7 @@ Map getAnsibleExtraVars() {
                                   'static_assets_files': APP_NAME]
             break
         default:
-            error("Incorrect programming language please set one of the supported languages: java, python, js")
+            error("Incorrect programming language, please set one of the supported languages: java, python, js")
             break
     }
 
