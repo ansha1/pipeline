@@ -68,7 +68,7 @@ def call(body) {
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
+    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
