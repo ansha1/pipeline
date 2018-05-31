@@ -83,7 +83,6 @@ def call(body) {
     echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
-    echo("Source Defined Version: ' + ${version}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n')
@@ -94,7 +93,8 @@ def getUtils() {
     // utils requires context
     version = utils.getVersion()
     DEPLOY_ONLY = false
-
+    echo("Source Defined Version: ' + ${version}\n")
+    
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
         BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
     } else {
