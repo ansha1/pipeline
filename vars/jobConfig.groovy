@@ -90,12 +90,18 @@ def call(body) {
 
 
 def getUtils() {
-    // utils requires context
-    version = utils.getVersion()
-    DEPLOY_ONLY = false
-    echo('==================================')
-    echo("Source Defined Version: ${version}")
-    echo('==================================')
+    return utils
+}
+
+
+void setBuildVersion(String userDefinedBuildVersion) {
+    if ( userDefinedBuildVersion ) {
+        version = userDefinedBuildVersion.trim()
+        DEPLOY_ONLY = true
+    } else {
+        version = utils.getVersion()
+        DEPLOY_ONLY = false
+    }
 
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
         BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
@@ -103,20 +109,11 @@ def getUtils() {
         BUILD_VERSION = version
     }
 
-    return utils
-}
-
-
-void setBuildVersion(String userDefinedBuildVersion) {
-    if(userDefinedBuildVersion){
-        version = userDefinedBuildVersion.trim()
-        DEPLOY_ONLY = true
-
-        echo('==================================')
-        echo('User Defined Version: ' + BUILD_VERSION)
-        echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-        echo('==================================')
-    }
+    echo('===============================')
+    echo('BUILD_VERSION: ' + BUILD_VERSION)
+    echo('===============================')
+    echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    echo('===============================')
 }
 
 
