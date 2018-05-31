@@ -59,7 +59,8 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Python \n\n")
         def languageVersion = args.get('languageVersion', 'python3.6')
-        def testCommands = args.get('testCommands', 'python setup.py test')
+        def testCommands = args.get('testCommands', '''pip install -r requirements-test.txt
+                                                       python setup.py test''')
 
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)
