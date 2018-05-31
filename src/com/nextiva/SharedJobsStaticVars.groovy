@@ -14,6 +14,7 @@ class SharedJobsStaticVars {
     static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
     static final PIP_EXTRA_INDEX_URL = 'http://repository.nextiva.xyz/repository/pypi-'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '-group/simple'
+    static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'
     static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'
