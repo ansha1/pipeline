@@ -38,7 +38,6 @@ def call(body) {
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             disableConcurrentBuilds()
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
             timeout(time: jobTimeout, unit: 'MINUTES')
@@ -89,7 +88,12 @@ def call(body) {
                 }
                 steps {
                     script {
-                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                        try{
+                            utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                        } catch (e){
+                            print e
+                            currentBuild.rawBuild.result = Result.UNSTABLE
+                        }
                     }
                 }
             }
