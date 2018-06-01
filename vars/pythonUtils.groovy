@@ -17,7 +17,7 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
         absoluteVenvDir = pwd()
     }
 
-    pipRepo = env.DEPLOY_ENVIRONMENT ? PIP_EXTRA_INDEX_DEFAULT_REPO : env.DEPLOY_ENVIRONMENT
+    pipRepo = env.DEPLOY_ENVIRONMENT.equals(null) ? PIP_EXTRA_INDEX_DEFAULT_REPO : env.DEPLOY_ENVIRONMENT
 
     return [
         "VIRTUAL_ENV=${absoluteVenvDir}",
