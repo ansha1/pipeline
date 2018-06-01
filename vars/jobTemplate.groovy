@@ -160,14 +160,16 @@ def call(body) {
                             script {
                                 runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                stage('Wait until service is up') {
-                                    try {
-                                        for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
-                                            healthCheck(jobConfig.healthCheckUrl[i])
+                                if( jobConfig.healthCheckUrl ){
+                                    stage('Wait until service is up') {
+                                        try {
+                                            for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
+                                                healthCheck(jobConfig.healthCheckUrl[i])
+                                            }
                                         }
-                                    }
-                                    catch (e) {
-                                        error('ERROR: Service startup failed ' + e)
+                                        catch (e) {
+                                            error('ERROR: Service startup failed ' + e)
+                                        }
                                     }
                                 }
                             }

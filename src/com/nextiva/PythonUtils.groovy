@@ -8,8 +8,20 @@ final String pathToSrc
 
 String getVersion() {
     dir(pathToSrc) {
-        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
-        return buildProperties.version
+        if ( fileExists(BUILD_PROPERTIES_FILENAME) ) {
+            def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+            if ( buildProperties.version ){
+                return buildProperties.version
+            }
+            else {
+                currentBuild.rawBuild.result = Result.ABORTED
+                throw new hudson.AbortException("ERROR: Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+            }
+        }
+        else {
+            currentBuild.rawBuild.result = Result.ABORTED
+            throw new hudson.AbortException("ERROR: File ${BUILD_PROPERTIES_FILENAME} not found.")
+        }
     }
 }
 
@@ -47,7 +59,9 @@ void runTests(Map args) {
     try {
         print("\n\n Start unit tests Python \n\n")
         def languageVersion = args.get('languageVersion', 'python3.6')
-        def testCommands = args.get('testCommands', 'python setup.py test')
+        def testCommands = args.get('testCommands', '''pip install -r requirements.txt
+                                                       pip install -r requirements-test.txt
+                                                       python setup.py test''')
 
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)

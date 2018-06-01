@@ -15,7 +15,7 @@ def call(body) {
 
     projectFlow = pipelineParams.projectFlow
     extraEnvs = pipelineParams.extraEnvs.equals(null) ? [:] : pipelineParams.extraEnvs
-    healthCheckMap = pipelineParams.healthCheckMap
+    healthCheckMap = pipelineParams.healthCheckMap.equals(null) ? [:] : pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
@@ -48,8 +48,8 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case ~/^hotfix\/.+$/:
-            ANSIBLE_ENV = 'none'
-            healthCheckUrl = ["none"]
+            ANSIBLE_ENV = null
+            healthCheckUrl = null
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
@@ -60,22 +60,22 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            ANSIBLE_ENV = 'none'
-            healthCheckUrl = ["none"]
+            ANSIBLE_ENV = null
+            healthCheckUrl = null
             branchPermissions = branchPermissionsMap.get('dev')
-            DEPLOY_ENVIRONMENT = 'none'
+            DEPLOY_ENVIRONMENT = null
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
+    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    echo('\n\n==============Job config complete ====================\n\n')
+    echo('\n\n==============Job config complete ==================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
@@ -85,7 +85,7 @@ def call(body) {
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
-    echo('\n======================================================\n')
+    echo('\n======================================================\n\n')
 }
 
 
@@ -94,18 +94,13 @@ def getUtils() {
 }
 
 
-void setBuildVersion(String userDefinedBuildVersion) {
-
-    if (!userDefinedBuildVersion) {
-        version = utils.getVersion()
-        DEPLOY_ONLY = false
-        echo('===========================')
-        echo('Source Defined Version = ' + version)
-    } else {
+void setBuildVersion(String userDefinedBuildVersion = null) {
+    if ( userDefinedBuildVersion ) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
-        echo('===========================')
-        echo('User Defined Version = ' + version)
+    } else {
+        version = utils.getVersion()
+        DEPLOY_ONLY = false
     }
 
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
@@ -115,9 +110,9 @@ void setBuildVersion(String userDefinedBuildVersion) {
     }
 
     echo('===============================')
-    echo('BUILD_VERSION ' + BUILD_VERSION)
+    echo('BUILD_VERSION: ' + BUILD_VERSION)
     echo('===============================')
-    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
     echo('===============================')
 }
 
@@ -138,12 +133,7 @@ Map getAnsibleExtraVars() {
                                   'static_assets_files': APP_NAME]
             break
         default:
-            error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
+            error("Incorrect programming language, please set one of the supported languages: java, python, js")
             break
     }
 
