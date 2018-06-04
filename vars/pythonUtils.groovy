@@ -21,6 +21,10 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
     if(env.DEPLOY_ENVIRONMENT == null){
         echo "env.DEPLOY_ENVIRONMENT == null"
     }
+    if(env.DEPLOY_ENVIRONMENT){
+        echo "env.DEPLOY_ENVIRONMENT == true"
+    }
+    echo instanceof env.DEPLOY_ENVIRONMENT
     echo "pipRepo - ${pipRepo}"
 
     return [
