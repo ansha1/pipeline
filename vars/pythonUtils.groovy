@@ -18,6 +18,9 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
     }
 
     pipRepo = env.DEPLOY_ENVIRONMENT.equals(null) ? PIP_EXTRA_INDEX_DEFAULT_REPO : env.DEPLOY_ENVIRONMENT
+    if(env.DEPLOY_ENVIRONMENT == null){
+        echo "env.DEPLOY_ENVIRONMENT == null"
+    }
     echo "pipRepo - ${pipRepo}"
 
     return [
