@@ -164,7 +164,7 @@ def call(body) {
                             script {
                                 runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                if( jobConfig.healthCheckUrl ){
+                                if( jobConfig.healthCheckUrl.size > 0 ){
                                     stage('Wait until service is up') {
                                         try {
                                             for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {

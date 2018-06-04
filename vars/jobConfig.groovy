@@ -48,8 +48,8 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case ~/^hotfix\/.+$/:
-            ANSIBLE_ENV = null
-            healthCheckUrl = null
+            ANSIBLE_ENV = 'none'
+            healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
@@ -60,10 +60,10 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            ANSIBLE_ENV = null
-            healthCheckUrl = null
+            ANSIBLE_ENV = 'none'
+            healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev')
-            DEPLOY_ENVIRONMENT = null
+            DEPLOY_ENVIRONMENT = ''
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
