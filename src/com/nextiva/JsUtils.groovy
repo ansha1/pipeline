@@ -1,3 +1,5 @@
+package com.nextiva
+
 import static SharedJobsStaticVars.*
 
 

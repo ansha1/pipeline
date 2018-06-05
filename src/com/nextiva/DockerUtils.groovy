@@ -1,3 +1,5 @@
+package com.nextiva
+
 /**
  * args by default are set to '-u root'
  * if you need to pass any additional parameters
