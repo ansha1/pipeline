@@ -1,0 +1,80 @@
+#!groovy
+@Library('pipelines@develop') _
+
+
+import static com.nextiva.SharedJobsStaticVars.*
+import com.nextiva.*
+
+jobConfig {
+    projectFlow =  ['language'       : 'python',
+                    'languageVersion': 'python3']
+
+    branchPermissionsMap = [dev       : ["authenticated"],
+                            production: ["authenticated"]]
+
+    APP_NAME = "test-python-client"
+    CHANNEL_TO_NOTIFY = "testchannel"
+}
+def securityPermissions = jobConfig.branchProperties
+
+//noinspection GroovyAssignabilityCheck
+pipeline {
+
+    agent { label DEFAULT_NODE_LABEL }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
+        timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Set additional properties') {
+            steps {
+                script {
+                    utils = jobConfig.getUtils()
+                    jobConfig.setBuildVersion()
+
+                    env.APP_NAME = jobConfig.APP_NAME
+                    env.CHANNEL_TO_NOTIFY = jobConfig.CHANNEL_TO_NOTIFY
+                    env.VERSION = jobConfig.version
+                    env.BUILD_VERSION = jobConfig.BUILD_VERSION
+                    env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
+                }
+            }
+        }
+        stage('Unit tests') {
+            steps {
+                script {
+                    utils.runTests(jobConfig.projectFlow)
+                }
+            }
+        }
+        stage('Sonar analyzing') {
+            steps {
+                script {
+                    utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                }
+            }
+        }
+        stage('Build and Publish pypi-package') {
+            when {
+                expression {
+                    env.BRANCH_NAME ==~ /^master$/
+                }
+            }
+            steps {
+                script {
+                    buildPublishPypiPackage('.', null, jobConfig.projectFlow['languageVersion'])
+                }
+            }
+
+        }
+    }
+    post {
+        always {
+            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+        }
+    }
+}
