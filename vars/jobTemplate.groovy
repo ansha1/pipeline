@@ -190,7 +190,7 @@ def call(body) {
                         if (env.BRANCH_NAME ==~ /^(${jobConfig.NOTIFY_RULES})$/) {
                             slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
                         } else {
-                            echo 'You do not set this branch in NOTIFY_RULES variable in Jenkinsfile'
+                            echo 'You do not set this branch pattern in NOTIFY_RULES variable in Jenkinsfile'
                         }
                     }
                 }
