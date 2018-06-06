@@ -24,7 +24,7 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-    NOTIFY_RULES = pipelineParams.NOTIFY_RULES
+    NOTIFY_RULES = pipelineParams.NOTIFY_RULES.equals(null) ? [:] : pipelineParams.NOTIFY_RULES
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
 
 
