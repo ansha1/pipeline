@@ -22,6 +22,7 @@ def call(body) {
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+        NOTIFY_RULES = pipelineParams.NOTIFY_RULES
     }
     def securityPermissions = jobConfig.branchProperties
     def jobTimeout = jobConfig.jobTimeoutMinutes
@@ -88,9 +89,9 @@ def call(body) {
                 }
                 steps {
                     script {
-                        try{
+                        try {
                             utils.runSonarScanner(jobConfig.BUILD_VERSION)
-                        } catch (e){
+                        } catch (e) {
                             print e
                             currentBuild.rawBuild.result = Result.UNSTABLE
                         }
@@ -164,7 +165,7 @@ def call(body) {
                             script {
                                 runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                if( jobConfig.healthCheckUrl.size > 0 ){
+                                if (jobConfig.healthCheckUrl.size > 0) {
                                     stage('Wait until service is up') {
                                         try {
                                             for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
@@ -184,7 +185,15 @@ def call(body) {
         }
         post {
             always {
-                slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+                steps {
+                    script {
+                        if (env.BRANCH_NAME ==~ /^(${jobConfig.NOTIFY_RULES})$/) {
+                            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+                        } else {
+                            echo 'You do not set this branch in NOTIFY_RULES variable in Jenkinsfile'
+                        }
+                    }
+                }
             }
         }
     }
