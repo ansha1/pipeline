@@ -24,6 +24,7 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+    NOTIFY_RULES = pipelineParams.NOTIFY_RULES
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
 
 
@@ -83,6 +84,7 @@ def call(body) {
     echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
     echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
+    echo("NOTIFY_RULES: ${NOTIFY_RULES}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n\n')
