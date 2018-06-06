@@ -22,7 +22,7 @@ def call(body) {
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-        NOTIFY_RULES = pipelineParams.NOTIFY_RULES
+        branchNotifyRules = pipelineParams.branchNotifyRules
     }
     def securityPermissions = jobConfig.branchProperties
     def jobTimeout = jobConfig.jobTimeoutMinutes
@@ -187,10 +187,10 @@ def call(body) {
             always {
                 steps {
                     script {
-                        if (env.BRANCH_NAME ==~ /^(${jobConfig.NOTIFY_RULES})$/) {
-                            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
-                        } else {
-                            echo 'You do not set this branch pattern in NOTIFY_RULES variable in Jenkinsfile'
+                        jobConfig.branchNotifyRules.each {
+                            if (env.BRANCH_NAME ==~ it) {
+                                slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+                            }
                         }
                     }
                 }
