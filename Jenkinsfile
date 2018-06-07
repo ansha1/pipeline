@@ -1,8 +1,10 @@
+@Library('pipelines@develop') _
+
 node('debian') {
     try {
         timeout(time: 50, unit: 'HOURS') {
 
-            if (BRANCH_NAME ==~ /^(PR-*)$/) {
+            if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
                 stage('change default pipeline branch in test folder') {
                     def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
                     testFolder.properties.each {
@@ -11,6 +13,7 @@ node('debian') {
                         }
                     }
                     testFolder.save()
+                    print('pipeline branch changed to ' + env.BRANCH_NAME)
                 }
             }
             stage('printenv') {
