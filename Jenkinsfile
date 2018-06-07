@@ -4,11 +4,12 @@ node('debian') {
     try {
         timeout(time: 50, unit: 'MINUTES') {
 
-            changeSharedLibBranch()
-
             stage('printenv') {
                 sh 'printenv'
             }
+
+            changeSharedLibBranch()
+
         }
     } catch (e) {
         error(e)
