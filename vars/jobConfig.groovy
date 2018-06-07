@@ -20,6 +20,9 @@ def call(body) {
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
     APP_NAME = pipelineParams.APP_NAME
+    NODE_LABEL = pipelineParams.NODE_LABEL.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.NODE_LABEL
+    ANSIBLE_REPO = pipelineParams.ANSIBLE_REPO.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ANSIBLE_REPO
+    ANSIBLE_REPO_BRANCH = pipelineParams.ANSIBLE_REPO_BRANCH.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ANSIBLE_REPO_BRANCH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
@@ -69,7 +72,9 @@ def call(body) {
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
+    // this should be used as condition otherwise we'll never reach the consensus
+    INVENTORY_PATH = pipelineParams.ANSIBLE_REPO.equals(null) ? "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}/inventory" : "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
+    
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
@@ -78,6 +83,8 @@ def call(body) {
 
     echo('\n\n==============Job config complete ==================\n\n')
     echo("APP_NAME: ${APP_NAME}\n")
+    echo("ANSIBLE_REPO: ${ANSIBLE_REPO}\n")
+    echo("ANSIBLE_REPO_BRANCH: ${ANSIBLE_REPO_BRANCH}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
