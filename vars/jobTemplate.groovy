@@ -185,12 +185,10 @@ def call(body) {
         }
         post {
             always {
-                steps {
-                    script {
-                        jobConfig.branchNotifyRules.each {
-                            if (env.BRANCH_NAME ==~ it) {
-                                slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
-                            }
+                script {
+                    jobConfig.branchNotifyRules.each {
+                        if (env.BRANCH_NAME ==~ it) {
+                            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
                         }
                     }
                 }
@@ -198,3 +196,4 @@ def call(body) {
         }
     }
 }
+
