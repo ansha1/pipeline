@@ -13,7 +13,8 @@ node('debian') {
     } catch (e) {
         error(e)
     } finally {
-        slackNotify('testchannel')
+//        slackNotify('testchannel')
+        echo('1')
     }
 }
 
