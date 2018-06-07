@@ -25,8 +25,13 @@ def changeSharedLibBranch() {
             def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
             testFolder.properties.each {
                 if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-                    libs.each { i -> i.setDefaultVersion(env.BRANCH_NAME) }
+
+                    libs = it.getLibraries()
+                    print(libs)
+
+                    libs.each { i -> print(i.setDefaultVersion(env.BRANCH_NAME)) }
                 }
+
             }
             testFolder.save()
             print('pipeline branch changed to ' + env.BRANCH_NAME)
