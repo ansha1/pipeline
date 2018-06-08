@@ -88,9 +88,9 @@ def call(body) {
                 }
             }
             stage('Sonar analyzing') {
-                when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
-                }
+                // when {
+                //     expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                // }
                 steps {
                     script {
                         try {
@@ -103,11 +103,11 @@ def call(body) {
                 }
             }
             stage('Build') {
-                when {
-                    expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
-                    }
-                }
+                // when {
+                //     expression {
+                //         jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                //     }
+                // }
                 parallel {
                     stage('Publish build artifacts') {
                         steps {
@@ -116,22 +116,22 @@ def call(body) {
                             }
                         }
                     }
-                    stage('Publish docker image') {
-                        when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
-                        }
-                        steps {
-                            script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
-                            }
-                        }
-                    }
+                    // stage('Publish docker image') {
+                    //     when {
+                    //         expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
+                    //     }
+                    //     steps {
+                    //         script {
+                    //             buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                    //         }
+                    //     }
+                    // }
                 }
             }
             stage('Check approvemets for deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
+                // when {
+                //     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                // }
                 steps {
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
@@ -146,21 +146,21 @@ def call(body) {
                 }
             }
             stage('Deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
+                // when {
+                //     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                // }
                 parallel {
-                    stage('Deploy in kubernetes') {
-                        when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
-                        }
-                        steps {
-                            script {
-                                echo("\n\nBUILD_VERSION: ${jobConfig.BUILD_VERSION}\n\n")
-                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
-                            }
-                        }
-                    }
+                    // stage('Deploy in kubernetes') {
+                    //     when {
+                    //         expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
+                    //     }
+                    //     steps {
+                    //         script {
+                    //             echo("\n\nBUILD_VERSION: ${jobConfig.BUILD_VERSION}\n\n")
+                    //             kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
+                    //         }
+                    //     }
+                    // }
                     stage('Deploy on environment') {
                         when {
                             expression { isApproved ==~ true }
