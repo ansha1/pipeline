@@ -39,6 +39,13 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'dev'
             echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
             break
+        case 'switch_to_uniq_Jenkinsfile_for_all_branches':
+            ANSIBLE_ENV = ansibleEnvMap.get('dev')
+            healthCheckUrl = healthCheckMap.get('dev')
+            branchPermissions = branchPermissionsMap.get('dev')
+            DEPLOY_ENVIRONMENT = 'dev'
+            echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
+            break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
@@ -74,7 +81,7 @@ def call(body) {
 
     // this should be used as condition otherwise we'll never reach the consensus
     INVENTORY_PATH = pipelineParams.ANSIBLE_REPO.equals(null) ? "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}/inventory" : "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
-    
+
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
@@ -82,6 +89,7 @@ def call(body) {
     }
 
     echo('\n\n==============Job config complete ==================\n\n')
+    echo("NODE_LABEL: ${NODE_LABEL}\n")
     echo("APP_NAME: ${APP_NAME}\n")
     echo("ANSIBLE_REPO: ${ANSIBLE_REPO}\n")
     echo("ANSIBLE_REPO_BRANCH: ${ANSIBLE_REPO_BRANCH}\n")
