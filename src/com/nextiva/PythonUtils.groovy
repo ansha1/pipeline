@@ -68,7 +68,7 @@ void runTests(Map args) {
             pythonUtils.venvSh(testCommands)
         }
     } catch (e) {
-        error("ERROR: Unit test fail ${e}")
+        error("Unit test fail ${e}")
     }
 }
 
