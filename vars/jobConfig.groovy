@@ -79,8 +79,7 @@ def call(body) {
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    // this should be used as condition otherwise we'll never reach the consensus
-    INVENTORY_PATH = pipelineParams.ANSIBLE_REPO.equals(null) ? "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}" : "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}/inventory"
+    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
 
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
