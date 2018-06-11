@@ -24,7 +24,7 @@ node('slave4') {
 
 }
 
-//@NonCPS
+@NonCPS
 def changeSharedLibBranch() {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
         String sourceBranch = 'feature/add-pipeline-for-pipeline'
