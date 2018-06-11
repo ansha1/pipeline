@@ -3,7 +3,7 @@
 node('debian') {
     try {
         timeout(time: 50, unit: 'MINUTES') {
-
+            checkout scm
             stage('printenv') {
                 sh 'printenv'
             }
