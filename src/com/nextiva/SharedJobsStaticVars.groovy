@@ -34,6 +34,6 @@ class SharedJobsStaticVars {
     static final RC_JOB_LOCK_MESSAGE = """The Deployment to RC environment is locked.\n
             Please contact the primary approver in Kyiv: Sergey Podgorov <sergey.podgorov@nextiva.com>, second-level approvers: Kirill Osadchyy <kirill.osadchyy@nextiva.com> & Ivan Maksymiv <ivan.maksymiv@nextiva.com>\n
             OR the primary approver in Arizona: Keerthi Suraparaju <keerthi.suraparaju@nextiva.com>, second-level approver Ebrahim Feyzi <ebrahim.feyzi@nextiva.com>  with unlocking request for RC environment.\n
-            If you can’t reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
+            If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
 }
