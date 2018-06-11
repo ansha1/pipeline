@@ -69,19 +69,17 @@ void runTests(Map args) {
                                                        python setup.py test''')
     def testPostCommands = args.get('testPostCommands')
 
-    try {
-        dir(pathToSrc) {
-            pythonUtils.createVirtualEnv(languageVersion)
+    dir(pathToSrc) {
+        pythonUtils.createVirtualEnv(languageVersion)
+        try {
             pythonUtils.venvSh(testCommands)
-        }
-    } catch (e) {
-        error("Unit test fail ${e}")
-    } finally {
-        println('============================')
-        println('Starting a cleanup after unit tests execution')
-        println('============================')
-        
-        dir(pathToSrc) {
+        } catch (e) {
+            error("Unit test fail ${e}")
+        } finally {
+            println('============================')
+            println('Starting a cleanup after unit tests execution')
+            println('============================')
+            
             pythonUtils.venvSh(testPostCommands)
         }
     }
