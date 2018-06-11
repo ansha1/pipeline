@@ -46,8 +46,8 @@ def changeSharedLibBranch(String libBranch) {
             testFolder.save()
             print('pipeline branch changed to ' + libBranch)
         }
-    } catch (changelibExeption) {
-        error("something wrong in changing default lib ${changelibExeption}")
+    } catch (e) {
+        print(e.toString())
     }
 }
 
