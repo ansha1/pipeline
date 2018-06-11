@@ -27,7 +27,7 @@ node('slave4') {
 @NonCPS
 def changeSharedLibBranch() {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
-        def sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+        String sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
         print("sssssss ${sourceBranch}")
         stage('change pipeline branch in test folder') {
             def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
@@ -36,7 +36,7 @@ def changeSharedLibBranch() {
                     libs = it.getLibraries()
                     print(libs)
                 }
-                libs.each { i -> print(i.setDefaultVersion(sourceBranch)) }
+                libs.each { i -> print(i.setDefaultVersion('master')) }
             }
         }
         testFolder.save()
