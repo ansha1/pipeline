@@ -2,6 +2,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
+    cleanWs()
     try {
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
