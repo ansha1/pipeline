@@ -1,6 +1,8 @@
 @Library('pipelines') _
 import static com.nextiva.SharedJobsStaticVars.*
 
+
+changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
 node('slave4') {
     cleanWs()
     try {
@@ -11,7 +13,7 @@ node('slave4') {
 
 //                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
-                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
+//                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
                 stage('run downstream jobs') {
                     runDownstreamJobs()
                 }
