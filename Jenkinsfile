@@ -7,19 +7,15 @@ node('slave4') {
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
                 checkout scm
-                stage('printenv') {
-                    sh 'printenv'
-                }
-                String sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
-                changeSharedLibBranch(sourceBranch)
+
+                changeSharedLibBranch(getSoruceBranchFromPr(CHANGE_URL))
 
             }
         }
     } catch (e) {
         error(e)
     } finally {
-//        slackNotify('testchannel')
-        echo('1')
+        slackNotify('testchannel')
     }
 
 }
@@ -48,18 +44,13 @@ def changeSharedLibBranch(String libBranch) {
 String getSoruceBranchFromPr(String url) {
 
     print("Received PR url: ${url}")
-
-//    http://git.nextiva.xyz/projects/REL/repos/pipelines/pull-requests/85/overview
-//    http://git.nextiva.xyz/rest/api/1.0/projects/REL/repos/pipelines/pull-requests/85
-
     prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-
     print("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     def props = readJSON text: prResponce.content
-//    def revs = props.fromRef.displayId.trim()
-    sourceBranch = props.fromRef.displayId.trim()
+
+    def sourceBranch = props.fromRef.displayId.trim()
     print("SourceBranch: ${sourceBranch}")
 
     return sourceBranch
