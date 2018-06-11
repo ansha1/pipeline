@@ -2,41 +2,60 @@
 
 node('slave4') {
     try {
-        timeout(time: 50, unit: 'MINUTES') {
-            checkout scm
-            stage('printenv') {
-                sh 'printenv'
+        ansiColor('xterm') {
+            timeout(time: 50, unit: 'MINUTES') {
+                checkout scm
+                stage('printenv') {
+                    sh 'printenv'
+                }
+
+                changeSharedLibBranch()
+
             }
-
-            changeSharedLibBranch()
-
         }
     } catch (e) {
-        error(e)    } finally {
+        error(e)
+    } finally {
 //        slackNotify('testchannel')
         echo('1')
     }
+
 }
 
 @NonCPS
 def changeSharedLibBranch() {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
-
-        //taking branch name from git because env.BRANCH_NAME is PR-*
-        currentBranch = sh returnStdout: true, script: 'git branch -r'
-        currentBranch = currentBranch.trim().replace("origin/", "")
+        def sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
         stage('change pipeline branch in test folder') {
             def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
             testFolder.properties.each {
                 if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
                     libs = it.getLibraries()
-                    libs.each { i -> i.setDefaultVersion(currentBranch) }
+                    libs.each { i -> i.setDefaultVersion(sourceBranch) }
                 }
-
             }
             testFolder.save()
             print('pipeline branch changed to ' + currentBranch)
         }
     }
+}
+
+String getSoruceBranchFromPr(String url) {
+
+    print("Received PR url: ${url}")
+
+//    http://git.nextiva.xyz/projects/REL/repos/pipelines/pull-requests/85/overview
+//    http://git.nextiva.xyz/rest/api/1.0/projects/REL/repos/pipelines/pull-requests/85
+
+    prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
+
+    print("Mutate url for access via rest api: ${prUrl}")
+
+    def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
+    def props = readJSON text: prResponce.content
+//    def revs = props.fromRef.displayId.trim()
+    sourceBranch = props.fromRef.displayId.trim()
+
+    return sourceBranch
 }
