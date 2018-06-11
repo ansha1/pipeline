@@ -167,7 +167,7 @@ def call(body) {
 
                                 if (jobConfig.healthCheckUrl.size > 0) {
                                     stage('Wait until service is up') {
-                                        healthCheck.multi(jobConfig.healthCheckUrl)
+                                        healthCheck.list(jobConfig.healthCheckUrl)
                                     }
                                 }
                             }
