@@ -24,7 +24,6 @@ node('slave4') {
     } finally {
         slackNotify('testchannel')
     }
-
 }
 
 @NonCPS
