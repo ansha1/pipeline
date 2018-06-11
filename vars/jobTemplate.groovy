@@ -16,10 +16,10 @@ def call(body) {
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
-        NODE_LABEL = pipelineParams.NODE_LABEL
+        nodeLabel = pipelineParams.nodeLabel
         APP_NAME = pipelineParams.APP_NAME
-        ANSIBLE_REPO = pipelineParams.ANSIBLE_REPO
-        ANSIBLE_REPO_BRANCH = pipelineParams.ANSIBLE_REPO_BRANCH
+        ansibleRepo = pipelineParams.ansibleRepo
+        ansibleRepoBranch = pipelineParams.ansibleRepoBranch
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
@@ -34,7 +34,7 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent { label jobConfig.NODE_LABEL }
+        agent { label jobConfig.nodeLabel }
 
         tools {
             jdk 'Java 8 Install automatically'
@@ -167,7 +167,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                def repoDir = prepareRepoDir(jobConfig.ANSIBLE_REPO, jobConfig.ANSIBLE_REPO_BRANCH)
+                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                 runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 if (jobConfig.healthCheckUrl.size > 0) {

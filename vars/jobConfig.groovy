@@ -20,9 +20,9 @@ def call(body) {
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
     APP_NAME = pipelineParams.APP_NAME
-    NODE_LABEL = pipelineParams.NODE_LABEL.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.NODE_LABEL
-    ANSIBLE_REPO = pipelineParams.ANSIBLE_REPO.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ANSIBLE_REPO
-    ANSIBLE_REPO_BRANCH = pipelineParams.ANSIBLE_REPO_BRANCH.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ANSIBLE_REPO_BRANCH
+    nodeLabel = pipelineParams.nodeLabel.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.nodeLabel
+    ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
+    ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
@@ -88,10 +88,10 @@ def call(body) {
     }
 
     echo('\n\n==============Job config complete ==================\n\n')
-    echo("NODE_LABEL: ${NODE_LABEL}\n")
+    echo("nodeLabel: ${nodeLabel}\n")
     echo("APP_NAME: ${APP_NAME}\n")
-    echo("ANSIBLE_REPO: ${ANSIBLE_REPO}\n")
-    echo("ANSIBLE_REPO_BRANCH: ${ANSIBLE_REPO_BRANCH}\n")
+    echo("ansibleRepo: ${ansibleRepo}\n")
+    echo("ansibleRepoBranch: ${ansibleRepoBranch}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")

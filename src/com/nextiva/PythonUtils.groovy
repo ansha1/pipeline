@@ -71,6 +71,11 @@ void runTests(Map args) {
         }
     } catch (e) {
         error("Unit test fail ${e}")
+    } finally {
+        println("Starting a cleanup after unit tests execution")
+        def postActionClean = args.get('postActionClean', 'pwd')
+        pythonUtils.createVirtualEnv(languageVersion)
+        pythonUtils.venvSh(postActionClean)
     }
 }
 
