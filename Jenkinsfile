@@ -7,9 +7,9 @@ node('slave4') {
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
 
-                checkout scm
+//                checkout scm
 
-                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+//                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
                 changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
                 stage('run downstream jobs') {
