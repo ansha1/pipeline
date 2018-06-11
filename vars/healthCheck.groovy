@@ -1,8 +1,8 @@
-def call(String healthcheckUrl, Integer time_limit=2) {
-    timeout(time_limit) {   //default 2 minutes for starting
+def call(String healthCheckUrl, Integer timeLimit=2) {
+    timeout(timeLimit) {   //default 2 minutes for starting
         waitUntil {
             try {
-                httpRequest url: healthcheckUrl, consoleLogResponseBody: true
+                httpRequest url: healthCheckUrl, consoleLogResponseBody: true
                 return true
             } catch (e) {
                 return false
@@ -12,9 +12,9 @@ def call(String healthcheckUrl, Integer time_limit=2) {
 }
 
 
-def list(List healthcheckUrls, Integer time_limit=2){
+def list(List healthCheckUrls, Integer timeLimit=2){
     try {
-        healthcheckUrls.each{healthCheck(it, time_limit)}
+        healthCheckUrls.each{healthCheck(it, timeLimit)}
     }
     catch (e) {
         error('Service startup failed ' + e)
