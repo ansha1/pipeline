@@ -1,4 +1,5 @@
 @Library('pipelines@develop') _
+import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
     try {
@@ -50,7 +51,7 @@ String getSoruceBranchFromPr(String url) {
 
     prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
 
-    print("Mutate url for access via rest api: ${prUrl}")
+    print("Mutate Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     def props = readJSON text: prResponce.content
