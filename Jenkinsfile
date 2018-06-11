@@ -1,6 +1,6 @@
 @Library('pipelines@develop') _
 
-node('debian') {
+node('slave4') {
     try {
         timeout(time: 50, unit: 'MINUTES') {
             checkout scm
