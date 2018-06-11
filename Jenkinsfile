@@ -9,9 +9,9 @@ node('slave4') {
 
                 checkout scm
 
-//                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
-//                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
+                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
                 stage('run downstream jobs') {
                     runDownstreamJobs()
                 }
