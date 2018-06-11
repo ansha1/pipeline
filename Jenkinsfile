@@ -2,18 +2,18 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
+//changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
 node('slave4') {
     cleanWs()
     try {
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
 
-//                checkout scm
+                checkout scm
 
-//                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
-//                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
+                changeSharedLibBranch(sourceBranch)
                 stage('run downstream jobs') {
                     runDownstreamJobs()
                 }
@@ -30,16 +30,16 @@ node('slave4') {
 def changeSharedLibBranch(String libBranch) {
 
     def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
-//    testFolder.properties.each {
-//        if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-//            libs = it.getLibraries()
-//            libs.each { i ->
-//                if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
-//                    i.setDefaultVersion(libBranch)
-//                }
-//            }
-//        }
-//    }
+    testFolder.properties.each {
+        if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
+            libs = it.getLibraries()
+            libs.each { i ->
+                if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
+                    i.setDefaultVersion(libBranch)
+                }
+            }
+        }
+    }
     testFolder.save()
     print('pipeline branch changed to ' + libBranch)
 }
