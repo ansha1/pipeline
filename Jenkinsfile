@@ -7,7 +7,9 @@ node('slave4') {
             timeout(time: 50, unit: 'MINUTES') {
                 checkout scm
 
-                changeSharedLibBranch(getSoruceBranchFromPr(CHANGE_URL))
+                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+
+                changeSharedLibBranch(sourceBranch)
 
                 runDownstreamJobs()
             }
