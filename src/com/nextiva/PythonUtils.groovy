@@ -60,7 +60,7 @@ void runTests(Map args) {
     //TODO: add publish test report step
 
     println('============================')
-    println("Start Python unit tests")
+    println('Start Python unit tests')
     println('============================')
     
     def languageVersion = args.get('languageVersion', 'python3.6')
@@ -78,7 +78,7 @@ void runTests(Map args) {
         error("Unit test fail ${e}")
     } finally {
         println('============================')
-        println("Starting a cleanup after unit tests execution")
+        println('Starting a cleanup after unit tests execution')
         println('============================')
         
         dir(pathToSrc) {
