@@ -3,13 +3,13 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
     try {
-
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
                 checkout scm
 
                 changeSharedLibBranch(getSoruceBranchFromPr(CHANGE_URL))
 
+                runDownstreamJobs()
             }
         }
     } catch (e) {
@@ -54,4 +54,18 @@ String getSoruceBranchFromPr(String url) {
     print("SourceBranch: ${sourceBranch}")
 
     return sourceBranch
+}
+
+def runDownstreamJobs() {
+    stage('run downstream jobs') {
+
+        parallel javaIntegration: {
+            build job: 'nextiva-pipeline-tests/test-java-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
+        }, jsIntegration: {
+            build job: 'nextiva-pipeline-tests/test-js-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
+        }, pythonLibIntegration: {
+            build job: 'nextiva-pipeline-tests/test-python-client/master', parameters: [string(name: 'deploy_version', value: '')]
+        },
+        failFast: true
+    }
 }
