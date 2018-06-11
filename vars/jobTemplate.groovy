@@ -23,9 +23,13 @@ def call(body) {
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
         branchNotifyRules = pipelineParams.branchNotifyRules
+        buildNumToKeepStr = pipelineParams.buildNumToKeepStr
+        artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
     def securityPermissions = jobConfig.branchProperties
-    def jobTimeout = jobConfig.jobTimeoutMinutes
+    def jobTimeoutMinutes = jobConfig.jobTimeoutMinutes
+    def buildNumToKeepStr = jobConfig.buildNumToKeepStr
+    def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -41,7 +45,8 @@ def call(body) {
             timestamps()
             disableConcurrentBuilds()
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
-            timeout(time: jobTimeout, unit: 'MINUTES')
+            timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
+            buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
         }
 
         parameters {
