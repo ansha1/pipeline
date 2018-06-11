@@ -5,14 +5,13 @@ node('slave4') {
     try {
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
-                stage('checkout')
+
                 checkout scm
 
-                stage('change pipeline branch in test folder')
                 sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+
                 changeSharedLibBranch(sourceBranch)
 
-                stage('run downstream jobs')
                 runDownstreamJobs()
 
             }
