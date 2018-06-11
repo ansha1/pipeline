@@ -10,8 +10,8 @@ node('slave4') {
                 stage('printenv') {
                     sh 'printenv'
                 }
-
-                changeSharedLibBranch()
+                String sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+                changeSharedLibBranch(sourceBranch)
 
             }
         }
@@ -25,11 +25,8 @@ node('slave4') {
 }
 
 @NonCPS
-def changeSharedLibBranch() {
+def changeSharedLibBranch(String libBranch) {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
-        String sourceBranch = 'feature/add-pipeline-for-pipeline'
-//        String sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
-        print("sssssss ${sourceBranch}")
         stage('change pipeline branch in test folder') {
             def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
             testFolder.properties.each {
@@ -40,11 +37,11 @@ def changeSharedLibBranch() {
                 }
                 libs.each { i ->
                     println("lib oneone ${i}")
-                    print(i.setDefaultVersion('master')) }
+                    print(i.setDefaultVersion(libBranch)) }
             }
         }
         testFolder.save()
-        print('pipeline branch changed to ' + sourceBranch)
+        print('pipeline branch changed to ' + libBranch)
     }
 }
 
