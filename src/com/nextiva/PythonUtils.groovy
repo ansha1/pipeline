@@ -58,13 +58,18 @@ def runSonarScanner(String projectVersion) {
 
 void runTests(Map args) {
     //TODO: add publish test report step
-    try {
-        print("\n\n Start unit tests Python \n\n")
-        def languageVersion = args.get('languageVersion', 'python3.6')
-        def testCommands = args.get('testCommands', '''pip install -r requirements.txt
+
+    println('############################')
+    println("Start Python unit tests")
+    println('############################')
+    
+    def languageVersion = args.get('languageVersion', 'python3.6')
+    def testCommands = args.get('testCommands', '''pip install -r requirements.txt
                                                        pip install -r requirements-test.txt
                                                        python setup.py test''')
+    def testPostCommands = args.get('testPostCommands')
 
+    try {
         dir(pathToSrc) {
             pythonUtils.createVirtualEnv(languageVersion)
             pythonUtils.venvSh(testCommands)
@@ -72,12 +77,12 @@ void runTests(Map args) {
     } catch (e) {
         error("Unit test fail ${e}")
     } finally {
+        println('############################')
         println("Starting a cleanup after unit tests execution")
-        def postActionClean = args.get('postActionClean', 'pwd')
-        def languageVersion = args.get('languageVersion', 'python3.6')
+        println('############################')
+        
         dir(pathToSrc) {
-            pythonUtils.createVirtualEnv(languageVersion)
-            pythonUtils.venvSh(postActionClean)
+            pythonUtils.venvSh(testPostCommands)
         }
     }
 }
