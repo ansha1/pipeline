@@ -24,22 +24,26 @@ node('slave4') {
 
 @NonCPS
 def changeSharedLibBranch(String libBranch) {
-    if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
-        stage('change pipeline branch in test folder') {
-            def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
-            testFolder.properties.each {
-                if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-                    libs = it.getLibraries()
-                    libs.each { i ->
-                        if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
-                            i.setDefaultVersion(libBranch)
+    try {
+        if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
+            stage('change pipeline branch in test folder') {
+                def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
+                testFolder.properties.each {
+                    if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
+                        libs = it.getLibraries()
+                        libs.each { i ->
+                            if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
+                                i.setDefaultVersion(libBranch)
+                            }
                         }
                     }
                 }
+                testFolder.save()
+                print('pipeline branch changed to ' + libBranch)
             }
-            testFolder.save()
-            print('pipeline branch changed to ' + libBranch)
         }
+    } catch (changelibExeption){
+        error("something wrong in changing default lib ${changelibExeption}")
     }
 }
 
