@@ -12,9 +12,9 @@ node('slave4') {
 //                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
 
 //                changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
-
-                runDownstreamJobs()
-
+                stage('run downstream jobs') {
+                    runDownstreamJobs()
+                }
             }
         }
     } catch (e) {
