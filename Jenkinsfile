@@ -1,4 +1,3 @@
-@Library('pipelines@develop') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
@@ -18,7 +17,7 @@ node('slave4') {
             }
         }
     } catch (e) {
-        error(e)
+        print(e.toString())
     } finally {
         slackNotify('testchannel')
     }
