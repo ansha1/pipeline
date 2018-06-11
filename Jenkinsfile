@@ -24,7 +24,7 @@ node('slave4') {
 
 }
 
-@NonCPS
+//@NonCPS
 def changeSharedLibBranch() {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
         String sourceBranch = 'feature/add-pipeline-for-pipeline'
@@ -35,9 +35,12 @@ def changeSharedLibBranch() {
             testFolder.properties.each {
                 if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
                     libs = it.getLibraries()
+                    echo'some libraries'
                     print(libs)
                 }
-                libs.each { i -> print(i.setDefaultVersion('master')) }
+                libs.each { i ->
+                    println("lib oneone ${i}")
+                    print(i.setDefaultVersion('master')) }
             }
         }
         testFolder.save()
