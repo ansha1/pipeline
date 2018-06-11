@@ -3,6 +3,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
     try {
+
         ansiColor('xterm') {
             timeout(time: 50, unit: 'MINUTES') {
                 checkout scm
@@ -51,12 +52,13 @@ String getSoruceBranchFromPr(String url) {
 
     prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
 
-    print("Mutate Url for access via rest api: ${prUrl}")
+    print("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     def props = readJSON text: prResponce.content
 //    def revs = props.fromRef.displayId.trim()
     sourceBranch = props.fromRef.displayId.trim()
+    print("SourceBranch: ${sourceBranch}")
 
     return sourceBranch
 }
