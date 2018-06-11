@@ -167,14 +167,7 @@ def call(body) {
 
                                 if (jobConfig.healthCheckUrl.size > 0) {
                                     stage('Wait until service is up') {
-                                        try {
-                                            for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
-                                                healthCheck(jobConfig.healthCheckUrl[i])
-                                            }
-                                        }
-                                        catch (e) {
-                                            error('ERROR: Service startup failed ' + e)
-                                        }
+                                        healthCheck.multi(jobConfig.healthCheckUrl)
                                     }
                                 }
                             }
