@@ -7,12 +7,10 @@ node('slave4') {
             timeout(time: 50, unit: 'MINUTES') {
                 stage('checkout') {
                     checkout scm
+                }
 
-                }
-                stage('change pipeline branch in test folder') {
-                    sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
-                    changeSharedLibBranch(sourceBranch)
-                }
+                sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+                changeSharedLibBranch(sourceBranch)
 
                 stage('run downstream jobs') {
                     runDownstreamJobs()
@@ -28,25 +26,27 @@ node('slave4') {
 
 @NonCPS
 def changeSharedLibBranch(String libBranch) {
-    try {
-        if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
+    stage('change pipeline branch in test folder') {
+        try {
+            if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
 
-            def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
-            testFolder.properties.each {
-                if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-                    libs = it.getLibraries()
-                    libs.each { i ->
-                        if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
-                            i.setDefaultVersion(libBranch)
+                def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
+                testFolder.properties.each {
+                    if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
+                        libs = it.getLibraries()
+                        libs.each { i ->
+                            if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
+                                i.setDefaultVersion(libBranch)
+                            }
                         }
                     }
                 }
+                testFolder.save()
+                print('pipeline branch changed to ' + libBranch)
             }
-            testFolder.save()
-            print('pipeline branch changed to ' + libBranch)
+        } catch (e) {
+            print(e.toString())
         }
-    } catch (e) {
-        print(e.toString())
     }
 }
 
