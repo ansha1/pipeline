@@ -1,8 +1,8 @@
 @Library('pipelines') _
 import static com.nextiva.SharedJobsStaticVars.*
 
-
-changeSharedLibBranch('feature/add-pipeline-for-pipeline111')
+sourceBranch = getSoruceBranchFromPr(CHANGE_URL)
+changeSharedLibBranch(sourceBranch)
 node('slave4') {
     cleanWs()
     try {
@@ -28,20 +28,23 @@ node('slave4') {
 
 @NonCPS
 def changeSharedLibBranch(String libBranch) {
-
-    def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
-    testFolder.properties.each {
-        if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-            libs = it.getLibraries()
-            libs.each { i ->
-                if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
-                    i.setDefaultVersion(libBranch)
+    try {
+        def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
+        testFolder.properties.each {
+            if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
+                libs = it.getLibraries()
+                libs.each { i ->
+                    if (i instanceof org.jenkinsci.plugins.workflow.libs.LibraryConfiguration) {
+                        i.setDefaultVersion(libBranch)
+                    }
                 }
             }
         }
+        testFolder.save()
+        print('pipeline branch changed to ' + libBranch)
+    } catch (e) {
+        print(e.toString())
     }
-    testFolder.save()
-    print('pipeline branch changed to ' + libBranch)
 }
 
 String getSoruceBranchFromPr(String url) {
