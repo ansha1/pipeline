@@ -12,8 +12,7 @@ node('debian') {
 
         }
     } catch (e) {
-        error(e)
-    } finally {
+        error(e)    } finally {
 //        slackNotify('testchannel')
         echo('1')
     }
@@ -22,20 +21,22 @@ node('debian') {
 @NonCPS
 def changeSharedLibBranch() {
     if (env.BRANCH_NAME ==~ /^(PR-.*)$/) {
-        stage('change default pipeline branch in test folder') {
+
+        //taking branch name from git because env.BRANCH_NAME is PR-*
+        currentBranch = sh returnStdout: true, script: 'git branch -r'
+        currentBranch = currentBranch.trim().replace("origin/", "")
+
+        stage('change pipeline branch in test folder') {
             def testFolder = Jenkins.instance.getItemByFullName("nextiva-pipeline-tests")
             testFolder.properties.each {
                 if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
-
                     libs = it.getLibraries()
-                    print(libs)
-
-                    libs.each { i -> print(i.setDefaultVersion(env.BRANCH_NAME)) }
+                    libs.each { i -> i.setDefaultVersion(currentBranch) }
                 }
 
             }
             testFolder.save()
-            print('pipeline branch changed to ' + env.BRANCH_NAME)
+            print('pipeline branch changed to ' + currentBranch)
         }
     }
 }
