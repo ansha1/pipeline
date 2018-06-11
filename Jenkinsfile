@@ -1,3 +1,4 @@
+@Library('pipelines') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 node('slave4') {
