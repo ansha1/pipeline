@@ -12,11 +12,9 @@ def call(String healthcheckUrl, Integer time_limit=2) {
 }
 
 
-def multi(Array healthcheckUrls, Integer time_limit=2){
+def list(List healthcheckUrls, Integer time_limit=2){
     try {
-        for (int i = 0; i < healthcheckUrls.size; i++) {
-            healthCheck(healthcheckUrls[i], time_limit)
-        }
+        healthcheckUrls.each{healthCheck(it, time_limit)}
     }
     catch (e) {
         error('Service startup failed ' + e)
