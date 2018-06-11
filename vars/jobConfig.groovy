@@ -39,13 +39,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'dev'
             echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
             break
-        case 'switch_to_uniq_Jenkinsfile_for_all_branches':
-            ANSIBLE_ENV = ansibleEnvMap.get('dev')
-            healthCheckUrl = healthCheckMap.get('dev')
-            branchPermissions = branchPermissionsMap.get('dev')
-            DEPLOY_ENVIRONMENT = 'dev'
-            echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
-            break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
