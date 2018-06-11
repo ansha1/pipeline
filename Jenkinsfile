@@ -34,7 +34,7 @@ def changeSharedLibBranch() {
             testFolder.properties.each {
                 if (it instanceof org.jenkinsci.plugins.workflow.libs.FolderLibraries) {
                     libs = it.getLibraries()
-                    libs.each { i -> i.setDefaultVersion(sourceBranch) }
+                    libs.each { i -> print(i.setDefaultVersion(sourceBranch)) }
                 }
             }
             testFolder.save()
