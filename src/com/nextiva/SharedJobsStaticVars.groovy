@@ -31,6 +31,8 @@ class SharedJobsStaticVars {
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
     static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
+    static final BUILD_NUM_TO_KEEP_STR = '30'
+    static final ARTIFACT_NUM_TO_KEEP_STR = '30'
     static final RC_JOB_LOCK_MESSAGE = """The Deployment to RC environment is locked.\n
             Please contact the primary approver in Kyiv: Sergey Podgorov <sergey.podgorov@nextiva.com>, second-level approvers: Kirill Osadchyy <kirill.osadchyy@nextiva.com> & Ivan Maksymiv <ivan.maksymiv@nextiva.com>\n
             OR the primary approver in Arizona: Keerthi Suraparaju <keerthi.suraparaju@nextiva.com>, second-level approver Ebrahim Feyzi <ebrahim.feyzi@nextiva.com>  with unlocking request for RC environment.\n

@@ -19,6 +19,8 @@ def call(body) {
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
+    buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
+    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
     APP_NAME = pipelineParams.APP_NAME
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
