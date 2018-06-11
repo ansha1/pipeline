@@ -42,7 +42,7 @@ def changeSharedLibBranch(String libBranch) {
                 print('pipeline branch changed to ' + libBranch)
             }
         }
-    } catch (changelibExeption){
+    } catch (changelibExeption) {
         error("something wrong in changing default lib ${changelibExeption}")
     }
 }
@@ -64,14 +64,14 @@ String getSoruceBranchFromPr(String url) {
 
 def runDownstreamJobs() {
     stage('run downstream jobs') {
-
-        parallel javaIntegration: {
-            build job: 'nextiva-pipeline-tests/test-java-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
-        }, jsIntegration: {
-            build job: 'nextiva-pipeline-tests/test-js-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
-        }, pythonLibIntegration: {
-            build job: 'nextiva-pipeline-tests/test-python-client/master', parameters: [string(name: 'deploy_version', value: '')]
-        },
-        failFast: true
+        echo 'some output'
+//        parallel javaIntegration: {
+//            build job: 'nextiva-pipeline-tests/test-java-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
+//        }, jsIntegration: {
+//            build job: 'nextiva-pipeline-tests/test-js-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
+//        }, pythonLibIntegration: {
+//            build job: 'nextiva-pipeline-tests/test-python-client/master', parameters: [string(name: 'deploy_version', value: '')]
+//        },
+//        failFast: true
     }
 }
