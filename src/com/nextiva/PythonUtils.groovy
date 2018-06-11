@@ -74,6 +74,7 @@ void runTests(Map args) {
     } finally {
         println("Starting a cleanup after unit tests execution")
         def postActionClean = args.get('postActionClean', 'pwd')
+        def languageVersion = args.get('languageVersion', 'python3.6')
         pythonUtils.createVirtualEnv(languageVersion)
         pythonUtils.venvSh(postActionClean)
     }

@@ -16,10 +16,10 @@ def call(body) {
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
-        nodeLabel = pipelineParams.nodeLabel
+        nodeLabel = pipelineParams.NODE_LABEL
         APP_NAME = pipelineParams.APP_NAME
-        ansibleRepo = pipelineParams.ansibleRepo
-        ansibleRepoBranch = pipelineParams.ansibleRepoBranch
+        ansibleRepo = pipelineParams.ANSIBLE_REPO
+        ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
