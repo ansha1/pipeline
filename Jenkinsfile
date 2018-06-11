@@ -39,9 +39,9 @@ def changeSharedLibBranch(String libBranch) {
                     }
                 }
             }
+            testFolder.save()
+            print('pipeline branch changed to ' + libBranch)
         }
-        testFolder.save()
-        print('pipeline branch changed to ' + libBranch)
     }
 }
 
