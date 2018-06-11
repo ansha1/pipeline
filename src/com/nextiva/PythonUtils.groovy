@@ -76,11 +76,13 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
-            println('============================')
-            println('Starting a cleanup after unit tests execution')
-            println('============================')
-            
-            pythonUtils.venvSh(testPostCommands)
+            if(testPostCommands) {
+                println('============================')
+                println('Starting a cleanup after unit tests execution')
+                println('============================')
+                
+                pythonUtils.venvSh(testPostCommands)
+            }
         }
     }
 }
