@@ -36,11 +36,7 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    scannerHome = tool SONAR_QUBE_SCANNER
-
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
-    }
+    sonarScanner.run(projectVersion)
 }
 
 
