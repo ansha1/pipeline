@@ -102,8 +102,8 @@ def call(body) {
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
     echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
-    echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
-    echo("branchNotifyRules: ${branchNotifyRules}\n")
+    echo("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}\n")
+    // echo("branchNotifyRules: ${branchNotifyRules}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n\n')
