@@ -210,7 +210,6 @@ def call(body) {
                 script {
                     if (!jobConfig.slackNotifictionScope.equals(null)) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
-                            println('branches: ' + branches + ' channel: ' + channel)
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
                                     println('channel to notify is: ' + channel)
