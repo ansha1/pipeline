@@ -30,6 +30,7 @@ node('slave4') {
     } catch (e) {
         error(e.toString())
     } finally {
+        echo currentBuild.currentResult
         slackNotify('testchannel')
     }
 }
