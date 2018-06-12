@@ -6,12 +6,11 @@ sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : B
 changeSharedLibBranch(sourceBranch)
 
 node('slave4') {
+
     properties properties: [
-
             disableConcurrentBuilds()
-
     ]
-//    properties(disableConcurrentBuilds())
+
     cleanWs()
     try {
         timestamps {
