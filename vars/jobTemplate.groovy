@@ -77,8 +77,10 @@ def call(body) {
 
                         // jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         jobConfig.branchNotifyRules.each {
-                            println('branch notification rules' + it)
+                            println('branch notification rules: ' + it)
+                            println('branch: ' + env.BRANCH_NAME)
                             if (env.BRANCH_NAME ==~ it) {
+                                println('we are inside of IF block')
                                 jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
                                     println('branches: ' + branches + ' channel: ' + channel)
                                     if (env.BRANCH_NAME ==~ branches) {
