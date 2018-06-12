@@ -75,26 +75,10 @@ def call(body) {
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
-                        // jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        jobConfig.branchNotifyRules.each {
-                            println('branch notification rules: ' + it)
-                            println('branch: ' + env.BRANCH_NAME)
-                            if (env.BRANCH_NAME ==~ it) {
-                                println('we are inside of IF block')
-                                jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
-                                    println('branches: ' + branches + ' channel: ' + channel)
-                                    branches.each {
-                                        if (env.BRANCH_NAME ==~ it) {
-                                            println('channel to notify is: ' + channel)
-                                            // slackNotify(channel)
-                                        }
-                                    }
-                                }
-                            }  
-                        }
-
+                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+                        
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
-                        // sh "printenv"
+                        sh "printenv"
                         print("\n\n ============================= \n")
                     }
                 }
@@ -216,11 +200,15 @@ def call(body) {
                     jobConfig.branchNotifyRules.each {
                         if (env.BRANCH_NAME ==~ it) {
                             jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
-                                if (env.BRANCH_NAME ==~ branches)
-                                println('channel to notify is: ' + channel)
-                                slackNotify(channel)
+                                println('branches: ' + branches + ' channel: ' + channel)
+                                branches.each {
+                                    if (env.BRANCH_NAME ==~ it) {
+                                        println('channel to notify is: ' + channel)
+                                        slackNotify(channel)
+                                    }
+                                }
                             }
-                        }
+                        }  
                     }
                 }
             }
