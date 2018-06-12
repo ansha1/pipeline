@@ -6,6 +6,8 @@ sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : B
 changeSharedLibBranch(sourceBranch)
 
 node('slave4') {
+
+    properties([disableConcurrentBuilds()])
     cleanWs()
     try {
         timestamps {
@@ -28,7 +30,7 @@ node('slave4') {
             }
         }
     } catch (e) {
-        error(e.toString())
+        throw e
     } finally {
         echo currentBuild.currentResult
         slackNotify('testchannel')
