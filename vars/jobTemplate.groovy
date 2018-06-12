@@ -75,6 +75,8 @@ def call(body) {
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
+                        jobConfig.CHANNEL_TO_NOTIFY.each { k, v -> println('key is: ' + k + ' value is: ' + v)}
+
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
 
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
