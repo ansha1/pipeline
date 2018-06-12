@@ -75,14 +75,14 @@ def call(body) {
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
-                        jobConfig.CHANNEL_TO_NOTIFY.each { k, v -> println('key is: ' + k + ' value is: ' + v)}
-
+                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         jobConfig.branchNotifyRules.each {
                             if (env.BRANCH_NAME ==~ it) {
                                 jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
-                                    if (env.BRANCH_NAME ==~ branches)
-                                    println('channel to notify is: ' + channel)
-                                    slackNotify(channel)
+                                    if (env.BRANCH_NAME ==~ branches) {
+                                        println('channel to notify is: ' + channel)
+                                        slackNotify(channel)
+                                    }
                                 }
                             }  
                         }
