@@ -28,10 +28,13 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     branchNotifyRules = pipelineParams.branchNotifyRules.equals(null) ? ['dev', 'develop', 'hotfix/.+', 'release/.+', 'PR/.+', 'feature/.+', 'master'] : pipelineParams.branchNotifyRules
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
-
+    CHANNEL_TO_NOTIFY = if(pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
+                            [:] << [LIST_OF_DEFAULT_BRANCH_PATTERNS : pipelineParams.CHANNEL_TO_NOTIFY]
+                        } else {
+                            pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
+                        }
 
     switch (env.BRANCH_NAME) {
         case 'dev':

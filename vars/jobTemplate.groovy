@@ -25,6 +25,7 @@ def call(body) {
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+        CHANNEL_TO_NOTIFY_PER_BRANCH = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
         branchNotifyRules = pipelineParams.branchNotifyRules
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
