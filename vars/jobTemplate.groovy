@@ -26,7 +26,6 @@ def call(body) {
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         channelToNotify = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
-        // branchNotifyRules = pipelineParams.branchNotifyRules
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
@@ -81,7 +80,7 @@ def call(body) {
                                 branches.each {
                                     if (env.BRANCH_NAME ==~ it) {
                                         println('channel to notify is: ' + channel)
-                                        // slackNotify(channel)
+                                        slackNotify(channel)
                                     }
                                 }
                             }
