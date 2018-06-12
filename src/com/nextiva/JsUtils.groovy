@@ -3,7 +3,7 @@ package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-final String pathToSrc
+final String pathToSrc = '.'
 
 
 String getVersion() {
