@@ -33,8 +33,8 @@ def call(body) {
     if (pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
         CHANNEL_TO_NOTIFY = [:]
         tupleOfDefaultBranches = LIST_OF_DEFAULT_BRANCH_PATTERNS.asImmutable()
-        echo("LIST_OF_DEFAULT_BRANCH_PATTERNS:  ${LIST_OF_DEFAULT_BRANCH_PATTERNS}\n")                
-        CHANNEL_TO_NOTIFY << [ tupleOfDefaultBranches : pipelineParams.CHANNEL_TO_NOTIFY]
+        echo("LIST_OF_DEFAULT_BRANCH_PATTERNS:  ${tupleOfDefaultBranches}\n")                
+        CHANNEL_TO_NOTIFY << [ "${tupleOfDefaultBranches}" : pipelineParams.CHANNEL_TO_NOTIFY]
     } else {
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
     }
