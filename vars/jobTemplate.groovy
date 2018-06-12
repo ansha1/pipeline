@@ -75,10 +75,12 @@ def call(body) {
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
-                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+                        // jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         jobConfig.branchNotifyRules.each {
+                            println('branch notification rules' + it)
                             if (env.BRANCH_NAME ==~ it) {
                                 jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
+                                    println('branches: ' + branches + ' channel: ' + channel)
                                     if (env.BRANCH_NAME ==~ branches) {
                                         println('channel to notify is: ' + channel)
                                         slackNotify(channel)
@@ -88,7 +90,7 @@ def call(body) {
                         }
 
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
-                        sh "printenv"
+                        // sh "printenv"
                         print("\n\n ============================= \n")
                     }
                 }
