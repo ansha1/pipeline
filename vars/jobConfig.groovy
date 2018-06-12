@@ -22,6 +22,9 @@ def call(body) {
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
     APP_NAME = pipelineParams.APP_NAME
+    nodeLabel = pipelineParams.nodeLabel.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.nodeLabel
+    ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
+    ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
@@ -72,6 +75,7 @@ def call(body) {
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
     INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
+
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
@@ -79,7 +83,10 @@ def call(body) {
     }
 
     echo('\n\n==============Job config complete ==================\n\n')
+    echo("nodeLabel: ${nodeLabel}\n")
     echo("APP_NAME: ${APP_NAME}\n")
+    echo("ansibleRepo: ${ansibleRepo}\n")
+    echo("ansibleRepoBranch: ${ansibleRepoBranch}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")

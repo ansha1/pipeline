@@ -48,27 +48,42 @@ String createReleaseVersion(String version) {
 def runSonarScanner(String projectVersion) {
     scannerHome = tool SONAR_QUBE_SCANNER
 
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    dir(pathToSrc) {
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+        }
     }
 }
 
 
 void runTests(Map args) {
     //TODO: add publish test report step
-    try {
-        print("\n\n Start unit tests Python \n\n")
-        def languageVersion = args.get('languageVersion', 'python3.6')
-        def testCommands = args.get('testCommands', '''pip install -r requirements.txt
+
+    println('============================')
+    println('Start Python unit tests')
+    println('============================')
+    
+    def languageVersion = args.get('languageVersion', 'python3.6')
+    def testCommands = args.get('testCommands', '''pip install -r requirements.txt
                                                        pip install -r requirements-test.txt
                                                        python setup.py test''')
+    def testPostCommands = args.get('testPostCommands')
 
-        dir(pathToSrc) {
-            pythonUtils.createVirtualEnv(languageVersion)
+    dir(pathToSrc) {
+        pythonUtils.createVirtualEnv(languageVersion)
+        try {
             pythonUtils.venvSh(testCommands)
+        } catch (e) {
+            error("Unit test fail ${e}")
+        } finally {
+            if(testPostCommands) {
+                println('============================')
+                println('Starting a cleanup after unit tests execution')
+                println('============================')
+                
+                pythonUtils.venvSh(testPostCommands)
+            }
         }
-    } catch (e) {
-        error("ERROR: Unit test fail ${e}")
     }
 }
 

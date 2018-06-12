@@ -16,7 +16,10 @@ def call(body) {
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
         jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
+        nodeLabel = pipelineParams.NODE_LABEL
         APP_NAME = pipelineParams.APP_NAME
+        ansibleRepo = pipelineParams.ANSIBLE_REPO
+        ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
@@ -26,6 +29,7 @@ def call(body) {
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
+    
     def securityPermissions = jobConfig.branchProperties
     def jobTimeoutMinutes = jobConfig.jobTimeoutMinutes
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
@@ -34,7 +38,7 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent { label DEFAULT_NODE_LABEL }
+        agent { label jobConfig.nodeLabel }
 
         tools {
             jdk 'Java 8 Install automatically'
@@ -168,7 +172,8 @@ def call(body) {
                         }
                         steps {
                             script {
-                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 if (jobConfig.healthCheckUrl.size > 0) {
                                     stage('Wait until service is up') {
