@@ -5,11 +5,13 @@ import static com.nextiva.SharedJobsStaticVars.*
 sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : BRANCH_NAME
 changeSharedLibBranch(sourceBranch)
 
-node('slave4') {
+properties properties: [
+        disableConcurrentBuilds()
+]
 
-    properties properties: [
-            disableConcurrentBuilds()
-    ]
+node(DEFAULT_NODE_LABEL) {
+
+
 
     cleanWs()
     try {
@@ -29,13 +31,12 @@ node('slave4') {
                     stage('run downstream jobs') {
                         runDownstreamJobs()
                     }
-                    currentBuild.result = 'SUCCESS'
                 }
             }
         }
     } catch (e) {
+        currentBuild.result = "FAILED"
         throw e
-        currentBuild.result = 'FAILURE'
     } finally {
         slackNotify('testchannel')
     }
