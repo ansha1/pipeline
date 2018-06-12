@@ -69,7 +69,7 @@ def call(body) {
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
                         env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
-                        env.CHANNEL_TO_NOTIFY = jobConfig.channelToNotify
+                        env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
