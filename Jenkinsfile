@@ -34,8 +34,8 @@ node('slave4') {
         }
     } catch (e) {
         throw e
+        currentBuild.currentResult = 'FAILURE'
     } finally {
-        echo currentBuild.currentResult
         slackNotify('testchannel')
     }
 }
