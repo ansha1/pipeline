@@ -9,7 +9,7 @@ properties properties: [
         disableConcurrentBuilds()
 ]
 
-node(DEFAULT_NODE_LABEL) {
+node('debian') {
 
 
 
