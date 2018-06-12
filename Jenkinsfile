@@ -36,8 +36,9 @@ node('slave4') {
     } catch (e) {
         throw e
         currentBuild.result = 'FAILURE'
+    } finally {
+        slackNotify('testchannel')
     }
-    slackNotify('testchannel')
 }
 
 @NonCPS
