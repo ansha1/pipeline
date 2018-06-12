@@ -1,4 +1,4 @@
-@Library('pipelines') _
+@Library('pipelines@develop') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 
@@ -9,10 +9,7 @@ properties properties: [
         disableConcurrentBuilds()
 ]
 
-node('debian') {
-
-
-
+node(DEFAULT_NODE_LABEL) {
     cleanWs()
     try {
         timestamps {
