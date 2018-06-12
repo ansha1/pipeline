@@ -1,3 +1,6 @@
+import static com.nextiva.SharedJobsStaticVars.*
+
+
 def call(String projectVersion='0.1.0') {
     try {
         scannerHome = tool SONAR_QUBE_SCANNER
