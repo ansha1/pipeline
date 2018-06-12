@@ -29,6 +29,7 @@ node('slave4') {
                     stage('run downstream jobs') {
                         runDownstreamJobs()
                     }
+                    currentBuild.result = 'SUCCESS'
                 }
             }
         }
