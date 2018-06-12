@@ -83,9 +83,11 @@ def call(body) {
                                 println('we are inside of IF block')
                                 jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
                                     println('branches: ' + branches + ' channel: ' + channel)
-                                    if (env.BRANCH_NAME ==~ branches) {
-                                        println('channel to notify is: ' + channel)
-                                        slackNotify(channel)
+                                    branches.each {
+                                        if (env.BRANCH_NAME ==~ it) {
+                                            println('channel to notify is: ' + channel)
+                                            // slackNotify(channel)
+                                        }
                                     }
                                 }
                             }  
