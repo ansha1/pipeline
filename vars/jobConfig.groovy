@@ -42,7 +42,7 @@ def call(body) {
     // channelToNotify = [:]
     // channelToNotify : [channelToNotify: "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
     channelToNotify = pipelineParams.channelToNotify.equals(null) ? null : [(pipelineParams.channelToNotify): "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
-    slackNotifictionScope = pipelineParams.channelToNotify.equals(null) ? channelToNotify : pipelineParams.channelToNotifyPerBranch
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? channelToNotify : pipelineParams.channelToNotifyPerBranch
 
     switch (env.BRANCH_NAME) {
         case 'dev':
