@@ -98,12 +98,7 @@ def call(body) {
                 }
                 steps {
                     script {
-                        try {
-                            utils.runSonarScanner(jobConfig.BUILD_VERSION)
-                        } catch (e) {
-                            print e
-                            currentBuild.rawBuild.result = Result.UNSTABLE
-                        }
+                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
                     }
                 }
             }
