@@ -77,7 +77,15 @@ def call(body) {
 
                         jobConfig.CHANNEL_TO_NOTIFY.each { k, v -> println('key is: ' + k + ' value is: ' + v)}
 
-                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+                        jobConfig.branchNotifyRules.each {
+                            if (env.BRANCH_NAME ==~ it) {
+                                jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
+                                    if (env.BRANCH_NAME ==~ branches)
+                                    println('channel to notify is: ' + channel)
+                                    slackNotify(channel)
+                                }
+                            }  
+                        }
 
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
                         sh "printenv"
@@ -201,7 +209,11 @@ def call(body) {
                 script {
                     jobConfig.branchNotifyRules.each {
                         if (env.BRANCH_NAME ==~ it) {
-                            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+                            jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
+                                if (env.BRANCH_NAME ==~ branches)
+                                println('channel to notify is: ' + channel)
+                                slackNotify(channel)
+                            }
                         }
                     }
                 }
