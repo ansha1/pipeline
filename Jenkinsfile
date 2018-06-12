@@ -75,7 +75,7 @@ def runDownstreamJobs() {
     }, jsIntegration: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }, pythonLibIntegration: {
-        build job: 'nextiva-pipeline-tests/test-python-client/master', parameters: [string(name: 'deploy_version', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-lib/master', parameters: [string(name: 'deploy_version', value: '')]
     },
     failFast: true
 
