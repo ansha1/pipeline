@@ -46,7 +46,9 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    sonarScanner.run(projectVersion)
+    dir(pathToSrc) {
+        sonarScanner.run(projectVersion)
+    }
 }
 
 

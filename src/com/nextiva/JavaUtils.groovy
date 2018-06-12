@@ -28,14 +28,17 @@ String createReleaseVersion(String version) {
 
 def runSonarScanner(String projectVersion) {
     scannerHome = tool SONAR_QUBE_SCANNER
-    withSonarQubeEnv(SONAR_QUBE_ENV) {
-        sh 'mvn verify sonar:sonar'
-    }
-    timeout(time: 30, unit: 'MINUTES') {
-        def qg = waitForQualityGate()
-        if (qg.status != 'OK') {
-            print('Sonar Quality Gate failed')
-//            currentBuild.rawBuild.result = Result.UNSTABLE
+
+    dir(pathToSrc) {
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh 'mvn verify sonar:sonar'
+        }
+        timeout(time: 30, unit: 'MINUTES') {
+            def qg = waitForQualityGate()
+            if (qg.status != 'OK') {
+                print('Sonar Quality Gate failed')
+                // currentBuild.rawBuild.result = Result.UNSTABLE
+            }
         }
     }
 }
