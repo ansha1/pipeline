@@ -4,7 +4,7 @@ package com.nextiva;
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
-    static final LIST_OF_DEFAULT_BRANCH_PATTERNS = new Tuple('dev', 'develop', 'hotfix/.+', 'release/.+', 'PR/.+', 'feature/.+', 'master')
+    static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'PR/.+', 'feature/.+', 'master'].asImmutable()
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
