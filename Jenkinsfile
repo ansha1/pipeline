@@ -35,9 +35,8 @@ node('slave4') {
     } catch (e) {
         throw e
         currentBuild.result = 'FAILURE'
-    } finally {
-        slackNotify('testchannel')
     }
+    slackNotify('testchannel')
 }
 
 @NonCPS
@@ -83,5 +82,5 @@ def runDownstreamJobs() {
     }, pythonLibIntegration: {
         build job: 'nextiva-pipeline-tests/test-python-lib/master', parameters: [string(name: 'deploy_version', value: '')]
     },
-     failFast: true
+            failFast: true
 }
