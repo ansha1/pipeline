@@ -28,7 +28,7 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    branchNotifyRules = pipelineParams.branchNotifyRules.equals(null) ? LIST_OF_DEFAULT_BRANCH_PATTERNS : pipelineParams.branchNotifyRules
+    // branchNotifyRules = pipelineParams.branchNotifyRules.equals(null) ? LIST_OF_DEFAULT_BRANCH_PATTERNS : pipelineParams.branchNotifyRules
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
     
     // if (pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
@@ -40,8 +40,9 @@ def call(body) {
     //     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
     // }
     // channelToNotify = [:]
-    channelToNotify = pipelineParams.channelToNotifyPerBranch.equals(null) ? pipelineParams.channelToNotify : pipelineParams.channelToNotifyPerBranch
-    slackNotifictionScope = channelToNotify.equals(null) ? null : [channelToNotify: "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
+    // channelToNotify : [channelToNotify: "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
+    channelToNotify = pipelineParams.channelToNotify.equals(null) ? null : [pipelineParams.channelToNotify: "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
+    slackNotifictionScope = pipelineParams.channelToNotify.equals(null) ? channelToNotify : pipelineParams.channelToNotifyPerBranch
 
     switch (env.BRANCH_NAME) {
         case 'dev':

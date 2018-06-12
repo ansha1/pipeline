@@ -26,7 +26,7 @@ def call(body) {
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         channelToNotify = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
-        branchNotifyRules = pipelineParams.branchNotifyRules
+        // branchNotifyRules = pipelineParams.branchNotifyRules
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
@@ -84,8 +84,8 @@ def call(body) {
                                         // slackNotify(channel)
                                     }
                                 }
-                            }     
-                        }   
+                            }
+                        }
 
                         // jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         
