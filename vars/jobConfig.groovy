@@ -32,8 +32,9 @@ def call(body) {
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
     if (pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
         CHANNEL_TO_NOTIFY = [:]
+        tupleOfDefaultBranches = LIST_OF_DEFAULT_BRANCH_PATTERNS.asImmutable()
         println("LIST_OF_DEFAULT_BRANCH_PATTERNS: ", LIST_OF_DEFAULT_BRANCH_PATTERNS)                
-        CHANNEL_TO_NOTIFY << [ LIST_OF_DEFAULT_BRANCH_PATTERNS.asImmutable() : pipelineParams.CHANNEL_TO_NOTIFY]
+        CHANNEL_TO_NOTIFY << [ tupleOfDefaultBranches : pipelineParams.CHANNEL_TO_NOTIFY]
     } else {
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
     }
