@@ -30,14 +30,18 @@ def call(body) {
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     branchNotifyRules = pipelineParams.branchNotifyRules.equals(null) ? LIST_OF_DEFAULT_BRANCH_PATTERNS : pipelineParams.branchNotifyRules
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
-    if (pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
-        CHANNEL_TO_NOTIFY = [:]
-        // tupleOfDefaultBranches = LIST_OF_DEFAULT_BRANCH_PATTERNS.asImmutable()
-        echo("LIST_OF_DEFAULT_BRANCH_PATTERNS:  ${LIST_OF_DEFAULT_BRANCH_PATTERNS}\n")                
-        CHANNEL_TO_NOTIFY << [ "${LIST_OF_DEFAULT_BRANCH_PATTERNS}" : pipelineParams.CHANNEL_TO_NOTIFY]
-    } else {
-        CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
-    }
+    
+    // if (pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH.equals(null)) {
+    //     CHANNEL_TO_NOTIFY = [:]
+    //     // tupleOfDefaultBranches = LIST_OF_DEFAULT_BRANCH_PATTERNS.asImmutable()
+    //     echo("LIST_OF_DEFAULT_BRANCH_PATTERNS:  ${LIST_OF_DEFAULT_BRANCH_PATTERNS}\n")                
+    //     CHANNEL_TO_NOTIFY << [ "${LIST_OF_DEFAULT_BRANCH_PATTERNS}" : pipelineParams.CHANNEL_TO_NOTIFY]
+    // } else {
+    //     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
+    // }
+    // channelToNotify = [:]
+    channelToNotify = pipelineParams.channelToNotifyPerBranch.equals(null) ? pipelineParams.channelToNotify : pipelineParams.channelToNotifyPerBranch
+    slackNotifictionScope = channelToNotify.equals(null) ? null : [channelToNotify: "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
 
     switch (env.BRANCH_NAME) {
         case 'dev':

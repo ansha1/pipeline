@@ -24,8 +24,8 @@ def call(body) {
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-        CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-        CHANNEL_TO_NOTIFY_PER_BRANCH = pipelineParams.CHANNEL_TO_NOTIFY_PER_BRANCH
+        channelToNotify = pipelineParams.CHANNEL_TO_NOTIFY
+        channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         branchNotifyRules = pipelineParams.branchNotifyRules
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
@@ -75,10 +75,22 @@ def call(body) {
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
-                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+                        if (!jobConfig.slackNotifictionScope.equals(null)) {
+                            jobConfig.slackNotifictionScope.each { channel, branches ->
+                                println('branches: ' + branches + ' channel: ' + channel)
+                                branches.each {
+                                    if (env.BRANCH_NAME ==~ it) {
+                                        println('channel to notify is: ' + channel)
+                                        // slackNotify(channel)
+                                    }
+                                }
+                            }     
+                        }   
+
+                        // jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
-                        sh "printenv"
+                        // sh "printenv"
                         print("\n\n ============================= \n")
                     }
                 }
@@ -197,18 +209,16 @@ def call(body) {
         post {
             always {
                 script {
-                    jobConfig.branchNotifyRules.each {
-                        if (env.BRANCH_NAME ==~ it) {
-                            jobConfig.CHANNEL_TO_NOTIFY.each { branches, channel ->
-                                println('branches: ' + branches + ' channel: ' + channel)
-                                branches.each {
-                                    if (env.BRANCH_NAME ==~ it) {
-                                        println('channel to notify is: ' + channel)
-                                        slackNotify(channel)
-                                    }
+                    if (!jobConfig.slackNotifictionScope.equals(null)) {
+                        jobConfig.slackNotifictionScope.each { channel, branches ->
+                            println('branches: ' + branches + ' channel: ' + channel)
+                            branches.each {
+                                if (env.BRANCH_NAME ==~ it) {
+                                    println('channel to notify is: ' + channel)
+                                    // slackNotify(channel)
                                 }
                             }
-                        }  
+                        }     
                     }
                 }
             }
