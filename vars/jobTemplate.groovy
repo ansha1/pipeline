@@ -195,7 +195,7 @@ def call(body) {
         post {
             always {
                 script {
-                    if (!jobConfig.slackNotifictionScope.equals(null)) {
+                    if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
