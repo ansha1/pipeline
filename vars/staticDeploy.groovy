@@ -9,8 +9,8 @@ def call(String componentName, String deployEnvironment, String deployVersion, S
     echo nextivaRepo
     echo "2222222"
 
-    def nextivaRepo = nextivaRepo.equals(null) ? deployEnvironment : nextivaRepo
+    def nextivaRepo2 = nextivaRepo.equals(null) ? deployEnvironment : nextivaRepo
 
     def repoDir = prepareRepoDir(RELEASE_MANAGEMENT_REPO_URL, RELEASE_MANAGEMENT_REPO_BRANCH)
-    runAnsiblePlaybook(repoDir, "${BASIC_INVENTORY_PATH}/${env}", PLAYBOOK_PATH, ['version': deployVersion, 'component_name': componentName, 'static_assets_files': componentName, 'nextiva_repo': nextivaRepo])
+    runAnsiblePlaybook(repoDir, "${BASIC_INVENTORY_PATH}/${env}", PLAYBOOK_PATH, ['version': deployVersion, 'component_name': componentName, 'static_assets_files': componentName, 'nextiva_repo': nextivaRepo2])
 }
