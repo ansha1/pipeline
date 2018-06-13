@@ -7,6 +7,7 @@ import groovy.transform.Field
 @Field
 String pathToSrc = '.'
 
+
 String getVersion() {
     dir(pathToSrc) {
         def packageJson = readJSON file: "package.json"
