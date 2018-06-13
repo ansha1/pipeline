@@ -29,8 +29,8 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
-    channelToNotify = pipelineParams.channelToNotify.equals(null) ? null : [(pipelineParams.channelToNotify): "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
-    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? channelToNotify : pipelineParams.channelToNotifyPerBranch
+    defaultSlackNotificationScope = pipelineParams.CHANNEL_TO_NOTIFY.equals(null) ? null : [(pipelineParams.CHANNEL_TO_NOTIFY): "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationScope : pipelineParams.channelToNotifyPerBranch
 
     switch (env.BRANCH_NAME) {
         case 'dev':

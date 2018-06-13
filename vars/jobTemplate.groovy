@@ -24,7 +24,7 @@ def call(body) {
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-        channelToNotify = pipelineParams.CHANNEL_TO_NOTIFY
+        CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
