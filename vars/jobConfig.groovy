@@ -28,10 +28,9 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-    branchNotifyRules = pipelineParams.branchNotifyRules.equals(null) ? ['dev', 'develop', 'hotfix/.+', 'release/.+', 'PR/.+', 'feature/.+', 'master'] : pipelineParams.branchNotifyRules
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
-
+    defaultSlackNotificationMap = pipelineParams.CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(pipelineParams.CHANNEL_TO_NOTIFY): "${LIST_OF_DEFAULT_BRANCH_PATTERNS}"]
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -92,8 +91,7 @@ def call(body) {
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
     echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
-    echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
-    echo("branchNotifyRules: ${branchNotifyRules}\n")
+    echo("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
     echo('\n======================================================\n\n')

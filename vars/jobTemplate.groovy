@@ -25,7 +25,7 @@ def call(body) {
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-        branchNotifyRules = pipelineParams.branchNotifyRules
+        channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
@@ -69,13 +69,12 @@ def call(body) {
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
                         env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
-                        env.CHANNEL_TO_NOTIFY = jobConfig.CHANNEL_TO_NOTIFY
+                        env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
                         env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-
                         print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
                         sh "printenv"
                         print("\n\n ============================= \n")
@@ -184,10 +183,15 @@ def call(body) {
         post {
             always {
                 script {
-                    jobConfig.branchNotifyRules.each {
-                        if (env.BRANCH_NAME ==~ it) {
-                            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
-                        }
+                    if (jobConfig.slackNotifictionScope.size() > 0) {
+                        jobConfig.slackNotifictionScope.each { channel, branches ->
+                            branches.each {
+                                if (env.BRANCH_NAME ==~ it) {
+                                    println('channel to notify is: ' + channel)
+                                    slackNotify(channel)
+                                }
+                            }
+                        }     
                     }
                 }
             }
