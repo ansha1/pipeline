@@ -3,8 +3,12 @@ package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-String pathToSrc = '.'
+//final String pathToSrc
 
+
+JsUtils(final String pathToSrc) {
+       this.pathToSrc = pathToSrc
+}
 
 String getVersion() {
     dir(pathToSrc) {
