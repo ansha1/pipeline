@@ -1,14 +1,10 @@
 package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
+import groovy.transform.Field
 
 
-//final String pathToSrc
-
-
-JsUtils(final String pathToSrc) {
-       this.pathToSrc = pathToSrc
-}
+@Field String pathToSrc = '.'
 
 String getVersion() {
     dir(pathToSrc) {
