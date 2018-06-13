@@ -2,7 +2,7 @@ import com.nextiva.JavaUtils
 import com.nextiva.JsUtils
 import com.nextiva.PythonUtils
 
-def call(String language, String pathToSrc) {
+def call(String language, String pathToSrc='.') {
 
     switch (language) {
         case 'java':
