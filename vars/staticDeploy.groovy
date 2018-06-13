@@ -5,6 +5,10 @@ def call(String componentName, String deployEnvironment, String deployVersion, S
     static final BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/static-deploy'
     static final PLAYBOOK_PATH = 'ansible/role-based_playbooks/static-deploy.yml'
 
+    echo "1111111"
+    echo nextivaRepo
+    echo "2222222"
+
     def nextivaRepo = nextivaRepo.equals(null) ? deployEnvironment : nextivaRepo
 
     def repoDir = prepareRepoDir(RELEASE_MANAGEMENT_REPO_URL, RELEASE_MANAGEMENT_REPO_BRANCH)
