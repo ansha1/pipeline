@@ -1,0 +1,135 @@
+#!groovy
+@Library('pipelines') _
+
+
+import static com.nextiva.SharedJobsStaticVars.*
+import com.nextiva.*
+
+APP_NAME = 'js-ui-component'
+HEALTHCHECK_URL = 'http://js-modules.nextiva.xyz/js-ui-component/build.properties'
+CHANNEL_TO_NOTIFY = 'js-ui-component'
+
+//noinspection GroovyAssignabilityCheck
+pipeline {
+
+    agent { label "nodejs" }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
+    }
+
+    stages {
+        stage('Set additional properties') {
+            steps {
+                script {
+                    BUILD_VERSION = new JsUtils().getVersion()
+                }
+            }
+        }
+        stage('Info') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+                sh 'env'
+                print "APP_NAME: ${APP_NAME}"
+                print "BUILD_VERSION: ${BUILD_VERSION}"
+            }
+        }
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Parallel tests') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                        sh 'npm run lint'
+                    }
+                }
+                stage('Test') {
+                    steps {
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+        stage('Sonar analyzing') {
+            steps {
+                script {
+                    sonarScanner(BUILD_VERSION)
+                }
+            }
+        }
+        stage('Parallel builds') {
+            parallel {
+                stage('Dist') {
+                    steps {
+                        sh 'npm run dist'
+                    }
+                }
+                stage('Build storybook') {
+                    steps {
+                        sh 'npm run build-storybook'
+                    }
+                }
+            }
+        }
+        /*stage('Publish') {
+            when {
+                expression {
+                    env.BRANCH_NAME ==~ /^master$/
+                }
+            }
+            steps {
+                sh 'npm publish'
+            }
+        }*/
+        /*
+        Building and upload static assets package of js module storybook to Nexus
+        */
+        stage('Publish to Nexus') {
+            when {
+                expression {
+                    env.BRANCH_NAME ==~ /^master$/
+                }
+            }
+            steps {
+                script {
+                    archiveToNexus('dev', 'storybook-static', BUILD_VERSION, APP_NAME)
+                }
+            }
+        }
+        /*
+        Deploying static assets package of js module storybook to http://js-modules.nextiva.xyz
+        */
+        stage('Deploy to Nginx') {
+            when {
+                expression {
+                    env.BRANCH_NAME ==~ /^master$/
+                }
+            }
+            steps {
+                script {
+                    staticDeploy(APP_NAME, 'dev', BUILD_VERSION)
+                    healthCheck(HEALTHCHECK_URL)
+                }
+            }
+        }
+    }
+    post {
+        always {
+            publishHTML([allowMissing: true,
+                alwaysLinkToLastBuild: false,
+                keepAll              : false,
+                reportDir            : '.',
+                reportFiles          : 'test-report.html',
+                reportName           : 'Test Report',
+                reportTitles         : ''])
+            slackNotify(CHANNEL_TO_NOTIFY)
+        }
+    }
+}
