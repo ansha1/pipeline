@@ -1,4 +1,5 @@
-@Library('pipelines@develop') _
+@Library('pipelines') _
+
 
 jobTemplate {
 
