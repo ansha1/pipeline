@@ -75,11 +75,12 @@ def runDownstreamJobs() {
 
     //TODO:add building release start/release finish jobs for this projects before starting multibranch job
 
-    parallel javaIntegration: {
-        build job: 'nextiva-pipeline-tests/test-java-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
-    }, jsIntegration: {
+    parallel  jsIntegration: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }, pythonLibIntegration: {
         build job: 'nextiva-pipeline-tests/test-python-lib/master', parameters: [string(name: 'deploy_version', value: '')]
     }
+//    }, javaIntegration: {
+//        build job: 'nextiva-pipeline-tests/test-java-pipeline/develop', parameters: [string(name: 'deploy_version', value: '')]
+//    }
 }
