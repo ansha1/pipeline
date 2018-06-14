@@ -89,7 +89,7 @@ pipeline {
             }
             steps {
                 script {
-                    archiveToNexus('test', 'storybook-static', BUILD_VERSION, APP_NAME)
+                    archiveToNexus('dev', 'storybook-static', BUILD_VERSION, APP_NAME)
                 }
             }
         }
