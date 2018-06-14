@@ -34,6 +34,8 @@ pipeline {
                 sh 'node -v'
                 sh 'npm -v'
                 sh 'env'
+                print "APP_NAME: ${APP_NAME}"
+                print "BUILD_VERSION: ${BUILD_VERSION}"
             }
         }
         stage('Install') {
@@ -41,14 +43,18 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Lint') {
-            steps {
-                sh 'npm run lint'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'npm test'
+        stage('Parallel tests') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                        sh 'npm run lint'
+                    }
+                }
+                stage('Test') {
+                    steps {
+                        sh 'npm test'
+                    }
+                }
             }
         }
         stage('Sonar analyzing') {
@@ -58,14 +64,18 @@ pipeline {
                 }
             }
         }
-        stage('Dist') {
-            steps {
-                sh 'npm run dist'
-            }
-        }
-        stage('Build storybook') {
-            steps {
-                sh 'npm run build-storybook'
+        stage('Parallel builds') {
+            parallel {
+                stage('Dist') {
+                    steps {
+                        sh 'npm run dist'
+                    }
+                }
+                stage('Build storybook') {
+                    steps {
+                        sh 'npm run build-storybook'
+                    }
+                }
             }
         }
         /*stage('Publish') {
