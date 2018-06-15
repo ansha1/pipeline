@@ -1,0 +1,29 @@
+@Library('pipelines') _
+
+
+jobTemplate {
+
+    APP_NAME = 'js-app'
+    BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/static-deploy/'
+    PLAYBOOK_PATH = 'ansible/role-based_playbooks/static-deploy.yml'
+    CHANNEL_TO_NOTIFY = 'js-app'
+
+    ansibleEnvMap = [dev       : "dev",
+                     qa        : "rc",
+                     production: "production"]
+
+    projectFlow = ['language'    : 'js',
+                   'testCommands': '''
+                                   npm install
+                                   npm run lint
+                                   npm run test:coverage
+                                   ''']
+
+    healthCheckMap = [dev       : ["http://dev.dev.nextiva.xyz/apps/js-app/build.properties"],
+                      qa        : ["http://rc.rc.nextiva.xyz/apps/js-app/build.properties"],
+                      production: ["http://nextiva.nextos.com/apps/js-app/build.properties"]]
+
+    branchPermissionsMap = [dev       : ["authenticated"],
+                            qa        : ["first_user", "second_user"],
+                            production: ["first_user", "second_user"]]
+}
