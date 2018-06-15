@@ -19,7 +19,7 @@ def call(body) {
         cleanWs()
 
         timestamps {
-            timeout(time: 250, unit: 'MINUTES') {
+            timeout(time: 240, unit: 'MINUTES') {
                 stage("checkout") {
                     git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
                 }
