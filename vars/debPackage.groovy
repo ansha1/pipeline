@@ -127,7 +127,7 @@ def isDebPackageExists(String packageName, String packageVersion, String deployE
         println "Deb package ${packageName} with version ${packageVersion} exists in Nexus."
         return true
     }
-    esle {
+    else {
         println "Deb package ${packageName} with version ${packageVersion} not found in Nexus."
         return false
     }
