@@ -116,10 +116,10 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
 }
 
 
-def isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
+Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
-    index_char = packageName.substring(0,1)
+    def index_char = packageName.substring(0,1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     def status = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
     
