@@ -121,9 +121,9 @@ def isDebPackageExists(String packageName, String packageVersion, String deployE
 
     index_char = packageName.substring(0,1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
-    def output = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
+    def status = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
     
-    if ( output.size() != 0 ) {
+    if ( status == 0 ) {
         println "Deb package ${packageName} with version ${packageVersion} exists in Nexus."
         return true
     }
