@@ -89,7 +89,8 @@ def call(body) {
                     script {
                         utils.runTests(jobConfig.projectFlow)
 
-                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
+                        if (BRANCH_NAME ==~ /^(dev)$/ & jobConfig.projectFlow.language.equals('python')){
+//                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
                             stage('Veracode analyzing'){
                                 build job: 'VeracodeScan',
                                         parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
