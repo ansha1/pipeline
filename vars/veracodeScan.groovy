@@ -6,8 +6,8 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    APP_NAME = pipelineParams.appName
-    BUILD_VERSION = pipelineParams.appName
+    appName = pipelineParams.appName
+    buildVersion = pipelineParams.buildVersion
     repoUrl = pipelineParams.repoUrl
     repoBranch = pipelineParams.repoBranch
 
@@ -21,16 +21,16 @@ def call(body) {
             git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
         }
         stage("create archive") {
-            sh "zip -rv9 ${APP_NAME}-${BUILD_VERSION}.zip . -i '*.py' '*.html' '*.htm'"
+            sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
         }
         stage("start veracode scan") {
             withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                 veracode applicationName: 'NextOS Platform (CRM)',
                         criticality: 'VeryHigh',
-                        fileNamePattern: "${APP_NAME}-${BUILD_VERSION}.zip",
-                        scanIncludesPattern: "${APP_NAME}-${BUILD_VERSION}.zip",
-                        scanName: "${APP_NAME}-${BUILD_VERSION}", timeout: 240,
-                        uploadIncludesPattern: "${APP_NAME}-${BUILD_VERSION}.zip",
+                        fileNamePattern: "${appName}-${buildVersion}.zip",
+                        scanIncludesPattern: "${appName}-${buildVersion}.zip",
+                        scanName: "${appName}-${buildVersion}", timeout: 240,
+                        uploadIncludesPattern: "${appName}-${buildVersion}.zip",
                         vuser: USERNAME, vpassword: PASSWORD
             }
         }
