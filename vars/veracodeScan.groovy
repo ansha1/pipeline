@@ -15,23 +15,28 @@ def call(body) {
         properties properties: [
                 disableConcurrentBuilds()
         ]
+
         cleanWs()
 
-        stage("checkout") {
-            git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
-        }
-        stage("create archive") {
-            sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
-        }
-        stage("start veracode scan") {
-            withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                veracode applicationName: 'NextOS Platform (CRM)',
-                        criticality: 'VeryHigh',
-                        fileNamePattern: "${appName}-${buildVersion}.zip",
-                        scanIncludesPattern: "${appName}-${buildVersion}.zip",
-                        scanName: "${appName}-${buildVersion}", timeout: 240,
-                        uploadIncludesPattern: "${appName}-${buildVersion}.zip",
-                        vuser: USERNAME, vpassword: PASSWORD
+        timestamps {
+            timeout(time: 250, unit: 'MINUTES') {
+                stage("checkout") {
+                    git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
+                }
+                stage("create archive") {
+                    sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
+                }
+                stage("start veracode scan") {
+                    withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        veracode applicationName: 'NextOS Platform (CRM)',
+                                criticality: 'VeryHigh',
+                                fileNamePattern: "${appName}-${buildVersion}.zip",
+                                scanIncludesPattern: "${appName}-${buildVersion}.zip",
+                                scanName: "${appName}-${buildVersion}", timeout: 240,
+                                uploadIncludesPattern: "${appName}-${buildVersion}.zip",
+                                vuser: USERNAME, vpassword: PASSWORD
+                    }
+                }
             }
         }
     }
