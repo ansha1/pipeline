@@ -1,4 +1,6 @@
 import com.nextiva.*
+import static com.nextiva.SharedJobsStaticVars.*
+
 
 def call(body) {
 
@@ -12,16 +14,24 @@ def call(body) {
                             production: "production"]
 
     projectFlow = pipelineParams.projectFlow
-    healthCheckMap = pipelineParams.healthCheckMap
+    extraEnvs = pipelineParams.extraEnvs.equals(null) ? [:] : pipelineParams.extraEnvs
+    healthCheckMap = pipelineParams.healthCheckMap.equals(null) ? [:] : pipelineParams.healthCheckMap
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
+    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
+    buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
+    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
     APP_NAME = pipelineParams.APP_NAME
+    nodeLabel = pipelineParams.nodeLabel.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.nodeLabel
+    ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
+    ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
-
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+    defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY) : LIST_OF_DEFAULT_BRANCH_PATTERNS]
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -45,7 +55,7 @@ def call(body) {
             break
         case ~/^hotfix\/.+$/:
             ANSIBLE_ENV = 'none'
-            healthCheckUrl = ["none"]
+            healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
@@ -57,29 +67,35 @@ def call(body) {
             break
         default:
             ANSIBLE_ENV = 'none'
-            healthCheckUrl = ["none"]
+            healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev')
+            DEPLOY_ENVIRONMENT = ''
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    INVENTORY_PATH = BASIC_INVENTORY_PATH + ANSIBLE_ENV
+    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
+
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    echo('\n\n==============Job config complete ====================\n\n')
+    echo('\n\n==============Job config complete ==================\n\n')
+    echo("nodeLabel: ${nodeLabel}\n")
     echo("APP_NAME: ${APP_NAME}\n")
+    echo("ansibleRepo: ${ansibleRepo}\n")
+    echo("ansibleRepoBranch: ${ansibleRepoBranch}\n")
     echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
     echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
     echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
+    echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
     echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
-    echo("CHANNEL_TO_NOTIFY: ${CHANNEL_TO_NOTIFY}\n")
+    echo("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}\n")
     echo("healthCheckUrl:")
     healthCheckUrl.each { print(it) }
-    echo('\n======================================================\n')
+    echo('\n======================================================\n\n')
 }
 
 
@@ -88,30 +104,25 @@ def getUtils() {
 }
 
 
-void setBuildVersion(String userDefinedBuildVersion) {
-
-    if (!userDefinedBuildVersion) {
-        version = utils.getVersion()
-        DEPLOY_ONLY = false
-        echo('===========================')
-        echo('Source Defined Version = ' + version)
-    } else {
+void setBuildVersion(String userDefinedBuildVersion = null) {
+    if (userDefinedBuildVersion) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
-        echo('===========================')
-        echo('User Defined Version = ' + version)
+    } else {
+        version = utils.getVersion()
+        DEPLOY_ONLY = false
     }
 
     if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "SNAPSHOT" + "-" + env.BUILD_ID
+        BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
     } else {
         BUILD_VERSION = version
     }
 
     echo('===============================')
-    echo('BUILD_VERSION ' + BUILD_VERSION)
+    echo('BUILD_VERSION: ' + BUILD_VERSION)
     echo('===============================')
-    print('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
     echo('===============================')
 }
 
@@ -132,12 +143,7 @@ Map getAnsibleExtraVars() {
                                   'static_assets_files': APP_NAME]
             break
         default:
-            error("""Incorrect programming language
-                                        please set one of the
-                                        supported languages:
-                                        java
-                                        python
-                                        js""")
+            error("Incorrect programming language, please set one of the supported languages: java, python, js")
             break
     }
 

@@ -2,6 +2,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
+
 def call(body) {
     def pipelineParams = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -9,23 +10,35 @@ def call(body) {
     body()
 
     jobConfig {
+        extraEnvs = pipelineParams.extraEnvs
         projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
+        jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
+        nodeLabel = pipelineParams.NODE_LABEL
         APP_NAME = pipelineParams.APP_NAME
+        ansibleRepo = pipelineParams.ANSIBLE_REPO
+        ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+        channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
+        buildNumToKeepStr = pipelineParams.buildNumToKeepStr
+        artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
     }
+
     def securityPermissions = jobConfig.branchProperties
+    def jobTimeoutMinutes = jobConfig.jobTimeoutMinutes
+    def buildNumToKeepStr = jobConfig.buildNumToKeepStr
+    def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent { label 'debian' }
+        agent { label jobConfig.nodeLabel }
 
         tools {
             jdk 'Java 8 Install automatically'
@@ -34,9 +47,10 @@ def call(body) {
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             disableConcurrentBuilds()
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
+            timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
+            buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
         }
 
         parameters {
@@ -50,6 +64,20 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
+
+                        env.APP_NAME = jobConfig.APP_NAME
+                        env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
+                        env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
+                        env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
+                        env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
+                        env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
+                        env.VERSION = jobConfig.version
+                        env.BUILD_VERSION = jobConfig.BUILD_VERSION
+
+                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+                        print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
+                        sh "printenv"
+                        print("\n\n ============================= \n")
                     }
                 }
             }
@@ -138,16 +166,12 @@ def call(body) {
                         }
                         steps {
                             script {
-                                runAnsiblePlaybook.releaseManagement(jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                stage('Wait until service is up') {
-                                    try {
-                                        for (int i = 0; i < jobConfig.healthCheckUrl.size; i++) {
-                                            healthCheck(jobConfig.healthCheckUrl[i])
-                                        }
-                                    }
-                                    catch (e) {
-                                        error('Service startup failed ' + e)
+                                if (jobConfig.healthCheckUrl.size > 0) {
+                                    stage('Wait until service is up') {
+                                        healthCheck.list(jobConfig.healthCheckUrl)
                                     }
                                 }
                             }
@@ -155,10 +179,34 @@ def call(body) {
                     }
                 }
             }
+            stage('QA integration tests') {
+                when {
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                }
+                steps {
+                    //after successfully deploy on environment start QA CORE TEAM Integration tests with this application
+                    build job: 'QA_Incoming_Integration',
+                            parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                                         string(name: 'env', value: jobConfig.ANSIBLE_ENV),
+                                         string(name: 'runId', value: '')],
+                            wait: false
+                }
+            }
         }
         post {
             always {
-                slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+                script {
+                    if (jobConfig.slackNotifictionScope.size() > 0) {
+                        jobConfig.slackNotifictionScope.each { channel, branches ->
+                            branches.each {
+                                if (env.BRANCH_NAME ==~ it) {
+                                    println('channel to notify is: ' + channel)
+                                    slackNotify(channel)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

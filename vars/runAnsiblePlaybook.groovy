@@ -36,19 +36,11 @@ def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars)
 
 def execute(String repoDir, String playbookContext, String playbookPath) {
     script {
-      	checkRCState()
+      	isRCLocked.checkState()
         stage('Run ansible playbook ' + playbookPath) {
             sh """
                 cd ${repoDir} && ansible-playbook ${playbookContext}
             """
         }
-    }
-}
-
-def checkRCState() {
-    // check if RC in locked state
-    if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
-        currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("\nAll RC deploy jobs are locked !!!\nPlease contact QA Core Team.\n")
     }
 }

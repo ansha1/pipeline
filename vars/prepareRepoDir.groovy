@@ -12,9 +12,13 @@ def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_
     def formattedBranch = branch.replace('/', '_')
     
     def finalRepoDir = sharedLibraryRepoDir + '/' + formattedRepo + '/' + formattedBranch
+    def lockableResource = "lock_" + NODE_NAME.replace(' ', '_') + "_" + finalRepoDir
+    println "lockableResource: " + lockableResource
     
-    dir(finalRepoDir) {
-        git branch: branch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repo
+    lock(lockableResource) {
+        dir(finalRepoDir) {
+            git branch: branch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repo
+        }
     }
 
     return finalRepoDir

@@ -1,9 +1,11 @@
 package com.nextiva
 
-import static SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.*
+import groovy.transform.Field
 
 
-final String pathToSrc
+@Field
+String pathToSrc = '.'
 
 
 String getVersion() {
@@ -36,10 +38,8 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    scannerHome = tool SharedJobsStaticVars.SONAR_QUBE_SCANNER
-
-    withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    dir(pathToSrc) {
+        sonarScanner(projectVersion)
     }
 }
 
@@ -51,10 +51,10 @@ void runTests(Map args) {
         def testCommands = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
-            sh(returnStdout: true, script: testCommands)
+            sh testCommands
         }
     } catch (e) {
-        error("Unit test fail ${e}")
+        error("ERROR: Unit test fail ${e}")
     } finally {
         publishHTML([allowMissing         : true,
                      alwaysLinkToLastBuild: false,
@@ -70,10 +70,11 @@ void runTests(Map args) {
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     print("\n\n build and publish Js \n\n ")
     print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
-    def buildCommands = args.get('buildCommands', 'export OUTPUT_PATH=dist/static && npm install && npm run dist')
+    def distPath = args.get('distPath', 'dist/static')
+    def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
 
     dir(pathToSrc) {
         sh(returnStdout: true, script: buildCommands)
-        archiveToNexus(environment, 'dist/static', buildVersion, appName)
+        archiveToNexus(environment, distPath, buildVersion, appName)
     }
 }

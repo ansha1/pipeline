@@ -1,9 +1,12 @@
 package com.nextiva
 
-import static SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.*
+import groovy.transform.Field
 
 
-final String pathToSrc
+@Field
+String pathToSrc = '.'
+
 
 String getVersion() {
     dir(pathToSrc) {
@@ -27,9 +30,19 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    scannerHome = tool SharedJobsStaticVars.SONAR_QUBE_SCANNER
-    withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    scannerHome = tool SONAR_QUBE_SCANNER
+
+    dir(pathToSrc) {
+        withSonarQubeEnv(SONAR_QUBE_ENV) {
+            sh 'mvn verify sonar:sonar'
+        }
+        timeout(time: 30, unit: 'MINUTES') {
+            def qg = waitForQualityGate()
+            if (qg.status != 'OK') {
+                print('Sonar Quality Gate failed')
+                // currentBuild.rawBuild.result = Result.UNSTABLE
+            }
+        }
     }
 }
 
@@ -39,9 +52,9 @@ void runTests(Map args) {
     def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
-            sh(returnStdout: true, script: testCommands)
+            sh testCommands
         } catch (e) {
-            error("Unit test fail ${e}")
+            error("ERROR: Unit test fail ${e}")
         } finally {
             junit '**/target/surefire-reports/*.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
@@ -58,7 +71,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
         try {
             sh(returnStdout: true, script: buildCommands)
         } catch (e) {
-            error("buildPublish  fail ${e}")
+            error("ERROR: buildPublish fail ${e}")
         }
     }
 }

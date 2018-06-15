@@ -1,15 +1,29 @@
 package com.nextiva
 
-import static SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.*
+import groovy.transform.Field
 
 
-final String pathToSrc
+@Field
+String pathToSrc = '.'
 
 
 String getVersion() {
     dir(pathToSrc) {
-        def buildProperties = readProperties file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        return buildProperties.version
+        if ( fileExists(BUILD_PROPERTIES_FILENAME) ) {
+            def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+            if ( buildProperties.version ){
+                return buildProperties.version
+            }
+            else {
+                currentBuild.rawBuild.result = Result.ABORTED
+                throw new hudson.AbortException("ERROR: Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+            }
+        }
+        else {
+            currentBuild.rawBuild.result = Result.ABORTED
+            throw new hudson.AbortException("ERROR: File ${BUILD_PROPERTIES_FILENAME} not found.")
+        }
     }
 }
 
@@ -17,12 +31,12 @@ String getVersion() {
 void setVersion(String version) {
     dir(pathToSrc) {
         String propsToWrite = ''
-        def buildProperties = readProperties file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+        def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
         buildProperties.version = version
         buildProperties.each {
             propsToWrite = propsToWrite + it.toString() + '\n'
         }
-        writeFile file: SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME, text: propsToWrite
+        writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
     }
 }
 
@@ -34,27 +48,40 @@ String createReleaseVersion(String version) {
 
 
 def runSonarScanner(String projectVersion) {
-    scannerHome = tool SharedJobsStaticVars.SONAR_QUBE_SCANNER
-
-    withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
-        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
+    dir(pathToSrc) {
+        sonarScanner(projectVersion)
     }
 }
 
 
 void runTests(Map args) {
     //TODO: add publish test report step
-    try {
-        print("\n\n Start unit tests Python \n\n")
-        def languageVersion = args.get('languageVersion', 'python3.6')
-        def testCommands = args.get('testCommands', 'python setup.py test')
 
-        dir(pathToSrc) {
-            pythonUtils.createVirtualEnv(languageVersion)
+    println('============================')
+    println('Start Python unit tests')
+    println('============================')
+    
+    def languageVersion = args.get('languageVersion', 'python3.6')
+    def testCommands = args.get('testCommands', '''pip install -r requirements.txt
+                                                       pip install -r requirements-test.txt
+                                                       python setup.py test''')
+    def testPostCommands = args.get('testPostCommands')
+
+    dir(pathToSrc) {
+        pythonUtils.createVirtualEnv(languageVersion)
+        try {
             pythonUtils.venvSh(testCommands)
+        } catch (e) {
+            error("Unit test fail ${e}")
+        } finally {
+            if(testPostCommands) {
+                println('============================')
+                println('Starting a cleanup after unit tests execution')
+                println('============================')
+                
+                pythonUtils.venvSh(testPostCommands)
+            }
         }
-    } catch (e) {
-        error("Unit test fail ${e}")
     }
 }
 
