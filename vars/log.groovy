@@ -1,4 +1,4 @@
-class Color(){
+class Color {
     static final END_CHAR = '\033[0m '
     static final YELLOW_BOLD = '\033[1;33m'
     static final BLUE_BOLD = '\033[1;34m'
