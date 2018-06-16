@@ -1,8 +1,8 @@
-def color(){
-    END_CHAR = '\033[0m '
-    YELLOW_BOLD = '\033[1;33m'
-    BLUE_BOLD = '\033[1;34m'
-    RED_BOLD = '\033[1;31m'
+class Color(){
+    static final END_CHAR = '\033[0m '
+    static final YELLOW_BOLD = '\033[1;33m'
+    static final BLUE_BOLD = '\033[1;34m'
+    static final RED_BOLD = '\033[1;31m'
 }
 
 def printAnsiColor(String message, String color) {
@@ -12,7 +12,7 @@ def printAnsiColor(String message, String color) {
 }
 
 def info(message) {
-    printAnsiColor('This is a Info message'. color.BLUE_BOLD)
+    printAnsiColor('This is a Info message'. Color.BLUE_BOLD)
 }
 
 def warning(message) {
