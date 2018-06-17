@@ -2,34 +2,67 @@ import groovy.transform.Field
 
 
 @Field
-static final END_CHAR = '\033[0m '
-@Field
-static final BLUE_BOLD = '\033[1;34m'
-@Field
-static final YELLOW_BOLD = '\033[1;33m'
-@Field
-static final RED_BOLD = '\033[1;31m'
-@Field
-static final GREEN_BOLD = '\033[1;32m'
+static final END_CHAR = '\033[0m'
+
 
 def call(String message) {
     print(message)
 }
 
-def printAnsiColor(String message, String color) {
+def printColor(String message) {
     ansiColor('xterm') {
-        echo "${color}${message}${END_CHAR}"
+        print(message)
     }
 }
 
 def info(message) {
-    printAnsiColor(message, GREEN_BOLD)
+    blueBold(message)
 }
 
 def warning(message) {
-    printAnsiColor(message, YELLOW_BOLD)
+    yellowBold(message)
 }
 
 def error(message) {
-    printAnsiColor(message, RED_BOLD)
+    redBold(message)
+}
+
+def blue(String message){
+    printColor("\033[34m${message}${END_CHAR}")
+}
+
+def green(String message){
+    printColor("\033[32m${message}${END_CHAR}")
+}
+
+def yellow(String message){
+    printColor("\033[33m${message}${END_CHAR}")
+}
+
+def red(String message){
+    printColor("\033[31m${message}${END_CHAR}")
+}
+
+def magneta(String message){
+    printColor("\033[35m${message}${END_CHAR}")
+}
+
+def blueBold(String message){
+    printColor("\033[1;34m${message}${END_CHAR}")
+}
+
+def greenBold(String message){
+    printColor("\033[1;32m${message}${END_CHAR}")
+}
+
+def yellowBold(String message){
+    printColor("\033[1;33m${message}${END_CHAR}")
+}
+
+def redBold(String message){
+    printColor("\033[1;31m${message}${END_CHAR}")
+}
+
+def magnetaBold(String message){
+    printColor("\033[1;35m${message}${END_CHAR}")
 }
