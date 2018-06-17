@@ -11,6 +11,10 @@ static final YELLOW_BOLD = '\033[1;33m'
 static final RED_BOLD = '\033[1;31m'
 
 
+def call(String message) {
+    print(message)
+}
+
 def printAnsiColor(String message, String color) {
     ansiColor('xterm') {
         echo "${color}${message}${END_CHAR}"
@@ -22,9 +26,9 @@ def info(message) {
 }
 
 def warning(message) {
-    printColor(message, YELLOW_BOLD)
+    printAnsiColor(message, YELLOW_BOLD)
 }
 
 def error(message) {
-    printColor(message, RED_BOLD)
+    printAnsiColor(message, RED_BOLD)
 }
