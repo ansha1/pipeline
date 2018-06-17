@@ -1,5 +1,8 @@
-END_CHAR = '\033[0m '
-BLUE_BOLD = '\033[1;34m'
+@Field
+String END_CHAR = '\033[0m '
+
+@Field
+String BLUE_BOLD = '\033[1;34m'
 
 class Color {
     static final YELLOW_BOLD = '\033[1;33m'
