@@ -1,3 +1,6 @@
+import groovy.transform.Field
+
+
 @Field
 String END_CHAR = '\033[0m '
 
