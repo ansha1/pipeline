@@ -14,7 +14,7 @@ class Color {
 
 def printAnsiColor(String message, String color) {
     ansiColor('xterm') {
-        echo "${color}${msg}${END_CHAR}"
+        echo "${color}${message}${END_CHAR}"
     }
 }
 
