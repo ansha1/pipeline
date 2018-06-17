@@ -13,7 +13,7 @@ def printAnsiColor(String message, String color) {
 }
 
 def info(message) {
-    printAnsiColor('This is a Info message'. BLUE_BOLD)
+    printAnsiColor('This is a Info message', BLUE_BOLD)
 }
 
 def warning(message) {
