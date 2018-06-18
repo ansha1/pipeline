@@ -43,14 +43,12 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/"', trim: true
-                        echo("releaseBranchList:\n${releaseBranchList}\n")
-                        // releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" | wc -l', trim: true
                         releaseBranchCount = releaseBranchList.split().size()
                         echo("Release branch count: <<${releaseBranchCount}>>")
 
                         if (releaseBranchCount.toInteger() > 0) {
                             echo('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
-
+                            echo("releaseBranchList:\n${releaseBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nRelease branch(es) already exist, please remove/merge all existing release branches and restart ReleaseStart Job!!!\n\n")
                         }
