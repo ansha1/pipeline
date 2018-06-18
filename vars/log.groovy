@@ -28,7 +28,7 @@ def error(message) {
 }
 
 def debug(message) {
-    if(params.DEBUG || env.DEBUG){
+    if(params.DEBUG || new Boolean(env.DEBUG){
         magnetaBold(message)
     }
 }
