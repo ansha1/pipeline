@@ -22,6 +22,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
         }
         tools {
             jdk 'Java 8 Install automatically'

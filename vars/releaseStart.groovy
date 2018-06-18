@@ -22,6 +22,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
         }
         tools {
             jdk 'Java 8 Install automatically'
@@ -46,9 +47,9 @@ def call(body) {
                         releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
 
                         if (releaseBranchCount.toInteger() > 0) {
-                            echo('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
-                            echo("Release branch count: <<${releaseBranchCount}>>")
-                            echo("List of release branches:\n${releaseBranchList}\n")
+                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
+                            log.error("Release branch count: <<${releaseBranchCount}>>")
+                            log.error("List of release branches:\n${releaseBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nRelease branch(es) already exist, please remove/merge all existing release branches and restart ReleaseStart Job!!!\n\n")
                         }
