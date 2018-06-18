@@ -42,7 +42,7 @@ def call(body) {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
 
-                        releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/"', trim: true
+                        releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/"'
                         releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
 
                         if (releaseBranchCount.toInteger() > 0) {
