@@ -82,20 +82,22 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    log.info('==============Job config complete ==================')
-    log.info("nodeLabel: ${nodeLabel}")
-    log.info("APP_NAME: ${APP_NAME}")
-    log.info("ansibleRepo: ${ansibleRepo}")
-    log.info("ansibleRepoBranch: ${ansibleRepoBranch}")
-    log.info("INVENTORY_PATH: ${INVENTORY_PATH}")
-    log.info("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
-    log.info("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
-    log.info("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
-    log.info("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
-    log.info("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}")
-    log.info("healthCheckUrl:")
-    healthCheckUrl.each { log.info("  - ${it}") }
-    log.info('======================================================')
+    log('')
+    log('============== Job config complete ==================')
+    log("nodeLabel: ${nodeLabel}")
+    log("APP_NAME: ${APP_NAME}")
+    log("ansibleRepo: ${ansibleRepo}")
+    log("ansibleRepoBranch: ${ansibleRepoBranch}")
+    log("INVENTORY_PATH: ${INVENTORY_PATH}")
+    log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
+    log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
+    log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
+    log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
+    log("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}")
+    log("healthCheckUrl:")
+    healthCheckUrl.each { log("  - ${it}") }
+    log('=====================================================')
+    log('')
 }
 
 
@@ -121,7 +123,6 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 
     log.info('===============================')
     log.info('BUILD_VERSION: ' + BUILD_VERSION)
-    log.info('===============================')
     log.info('DEPLOY_ONLY: ' + DEPLOY_ONLY)
     log.info('===============================')
 }

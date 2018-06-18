@@ -88,7 +88,9 @@ void runTests(Map args) {
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     log.info("Build and publish Python.")
-    log.info("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
 
     debPackage.build(appName, buildVersion, environment, pathToSrc)
     debPackage.publish(appName, environment, pathToSrc)

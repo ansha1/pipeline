@@ -61,7 +61,9 @@ void runTests(Map args) {
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     log.info("Build and publish JavaScript application.")
-    log.info("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
     def distPath = args.get('distPath', 'dist/static')
     def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
 

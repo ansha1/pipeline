@@ -65,7 +65,9 @@ void runTests(Map args) {
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     log.info("Build and publish Java application.")
-    log.info("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
     def buildCommands = args.get('buildCommands', 'mvn deploy --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {

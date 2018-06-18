@@ -77,7 +77,7 @@ def call(body) {
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         log.info("GLOBAL ENVIRONMENT VARIABLES:")
-                        sh "printenv"
+                        log.info(sh(script: "printenv", returnStdout: true))
                         log.info("=============================")
                     }
                 }
