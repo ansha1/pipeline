@@ -46,10 +46,10 @@ def call(body) {
                         releaseBranchCount = releaseBranchCount.trim()
                         echo("Release branch count: <<${releaseBranchCount}>>")
 
-                        if (releaseBranchCount.toInteger() == 0 || releaseBranchCount.toInteger() > 1) {
-                            echo('\n\nThere are either 0 or more than 1 release branch, please create/leave one and restart ReleaseStart Job!!!\n\n')
+                        if (releaseBranchCount.toInteger() > 0) {
+                            echo('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
                             currentBuild.rawBuild.result = Result.ABORTED
-                            throw new hudson.AbortException("\n\nThere are more then 1 release branches, please create/leave one and restart ReleaseStart Job!!!\n\n")
+                            throw new hudson.AbortException("\n\nRelease branch(es) exits, please remove/merge all existing release branches and restart ReleaseStart Job!!!\n\n")
                             break
                         }
                     }
