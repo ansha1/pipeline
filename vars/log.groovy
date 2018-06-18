@@ -28,8 +28,8 @@ def error(message) {
 }
 
 def debug(message) {
-    echo DEBUG
-    if(DEBUG){
+    echo params.DEBUG
+    if(params.DEBUG){
         magnetaBold(message)
     }
 }
