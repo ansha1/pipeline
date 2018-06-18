@@ -50,7 +50,6 @@ def call(body) {
                             echo('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nRelease branch(es) already exist, please remove/merge all existing release branches and restart ReleaseStart Job!!!\n\n")
-                            break
                         }
                     }
                 }
