@@ -32,7 +32,7 @@ def multiline(String prefix, String message) {
 }
 
 def info(message) {
-    blueBold( multiline("[INFO] ", message) )
+    blueBold("[INFO] " + message)
 }
 
 def warning(message) {
@@ -70,7 +70,7 @@ def magneta(String message) {
 }
 
 def blueBold(String message) {
-    print("\033[1;34m${message}${END_CHAR}")
+    printWithNoTrace("\033[1;34m${message}${END_CHAR}")
 }
 
 def greenBold(String message) {
