@@ -16,15 +16,15 @@ def printColor(String message) {
 }
 
 def info(message) {
-    blueBold(message)
+    blueBold("[INFO] " + message)
 }
 
 def warning(message) {
-    yellowBold(message)
+    yellowBold("[WARNING] " + message)
 }
 
 def error(message) {
-    redBold(message)
+    redBold("[ERROR]" + message)
 }
 
 def debug(message) {
@@ -33,7 +33,7 @@ def debug(message) {
     if(ttt){
         echo "TTT"
     }
-    if(params.DEBUG){
+    if(params.DEBUG || new Boolean("${env.DEBUG}")){
         magnetaBold(message)
     }
 }
