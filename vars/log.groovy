@@ -14,7 +14,8 @@ def isDebug(){
 }
 
 def printWithNoTrace(cmd) {
-    sh (script: '#!/bin/sh -e\n echo '+ cmd, returnStdout: true)
+    print("#!/bin/sh -e\n echo ${cmd}")
+    sh (script: "#!/bin/sh -e\n echo ${cmd}", returnStdout: false)
 }
 
 def multiline(String prefix, String message) {
