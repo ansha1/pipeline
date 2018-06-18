@@ -28,8 +28,8 @@ def error(message) {
 }
 
 def debug(message) {
-    echo env.DEBUG
-    if(params.DEBUG || new Boolean("${env.DEBUG}"){
+    echo "${env.DEBUG}"
+    if(params.DEBUG){
         magnetaBold(message)
     }
 }
