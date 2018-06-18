@@ -9,6 +9,10 @@ def call(String message) {
     print(message)
 }
 
+def isDebug(){
+    return params.DEBUG || new Boolean("${env.DEBUG}")
+}
+
 def info(message) {
     blueBold("[INFO] " + message)
 }
@@ -22,7 +26,7 @@ def error(message) {
 }
 
 def debug(message) {
-    if(params.DEBUG || new Boolean("${env.DEBUG}")){
+    if(isDebug()){
         magnetaBold("[DEBUG] " + message)
     }
 }
