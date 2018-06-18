@@ -5,6 +5,13 @@ import static com.nextiva.SharedJobsStaticVars.*
 //noinspection GroovyAssignabilityCheck
 pipeline {
     agent any
+
+    options {
+        timestamps()
+        skipStagesAfterUnstable()
+        ansiColor('xterm')
+    }
+
     tools {
         jdk 'Java 8 Install automatically'
         maven 'Maven 3.3.3 Install automatically'

@@ -4,12 +4,12 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 //noinspection GroovyAssignabilityCheck
 pipeline {
-
     agent any
 
     options {
         timestamps()
         skipStagesAfterUnstable()
+        ansiColor('xterm')
     }
 
     parameters {

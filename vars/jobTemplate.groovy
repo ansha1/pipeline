@@ -51,6 +51,7 @@ def call(body) {
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
+            ansiColor('xterm')
         }
 
         parameters {
