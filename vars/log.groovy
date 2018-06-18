@@ -13,41 +13,25 @@ def isDebug(){
     return params.DEBUG || new Boolean("${env.DEBUG}")
 }
 
-/*def printWithNoTrace(cmd) {
-    //print("#!/bin/sh -e\n echo ${cmd}")
-    sh (script: "#!/bin/sh -e\n echo \"${cmd}\"", returnStdout: false)
-}
-
-def multiline(String prefix, String message) {
-    def list = message.readLines()
-    def result = ''
-
-    list.eachWithIndex{line, index ->
-        result = "${result}${prefix}${line}"
-        printWithNoTrace(result)
-        if(index < list.size() - 1){
-            result = result + "\n"
-        }
-    } 
-    //return result
-}*/
-
 def info(message) {
     def list = message.readLines()
     list.each{blueBold("[INFO] " + it)}
 }
 
 def warning(message) {
-    yellowBold( multiline("[WARNING] ", message) )
+    def list = message.readLines()
+    list.each{yellowBold("[WARNING] " + it)}
 }
 
 def error(message) {
-    redBold( multiline("[ERROR] ", message) )
+    def list = message.readLines()
+    list.each{redBold("[ERROR] " + it)}
 }
 
 def debug(message) {
     if(isDebug()){
-        magnetaBold( multiline("[DEBUG] ", message) )
+        def list = message.readLines()
+        list.each{magnetaBold("[DEBUG] ", it)}
     }
 }
 
