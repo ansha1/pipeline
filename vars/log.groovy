@@ -24,17 +24,12 @@ def warning(message) {
 }
 
 def error(message) {
-    redBold("[ERROR]" + message)
+    redBold("[ERROR] " + message)
 }
 
 def debug(message) {
-    echo "${env.DEBUG}"
-    ttt = new Boolean("${env.DEBUG}")
-    if(ttt){
-        echo "TTT"
-    }
     if(params.DEBUG || new Boolean("${env.DEBUG}")){
-        magnetaBold(message)
+        magnetaBold("[DEBUG] " + message)
     }
 }
 
