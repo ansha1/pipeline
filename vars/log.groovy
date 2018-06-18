@@ -72,7 +72,7 @@ def magneta(String message) {
 }
 
 def blueBold(String message) {
-    printWithNoTrace("\033[1;34m${message}${END_CHAR}")
+    print("\033[1;34m${message}${END_CHAR}")
 }
 
 def greenBold(String message) {
