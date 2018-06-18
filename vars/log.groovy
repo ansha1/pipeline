@@ -13,21 +13,34 @@ def isDebug(){
     return params.DEBUG || new Boolean("${env.DEBUG}")
 }
 
+def multiline(String prefix, String message) {
+    def list = message.readLines()
+    def result = ''
+
+    list.eachWithIndex{line, index ->
+        result = "${result}${prefix}${line}"
+        if(index < list.size() - 1){
+            result = result + "\n"
+        }
+    } 
+    return result
+}
+
 def info(message) {
-    blueBold("[INFO] " + message)
+    blueBold( multiline("[INFO] ", message) )
 }
 
 def warning(message) {
-    yellowBold("[WARNING] " + message)
+    yellowBold( multiline("[WARNING] ", message) )
 }
 
 def error(message) {
-    redBold("[ERROR] " + message)
+    redBold( multiline("[ERROR] ", message) )
 }
 
 def debug(message) {
     if(isDebug()){
-        magnetaBold("[DEBUG] " + message)
+        magnetaBold( multiline("[DEBUG] ", message) )
     }
 }
 
