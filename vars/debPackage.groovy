@@ -121,6 +121,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
 
     def index_char = packageName.substring(0,1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
+    log.debug("Deb-package URL: " + nexusDebPackageUrl)
     def status = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
     
     if ( status == 0 ) {
