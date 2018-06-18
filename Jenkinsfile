@@ -25,7 +25,7 @@ node(DEFAULT_NODE_LABEL) {
 
                     stage('run unit tests') {
                         //TODO: add unit tests
-                        print('unit tests')
+                        echo 'unit tests'
                     }
 
                     stage('run downstream jobs') {

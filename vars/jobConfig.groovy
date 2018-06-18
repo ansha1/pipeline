@@ -39,7 +39,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
-            log.warning('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
+            //log('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
             break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
