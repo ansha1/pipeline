@@ -45,7 +45,7 @@ def call(body) {
                         releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/"', trim: true
                         echo("releaseBranchList: ${releaseBranchList}\n")
                         // releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" | wc -l', trim: true
-                        releaseBranchCount = releaseBranchList.size()
+                        releaseBranchCount = releaseBranchList.split().size()
                         echo("Release branch count: <<${releaseBranchCount}>>")
 
                         if (releaseBranchCount.toInteger() > 0) {
