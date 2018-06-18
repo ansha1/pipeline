@@ -25,7 +25,7 @@ node(DEFAULT_NODE_LABEL) {
 
                     stage('run unit tests') {
                         //TODO: add unit tests
-                        log.info('unit tests')
+                        print('unit tests')
                     }
 
                     stage('run downstream jobs') {
@@ -56,20 +56,20 @@ def changeSharedLibBranch(String libBranch) {
         }
     }
     testFolder.save()
-    log.info('pipeline branch changed to ' + libBranch)
+    print('pipeline branch changed to ' + libBranch)
 }
 
 String getSoruceBranchFromPr(String url) {
 
-    log.info("Received PR url: ${url}")
+    print("Received PR url: ${url}")
     prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-    log.info("Transform Url for access via rest api: ${prUrl}")
+    print("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     def props = readJSON text: prResponce.content
 
     def sourceBranch = props.fromRef.displayId.trim()
-    log.info("SourceBranch: ${sourceBranch}")
+    print("SourceBranch: ${sourceBranch}")
 
     return sourceBranch
 }
