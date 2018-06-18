@@ -14,7 +14,7 @@ def build(String appName, String buildVersion, String extraPath='.') {
 
 def execute(def customImage, def commandToRun, String args='-u root') {
     customImage.inside("${args}") {
-        echo "Running command ${commandToRun}"
+        log.info("Running command ${commandToRun}")
         sh "${commandToRun}"
     }
 }

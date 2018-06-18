@@ -26,7 +26,7 @@ def build(String packageName, String version, String deployEnvironment, String e
     def buildLocation = ''
 
     if ( extraPath ) {
-        println "We are going to build within " + extraPath
+        log.info("We are going to build within " + extraPath)
         pathToDebianFolder = WORKSPACE + "/" + extraPath + "/" + "debian"
         buildLocation = WORKSPACE + "/" + extraPath
     }
@@ -87,23 +87,23 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
     }
 
     def nexusDebRepoUrl = NEXUS_DEB_PKG_REPO_URL + deployEnvironment + "/"
-    println "nexusDebRepoUrl: " + nexusDebRepoUrl
+    log.info("nexusDebRepoUrl: " + nexusDebRepoUrl)
 
     if ( deployEnvironment in LIST_OF_ENVS ) {
-        println "Deploy deb-package to Nexus (repo: " + deployEnvironment + ")"
+        log.info("Deploy deb-package to Nexus (repo: " + deployEnvironment + ")")
 
         // get build version from build.properties file
         dir(buildLocation) {
             def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
             def getBuildVersion = buildProperties.build_version
-            println getBuildVersion
+            log.info(getBuildVersion)
             def debName = sh(returnStdout: true, script: """ls -1 ../${packageName}_${getBuildVersion}*.deb""").trim()
-            println "FOUND deb-package: " + debName
+            log.info("FOUND deb-package: " + debName)
 
             // upload deb-package to Nexus 3
             def isDeployedToNexus = sh(returnStatus: true, script: """curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
                                     --data-binary @${debName} ${nexusDebRepoUrl}""")
-            println "Deployment to Nexus finished with status: " + isDeployedToNexus
+            log.info("Deployment to Nexus finished with status: " + isDeployedToNexus)
             if ( isDeployedToNexus != 0 ) {
                 currentBuild.rawBuild.result = Result.ABORTED
                 throw new hudson.AbortException("ERROR: There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
@@ -124,11 +124,11 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def status = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
     
     if ( status == 0 ) {
-        println "Deb package ${packageName} with version ${packageVersion} exists in Nexus."
+        log.info("Deb package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
     }
     else {
-        println "Deb package ${packageName} with version ${packageVersion} not found in Nexus."
+        log.info("Deb package ${packageName} with version ${packageVersion} not found in Nexus.")
         return false
     }
 }

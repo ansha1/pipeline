@@ -34,8 +34,8 @@ pipeline {
                 sh 'node -v'
                 sh 'npm -v'
                 sh 'env'
-                print "APP_NAME: ${APP_NAME}"
-                print "BUILD_VERSION: ${BUILD_VERSION}"
+                log.info("APP_NAME: ${APP_NAME}")
+                log.info("BUILD_VERSION: ${BUILD_VERSION}")
             }
         }
         stage('Install') {

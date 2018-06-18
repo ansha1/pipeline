@@ -29,7 +29,7 @@ def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars)
     def playbookContext = '-i ' + inventoryPath + ' ' + playbookPath +
                           ' --vault-password-file ' + ANSIBLE_PASSWORD_PATH + generateExtraVars
 
-    println "playbookContext: " + playbookContext
+    log.info("playbookContext: " + playbookContext)
 
     return playbookContext
 }

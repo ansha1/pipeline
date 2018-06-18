@@ -78,11 +78,11 @@ def prepareVersion(String projectType) {
                 if (projectVersion.endsWith("-SNAPSHOT")) {
                     releaseVersion = projectVersion - "-SNAPSHOT"
                 } else {
-                    error("ERROR: Branch contains non-snapshot version: " + projectVersion)
+                    error("Branch contains non-snapshot version: " + projectVersion)
                 }
             } else {
                 if (!releaseVersion =~ (/^\d+\.\d+\.\d+$/)) {
-                    error("ERROR: Invalid release version: " + releaseVersion)
+                    error("Invalid release version: " + releaseVersion)
                 }
             }
 
@@ -93,7 +93,7 @@ def prepareVersion(String projectType) {
             if (patch.isNumber()) {
                 developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0" + "-SNAPSHOT"
             } else {
-                error("ERROR: Invalid version: " + projectVersion)
+                error("Invalid version: " + projectVersion)
             }
             break
         case 'javascript':

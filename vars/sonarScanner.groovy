@@ -12,12 +12,12 @@ def call(String projectVersion='0.1.0') {
         timeout(time: 10, unit: 'MINUTES') {
             def qg = waitForQualityGate()
             if (qg.status != 'OK') {
-                print('Sonar Quality Gate failed')
+                log.warning('Sonar Quality Gate failed')
                 // currentBuild.rawBuild.result = Result.UNSTABLE
             }
         }
     } catch (e) {
-        print e
+        log.warning(e)
         currentBuild.rawBuild.result = Result.UNSTABLE
     }
 }

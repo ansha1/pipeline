@@ -48,12 +48,12 @@ def call(body) {
             stage('Collecting release version') {
                 steps {
                     script {
-                        echo "\nUserDefinedReleaseVersion: ${userDefinedReleaseVersion}\n"
+                        log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+.\d+)$/) {
-                            echo("\n\nSelected release version: ${releaseVersion}")
+                            log.info("Selected release version: ${releaseVersion}")
                         } else {
                             error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')

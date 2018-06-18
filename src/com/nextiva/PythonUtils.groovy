@@ -57,9 +57,9 @@ def runSonarScanner(String projectVersion) {
 void runTests(Map args) {
     //TODO: add publish test report step
 
-    println('============================')
-    println('Start Python unit tests')
-    println('============================')
+    log.info('============================')
+    log.info('Start Python unit tests')
+    log.info('============================')
     
     def languageVersion = args.get('languageVersion', 'python3.6')
     def testCommands = args.get('testCommands', '''pip install -r requirements.txt
@@ -75,9 +75,9 @@ void runTests(Map args) {
             error("Unit test fail ${e}")
         } finally {
             if(testPostCommands) {
-                println('============================')
-                println('Starting a cleanup after unit tests execution')
-                println('============================')
+                log.info('============================')
+                log.info('Starting a cleanup after unit tests execution')
+                log.info('============================')
                 
                 pythonUtils.venvSh(testPostCommands)
             }
@@ -87,8 +87,8 @@ void runTests(Map args) {
 
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
-    print("\n\n build and publish Python \n\n ")
-    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("Build and publish Python.")
+    log.info("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
 
     debPackage.build(appName, buildVersion, environment, pathToSrc)
     debPackage.publish(appName, environment, pathToSrc)
