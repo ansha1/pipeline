@@ -41,6 +41,17 @@ def call(body) {
                 steps {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
+
+                        releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" | wc -l', trim: true
+                        releaseBranchCount = releaseBranchCount.trim()
+                        echo("Release branch count: <<${releaseBranchCount}>>")
+
+                        if (releaseBranchCount.toInteger() == 0 || releaseBranchCount.toInteger() > 1) {
+                            echo('\n\nThere are either 0 or more than 1 release branch, please create/leave one and restart ReleaseStart Job!!!\n\n')
+                            currentBuild.rawBuild.result = Result.ABORTED
+                            throw new hudson.AbortException("\n\nThere are more then 1 release branches, please create/leave one and restart ReleaseStart Job!!!\n\n")
+                            break
+                        }
                     }
                 }
             }
