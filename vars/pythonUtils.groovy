@@ -2,7 +2,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def createVirtualEnv(String pythonName='python', String venvDir=VENV_DIR) {
-    log.info('Create virtualenv (${venvDir})')
+    log.info("Create virtualenv (${venvDir})")
     sh(script: "virtualenv --python=${pythonName} ${venvDir}")
 }
 
