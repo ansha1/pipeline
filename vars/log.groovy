@@ -13,7 +13,7 @@ def isDebug(){
     return params.DEBUG || new Boolean("${env.DEBUG}")
 }
 
-def printWithNoTrace(cmd) {
+/*def printWithNoTrace(cmd) {
     //print("#!/bin/sh -e\n echo ${cmd}")
     sh (script: "#!/bin/sh -e\n echo \"${cmd}\"", returnStdout: false)
 }
@@ -25,15 +25,16 @@ def multiline(String prefix, String message) {
     list.eachWithIndex{line, index ->
         result = "${result}${prefix}${line}"
         printWithNoTrace(result)
-        /*if(index < list.size() - 1){
+        if(index < list.size() - 1){
             result = result + "\n"
-        }*/
+        }
     } 
     //return result
-}
+}*/
 
 def info(message) {
-    blueBold("[INFO] " + message)
+    def list = message.readLines()
+    list.each{blueBold("[INFO] " + it)}
 }
 
 def warning(message) {
