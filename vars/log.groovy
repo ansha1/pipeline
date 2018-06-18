@@ -29,6 +29,7 @@ def error(message) {
 
 def debug(message) {
     echo "${env.DEBUG}"
+    ttt = new Boolean("${env.DEBUG}")
     if(params.DEBUG){
         magnetaBold(message)
     }
