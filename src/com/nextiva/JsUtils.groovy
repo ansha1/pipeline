@@ -18,16 +18,8 @@ String getVersion() {
 
 void setVersion(String version) {
     dir(pathToSrc) {
-        def packageJson = readJSON file: "package.json"
-        def packageLockJson = readJSON file: "package-lock.json"
-
-        packageJson.version = version
-        packageLockJson.version = version
-
-        writeJSON file: "package.json", json: packageJson, pretty: 1
-        writeJSON file: "package-lock.json", json: packageLockJson, pretty: 1
-
-        print("\n Set version: ${packageJson.version}\n")
+        print("\n Set version: ${version}\n")
+        sh "npm version ${version} --no-git-tag-version"
     }
 }
 
