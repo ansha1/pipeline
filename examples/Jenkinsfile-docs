@@ -27,13 +27,13 @@ jobTemplate {
     * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
     * If the parameter is ommited the default ansible repo that will be used is http://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
     */
-    ANSIBLE_REPO = 'ssh://git@git.nextiva.xyz:7999/rel/ansible.git' 
+    // ANSIBLE_REPO = 'ssh://git@git.nextiva.xyz:7999/rel/ansible.git' 
 
     /*
     * ANSIBLE_REPO_BRANCH  - defines a branch name that will be used for ANSIBLE_REPO checkout. 
     * If the parameter is ommited the default branch 'dev' from ANSIBLE_REPO(release-management) will be used
     */
-    ANSIBLE_REPO_BRANCH = 'master'
+    // ANSIBLE_REPO_BRANCH = 'master'
 
     /* BASIC_INVENTORY_PATH defines a path to inventory files in ANSIBLE_REPO. This parameter is MANDATORY */
     BASIC_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/'
@@ -45,7 +45,7 @@ jobTemplate {
     * ANSIBLE_EXTRA_VARS - defines a list of extra parameters to pass to ansible playbook.
     * By default the parameters are defined in getAnsibleExtraVars() in http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy#130-151
     */
-    ANSIBLE_EXTRA_VARS = ['version': '', 'artifact_env': artifact_env]
+    // ANSIBLE_EXTRA_VARS = ['version': '', 'artifact_env': artifact_env]
 
     /* CHANNEL_TO_NOTIFY - is used to send all notification for all branches to the specified Slack channel */
     // CHANNEL_TO_NOTIFY = 'analytics'
@@ -87,7 +87,7 @@ jobTemplate {
     */
     projectFlow = ['language'         : 'python',
                    'languageVersion'  : 'python3.6'
-                   'pathToSrc'        : 'backend']
+                   // 'pathToSrc'        : 'backend']
 
     /* healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY */
     // healthCheckMap = [dev       : ["http://0.0.0.0:8080/health"],
