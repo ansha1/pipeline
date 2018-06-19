@@ -43,7 +43,13 @@ jobTemplate {
     channelToNotifyPerBranch = ['analytics-ci' : ['dev', 'hotfix/.+', 'PR.+', 'feature/.+'],
                                 'analytics' : ['master', 'release/.+']]
 
-    // ansibleEnvMap - defines a map of branches and corresponding ansible inventory env
+    /* 
+    * ansibleEnvMap - defines a map of branches and corresponding ansible inventory env
+    * If ommited the default value will be used:
+    * ansibleEnvMap = [dev : "dev",
+    *                  qa : "qa",
+    *                  production: "production"]
+    */
     ansibleEnvMap = [dev       : "dev",
                      qa        : "rc",
                      production: "beta"]
@@ -58,7 +64,7 @@ jobTemplate {
     *    language - defines a language that project use(Java, Python, JS)
     *    pathToSrc - defines a path to root sorce of your project relatively to base directory.
     *    buildCommands - list of the commands that will be performed on build step. If the parameter is omitted
-    *                    the default predefined tests from the appropriate class(pipelines/src/com/{JavaUtils,JsUtils,PythonUtils}.groovy) will be used
+    *                    the default predefined tests from the appropriate class(pipelines/src/com/(JavaUtils,JsUtils,PythonUtils).groovy) will be used
     *    distPath  - <JS only>: defines commands to perform on build step. The default value: "export OUTPUT_PATH=${distPath} && npm install && npm run dist"
     *    testCommands - list of the commands that should be perdormed on Test stage. If the parameter is omitted 
     *                   the default predefined tests from the appropriate class(pipelines/src/com/{JavaUtils,JsUtils,PythonUtils}.groovy) will be used
