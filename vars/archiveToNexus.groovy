@@ -10,7 +10,7 @@ def call(String deployEnvironment, String assetDir, String version, String packa
     if (deployEnvironment in LIST_OF_ENVS) {
       generateBuildProperties(deployEnvironment, version, jobName)
       print "111111111"
-      verboseParam = log.isDebug() : "" ? "--verbose"
+      //def verboseParam = log.isDebug() : "" ? "--verbose"
       print "222222222"
       sh """
           cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./
