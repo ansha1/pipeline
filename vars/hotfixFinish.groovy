@@ -26,7 +26,7 @@ def call(body) {
             skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
-            timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
+            timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
         }
         tools {
