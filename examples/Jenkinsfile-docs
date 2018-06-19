@@ -16,7 +16,7 @@ jobTemplate {
 
     APP_NAME = 'analytics' // APP_NAME - defines application name. This parameter is MANDATORY
     DEPLOY_ON_K8S = 'false' // DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted the default value is 'false'
-    NODE_LABEL = 'slave5' //  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted a random Jenkins node will be used
+    NODE_LABEL = 'slave5' //  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted label 'debian' will be used
 
     /* 
     * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
