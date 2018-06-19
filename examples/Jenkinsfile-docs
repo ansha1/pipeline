@@ -82,7 +82,7 @@ jobTemplate {
                       qa        : [],
                       production: []]
 
-    // branchPermissionsMap - defines a map with the default approvals for the approriate environments. This parameter is MANDATORY
+    // branchPermissionsMap - defines a map of ldap logins or ldap groups which can start/stop named branches(dev|release|master). This parameter is MANDATORY
     branchPermissionsMap = [dev       : ["authenticated"],
                             qa        : ["onovosad"],
                             production: ["onovosad"]]
