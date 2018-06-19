@@ -30,6 +30,8 @@ def call(body) {
                     withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         veracode applicationName: 'NextOS Platform (CRM)',
                                 criticality: 'VeryHigh',
+                                createSandbox: true,
+                                sandboxName: appName,
                                 fileNamePattern: "${appName}-${buildVersion}.zip",
                                 scanIncludesPattern: "${appName}-${buildVersion}.zip",
                                 scanName: "${appName}-${buildVersion}", timeout: 240,
