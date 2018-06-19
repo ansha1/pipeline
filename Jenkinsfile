@@ -24,8 +24,8 @@ node(DEFAULT_NODE_LABEL) {
                     }
 
                     stage('run unit tests') {
-                        //TODO: add unit tests
                         echo 'unit tests'
+                        sh './gradlew clean test'
                     }
 
                     stage('run downstream jobs') {
