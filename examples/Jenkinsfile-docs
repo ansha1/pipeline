@@ -87,7 +87,7 @@ jobTemplate {
     */
     projectFlow = ['language'         : 'python',
                    'languageVersion'  : 'python3.6'
-                   // 'pathToSrc'        : 'backend']
+                   'pathToSrc'        : 'backend']
 
     /* healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY */
     // healthCheckMap = [dev       : ["http://0.0.0.0:8080/health"],
