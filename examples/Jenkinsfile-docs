@@ -56,9 +56,6 @@ jobTemplate {
     *                  qa : "qa",
     *                  production: "production"]
     */
-    ansibleEnvMap = [dev       : "dev",
-                     qa        : "rc",
-                     production: "production"]
 
     /* 
     * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
@@ -85,13 +82,21 @@ jobTemplate {
                                          pytest --cov=. --cov-report=xml --junitxml=junit.xml --alluredir allure-results tests''',
                    'testPostCommands' : 'python tests/post_db_actions.py']
 
-    // healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY
-    healthCheckMap = [dev       : [],
-                      qa        : [],
-                      production: []]
+    /*
+    * healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY
+    * healthCheckMap = [dev       : [],
+    *                  qa        : [],
+    *                  production: []]
+    */
 
-    // branchPermissionsMap - defines a map of ldap logins or ldap groups which can start/stop named branches(dev|release|master). This parameter is MANDATORY
-    branchPermissionsMap = [dev       : ["authenticated"],
-                            qa        : ["onovosad"],
-                            production: ["onovosad"]]
+    /*
+    * branchPermissionsMap - defines a map of ldap logins or ldap groups which can start/stop named branches(dev|release|master). This parameter is MANDATORY
+    * branchPermissionsMap = [dev       : ["authenticated"],
+    *                        qa        : ["onovosad"],
+    *                        production: ["onovosad"]]
+    */
+
+    // jobTimeoutMinutes - defines the timeout for job execution. If the parameter is omitted the default timeout(30 mins) will be used
+    // buildNumToKeepStr - defines a number of builds to keep in thread. If the parameter is omitted the default value 7 will be used
+    // artifactNumToKeepStr - defines a number of artifacts to keep. If the parameter is omitted the default value 7 will be used
 }
