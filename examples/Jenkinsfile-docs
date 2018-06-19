@@ -69,7 +69,6 @@ jobTemplate {
     */
     projectFlow = ['language'         : 'python',
                    'pathToSrc'        : 'backend',
-                   'buildCommands'    :  ''    
                    'testCommands'     : '''pip install -U pip && pip install .[test]
                                          flake8 analytics tests || true
                                          pytest --cov=. --cov-report=xml --junitxml=junit.xml --alluredir allure-results tests''',
