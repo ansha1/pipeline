@@ -9,7 +9,7 @@ def call(String message) {
     print(message)
 }
 
-def isDebug() {
+Boolean isDebug() {
     return params.DEBUG || new Boolean("${env.DEBUG}")
 }
 
