@@ -32,11 +32,11 @@ pipeline {
         }
         stage('Info') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
-                sh 'env'
+                log.info(sh(script: 'node -v', returnStdout: true))
+                log.info(sh(script: 'npm -v', returnStdout: true))
                 log.info("APP_NAME: ${APP_NAME}")
                 log.info("BUILD_VERSION: ${BUILD_VERSION}")
+                log.info(sh(script: 'printenv', returnStdout: true))
             }
         }
         stage('Install') {

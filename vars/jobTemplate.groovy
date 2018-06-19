@@ -76,9 +76,9 @@ def call(body) {
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        log.info("GLOBAL ENVIRONMENT VARIABLES:")
-                        log.info(sh(script: "printenv", returnStdout: true))
-                        log.info("=============================")
+                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
+                        log.info(sh(script: 'printenv', returnStdout: true))
+                        log.info('=============================')
                     }
                 }
             }
