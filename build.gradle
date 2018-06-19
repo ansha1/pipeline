@@ -18,9 +18,7 @@ apply plugin: 'org.asciidoctor.convert'
 repositories {
     mavenCentral()
     jcenter()
-    flatDir {
-        dirs 'libs'
-    }
+    maven { url 'http://repo.jenkins-ci.org/releases/' }
 }
 
 group = "com.nextiva"
@@ -66,7 +64,7 @@ asciidoctor {
 }
 
 dependencies {
-    compile group: 'org.jenkins-ci.main', name: 'jenkins-core', version: '2.41'
+    compile group: 'org.jenkins-ci.main', name: 'jenkins-core', version: '2.47'
     compile 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.4.1'
