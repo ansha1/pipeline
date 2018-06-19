@@ -36,13 +36,13 @@ def runSonarScanner(String projectVersion) {
         withSonarQubeEnv(SONAR_QUBE_ENV) {
             sh 'mvn verify sonar:sonar'
         }
-        timeout(time: 30, unit: 'MINUTES') {
+        /*timeout(time: 30, unit: 'MINUTES') {
             def qg = waitForQualityGate()
             if (qg.status != 'OK') {
                 print('Sonar Quality Gate failed')
                 // currentBuild.rawBuild.result = Result.UNSTABLE
             }
-        }
+        }*/
     }
 }
 
