@@ -27,7 +27,7 @@ def call(body) {
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
-            buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
+            buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
         }
         tools {
             jdk 'Java 8 Install automatically'
