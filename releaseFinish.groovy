@@ -4,12 +4,12 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 //noinspection GroovyAssignabilityCheck
 pipeline {
-
     agent any
 
     options {
         timestamps()
         skipStagesAfterUnstable()
+        ansiColor('xterm')
     }
 
     parameters {
@@ -22,9 +22,9 @@ pipeline {
         stage('Prepare to finishing release') {
             steps {
                 script {
-                    echo('Check branch naming for compliance with git-flow')
+                    log.info('Check branch naming for compliance with git-flow')
                     if (params.releaseBranch ==~ /^(release\/\d+.\d+.\d+)$/) {
-                        echo('Parse release version')
+                        log.info('Parse release version')
                         releaseVersion = params.releaseBranch.replace("release/", "")
                     } else {
                         error('Wrong release branchName \n' +
@@ -32,7 +32,7 @@ pipeline {
                     }
 
                     if (params.developBranch ==~ /^(dev|develop)$/) {
-                        echo('Develop branch looks fine')
+                        log.info('Develop branch looks fine')
                     } else {
                         error('Wrong release branchName \n' +
                                 'please use git-flow naming convention')

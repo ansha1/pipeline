@@ -39,7 +39,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
-            echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
+            //log('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
             break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
@@ -82,20 +82,22 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    echo('\n\n==============Job config complete ==================\n\n')
-    echo("nodeLabel: ${nodeLabel}\n")
-    echo("APP_NAME: ${APP_NAME}\n")
-    echo("ansibleRepo: ${ansibleRepo}\n")
-    echo("ansibleRepoBranch: ${ansibleRepoBranch}\n")
-    echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
-    echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
-    echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
-    echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
-    echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
-    echo("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}\n")
-    echo("healthCheckUrl:")
-    healthCheckUrl.each { print(it) }
-    echo('\n======================================================\n\n')
+    log('')
+    log('============== Job config complete ==================')
+    log("nodeLabel: ${nodeLabel}")
+    log("APP_NAME: ${APP_NAME}")
+    log("ansibleRepo: ${ansibleRepo}")
+    log("ansibleRepoBranch: ${ansibleRepoBranch}")
+    log("INVENTORY_PATH: ${INVENTORY_PATH}")
+    log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
+    log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
+    log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
+    log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
+    log("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}")
+    log("healthCheckUrl:")
+    healthCheckUrl.each { log("  - ${it}") }
+    log('=====================================================')
+    log('')
 }
 
 
@@ -119,11 +121,10 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
         BUILD_VERSION = version
     }
 
-    echo('===============================')
-    echo('BUILD_VERSION: ' + BUILD_VERSION)
-    echo('===============================')
-    echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-    echo('===============================')
+    log.info('===============================')
+    log.info('BUILD_VERSION: ' + BUILD_VERSION)
+    log.info('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    log.info('===============================')
 }
 
 

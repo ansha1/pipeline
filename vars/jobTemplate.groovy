@@ -51,6 +51,7 @@ def call(body) {
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
+            ansiColor('xterm')
         }
 
         parameters {
@@ -75,9 +76,9 @@ def call(body) {
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
-                        sh "printenv"
-                        print("\n\n ============================= \n")
+                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
+                        log.info(sh(script: 'printenv', returnStdout: true))
+                        log.info('=============================')
                     }
                 }
             }
@@ -166,7 +167,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                echo("\n\nBUILD_VERSION: ${jobConfig.BUILD_VERSION}\n\n")
+                                log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
                             }
                         }
@@ -211,7 +212,7 @@ def call(body) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
-                                    println('channel to notify is: ' + channel)
+                                    log.info('channel to notify is: ' + channel)
                                     slackNotify(channel)
                                 }
                             }

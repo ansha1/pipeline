@@ -22,6 +22,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
@@ -49,11 +50,11 @@ def call(body) {
             stage('Collecting hotfix version') {
                 steps {
                     script {
-                        echo "\nUserDefinedHotfixVersion: ${hotfixVersion}\n"
+                        log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
                         hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
-                            echo("\n\nSelected hotfix version: ${hotfixVersion}")
+                            log.info("Selected hotfix version: ${hotfixVersion}")
                         } else {
                             error("""\n\nWrong hotfix version : ${hotfixVersion}
                                     please use git-flow naming convention\n\n""")

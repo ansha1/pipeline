@@ -22,6 +22,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
@@ -49,9 +50,9 @@ def call(body) {
                         releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
 
                         if (releaseBranchCount.toInteger() > 0) {
-                            echo('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
-                            echo("Release branch count: <<${releaseBranchCount}>>")
-                            echo("List of release branches:\n${releaseBranchList}\n")
+                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
+                            log.error("Release branch count: <<${releaseBranchCount}>>")
+                            log.error("List of release branches:\n${releaseBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nRelease branch(es) already exist, please remove/merge all existing release branches and restart ReleaseStart Job!!!\n\n")
                         }
@@ -62,12 +63,12 @@ def call(body) {
             stage('Collecting release version') {
                 steps {
                     script {
-                        echo "\nUserDefinedReleaseVersion: ${userDefinedReleaseVersion}\n"
+                        log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+.\d+)$/) {
-                            echo("\n\nSelected release version: ${releaseVersion}")
+                            log.info("Selected release version: ${releaseVersion}")
                         } else {
                             error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')

@@ -39,7 +39,7 @@ def runSonarScanner(String projectVersion) {
         /*timeout(time: 30, unit: 'MINUTES') {
             def qg = waitForQualityGate()
             if (qg.status != 'OK') {
-                print('Sonar Quality Gate failed')
+                log.warning('Sonar Quality Gate failed')
                 // currentBuild.rawBuild.result = Result.UNSTABLE
             }
         }*/
@@ -48,13 +48,13 @@ def runSonarScanner(String projectVersion) {
 
 
 void runTests(Map args) {
-    print("\n\n Start unit tests Java \n\n")
+    log.info("Start unit tests Java")
     def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
             sh testCommands
         } catch (e) {
-            error("ERROR: Unit test fail ${e}")
+            error("Unit test fail ${e}")
         } finally {
             junit '**/target/surefire-reports/*.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
@@ -64,14 +64,16 @@ void runTests(Map args) {
 
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
-    print("\n\n build and publish Java \n\n ")
-    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("Build and publish Java application.")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
     def buildCommands = args.get('buildCommands', 'mvn deploy --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
             sh(returnStdout: true, script: buildCommands)
         } catch (e) {
-            error("ERROR: buildPublish fail ${e}")
+            error("buildPublish fail ${e}")
         }
     }
 }

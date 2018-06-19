@@ -24,6 +24,7 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
@@ -54,40 +55,40 @@ def call(body) {
                                 .collect({ it.trim() })
                                 .findAll({ it ==~ /^origin\/hotfix\/\d+.\d+.\d+$/ })
 
-                        echo("Hotfix branch count: <<${hotfixBranches.size()}>>")
+                        log.info("Hotfix branch count: <<${hotfixBranches.size()}>>")
                         switch (hotfixBranches.size()) {
                             case 0:
-                                echo('There are no hotfix branches, please run HotfixStart Job first')
+                                log.error('There are no hotfix branches, please run HotfixStart Job first')
                                 currentBuild.rawBuild.result = Result.ABORTED
                                 throw new hudson.AbortException("\nThere no hotfix branches, please run HotfixStart Job first!!!\n")
                                 break
                             case 1:
                                 hotfixBranch = hotfixBranches[0].replace('origin/', '')
-                                echo('Find hotfix branch (' + hotfixBranch + ')\ncontinue...\n')
+                                log.info('Find hotfix branch (' + hotfixBranch + ')\ncontinue...\n')
                                 break
                             default:
-                                echo('\n\nThere are more then 1 hotfix branch, please remove all but one and restart HotfixFinish Job!!!\n\n')
+                                log.error('There are more then 1 hotfix branch, please remove all but one and restart HotfixFinish Job!!!')
                                 currentBuild.rawBuild.result = Result.ABORTED
                                 throw new hudson.AbortException("\n\nThere are more then 1 hotfix branches, please leave one and restart HotfixFinish Job!!!\n\n")
                                 break
                         }
 
-                        echo('Check branch naming for compliance with git-flow')
+                        log.info('Check branch naming for compliance with git-flow')
                         if (hotfixBranch ==~ /^(hotfix\/\d+.\d+.\d+)$/) {
-                            echo('Parse hotfix version')
+                            log.info('Parse hotfix version')
                             sh """
                                 git fetch
                                 git checkout ${hotfixBranch}
                             """
                             hotfixVersion = utils.getVersion()
-                            echo("\n\nFind hotfix version: ${hotfixVersion} \n\n")
+                            log.info("Found hotfix version: ${hotfixVersion}")
                         } else {
                             error("""\n\nWrong hotfix branch name: ${hotfixBranch}
                                     please use git-flow naming convention\n\n""")
                         }
 
                         if (developBranch ==~ /^(dev|develop)$/) {
-                            echo('Develop branch looks fine')
+                            log.info('Develop branch looks fine')
                         } else {
                             error("""\n\nWrong develop branch name : ${developBranch}
                                     please use git-flow naming convention\n\n""")
@@ -124,7 +125,7 @@ def call(body) {
                                 .findAll({ it ==~ /^origin\/release\/\d+.\d+.\d+$/ })
                                 .collect({ it.trim().replace("origin/", "") })
                         branches.add(developBranch)
-                        echo("Branches to merge to: ${branches}")
+                        log.info("Branches to merge to: ${branches}")
                         branches.each { branchToMerge ->
                             mergeBranch(repositoryUrl, hotfixBranch, branchToMerge, slackChannel, autoPullRequest)
                         }
@@ -162,7 +163,7 @@ def mergeBranch(repositoryUrl, source, destination, channelToNotify, autoPullReq
         """
         slackSend(color: '#00FF00', channel: channelToNotify, message: "merged ${source} into ${destination}")
     } catch (e) {
-        print e
+        log.warning(e)
         if (autoPullRequest) {
             def newBranch = "${source}-to-${destination}"
             sh """
