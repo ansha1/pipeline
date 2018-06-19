@@ -101,7 +101,8 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
             log.info("FOUND deb-package: " + debName)
 
             // upload deb-package to Nexus 3
-            def isDeployedToNexus = sh(returnStatus: true, script: """curl --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+            def verbose = log.isDebug() : "" ? "--verbose"
+            def isDeployedToNexus = sh(returnStatus: true, script: """curl ${verbose} --silent --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
                                     --data-binary @${debName} ${nexusDebRepoUrl}""")
             log.info("Deployment to Nexus finished with status: " + isDeployedToNexus)
             if ( isDeployedToNexus != 0 ) {
@@ -122,7 +123,8 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def index_char = packageName.substring(0,1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
-    def status = sh(returnStatus: true, script: "curl --silent --show-error --fail -I ${nexusDebPackageUrl}")
+    def verbose = log.isDebug() : "" ? "--verbose"
+    def status = sh(returnStatus: true, script: "curl ${verbose} --silent --show-error --fail -I ${nexusDebPackageUrl}")
     
     if ( status == 0 ) {
         log.info("Deb package ${packageName} with version ${packageVersion} exists in Nexus.")

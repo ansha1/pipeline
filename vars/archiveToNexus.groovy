@@ -9,10 +9,11 @@ def call(String deployEnvironment, String assetDir, String version, String packa
 
     if (deployEnvironment in LIST_OF_ENVS) {
       generateBuildProperties(deployEnvironment, version, jobName)
+      def verbose = log.isDebug() : "" ? "--verbose"
       sh """
           cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./
-          curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
-          curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
+          curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
+          curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
       """
     }
     else {
