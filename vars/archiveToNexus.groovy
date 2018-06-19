@@ -10,8 +10,6 @@ def call(String deployEnvironment, String assetDir, String version, String packa
     if (deployEnvironment in LIST_OF_ENVS) {
         generateBuildProperties(deployEnvironment, version, jobName)
 
-        def verboseParam = log.isDebug() : "" ? "--verbose"
-
         def verbose = ''
         if( log.isDebug() ) {
             verbose = "--verbose"
