@@ -24,6 +24,9 @@ def call(body) {
             timestamps()
             skipStagesAfterUnstable()
             ansiColor('xterm')
+            disableConcurrentBuilds()
+            timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
+            buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
         }
         tools {
             jdk 'Java 8 Install automatically'
