@@ -12,14 +12,15 @@ def call(String deployEnvironment, String assetDir, String version, String packa
 
         def verboseParam = log.isDebug() : "" ? "--verbose"
 
-        /*if( !log.isDebug() ) {
-            verboseParam = "--verbose"
-        }*/
+        def verbose = ''
+        if( log.isDebug() ) {
+            verbose = "--verbose"
+        }
 
         sh """
             cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./
-            curl ${verboseParam} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
-            curl ${verboseParam} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
+            curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
+            curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
         """
     }
     else {
