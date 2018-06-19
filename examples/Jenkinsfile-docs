@@ -86,16 +86,13 @@ jobTemplate {
     *    testPostCommands - list of the commands that should be performed as post step after test execution
     */
     projectFlow = ['language'         : 'python',
-                   'pathToSrc'        : 'backend',
-                   'testCommands'     : '''pip install -U pip && pip install .[test]
-                                         flake8 analytics tests || true
-                                         pytest --cov=. --cov-report=xml --junitxml=junit.xml --alluredir allure-results tests''',
-                   'testPostCommands' : 'python tests/post_db_actions.py']
+                   'languageVersion'  : 'python3.6'
+                   'pathToSrc'        : 'backend']
 
     /* healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY */
-    // healthCheckMap = [dev       : [],
-    //                   qa        : [],
-    //                   production: []]
+    // healthCheckMap = [dev       : ["http://0.0.0.0:8080/health"],
+    //                   qa        : ["http://0.0.0.0:8080/health"],
+    //                   production: ["http://0.0.0.0:8080/health"]]
 
     /* branchPermissionsMap - defines a map of ldap logins or ldap groups which can start/stop named branches(dev|release|master). This parameter is MANDATORY */
     // branchPermissionsMap = [dev       : ["authenticated"],
