@@ -14,7 +14,8 @@
 */
 jobTemplate {
 
-    APP_NAME = 'analytics' /* APP_NAME - defines application name. This parameter is MANDATORY */
+    /* APP_NAME - defines application name. This parameter is MANDATORY */
+    APP_NAME = 'analytics' 
 
     /* DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted the default value is 'false' */
     // DEPLOY_ON_K8S = 'false'
@@ -33,8 +34,12 @@ jobTemplate {
     * If the parameter is ommited the default branch 'dev' from ANSIBLE_REPO(release-management) will be used
     */
     ANSIBLE_REPO_BRANCH = 'master'
-    BASIC_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/' /* BASIC_INVENTORY_PATH defines a path to inventory files in ANSIBLE_REPO. This parameter is MANDATORY */
-    PLAYBOOK_PATH = 'analytics_playbook/api-server.yml' /* PLAYBOOK_PATH defines a path to ansible playbook in ANSIBLE_REPO. This parameter is MANDATORY */
+
+    /* BASIC_INVENTORY_PATH defines a path to inventory files in ANSIBLE_REPO. This parameter is MANDATORY */
+    BASIC_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/'
+
+    /* PLAYBOOK_PATH defines a path to ansible playbook in ANSIBLE_REPO. This parameter is MANDATORY */
+    PLAYBOOK_PATH = 'analytics_playbook/api-server.yml'
 
     /* 
     * ANSIBLE_EXTRA_VARS - defines a list of extra parameters to pass to ansible playbook.
@@ -102,7 +107,7 @@ jobTemplate {
 
     /* buildNumToKeepStr - defines a number of builds to keep in thread. If the parameter is omitted the default value 7 will be used */
     // buildNumToKeepStr = '7'
-    
+
     /* artifactNumToKeepStr - defines a number of artifacts to keep. If the parameter is omitted the default value 7 will be used */
     // artifactNumToKeepStr = '7'
 }
