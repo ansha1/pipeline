@@ -61,12 +61,15 @@ jobTemplate {
     * projectFlow - the main parameter of jobTemplate closure. This parameter is MANDATORY
     *    language - defines a language that project use(Java, Python, JS)
     *    pathToSrc - defines a path to root sorce of your project relatively to base directory.
+    *    buildCommands - list of the commands that will be performed on build step. If the parameter is omitted
+    *                    the default predefined tests from the appropriate class(pipelines/src/com/{JavaUtils,JsUtils,PythonUtils}.groovy) will be used
     *    testCommands - list of the commands that should be perdormed on Test stage. If the parameter is omitted 
     *                   the default predefined tests from the appropriate class(pipelines/src/com/{JavaUtils,JsUtils,PythonUtils}.groovy) will be used
     *    testPostCommands - list of the commands that should be performed as post step after test execution
     */
     projectFlow = ['language'         : 'python',
                    'pathToSrc'        : 'backend',
+                   'buildCommands'    :  ''    
                    'testCommands'     : '''pip install -U pip && pip install .[test]
                                          flake8 analytics tests || true
                                          pytest --cov=. --cov-report=xml --junitxml=junit.xml --alluredir allure-results tests''',
