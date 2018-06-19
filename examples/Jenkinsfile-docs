@@ -39,9 +39,15 @@ jobTemplate {
     */
     ANSIBLE_EXTRA_VARS = ['version': '', 'artifact_env': artifact_env]
 
-    // channelToNotifyPerBranch - defines a map with the Slack channels and a list of branches to monitor
-    channelToNotifyPerBranch = ['analytics-ci' : ['dev', 'hotfix/.+', 'PR.+', 'feature/.+'],
-                                'analytics' : ['master', 'release/.+']]
+    // CHANNEL_TO_NOTIFY - is used to send all notification for all branches to the specified Slack channel
+    CHANNEL_TO_NOTIFY = 'analytics'
+
+    /* 
+    * channelToNotifyPerBranch - defines a map with the Slack channels and a list of branches to monitor. More advanced option of CHANNEL_TO_NOTIFY.
+    *                            If both channelToNotifyPerBranch and CHANNEL_TO_NOTIFY are defined the high priorirty has channelToNotifyPerBranch
+    * channelToNotifyPerBranch = ['analytics-ci' : ['dev', 'hotfix/.+', 'PR.+', 'feature/.+'],
+    *                            'analytics' : ['master', 'release/.+']]
+    */
 
     /* 
     * ansibleEnvMap - defines a map of branches and corresponding ansible inventory env
@@ -52,13 +58,15 @@ jobTemplate {
     */
     ansibleEnvMap = [dev       : "dev",
                      qa        : "rc",
-                     production: "beta"]
+                     production: "production"]
 
-    // extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
-    extraEnvs = ['TEST_DB'        : "postgres://test:dev@localhost/test_analytics${testExecutorNumber}",
-                 'SURVEY_TEST_DB' : "postgres://test:dev@localhost/test_survey${testExecutorNumber}",
-                 'CRM_TEST_DB'    : "postgres://test:dev@localhost/test_crm${testExecutorNumber}"]
-
+    /* 
+    * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
+    * extraEnvs = ['TEST_DB'        : "postgres://test:dev@localhost/test_analytics${testExecutorNumber}",
+    *             'SURVEY_TEST_DB' : "postgres://test:dev@localhost/test_survey${testExecutorNumber}",
+    *             'CRM_TEST_DB'    : "postgres://test:dev@localhost/test_crm${testExecutorNumber}"]
+    */
+    
     /*
     * projectFlow - the main parameter of jobTemplate closure. This parameter is MANDATORY
     *    language - defines a language that project use(Java, Python, JS)
