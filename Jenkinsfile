@@ -56,20 +56,20 @@ def changeSharedLibBranch(String libBranch) {
         }
     }
     testFolder.save()
-    print('pipeline branch changed to ' + libBranch)
+    log('pipeline branch changed to ' + libBranch)
 }
 
 String getSoruceBranchFromPr(String url) {
 
-    print("Received PR url: ${url}")
+    log("Received PR url: ${url}")
     prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-    print("Transform Url for access via rest api: ${prUrl}")
+    log("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     def props = readJSON text: prResponce.content
 
     def sourceBranch = props.fromRef.displayId.trim()
-    print("SourceBranch: ${sourceBranch}")
+    log("SourceBranch: ${sourceBranch}")
 
     return sourceBranch
 }
