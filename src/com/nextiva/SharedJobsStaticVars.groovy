@@ -1,3 +1,5 @@
+package com.nextiva
+
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
