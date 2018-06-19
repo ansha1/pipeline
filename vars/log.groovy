@@ -31,7 +31,7 @@ def error(message) {
 def debug(message) {
     if(isDebug()){
         def list = message.readLines()
-        list.each{magnetaBold("[DEBUG] ", it)}
+        list.each{magnetaBold("[DEBUG] " + it)}
     }
 }
 
