@@ -1,5 +1,4 @@
-package com.nextiva;
-
+package com.nextiva
 
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'

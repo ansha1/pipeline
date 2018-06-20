@@ -1,6 +1,7 @@
 #!groovy
+package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.*
-import com.nextiva.*
+
 
 def call(body) {
     def pipelineParams = [:]
