@@ -87,7 +87,6 @@ def call(body) {
             stage('Create release branch') {
                 steps {
                     script {
-                        sh "git branch"
                         utils.setVersion(releaseVersion)
                         sh """
                             git commit --allow-empty -a -m "Release engineering - bumped to ${releaseVersion} release candidate version "
