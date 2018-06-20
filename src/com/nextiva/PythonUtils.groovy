@@ -30,6 +30,7 @@ String getVersion() {
 
 void setVersion(String version) {
     dir(pathToSrc) {
+        println("going to set a version ${version} within path ${pathToSrc}")
         String propsToWrite = ''
         def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
         buildProperties.version = version
