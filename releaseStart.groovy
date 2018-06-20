@@ -8,7 +8,7 @@ pipeline {
 
     options {
         timestamps()
-        skipStagesAfterUnstable()
+        //skipStagesAfterUnstable()
         ansiColor('xterm')
     }
 
@@ -22,6 +22,15 @@ pipeline {
         string(defaultValue: 'autoincrement', description: 'enter release version, or left empty to use version autoincrement', name: 'releaseVersion', trim: false)
     }
     stages {
+        stage('Deprecation warning') {
+            steps {
+                script {
+                    log.warning('DEPRECATED: Please urgently migrate to the latest realization of Release Start job!!!.' +
+                                'If you have any questions please contact DevOps by email: devopsteam@nextiva.com or by slack: #devops-support')
+                    currentBuild.rawBuild.result = Result.UNSTABLE
+                }
+            }
+        }
         stage('Checkout repo') {
             steps {
                 cleanWs()
