@@ -68,14 +68,20 @@ def call(body) {
                         log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
 
                         if (userDefinedReleaseVersion.equals('')) {
-                            releaseVersionNumList = utils.getVersion().tokenize('.')
-                            releaseVersion = releaseVersionNumList.get(0) + '.' + releaseVersionNumList.get(1)
-                        } else {
+                            releaseVersion = utils.getVersion()
+                            releaseVersionTokens = releaseVersion.tokenize('.')
+                            releaseBranch = releaseVersionTokens.get(0) + '.' + releaseVersionTokens.get(1)
+                        } 
+                        else {
+                            
                             releaseVersion = userDefinedReleaseVersion
+
                             if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
                                 log.info("Selected release version: ${releaseVersion}")
                                 releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
-                            } else {
+                                releaseBranch = releaseVersion
+                            } 
+                            else {
                                 error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')
                             }
@@ -89,9 +95,9 @@ def call(body) {
                     script {
                         utils.setVersion(releaseVersion)
                         sh """
-                            git commit --allow-empty -a -m "Release engineering - bumped to ${releaseVersion} release candidate version "
+                            git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
                         """
-                        sh "git branch release/${releaseVersion}"
+                        sh "git branch release/${releaseBranch}"
                     }
                 }
             }
@@ -102,14 +108,8 @@ def call(body) {
                         def tokens = releaseVersion.tokenize('.')
                         def major = tokens.get(0)
                         def minor = tokens.get(1)
-            
-                        if (tokens.size() == 3) {
-                            suffix = ".0"
-                        } else {
-                            suffix = ""
-                        }
 
-                        def developmentVersionPrefix = (major + "." + (minor.toInteger() + 1) + suffix).trim()
+                        def developmentVersionPrefix = major + "." + (minor.toInteger() + 1) + "." + "0"
                         log.info('developmentVersionPrefix: ' + developmentVersionPrefix)
 
                         switch (projectLanguage) {
