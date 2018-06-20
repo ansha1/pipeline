@@ -79,16 +79,14 @@ def call(body) {
             stage('Create release branch') {
                 steps {
                     script {
-                        if (projectLanguage.equals('java')) {
+                        // if (projectLanguage.equals('java')) {
                             utils.setVersion(releaseVersion)
                             //set release version in dev branch for prevent merge conflicts
                             sh """
-                              git commit -a -m "Release engineering - bumped to ${releaseVersion} release candidate version "
+                              git commit --allow-empty -m "Release engineering - bumped to ${releaseVersion} release candidate version "
                             """
-                        }
-                        sh """
-                          git branch release/${releaseVersion}
-                        """
+                        // }
+                        sh "git branch release/${releaseVersion}"
                     }
                 }
             }
