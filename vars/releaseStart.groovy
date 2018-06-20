@@ -68,8 +68,8 @@ def call(body) {
                         log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
 
                         if (userDefinedReleaseVersion.equals('')) {
-                            releaseVersionNumList = utils.getVersion().split("\\.")
-                            releaseVersion = releaseVersionNumList[0] + '.' + releaseVersionNumList[1]
+                            releaseVersionNumList = utils.getVersion().tokenize('.')
+                            releaseVersion = releaseVersionNumList.get(0) + '.' + releaseVersionNumList.get(1)
                         } else {
                             releaseVersion = userDefinedReleaseVersion
                             if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
@@ -110,7 +110,7 @@ def call(body) {
                         }
 
                         def developmentVersionPrefix = (major + "." + (minor.toInteger() + 1) + suffix).trim()
-                        println('developmentVersionPrefix: ' + developmentVersionPrefix)
+                        log.info('developmentVersionPrefix: ' + developmentVersionPrefix)
 
                         switch (projectLanguage) {
                             case 'java':
