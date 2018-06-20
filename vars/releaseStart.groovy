@@ -31,6 +31,7 @@ def call(body) {
             jdk 'Java 8 Install automatically'
             maven 'Maven 3.3.3 Install automatically'
         }
+
         stages {
 
             stage('Checkout repo') {
@@ -41,6 +42,7 @@ def call(body) {
 
                 }
             }
+
             stage('Prepare for starting release') {
                 steps {
                     script {
@@ -67,7 +69,7 @@ def call(body) {
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
-                        if (releaseVersion ==~ /^(\d+.\d+.\d+)$/) {
+                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?$/) {
                             log.info("Selected release version: ${releaseVersion}")
                         } else {
                             error('\n\nWrong release version : ' + releaseVersion +
@@ -76,20 +78,19 @@ def call(body) {
                     }
                 }
             }
+
             stage('Create release branch') {
                 steps {
                     script {
-                        // if (projectLanguage.equals('java')) {
-                            utils.setVersion(releaseVersion)
-                            //set release version in dev branch for prevent merge conflicts
-                            sh """
-                              git commit --allow-empty -m "Release engineering - bumped to ${releaseVersion} release candidate version "
-                            """
-                        // }
+                        utils.setVersion(releaseVersion)
+                        sh """
+                            git commit --allow-empty -m "Release engineering - bumped to ${releaseVersion} release candidate version "
+                        """
                         sh "git branch release/${releaseVersion}"
                     }
                 }
             }
+
             stage('Next development version bump') {
                 steps {
                     script {
@@ -114,6 +115,7 @@ def call(body) {
                     }
                 }
             }
+
             stage('Push to bitbucket repo') {
                 steps {
                     script {
