@@ -69,7 +69,7 @@ def call(body) {
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
-                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?$/) {
+                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
                             log.info("Selected release version: ${releaseVersion}")
                         } else {
                             error('\n\nWrong release version : ' + releaseVersion +
