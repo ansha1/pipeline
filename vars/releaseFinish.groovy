@@ -114,7 +114,7 @@ def call(body) {
                                     git push origin ${tmpBranch}
                                 """
                                 stage("Create pull request from ${releaseBranch} to ${developBranch}")
-                                def title = "DO NOT SQUASH THIS PR. Resolve megre conflicts for finishing ${env.JOB_NAME}#${env.BUILD_ID} "
+                                def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts for finishing ${env.JOB_NAME}#${env.BUILD_ID} "
                                 def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR(if its enabled for the repository). Auto created pull request from ${env.JOB_NAME} #${env.BUILD_ID}"
                                 pullRequestLink = createPr(repositoryUrl, tmpBranch, developBranch, title, description)
 
