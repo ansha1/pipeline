@@ -106,7 +106,7 @@ def call(body) {
                             if (autoPullRequest) {
                                 log.info("AUTO CREATING PULL REQUEST IS ENABLED  autoPullRequest: ${autoPullRequest}")
                                 stage("Create temporary branch")
-                                def tmpBranch = "resolve_conflicts_from_${releaseBranch}"
+                                def tmpBranch = "resolve-conflicts-from-${releaseBranch.replaceAll("origin/","")}-to-${developBranch.replaceAll("origin/","")}"
                                 sh """
                                     git reset --merge           
                                     git checkout ${releaseBranch}
@@ -114,8 +114,8 @@ def call(body) {
                                     git push origin ${tmpBranch}
                                 """
                                 stage("Create pull request from ${releaseBranch} to ${developBranch}")
-                                def title = "Resolve merge conflicts for finishing ${env.JOB_NAME}#${env.BUILD_ID} "
-                                def description = "Auto created pull request from ${env.JOB_NAME} #${env.BUILD_ID}"
+                                def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts for finishing ${env.JOB_NAME}#${env.BUILD_ID} "
+                                def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR (if its enabled for the repository). Auto created pull request from ${env.JOB_NAME} #${env.BUILD_ID}"
                                 pullRequestLink = createPr(repositoryUrl, tmpBranch, developBranch, title, description)
 
                                 def uploadSpec = """[{
