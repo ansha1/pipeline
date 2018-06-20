@@ -66,15 +66,20 @@ def call(body) {
                 steps {
                     script {
                         log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
-                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
-                        releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
-                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
-                            log.info("Selected release version: ${releaseVersion}")
+                        if (userDefinedReleaseVersion.equals('')) {
+                            releaseVersionNumList = utils.getVersion().split("\\.")
+                            releaseVersion = releaseVersionNumList[0] + '.' + releaseVersionNumList[1]
                         } else {
-                            error('\n\nWrong release version : ' + releaseVersion +
+                            releaseVersion = userDefinedReleaseVersion
+                            if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
+                                log.info("Selected release version: ${releaseVersion}")
+                                releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
+                            } else {
+                                error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')
-                        }
+                            }
+                        }                        
                     }
                 }
             }
@@ -97,14 +102,22 @@ def call(body) {
                         def tokens = releaseVersion.tokenize('.')
                         def major = tokens.get(0)
                         def minor = tokens.get(1)
-                        def patch = tokens.get(2)
+            
+                        if (tokens.size() == 3) {
+                            suffix = ".0"
+                        } else {
+                            suffix = ""
+                        }
+
+                        def developmentVersionPrefix = (major + "." + (minor.toInteger() + 1) + suffix).trim()
+                        println('developmentVersionPrefix: ' + developmentVersionPrefix)
 
                         switch (projectLanguage) {
                             case 'java':
-                                developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0" + "-SNAPSHOT"
+                                developmentVersion = developmentVersionPrefix + "-SNAPSHOT"
                                 break
                             default:
-                                developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0"
+                                developmentVersion = developmentVersionPrefix
                         }
 
                         utils.setVersion(developmentVersion)
