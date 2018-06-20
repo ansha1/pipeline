@@ -89,7 +89,7 @@ def call(body) {
                     script {
                         utils.setVersion(releaseVersion)
                         sh """
-                            git commit --allow-empty -m "Release engineering - bumped to ${releaseVersion} release candidate version "
+                            git commit -m "Release engineering - bumped to ${releaseVersion} release candidate version "
                         """
                         sh "git branch release/${releaseVersion}"
                     }
