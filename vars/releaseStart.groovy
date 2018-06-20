@@ -1,5 +1,4 @@
 #!groovy
-package com.nextiva
 import static com.nextiva.SharedJobsStaticVars.*
 
 
