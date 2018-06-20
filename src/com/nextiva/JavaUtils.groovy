@@ -34,7 +34,7 @@ def runSonarScanner(String projectVersion) {
 
     dir(pathToSrc) {
         withSonarQubeEnv(SONAR_QUBE_ENV) {
-            sh 'mvn verify sonar:sonar'
+            sh 'mvn sonar:sonar'
         }
         /*timeout(time: 30, unit: 'MINUTES') {
             def qg = waitForQualityGate()
