@@ -33,9 +33,11 @@ void setVersion(String version) {
         println("going to set a version ${version} within path ${pathToSrc}")
         String propsToWrite = ''
         def buildProperties = readProperties file: BUILD_PROPERTIES_FILENAME
+        println("buildProperties: ${buildProperties}")
         buildProperties.version = version
         buildProperties.each {
             propsToWrite = propsToWrite + it.toString() + '\n'
+            println("propsToWrite: ${propsToWrite}")
         }
         writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
     }
