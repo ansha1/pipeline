@@ -1,7 +1,7 @@
  @Library('pipelines') _
 /*
 * To access Nextiva pipeline shared libraries, the Jenkinsfile needs to use the @Library annotation, 
-* specifying the library’s name 'pipelines'(SCM - ssh://git@git.nextiva.xyz:7999/rel/pipelines.git)
+* specifying the library's name 'pipelines'(SCM - ssh://git@git.nextiva.xyz:7999/rel/pipelines.git)
 * 
 * More info about Jenkins Shared Library can be found here: https://jenkins.io/doc/book/pipeline/shared-libraries/
 */

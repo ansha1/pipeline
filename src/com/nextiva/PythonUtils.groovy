@@ -63,8 +63,8 @@ void runTests(Map args) {
     
     def languageVersion = args.get('languageVersion', 'python3.6')
     def testCommands = args.get('testCommands', '''pip install -r requirements.txt
-                                                       pip install -r requirements-test.txt
-                                                       python setup.py test''')
+                                                   pip install -r requirements-test.txt
+                                                   python setup.py test''')
     def testPostCommands = args.get('testPostCommands')
 
     dir(pathToSrc) {
