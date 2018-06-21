@@ -17,12 +17,12 @@ String getVersion() {
             }
             else {
                 currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("ERROR: Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+                throw new hudson.AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
             }
         }
         else {
             currentBuild.rawBuild.result = Result.ABORTED
-            throw new hudson.AbortException("ERROR: File ${BUILD_PROPERTIES_FILENAME} not found.")
+            throw new hudson.AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
         }
     }
 }
