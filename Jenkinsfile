@@ -80,9 +80,9 @@ def runDownstreamJobs() {
     parallel jsReleaseStartFinish: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
-    }, javaReleaseStartFinish {
+    }, javaReleaseStartFinish: {
         log.info('JAVA: ReleaseStartFinish not implemented yet')
-    }, pythonReleaseStartFinish {
+    }, pythonReleaseStartFinish: {
         log.info('Python: ReleaseStartFinish not implemented yet')
     }
 
