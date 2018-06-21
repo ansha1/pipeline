@@ -64,28 +64,33 @@ def call(body) {
 
             stage('Collecting release version') {
                 steps {
-                    script {
-                        log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
+                    script {   
 
-                        if (userDefinedReleaseVersion.equals('')) {
-                            releaseVersion = utils.getVersion()
-                            releaseVersionTokens = releaseVersion.tokenize('.')
-                            releaseBranch = releaseVersionTokens.get(0) + '.' + releaseVersionTokens.get(1)
+                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
+                        releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
+
+                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
+                            log.info("Selected release version: ${releaseVersion}")
+                            
+                            def tokens = releaseVersion.tokenize('.')
+                            def major = tokens.get(0)
+                            def minor = tokens.get(1)
+                            if (tokens.size() == 2 {
+                                releaseBranch = releaseVersion
+                                releaseVersion = major + '.' + minor + "." + "0"
+                                log.warn("The version we are going to use for deployment is: ${releaseVersion}")
+                            } else if (!(userDefinedReleaseVersion.equals('')) {
+                                log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
+                                releaseBranch = releaseVersion
+                            } else {
+                                log.info("Getting releaseVersion from build properties file")
+                                releaseBranch = major + '.' + minor 
+                            }
                         } 
                         else {
-                            
-                            releaseVersion = userDefinedReleaseVersion
-
-                            if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
-                                log.info("Selected release version: ${releaseVersion}")
-                                releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
-                                releaseBranch = releaseVersion
-                            } 
-                            else {
-                                error('\n\nWrong release version : ' + releaseVersion +
-                                    '\nplease use git-flow naming convention\n\n')
-                            }
-                        }                        
+                            error('\n\nWrong release version : ' + releaseVersion +
+                                '\nplease use git-flow naming convention\n\n')
+                        }
                     }
                 }
             }
@@ -93,6 +98,7 @@ def call(body) {
             stage('Create release branch') {
                 steps {
                     script {
+                        if 
                         utils.setVersion(releaseVersion)
                         sh """
                             git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
@@ -105,12 +111,7 @@ def call(body) {
             stage('Next development version bump') {
                 steps {
                     script {
-                        def tokens = releaseVersion.tokenize('.')
-                        def major = tokens.get(0)
-                        def minor = tokens.get(1)
-
                         def developmentVersionPrefix = major + "." + (minor.toInteger() + 1) + "." + "0"
-                        log.info('developmentVersionPrefix: ' + developmentVersionPrefix)
 
                         switch (projectLanguage) {
                             case 'java':
@@ -120,6 +121,7 @@ def call(body) {
                                 developmentVersion = developmentVersionPrefix
                         }
 
+                        log.info('developmentVersion: ' + developmentVersion)
                         utils.setVersion(developmentVersion)
 
                         sh """
