@@ -75,7 +75,8 @@ def call(body) {
                             def tokens = releaseVersion.tokenize('.')
                             def major = tokens.get(0)
                             def minor = tokens.get(1)
-                            if (tokens.size() == 2 {
+
+                            if (tokens.size() == 2){
                                 releaseBranch = releaseVersion
                                 releaseVersion = major + '.' + minor + "." + "0"
                                 log.warn("The version we are going to use for deployment is: ${releaseVersion}")
