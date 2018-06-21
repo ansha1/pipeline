@@ -72,9 +72,9 @@ def call(body) {
                         if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
                             log.info("Selected release version: ${releaseVersion}")
                             
-                            def tokens = releaseVersion.tokenize('.')
-                            def major = tokens.get(0)
-                            def minor = tokens.get(1)
+                            tokens = releaseVersion.tokenize('.')
+                            major = tokens.get(0)
+                            minor = tokens.get(1)
 
                             if (tokens.size() == 2) {
                                 releaseBranch = releaseVersion
