@@ -38,9 +38,7 @@ def execute(String repoDir, String playbookContext, String playbookPath) {
     script {
       	isRCLocked.checkState()
         stage('Run ansible playbook ' + playbookPath) {
-            sh """
-                cd ${repoDir} && ansible-playbook ${playbookContext}
-            """
+            sh "cd ${repoDir} && ansible-playbook ${playbookContext}"
         }
     }
 }

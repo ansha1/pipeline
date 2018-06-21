@@ -3,7 +3,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def createVirtualEnv(String pythonName='python', String venvDir=VENV_DIR) {
     log.info("Create virtualenv (${venvDir})")
-    sh(script: "virtualenv --python=${pythonName} ${venvDir}")
+    sh "virtualenv --python=${pythonName} ${venvDir}"
 }
 
 def getVirtualEnv(String venvDir=VENV_DIR) {
@@ -43,6 +43,6 @@ def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
 
 def pipInstall(String filename, String venvDir=VENV_DIR) {
     withEnv(getVirtualEnv(venvDir)) {
-        sh(script: "pip install -r ${filename}")
+        sh "pip install -r ${filename}"
     }
 }

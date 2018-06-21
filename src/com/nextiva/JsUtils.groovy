@@ -68,7 +68,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
 
     dir(pathToSrc) {
-        sh(returnStdout: true, script: buildCommands)
+        sh "${buildCommands}"
         archiveToNexus(environment, distPath, buildVersion, appName)
     }
 }

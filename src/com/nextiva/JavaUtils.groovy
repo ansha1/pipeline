@@ -71,7 +71,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     def buildCommands = args.get('buildCommands', 'mvn deploy --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
-            sh(returnStdout: true, script: buildCommands)
+            sh "${buildCommands}"
         } catch (e) {
             error("buildPublish fail ${e}")
         }
