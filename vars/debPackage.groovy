@@ -118,28 +118,3 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
         throw new IllegalArgumentException("ERROR: Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
     }
 }
-
-
-Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
-    // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
-
-    def index_char = packageName.substring(0,1)
-    def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
-    log.debug("Deb-package URL: " + nexusDebPackageUrl)
-    
-    def verbose = ''
-    if( log.isDebug() ) {
-        verbose = "--verbose"
-    }
-    
-    def status = sh(returnStatus: true, script: "curl ${verbose} --silent --show-error --fail -I ${nexusDebPackageUrl}")
-    
-    if ( status == 0 ) {
-        log.info("Deb package ${packageName} with version ${packageVersion} exists in Nexus.")
-        return true
-    }
-    else {
-        log.info("Deb package ${packageName} with version ${packageVersion} not found in Nexus.")
-        return false
-    }
-}
