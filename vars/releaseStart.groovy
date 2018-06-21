@@ -79,7 +79,7 @@ def call(body) {
                             if (tokens.size() == 2) {
                                 releaseBranch = releaseVersion
                                 releaseVersion = major + "." + minor + "." + "0"
-                                log.warn("The version we are going to use for deployment is: ${releaseVersion}")
+                                log.warning("The version we are going to use for deployment is: ${releaseVersion}")
                             } else if (!(userDefinedReleaseVersion.equals(''))) {
                                 log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
                                 releaseBranch = releaseVersion
