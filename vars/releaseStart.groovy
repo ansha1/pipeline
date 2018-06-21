@@ -80,7 +80,7 @@ def call(body) {
                                 releaseBranch = releaseVersion
                                 releaseVersion = major + "." + minor + "." + "0"
                                 log.warning("The version we are going to use for deployment is: ${releaseVersion}")
-                            } else if (!(userDefinedReleaseVersion.equals(''))) {
+                            } else if (userDefinedReleaseVersion) {
                                 log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
                                 releaseBranch = releaseVersion
                             } else {
