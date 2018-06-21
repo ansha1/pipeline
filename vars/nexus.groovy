@@ -57,7 +57,7 @@ Boolean isPypiPackageExists(String packageName, String packageVersion, String re
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=docker&format=docker&name=analytics&version=0.1.504
 Boolean isDockerPackageExists(String packageName, String packageVersion, String repo = 'docker', String format = 'docker') {
 
-    ddef res = checkNexusPackage(repo, format, packageName, packageVersion)
+    def res = checkNexusPackage(repo, format, packageName, packageVersion)
     checkStatus(res, packageName, packageVersion)
 }
 
