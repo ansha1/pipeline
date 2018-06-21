@@ -19,7 +19,7 @@ String getVersion() {
 void setVersion(String version) {
     dir(pathToSrc) {
         log.info("Set version: ${version}")
-        sh "npm version ${version} --no-git-tag-version"
+        sh "npm version ${version} --no-git-tag-version --allow-same-version"
     }
 }
 

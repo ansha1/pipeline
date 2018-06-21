@@ -31,6 +31,7 @@ def call(body) {
             jdk 'Java 8 Install automatically'
             maven 'Maven 3.3.3 Install automatically'
         }
+
         stages {
 
             stage('Checkout repo') {
@@ -41,6 +42,7 @@ def call(body) {
 
                 }
             }
+
             stage('Prepare for starting release') {
                 steps {
                     script {
@@ -63,51 +65,63 @@ def call(body) {
             stage('Collecting release version') {
                 steps {
                     script {
-                        log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
+
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
-                        if (releaseVersion ==~ /^(\d+.\d+.\d+)$/) {
+                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
                             log.info("Selected release version: ${releaseVersion}")
-                        } else {
+
+                            tokens = releaseVersion.tokenize('.')
+                            major = tokens.get(0)
+                            minor = tokens.get(1)
+
+                            if (tokens.size() == 2) {
+                                releaseBranch = releaseVersion
+                                releaseVersion = major + "." + minor + "." + "0"
+                                log.warning("The version we are going to use for deployment is: ${releaseVersion}")
+                            } else if (userDefinedReleaseVersion) {
+                                log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
+                                releaseBranch = releaseVersion
+                            } else {
+                                log.info("Getting releaseVersion from build properties file")
+                                releaseBranch = major + '.' + minor 
+                            }
+                        } 
+                        else {
                             error('\n\nWrong release version : ' + releaseVersion +
-                                    '\nplease use git-flow naming convention\n\n')
+                                '\nplease use git-flow naming convention\n\n')
                         }
                     }
                 }
             }
+
             stage('Create release branch') {
                 steps {
                     script {
-                        if (projectLanguage.equals('java')) {
-                            utils.setVersion(releaseVersion)
-                            //set release version in dev branch for prevent merge conflicts
-                            sh """
-                              git commit -a -m "Release engineering - bumped to ${releaseVersion} release candidate version "
-                            """
-                        }
+                        utils.setVersion(releaseVersion)
                         sh """
-                          git branch release/${releaseVersion}
+                            git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
                         """
+                        sh "git branch release/${releaseBranch}"
                     }
                 }
             }
+
             stage('Next development version bump') {
                 steps {
                     script {
-                        def tokens = releaseVersion.tokenize('.')
-                        def major = tokens.get(0)
-                        def minor = tokens.get(1)
-                        def patch = tokens.get(2)
+                        def developmentVersionPrefix = major + "." + (minor.toInteger() + 1) + "." + "0"
 
                         switch (projectLanguage) {
                             case 'java':
-                                developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0" + "-SNAPSHOT"
+                                developmentVersion = developmentVersionPrefix + "-SNAPSHOT"
                                 break
                             default:
-                                developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0"
+                                developmentVersion = developmentVersionPrefix
                         }
 
+                        log.info('developmentVersion: ' + developmentVersion)
                         utils.setVersion(developmentVersion)
 
                         sh """
@@ -116,6 +130,7 @@ def call(body) {
                     }
                 }
             }
+
             stage('Push to bitbucket repo') {
                 steps {
                     script {

@@ -49,7 +49,7 @@ def call(body) {
 
                         utils = getUtils(projectLanguage, versionPath)
 
-                        releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "^  origin/release/" | wc -l', trim: true
+                        releaseBranchCount = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" | wc -l', trim: true
                         releaseBranchCount = releaseBranchCount.trim()
                         log.info("Release branch count: <<${releaseBranchCount}>>")
                         switch (releaseBranchCount) {
@@ -59,7 +59,7 @@ def call(body) {
                                 throw new hudson.AbortException("\nThere no release branches, please run ReleaseStart Job first!!!\n")
                                 break
                             case '1':
-                                releaseBranch = sh returnStdout: true, script: 'git branch -r | grep "^  origin/release/"'
+                                releaseBranch = sh returnStdout: true, script: 'git branch -r | grep "origin/release/"'
                                 releaseBranch = releaseBranch.trim()
                                 log.info('Find release branch ' + releaseBranch + '\ncontinue...\n')
                                 break
@@ -71,7 +71,7 @@ def call(body) {
                         }
 
                         log.info('Check branch naming for compliance with git-flow')
-                        if (releaseBranch ==~ /^(origin\/release\/\d+.\d+.\d+)$/) {
+                        if (releaseBranch ==~ /^(origin\/release\/\d+.\d+(.\d+)?)$/) {
                             log.info('Parse release version')
                             sh """
                                 git fetch
