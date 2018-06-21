@@ -99,7 +99,6 @@ def call(body) {
             stage('Create release branch') {
                 steps {
                     script {
-                        if 
                         utils.setVersion(releaseVersion)
                         sh """
                             git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
