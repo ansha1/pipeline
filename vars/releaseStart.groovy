@@ -64,14 +64,14 @@ def call(body) {
 
             stage('Collecting release version') {
                 steps {
-                    script {   
+                    script {
 
                         releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
                             log.info("Selected release version: ${releaseVersion}")
-                            
+
                             tokens = releaseVersion.tokenize('.')
                             major = tokens.get(0)
                             minor = tokens.get(1)
