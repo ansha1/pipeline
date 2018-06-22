@@ -1,19 +1,19 @@
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
-    def index_char = packageName.substring(0,1)
+    def index_char = packageName.substring(0, 1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
-    
+
     def verbose = ''
-    if( log.isDebug() ) {
+    if (log.isDebug()) {
         verbose = "--verbose"
         log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
     }
-    
+
     def status = sh(returnStatus: true, script: "curl ${verbose} --silent --show-error --fail -I ${nexusDebPackageUrl}")
-    
-    if ( status == 0 ) {
+
+    if (status == 0) {
         log.info("Deb package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
     } else {
@@ -22,22 +22,22 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     }
 }
 
-def checkNexusPackage(String repo, String format, String packageName, String packageVersion) {
+Boolean checkNexusPackage(String repo, String format, String packageName, String packageVersion) {
 
     def nexusRestApi = "http://repository.nextiva.xyz/service/rest/beta/search?repository="
     def searchNexusQuery = nexusRestApi + repo + "&format=" + format + "&name=" + packageName + "&version=" + packageVersion
 
     def res = new groovy.json.JsonSlurper().parseText(new URL(searchNexusQuery).getText())
-    if( log.isDebug() ) {
-        log.info("searchNexusQuery: ${searchNexusQuery}")
-        log.info("The result of query: ${res}")
+    if (log.isDebug()) {
+        log.debug("searchNexusQuery: ${searchNexusQuery}")
+        log.debug("The result of query: ${res}")
     }
     checkStatus(res, packageName, packageVersion)
 }
 
 Boolean checkStatus(Map searchQueryResult, String packageName, String packageVersion) {
-    
-    if( searchQueryResult.items.size() > 0 ) {
+
+    if (searchQueryResult.items.size() > 0) {
         log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
     } else {
