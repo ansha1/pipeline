@@ -1,11 +1,11 @@
- @Library('pipelines') _
+#!groovy
 /*
-* To access Nextiva pipeline shared libraries, the Jenkinsfile needs to use the @Library annotation, 
+* To access Nextiva pipeline shared libraries, the Jenkinsfile needs to use the @Library annotation,
 * specifying the library's name 'pipelines'(SCM - ssh://git@git.nextiva.xyz:7999/rel/pipelines.git)
-* 
+*
 * More info about Jenkins Shared Library can be found here: https://jenkins.io/doc/book/pipeline/shared-libraries/
 */
-
+@Library('pipelines') _
 /*
 * jobTemplate is a groovy closure that is used to pass the Application parameters to the predefined template:
 * http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobTemplate.groovy
