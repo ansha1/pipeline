@@ -93,7 +93,7 @@ def call(body) {
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
-    log("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}")
+    log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
     healthCheckUrl.each { log("  - ${it}") }
     log('=====================================================')
