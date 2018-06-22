@@ -70,7 +70,7 @@ def build(String packageName, String version, String deployEnvironment, String e
     }
     else {
         currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("ERROR: There is no 'debian' folder within ${buildLocation}.")
+        throw new hudson.AbortException("There is no 'debian' folder within ${buildLocation}.")
     }
 }
 
@@ -110,11 +110,11 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
             log.info("Deployment to Nexus finished with status: " + isDeployedToNexus)
             if ( isDeployedToNexus != 0 ) {
                 currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("ERROR: There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
+                throw new hudson.AbortException("There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
             }
         }
     }
     else {
-        throw new IllegalArgumentException("ERROR: Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
+        throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
     }
 }

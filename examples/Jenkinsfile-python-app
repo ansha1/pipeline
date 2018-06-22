@@ -1,3 +1,4 @@
+#!groovy
 @Library('pipelines') _
 
 

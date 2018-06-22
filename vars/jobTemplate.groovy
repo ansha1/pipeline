@@ -93,11 +93,10 @@ def call(body) {
                         // This needs for sending all python projects to the Veracode DEVOPS-1289
                         if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
                             stage('Veracode analyzing'){
-                                build job: 'VeracodeScan',
-                                        parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                                     string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                     string(name: 'repoUrl', value: GIT_URL),
-                                                     string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
+                                build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                                                        string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
+                                                                        string(name: 'repoUrl', value: GIT_URL),
+                                                                        string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                             }
                         }
                     }
@@ -147,7 +146,7 @@ def call(body) {
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //TODO: add approve step, check CR step
-//                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
+//                            approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
                             isApproved = true //    = approve.isApproved()
                         } else {
                             //always approve for dev branch
@@ -197,11 +196,9 @@ def call(body) {
                 }
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration tests with this application
-                    build job: 'QA_Incoming_Integration',
-                            parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
-                                         string(name: 'env', value: jobConfig.ANSIBLE_ENV),
-                                         string(name: 'runId', value: '')],
-                            wait: false
+                    build job: 'QA_Incoming_Integration', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV),
+                                                                       string(name: 'runId', value: '')], wait: false
                 }
             }
         }

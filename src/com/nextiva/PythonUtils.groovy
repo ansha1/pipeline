@@ -17,12 +17,12 @@ String getVersion() {
             }
             else {
                 currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("ERROR: Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+                throw new hudson.AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
             }
         }
         else {
             currentBuild.rawBuild.result = Result.ABORTED
-            throw new hudson.AbortException("ERROR: File ${BUILD_PROPERTIES_FILENAME} not found.")
+            throw new hudson.AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
         }
     }
 }
@@ -63,8 +63,8 @@ void runTests(Map args) {
     
     def languageVersion = args.get('languageVersion', 'python3.6')
     def testCommands = args.get('testCommands', '''pip install -r requirements.txt
-                                                       pip install -r requirements-test.txt
-                                                       python setup.py test''')
+                                                   pip install -r requirements-test.txt
+                                                   python setup.py test''')
     def testPostCommands = args.get('testPostCommands')
 
     dir(pathToSrc) {
