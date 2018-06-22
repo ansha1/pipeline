@@ -8,6 +8,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def verbose = ''
     if( log.isDebug() ) {
         verbose = "--verbose"
+        log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
     }
     
     def status = sh(returnStatus: true, script: "curl ${verbose} --silent --show-error --fail -I ${nexusDebPackageUrl}")
@@ -26,7 +27,12 @@ def checkNexusPackage(String repo, String format, String packageName, String pac
     def nexusRestApi = "http://repository.nextiva.xyz/service/rest/beta/search?repository="
     def searchNexusQuery = nexusRestApi + repo + "&format=" + format + "&name=" + packageName + "&version=" + packageVersion
 
-    return new groovy.json.JsonSlurper().parseText(new URL(searchNexusQuery).getText())
+    def res = new groovy.json.JsonSlurper().parseText(new URL(searchNexusQuery).getText())
+    if( log.isDebug() ) {
+        log.info("searchNexusQuery: ${searchNexusQuery}")
+        log.info("The result of query: ${res}")
+    }
+    checkStatus(res, packageName, packageVersion)
 }
 
 Boolean checkStatus(Map searchQueryResult, String packageName, String packageVersion) {
@@ -43,22 +49,22 @@ Boolean checkStatus(Map searchQueryResult, String packageName, String packageVer
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=static-assets-production&format=raw&name=agent-0.1.21
 Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo, String format = 'raw') {
 
-    def res = checkNexusPackage(repo, format, packageName, packageVersion)
-    checkStatus(res, packageName, packageVersion)
+    checkNexusPackage(repo, format, packageName, packageVersion)
+
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=pypi-dev&format=pypi&name=crm-models&version=0.1.1
 Boolean isPypiPackageExists(String packageName, String packageVersion, String repo, String format = 'pypi') {
 
-    def res = checkNexusPackage(repo, format, packageName, packageVersion)
-    checkStatus(res, packageName, packageVersion)
+    checkNexusPackage(repo, format, packageName, packageVersion)
+
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=docker&format=docker&name=analytics&version=0.1.504
 Boolean isDockerPackageExists(String packageName, String packageVersion, String repo = 'docker', String format = 'docker') {
 
-    def res = checkNexusPackage(repo, format, packageName, packageVersion)
-    checkStatus(res, packageName, packageVersion)
+    checkNexusPackage(repo, format, packageName, packageVersion)
+
 }
 
 
