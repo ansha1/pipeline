@@ -38,4 +38,5 @@ class SharedJobsStaticVars {
             OR the primary approver in Arizona: Keerthi Suraparaju <keerthi.suraparaju@nextiva.com>, second-level approver Ebrahim Feyzi <ebrahim.feyzi@nextiva.com>  with unlocking request for RC environment.\n
             If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
+    static final NEWRELIC_PROD_API_KEY = '83904bdc782deef7783afde4a50348538b758577a208889'
 }
