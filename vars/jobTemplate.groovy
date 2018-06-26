@@ -28,7 +28,7 @@ def call(body) {
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
-        NEWRELIC_APP_ID = pipelineParams.NEWRELIC_APP_ID
+        NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -182,8 +182,8 @@ def call(body) {
                                 runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 try {
-                                    if (jobConfig.NEWRELIC_APP_ID && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
-                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV),
+                                    if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
+                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID[jobConfig.ANSIBLE_ENV], NEWRELIC_API_KEY_MAP[jobConfig.ANSIBLE_ENV],
                                                                   jobConfig.BUILD_VERSION)
                                     }
                                 }
