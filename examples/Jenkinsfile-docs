@@ -108,4 +108,7 @@ jobTemplate {
 
     /* artifactNumToKeepStr - defines a number of artifacts to keep. If the parameter is omitted the default value 7 will be used */
     // artifactNumToKeepStr = '7'
+
+    /* NEWRELIC_APP_ID_MAP - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id */
+    // NEWRELIC_APP_ID_MAP = ['production': '87818090']
 }
