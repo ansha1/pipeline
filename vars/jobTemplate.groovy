@@ -181,9 +181,13 @@ def call(body) {
                                 def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                 runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                if (jobConfig.NEWRELIC_APP_ID && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
-                                    newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV)),
-                                                              jobConfig.BUILD_VERSION)
+                                try {
+                                    if (jobConfig.NEWRELIC_APP_ID && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
+                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV)),
+                                                                jobConfig.BUILD_VERSION)
+                                    }
+                                catch (e) {
+                                    log.warning("An error occurred: Could not log deployment to New Relic. Check integration configuration.\n${e}")
                                 }
 
                                 if (jobConfig.healthCheckUrl.size() > 0) {
