@@ -183,7 +183,7 @@ def call(body) {
 
                                 try {
                                     if (jobConfig.NEWRELIC_APP_ID && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
-                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV)),
+                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV),
                                                                 jobConfig.BUILD_VERSION)
                                     }
                                 catch (e) {
