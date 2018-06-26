@@ -32,6 +32,7 @@ def call(body) {
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY) : LIST_OF_DEFAULT_BRANCH_PATTERNS]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
+    NEWRELIC_APP_ID = pipelineParams.NEWRELIC_APP_ID
 
     switch (env.BRANCH_NAME) {
         case 'dev':

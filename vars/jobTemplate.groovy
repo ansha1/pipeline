@@ -28,6 +28,7 @@ def call(body) {
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
+        NEWRELIC_APP_ID = pipelineParams.NEWRELIC_APP_ID
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -56,7 +57,7 @@ def call(body) {
 
         parameters {
             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                    'or leave empty for start full build')
+                   'or leave empty for start full build')
         }
 
         stages {
@@ -180,7 +181,12 @@ def call(body) {
                                 def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                 runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                if (jobConfig.healthCheckUrl.size > 0) {
+                                if (jobConfig.NEWRELIC_APP_ID && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
+                                    newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID, NEWRELIC_API_KEY_MAP.get(jobConfig.ANSIBLE_ENV)),
+                                                              jobConfig.BUILD_VERSION)
+                                }
+
+                                if (jobConfig.healthCheckUrl.size() > 0) {
                                     stage('Wait until service is up') {
                                         healthCheck.list(jobConfig.healthCheckUrl)
                                     }
