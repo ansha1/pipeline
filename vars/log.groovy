@@ -6,7 +6,7 @@ static final END_CHAR = '\033[0m'
 
 
 def call(String message) {
-    print(message)
+    print(message.toString())
 }
 
 Boolean isDebug() {
@@ -14,23 +14,23 @@ Boolean isDebug() {
 }
 
 def info(message) {
-    def list = message.readLines()
+    def list = message.toString().readLines()
     list.each{blueBold("[INFO] " + it)}
 }
 
 def warning(message) {
-    def list = message.readLines()
+    def list = message.toString().readLines()
     list.each{yellowBold("[WARNING] " + it)}
 }
 
 def error(message) {
-    def list = message.readLines()
+    def list = message.toString().readLines()
     list.each{redBold("[ERROR] " + it)}
 }
 
 def debug(message) {
     if(isDebug()){
-        def list = message.readLines()
+        def list = message.toString().readLines()
         list.each{magnetaBold("[DEBUG] " + it)}
     }
 }
