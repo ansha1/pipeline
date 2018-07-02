@@ -75,7 +75,6 @@ void runTests(Map args) {
             error("Unit test fail ${e}")
         } finally {
             try {
-
                 step([$class: 'WarningsPublisher',
                       canComputeNew: false,
                       canResolveRelativePaths: false,
@@ -94,7 +93,7 @@ void runTests(Map args) {
                       healthy: '',
                       unHealthy: ''])
 
-                junit '**/junit.xml1'
+                junit '**/junit.xml'
 
                 step([$class: 'CoberturaPublisher', 
                       autoUpdateHealth: false, 
@@ -107,7 +106,7 @@ void runTests(Map args) {
                       sourceEncoding: 'ASCII', 
                       zoomCoverageChart: false])
 
-                allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
             } catch (e) {
                 log.warning("there was a problem with test coverage pubish step: ${e}")
             }
