@@ -78,7 +78,7 @@ void runTests(Map args) {
             junit '**/junit.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
 
-            publishHTML([allowMissing         : true,
+            publishHTML([allowMissing     : true,
                      alwaysLinkToLastBuild: false,
                      keepAll              : false,
                      reportDir            : allure-results,
