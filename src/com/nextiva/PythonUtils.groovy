@@ -74,6 +74,18 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
+
+            junit '**/junit.xml'
+            checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
+
+            publishHTML([allowMissing         : true,
+                     alwaysLinkToLastBuild: false,
+                     keepAll              : false,
+                     reportDir            : allure-results,
+                     reportFiles          : 'test-report.html',
+                     reportName           : 'Test Report',
+                     reportTitles         : ''])
+
             if(testPostCommands) {
                 log.info('============================')
                 log.info('Starting a cleanup after unit tests execution')
