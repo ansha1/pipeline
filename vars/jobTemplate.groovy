@@ -226,6 +226,9 @@ def call(body) {
                             }
                         }
                     }
+                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/ ) {
+                        slackNotify.commitersOnly()
+                    }
                 }
             }
         }

@@ -39,4 +39,6 @@ class SharedJobsStaticVars {
             If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
     static final NEWRELIC_API_KEY_MAP = ['production': '83904bdc782deef7783afde4a50348538b758577a208889']
+    //Slack app bot token for getting slack userID over email
+    static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
 }
