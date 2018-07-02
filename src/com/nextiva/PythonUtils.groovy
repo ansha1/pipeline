@@ -74,7 +74,6 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
-
             step([$class: 'WarningsPublisher',
                   canComputeNew: false,
                   canResolveRelativePaths: false,
@@ -94,11 +93,11 @@ void runTests(Map args) {
                   unHealthy: ''])
 
             junit '**/junit.xml'
-            
+
             step([$class: 'CoberturaPublisher', 
                   autoUpdateHealth: false, 
                   autoUpdateStability: false, 
-                  coberturaReportFile: '**/coverage.xml', 
+                  coberturaReportFile: '**/coverage.xml1', 
                   failUnhealthy: false, 
                   failUnstable: false, 
                   maxNumberOfBuilds: 0, 
@@ -106,7 +105,7 @@ void runTests(Map args) {
                   sourceEncoding: 'ASCII', 
                   zoomCoverageChart: false])
             // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
-            allure includeProperties: false, jdk: '', results: [[path: 'backend/allure-results']]
+            allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
             // publishHTML([allowMissing     : true,
             //          alwaysLinkToLastBuild: false,
             //          keepAll              : false,
