@@ -75,17 +75,45 @@ void runTests(Map args) {
             error("Unit test fail ${e}")
         } finally {
 
-            junit '**/junit.xml'
-            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-            // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
+            step([$class: 'WarningsPublisher',
+                  canComputeNew: false,
+                  canResolveRelativePaths: false,
+                  consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
+                  defaultEncoding: '',
+                  excludePattern: '',
+                  healthy: '',
+                  includePattern: '',
+                  messagesPattern: '',
+                  unHealthy: ''])
+            step([$class: 'AnalysisPublisher',
+                  canComputeNew: false,
+                  checkStyleActivated: false,
+                  defaultEncoding: '',
+                  findBugsActivated: false,
+                  healthy: '',
+                  unHealthy: ''])
 
-            publishHTML([allowMissing     : true,
-                     alwaysLinkToLastBuild: false,
-                     keepAll              : false,
-                     reportDir            : 'allure-results',
-                     reportFiles          : 'index.html',
-                     reportName           : 'Allure Report',
-                     reportTitles         : ''])
+            junit '**/junit.xml'
+            
+            step([$class: 'CoberturaPublisher', 
+                  autoUpdateHealth: false, 
+                  autoUpdateStability: false, 
+                  coberturaReportFile: '**/coverage.xml', 
+                  failUnhealthy: false, 
+                  failUnstable: false, 
+                  maxNumberOfBuilds: 0, 
+                  onlyStable: false, 
+                  sourceEncoding: 'ASCII', 
+                  zoomCoverageChart: false])
+            // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
+            allure includeProperties: false, jdk: '', results: [[path: 'backend/allure-results']]
+            // publishHTML([allowMissing     : true,
+            //          alwaysLinkToLastBuild: false,
+            //          keepAll              : false,
+            //          reportDir            : 'allure-results',
+            //          reportFiles          : 'index.html',
+            //          reportName           : 'Allure Report',
+            //          reportTitles         : ''])
 
             if(testPostCommands) {
                 log.info('============================')
