@@ -74,38 +74,43 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
-            // step([$class: 'WarningsPublisher',
-            //       canComputeNew: false,
-            //       canResolveRelativePaths: false,
-            //       consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
-            //       defaultEncoding: '',
-            //       excludePattern: '',
-            //       healthy: '',
-            //       includePattern: '',
-            //       messagesPattern: '',
-            //       unHealthy: ''])
-            // step([$class: 'AnalysisPublisher',
-            //       canComputeNew: false,
-            //       checkStyleActivated: false,
-            //       defaultEncoding: '',
-            //       findBugsActivated: false,
-            //       healthy: '',
-            //       unHealthy: ''])
+            try {
 
-            // junit '**/junit.xml'
+                step([$class: 'WarningsPublisher',
+                      canComputeNew: false,
+                      canResolveRelativePaths: false,
+                      consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
+                      defaultEncoding: '',
+                      excludePattern: '',
+                      healthy: '',
+                      includePattern: '',
+                      messagesPattern: '',
+                      unHealthy: ''])
+                step([$class: 'AnalysisPublisher',
+                      canComputeNew: false,
+                      checkStyleActivated: false,
+                      defaultEncoding: '',
+                      findBugsActivated: false,
+                      healthy: '',
+                      unHealthy: ''])
 
-            // step([$class: 'CoberturaPublisher', 
-            //       autoUpdateHealth: false, 
-            //       autoUpdateStability: false, 
-            //       coberturaReportFile: '**/coverage.xml1', 
-            //       failUnhealthy: false, 
-            //       failUnstable: false, 
-            //       maxNumberOfBuilds: 0, 
-            //       onlyStable: false, 
-            //       sourceEncoding: 'ASCII', 
-            //       zoomCoverageChart: false])
+                junit '**/junit.xml1'
 
-            // allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
+                step([$class: 'CoberturaPublisher', 
+                      autoUpdateHealth: false, 
+                      autoUpdateStability: false, 
+                      coberturaReportFile: '**/coverage.xml1', 
+                      failUnhealthy: false, 
+                      failUnstable: false, 
+                      maxNumberOfBuilds: 0, 
+                      onlyStable: false, 
+                      sourceEncoding: 'ASCII', 
+                      zoomCoverageChart: false])
+
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
+            } catch (e) {
+                log.warning("there was a problem with test coverage pubish step: ${e}")
+            }
 
             if(testPostCommands) {
                 log.info('============================')
