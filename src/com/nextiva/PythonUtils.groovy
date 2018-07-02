@@ -98,7 +98,7 @@ void runTests(Map args) {
                 step([$class: 'CoberturaPublisher', 
                       autoUpdateHealth: false, 
                       autoUpdateStability: false, 
-                      coberturaReportFile: '**/coverage.xml1', 
+                      coberturaReportFile: '**/coverage.xml', 
                       failUnhealthy: false, 
                       failUnstable: false, 
                       maxNumberOfBuilds: 0, 
