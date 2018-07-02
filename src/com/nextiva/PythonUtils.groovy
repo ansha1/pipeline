@@ -81,8 +81,7 @@ void runTests(Map args) {
             publishHTML([allowMissing     : true,
                      alwaysLinkToLastBuild: false,
                      keepAll              : false,
-                     reportDir            : allure-results,
-                     reportFiles          : 'test-report.html',
+                     reportDir            : 'allure-results',
                      reportName           : 'Test Report',
                      reportTitles         : ''])
 
