@@ -74,45 +74,38 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
-            step([$class: 'WarningsPublisher',
-                  canComputeNew: false,
-                  canResolveRelativePaths: false,
-                  consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
-                  defaultEncoding: '',
-                  excludePattern: '',
-                  healthy: '',
-                  includePattern: '',
-                  messagesPattern: '',
-                  unHealthy: ''])
-            step([$class: 'AnalysisPublisher',
-                  canComputeNew: false,
-                  checkStyleActivated: false,
-                  defaultEncoding: '',
-                  findBugsActivated: false,
-                  healthy: '',
-                  unHealthy: ''])
+            // step([$class: 'WarningsPublisher',
+            //       canComputeNew: false,
+            //       canResolveRelativePaths: false,
+            //       consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
+            //       defaultEncoding: '',
+            //       excludePattern: '',
+            //       healthy: '',
+            //       includePattern: '',
+            //       messagesPattern: '',
+            //       unHealthy: ''])
+            // step([$class: 'AnalysisPublisher',
+            //       canComputeNew: false,
+            //       checkStyleActivated: false,
+            //       defaultEncoding: '',
+            //       findBugsActivated: false,
+            //       healthy: '',
+            //       unHealthy: ''])
 
-            junit '**/junit.xml'
+            // junit '**/junit.xml'
 
-            step([$class: 'CoberturaPublisher', 
-                  autoUpdateHealth: false, 
-                  autoUpdateStability: false, 
-                  coberturaReportFile: '**/coverage.xml1', 
-                  failUnhealthy: false, 
-                  failUnstable: false, 
-                  maxNumberOfBuilds: 0, 
-                  onlyStable: false, 
-                  sourceEncoding: 'ASCII', 
-                  zoomCoverageChart: false])
-            // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
-            allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
-            // publishHTML([allowMissing     : true,
-            //          alwaysLinkToLastBuild: false,
-            //          keepAll              : false,
-            //          reportDir            : 'allure-results',
-            //          reportFiles          : 'index.html',
-            //          reportName           : 'Allure Report',
-            //          reportTitles         : ''])
+            // step([$class: 'CoberturaPublisher', 
+            //       autoUpdateHealth: false, 
+            //       autoUpdateStability: false, 
+            //       coberturaReportFile: '**/coverage.xml1', 
+            //       failUnhealthy: false, 
+            //       failUnstable: false, 
+            //       maxNumberOfBuilds: 0, 
+            //       onlyStable: false, 
+            //       sourceEncoding: 'ASCII', 
+            //       zoomCoverageChart: false])
+
+            // allure includeProperties: false, jdk: '', results: [[path: 'allure-results1']]
 
             if(testPostCommands) {
                 log.info('============================')
