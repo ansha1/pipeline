@@ -75,15 +75,15 @@ void runTests(Map args) {
             error("Unit test fail ${e}")
         } finally {
 
-            // junit '**/junit.xml'
+            junit '**/junit.xml'
             // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']], unHealthy: ''
 
             publishHTML([allowMissing     : true,
                      alwaysLinkToLastBuild: false,
                      keepAll              : false,
                      reportDir            : 'allure-results',
-                     reportFiles          : 'test-report.html',
-                     reportName           : 'Test Report',
+                     reportFiles          : 'index.html',
+                     reportName           : 'Allure Report',
                      reportTitles         : ''])
 
             if(testPostCommands) {
