@@ -8,15 +8,13 @@ def call(String notifyChannel) {
 
 def commitersOnly() {
     def uploadSpec = buildStatusMessageBody()
-    def authors = getCommitAuthors()
-    authors.each {
-        def slackUserId = getSlackUserIdByEmail(it)
-        privateMessage(slackUserId, uploadSpec)
-    }
+    def commitAuthor = "git show --pretty=format:'%ae' | sed -n 1p"
+    def slackUserId = getSlackUserIdByEmail(commitAuthor)
+    privateMessage(slackUserId, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
-    log.debug{"Message: " + message}
+    log.debug { "Message: " + message }
     slackSend(channel: slackUserId, attachments: message, tokenCredentialId: "slackToken", botUser: true)
 }
 
