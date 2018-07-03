@@ -8,11 +8,9 @@ def call(String notifyChannel) {
 
 def commitersOnly() {
     def uploadSpec = buildStatusMessageBody()
-    def authors = getCommitAuthors()
-    authors.each {
-        def slackUserId = getSlackUserIdByEmail(it)
-        privateMessage(slackUserId, uploadSpec)
-    }
+    def commitAuthor = "git show --pretty=format:'%ae' | sed -n 1p"
+    def slackUserId = getSlackUserIdByEmail(commitAuthor)
+    privateMessage(slackUserId, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
@@ -21,6 +19,7 @@ def privateMessage(String slackUserId, String message) {
     //curl -H 'Accept: application/json' -X PUT '${uploadSpec}' "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
     httpRequest contentType: 'APPLICATION_JSON', httpMode: 'PUT', ignoreSslErrors: true, requestBody: 'text=${message}', url: 'https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true'
     //slackSend(channel: slackUserId, attachments: message, tokenCredentialId: "slackToken", botUser: true)
+
 }
 
 def buildStatusMessageBody() {
