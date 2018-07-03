@@ -15,7 +15,7 @@ def commitersOnly() {
 }
 
 def privateMessage(String slackUserId, String message) {
-    log.debug { "Message: " + message }
+    log.debug("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")
     httpRequest contentType: 'APPLICATION_JSON', quiet: env.DEBUG ? false : true,
             consoleLogResponseBody: env.DEBUG ? false : true, httpMode: 'POST',
