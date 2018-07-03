@@ -1,4 +1,5 @@
 #!groovy
+import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(String notifyChannel) {
@@ -15,10 +16,10 @@ def commitersOnly() {
 
 def privateMessage(String slackUserId, String message) {
     log.debug { "Message: " + message }
-    //curl -X POST -d "text=${uploadSpec}" "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
-    //curl -H 'Accept: application/json' -X PUT '${uploadSpec}' "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
-    httpRequest contentType: 'APPLICATION_JSON', consoleLogResponseBody: true, httpMode: 'PUT', requestBody: 'text=' + message, url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
-    //slackSend(channel: slackUserId, attachments: message, tokenCredentialId: "slackToken", botUser: true)
+    attachments = java.net.URLEncoder.encode(message, "UTF-8")
+    httpRequest contentType: 'APPLICATION_JSON', quiet: env.DEBUG ? false : true,
+            consoleLogResponseBody: env.DEBUG ? false : true, httpMode: 'POST',
+            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=trueattachments=${attachments}"
 
 }
 
@@ -52,7 +53,7 @@ def buildStatusMessageBody() {
 }
 
 def getSlackUserIdByEmail(String userMail) {
-    def response = httpRequest url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
+    def response = httpRequest quiet: env.DEBUG ? false : true, consoleLogResponseBody: env.DEBUG ? false : true, url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
     return responseJson.user.id
 }
