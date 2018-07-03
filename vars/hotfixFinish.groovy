@@ -122,7 +122,7 @@ def call(body) {
                         def branchesOutput = sh script: 'git branch -r', returnStdout: true
                         def branches = branchesOutput.tokenize('\n')
                                 .collect({ it.trim() })
-                                .findAll({ it ==~ /^origin\/release\/\d+.\d+.\d+$/ })
+                                .findAll({ it ==~ /^origin\/release\/\d+.\d+(.\d+)?$/ })
                                 .collect({ it.trim().replace("origin/", "") })
                         branches.add(developBranch)
                         log.info("Branches to merge to: ${branches}")
