@@ -14,7 +14,7 @@ def commitersOnly() {
 }
 
 def privateMessage(String slackUserId, String message) {
-    log.debug { "Message: " + message }
+    log.debug("Message: " + message)
     slackSend(channel: slackUserId, attachments: message, tokenCredentialId: "slackToken", botUser: true)
 }
 
