@@ -74,6 +74,43 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
+            try {
+                step([$class: 'WarningsPublisher',
+                      canComputeNew: false,
+                      canResolveRelativePaths: false,
+                      consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
+                      defaultEncoding: '',
+                      excludePattern: '',
+                      healthy: '',
+                      includePattern: '',
+                      messagesPattern: '',
+                      unHealthy: ''])
+                step([$class: 'AnalysisPublisher',
+                      canComputeNew: false,
+                      checkStyleActivated: false,
+                      defaultEncoding: '',
+                      findBugsActivated: false,
+                      healthy: '',
+                      unHealthy: ''])
+
+                junit '**/junit.xml'
+
+                step([$class: 'CoberturaPublisher', 
+                      autoUpdateHealth: false, 
+                      autoUpdateStability: false, 
+                      coberturaReportFile: '**/coverage.xml', 
+                      failUnhealthy: false, 
+                      failUnstable: false, 
+                      maxNumberOfBuilds: 0, 
+                      onlyStable: false, 
+                      sourceEncoding: 'ASCII', 
+                      zoomCoverageChart: false])
+
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
+            } catch (e) {
+                log.warning("there was a problem with test coverage pubish step: ${e}")
+            }
+
             if(testPostCommands) {
                 log.info('============================')
                 log.info('Starting a cleanup after unit tests execution')
