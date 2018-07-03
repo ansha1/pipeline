@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def call(String repoDir, String inventoryPath, String playbookPath, Map extraVars) {
 
     node(NODE_NAME) {
@@ -28,28 +29,16 @@ def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars)
     def playbookContext = '-i ' + inventoryPath + ' ' + playbookPath +
                           ' --vault-password-file ' + ANSIBLE_PASSWORD_PATH + generateExtraVars
 
-    println "playbookContext: " + playbookContext
+    log.info("playbookContext: " + playbookContext)
 
     return playbookContext
 }
 
 def execute(String repoDir, String playbookContext, String playbookPath) {
-	
     script {
-      	checkRCState()
+      	isRCLocked.checkState()
         stage('Run ansible playbook ' + playbookPath) {
-            sh """
-                cd ${repoDir} && ansible-playbook ${playbookContext}
-            """
+            sh "cd ${repoDir} && ansible-playbook ${playbookContext}"
         }
-    }
-}
-
-def checkRCState() {
-    
-    // check if RC in locked state
-    if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
-        currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("\nAll RC deploy jobs are locked !!!\nPlease contact QA Core Team.\n")
     }
 }

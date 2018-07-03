@@ -7,3 +7,11 @@ def call(String jobName = 'RCJobsLock') {
 
     return result
 }
+
+def checkState() {
+    // check if RC in locked state
+    if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException(RC_JOB_LOCK_MESSAGE)
+    }
+}
