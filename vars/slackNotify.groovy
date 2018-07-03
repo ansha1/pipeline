@@ -8,8 +8,8 @@ def call(String notifyChannel) {
 
 def commitersOnly() {
     def uploadSpec = buildStatusMessageBody()
-    def commitAuthor = "git show --pretty=format:'%ae' | sed -n 1p"
-    def slackUserId = getSlackUserIdByEmail(commitAuthor)
+    def commitAuthor = sh returnStdout: true, script: "git show --pretty=format:'%ae' | sed -n 1p"
+    def slackUserId = getSlackUserIdByEmail(commitAuthor.trim())
     privateMessage(slackUserId, uploadSpec)
 }
 
