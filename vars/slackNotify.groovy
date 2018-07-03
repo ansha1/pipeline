@@ -13,7 +13,7 @@ def commitersOnly() {
         def slackUserId = getSlackUserIdByEmail(commitAuthor.trim())
         privateMessage(slackUserId, uploadSpec)
     } catch (e) {
-        log.warn("Failed send notication to the commit authors: " + e.toString())
+        log.warn("Failed send Slack notication to the commit authors: " + e.toString())
     }
 }
 
