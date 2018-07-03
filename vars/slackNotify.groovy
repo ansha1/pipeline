@@ -16,7 +16,7 @@ def commitersOnly() {
 
 def privateMessage(String slackUserId, String message) {
     log.debug { "Message: " + message }
-    attachments = java.net.URLEncoder.encode(message, "UTF-8")
+    def attachments = java.net.URLEncoder.encode(message, "UTF-8")
     httpRequest contentType: 'APPLICATION_JSON', quiet: env.DEBUG ? false : true,
             consoleLogResponseBody: env.DEBUG ? false : true, httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=trueattachments=${attachments}"
