@@ -111,15 +111,16 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
+        BUILD_VERSION = version
     } else {
         version = utils.getVersion()
         DEPLOY_ONLY = false
-    }
 
-    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
-    } else {
-        BUILD_VERSION = version
+        if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+            BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
+        } else {
+            BUILD_VERSION = version
+        }
     }
 
     log.info('===============================')
