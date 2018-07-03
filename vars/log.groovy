@@ -23,6 +23,10 @@ def warning(message) {
     list.each{yellowBold("[WARNING] " + it)}
 }
 
+def warn(message){
+    warning(message)
+}
+
 def error(message) {
     def list = message.toString().readLines()
     list.each{redBold("[ERROR] " + it)}
