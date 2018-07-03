@@ -17,7 +17,7 @@ def privateMessage(String slackUserId, String message) {
     log.debug{"Message: " + message}
     //curl -X POST -d "text=${uploadSpec}" "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
     //curl -H 'Accept: application/json' -X PUT '${uploadSpec}' "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
-    httpRequest contentType: 'APPLICATION_JSON', httpMode: 'PUT', ignoreSslErrors: true, requestBody: 'text=${message}', url: 'https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true'
+    httpRequest contentType: 'APPLICATION_JSON', httpMode: 'PUT', ignoreSslErrors: true, requestBody: 'text=${message}', url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true"
     //slackSend(channel: slackUserId, attachments: message, tokenCredentialId: "slackToken", botUser: true)
 
 }
