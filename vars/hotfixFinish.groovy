@@ -171,7 +171,8 @@ def mergeBranch(repositoryUrl, source, destination, channelToNotify, autoPullReq
                 git checkout -b ${newBranch}
                 git push origin ${newBranch}
             """
-            def prLink = createPr(repositoryUrl, newBranch, destination, "${source}->${destination}", 'DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR(if its enabled for the repository), otherwise there will be conflicts when merging release to master and releaseFinish job fill fail')
+            def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts ${source}->${destination}"
+            def prLink = createPr(repositoryUrl, newBranch, destination, title, 'DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR(if its enabled for the repository), otherwise there will be conflicts when merging release to master and releaseFinish job fill fail')
             slackSend(color: '#6600cc',
                     channel: channelToNotify,
                     message: "Failed to automatically merge ${source} into ${destination}. Resolve conflicts and merge pull request (${prLink})")
