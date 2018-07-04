@@ -44,6 +44,17 @@ def call(body) {
                 steps {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
+
+                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "hotfix/" || true'
+                        hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
+
+                        if (hotfixBranchCount.toInteger() > 0) {
+                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
+                            log.error("hotfix branch count: <<${hotfixBranchCount}>>")
+                            log.error("List of hotfix branches:\n${hotfixBranchList}\n")
+                            currentBuild.rawBuild.result = Result.ABORTED
+                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing release branches and restart hotfixStart Job!!!\n\n")
+                        }
                     }
                 }
             }

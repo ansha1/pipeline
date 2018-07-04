@@ -52,7 +52,7 @@ def call(body) {
                         releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
 
                         if (releaseBranchCount.toInteger() > 0) {
-                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannnot go further with ReleaseStart Job!!!\n\n')
+                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with ReleaseStart Job!!!\n\n')
                             log.error("Release branch count: <<${releaseBranchCount}>>")
                             log.error("List of release branches:\n${releaseBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
