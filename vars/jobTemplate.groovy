@@ -29,6 +29,8 @@ def call(body) {
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
         NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
+        jdkVersion = pipelineParams.JDK_VERSION
+        mavenVersion = pipelineParams.MAVEN_VERSION
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -42,8 +44,8 @@ def call(body) {
         agent { label jobConfig.nodeLabel }
 
         tools {
-            jdk 'Java 8 Install automatically'
-            maven 'Maven 3.3.3 Install automatically'
+            jdk jobConfig.jdkVersion
+            maven jobConfig.mavenVersion
         }
 
         options {
