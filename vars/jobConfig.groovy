@@ -33,6 +33,8 @@ def call(body) {
     defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP.equals(null) ? [:] : pipelineParams.NEWRELIC_APP_ID_MAP
+    jdkVersion = pipelineParams.jdkVersion.equals(null) ?  DEFAULT_JDK_VERSION : pipelineParams.jdkVersion
+    mavenVersion = pipelineParams.mavenVersion.equals(null) ? DEFAULT_MAVEN_VERSION : pipelineParams.mavenVersion
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -96,6 +98,8 @@ def call(body) {
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
+    log("jdkVersion: ${jdkVersion}")
+    log("mavenVersion: ${mavenVersion}")
     healthCheckUrl.each { log("  - ${it}") }
     log('=====================================================')
     log('')
