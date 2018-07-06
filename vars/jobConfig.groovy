@@ -98,9 +98,9 @@ def call(body) {
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
+    healthCheckUrl.each { log("  - ${it}") }
     log("jdkVersion: ${jdkVersion}")
     log("mavenVersion: ${mavenVersion}")
-    healthCheckUrl.each { log("  - ${it}") }
     log('=====================================================')
     log('')
 }
