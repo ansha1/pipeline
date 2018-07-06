@@ -111,4 +111,10 @@ jobTemplate {
 
     /* NEWRELIC_APP_ID_MAP - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id */
     // NEWRELIC_APP_ID_MAP = ['production': '87818090']
+
+    /* JDK_VERSION - defines the JDK Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under JDK for options */
+    // JDK_VERSION = 'Java 8 Install automatically'
+
+    /* MAVEN_VERSION - defines the Maven Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under Maven for options  */
+    // MAVEN_VERSION = 'Maven 3.5.4 Install automatically'
 }
