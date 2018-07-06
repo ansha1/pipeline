@@ -84,14 +84,17 @@ def runDownstreamJobs() {
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
     }, pythonReleaseStartFinish: {
-        log.info('Python: ReleaseStartFinish not implemented yet')
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-release-finish'
     }
 
     parallel jsIntegration: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }, pythonLibIntegration: {
-        build job: 'nextiva-pipeline-tests/test-python-lib/master', parameters: [string(name: 'deploy_version', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-lib-pipeline/master', parameters: [string(name: 'deploy_version', value: '')]
     }, javaIntegration: {
         build job: 'nextiva-pipeline-tests/test-java-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
+    }, pythonIntegration: {
+        build job: 'nextiva-pipeline-tests/test-python-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }
 }
