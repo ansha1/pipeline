@@ -1,4 +1,4 @@
-@Library('pipelines') _
+@Library('pipeline') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 def lockableResource = "nextiva-pipelines-test"
@@ -25,6 +25,13 @@ lock(lockableResource) {
                         stage('run unit tests') {
                             echo 'unit tests'
                             sh './gradlew clean test'
+                        }
+
+                        stage('sonarqube analysing') {
+                            echo 'sonarqube analysing'
+                            script {
+                                sonarScanner('1.0.0')
+                            }
                         }
 
                         stage('run downstream jobs') {
