@@ -6,7 +6,7 @@ def call(){
             authors.add(getUserEmail { user = change.author })
         }
     }
-    print("Commit authors:")
-    authors.each { print(it) }
+    log.info("Commit authors:")
+    authors.each { log.info("  - ${it}") }
     return authors
 }

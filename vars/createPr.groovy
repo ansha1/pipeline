@@ -6,8 +6,8 @@ def call(String repositoryUrl, String sourceBranch, String destinationBranch, St
     def tokens = repositoryUrl.tokenize('/')
     def projectKey = tokens[2]
     def repositorySlug = tokens[3].replace(".git", "")
-    print('projectKey: ' + projectKey)
-    print('repositorySlug: ' + repositorySlug)
+    log.info('projectKey: ' + projectKey)
+    log.info('repositorySlug: ' + repositorySlug)
 
     String reviewersUrl = "http://git.nextiva.xyz/rest/default-reviewers/1.0/projects/${projectKey}/repos/${repositorySlug}/conditions"
     String createPrUrl = "http://git.nextiva.xyz/rest/api/1.0/projects/${projectKey}/repos/${repositorySlug}/pull-requests"
@@ -16,7 +16,7 @@ def call(String repositoryUrl, String sourceBranch, String destinationBranch, St
     def reviewersResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: reviewersUrl
     def props = readJSON text: reviewersResponce.content
     def revs = props[0].reviewers
-    print("Get reviewers")
+    log.info("Get reviewers")
     def revsList = []
     revs.each { revsList.add(['user': ['name': it.name]]) }
     def reviewers = JsonOutput.toJson(revsList)
@@ -45,6 +45,6 @@ def call(String repositoryUrl, String sourceBranch, String destinationBranch, St
     def pullRequestResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: requestBody, url: createPrUrl
     def responceJson = readJSON text: pullRequestResponce.content
     String pullRequestLink = responceJson.links.self[0].get('href')
-    print("\n\n PULL REQUEST WAS CREATED ${pullRequestLink}\n\n")
+    log.info("PULL REQUEST WAS CREATED ${pullRequestLink}")
     return pullRequestLink
 }

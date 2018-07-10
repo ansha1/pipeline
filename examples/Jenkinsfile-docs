@@ -1,0 +1,120 @@
+#!groovy
+/*
+* To access Nextiva pipeline shared libraries, the Jenkinsfile needs to use the @Library annotation,
+* specifying the library's name 'pipelines'(SCM - ssh://git@git.nextiva.xyz:7999/rel/pipelines.git)
+*
+* More info about Jenkins Shared Library can be found here: https://jenkins.io/doc/book/pipeline/shared-libraries/
+*/
+@Library('pipelines') _
+/*
+* jobTemplate is a groovy closure that is used to pass the Application parameters to the predefined template:
+* http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobTemplate.groovy
+* the configuration per project(branch, language, healthCheckUrl, branchPermissions) is loaded from another closure:
+* http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy
+*/
+jobTemplate {
+
+    /* APP_NAME - defines application name. This parameter is MANDATORY */
+    APP_NAME = 'analytics' 
+
+    /* DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted the default value is 'false' */
+    // DEPLOY_ON_K8S = 'false'
+
+    /*  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted label 'debian' will be used */
+    // NODE_LABEL = 'slave5'
+
+    /* 
+    * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
+    * If the parameter is ommited the default ansible repo that will be used is http://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
+    */
+    // ANSIBLE_REPO = 'ssh://git@git.nextiva.xyz:7999/rel/ansible.git' 
+
+    /*
+    * ANSIBLE_REPO_BRANCH  - defines a branch name that will be used for ANSIBLE_REPO checkout. 
+    * If the parameter is ommited the default branch 'dev' from ANSIBLE_REPO(release-management) will be used
+    */
+    // ANSIBLE_REPO_BRANCH = 'master'
+
+    /* BASIC_INVENTORY_PATH defines a path to inventory files in ANSIBLE_REPO. This parameter is MANDATORY */
+    BASIC_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/'
+
+    /* PLAYBOOK_PATH defines a path to ansible playbook in ANSIBLE_REPO. This parameter is MANDATORY */
+    PLAYBOOK_PATH = 'analytics_playbook/api-server.yml'
+
+    /* 
+    * ANSIBLE_EXTRA_VARS - defines a list of extra parameters to pass to ansible playbook.
+    * By default the parameters are defined in getAnsibleExtraVars() in http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy#130-151
+    */
+    // ANSIBLE_EXTRA_VARS = ['version': '', 'artifact_env': artifact_env]
+
+    /* CHANNEL_TO_NOTIFY - is used to send all notification for all branches to the specified Slack channel */
+    // CHANNEL_TO_NOTIFY = 'analytics'
+
+    /* 
+    * channelToNotifyPerBranch - defines a map with the Slack channels and a list of branches to monitor. More advanced option of CHANNEL_TO_NOTIFY.
+    *                            If both channelToNotifyPerBranch and CHANNEL_TO_NOTIFY are defined the high priorirty has channelToNotifyPerBranch
+    */ 
+    // channelToNotifyPerBranch = ['analytics-ci' : ['dev', 'hotfix/.+', 'PR.+', 'feature/.+'],
+    //                            'analytics' : ['master', 'release/.+']]
+
+    /* 
+    * ansibleEnvMap - defines a map of branches and corresponding ansible inventory env
+    * If ommited the default value will be used:
+    */
+    // ansibleEnvMap = [dev : "dev",
+    //                  qa : "rc",
+    //                  production: "production"]
+    
+
+    /* 
+    * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
+    */
+    // extraEnvs = ['TEST_DB'        : "postgres://test:dev@localhost/test_analytics${testExecutorNumber}",
+    //              'SURVEY_TEST_DB' : "postgres://test:dev@localhost/test_survey${testExecutorNumber}",
+    //              'CRM_TEST_DB'    : "postgres://test:dev@localhost/test_crm${testExecutorNumber}"]
+    
+    
+    /*
+    * projectFlow - the main parameter of jobTemplate closure. This parameter is MANDATORY
+    *    language - defines a language that project use(Java, Python, JS)
+    *    pathToSrc - defines a path to root sorce of your project relatively to base directory.
+    *    buildCommands - list of the commands that will be performed on build step. If the parameter is omitted
+    *                    the default predefined tests from the appropriate class(pipelines/src/com/(JavaUtils|JsUtils|PythonUtils).groovy) will be used
+    *    languageVersion - <Python only> defines python version that will be used for virtualenv
+    *    distPath  - <JS only> defines commands to perform on build step. The default value: "export OUTPUT_PATH=${distPath} && npm install && npm run dist"
+    *    testCommands - list of the commands that should be perdormed on Test stage. If the parameter is omitted 
+    *                   the default predefined tests from the appropriate class(pipelines/src/com/(JavaUtils|JsUtils|PythonUtils).groovy) will be used
+    *    testPostCommands - list of the commands that should be performed as post step after test execution
+    */
+    projectFlow = ['language'         : 'python',
+                   'languageVersion'  : 'python3.6'
+                   'pathToSrc'        : 'backend']
+
+    /* healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY */
+    // healthCheckMap = [dev       : ["http://0.0.0.0:8080/health"],
+    //                   qa        : ["http://0.0.0.0:8080/health"],
+    //                   production: ["http://0.0.0.0:8080/health"]]
+
+    /* branchPermissionsMap - defines a map of ldap logins or ldap groups which can start/stop named branches(dev|release|master). This parameter is MANDATORY */
+    // branchPermissionsMap = [dev       : ["authenticated"],
+    //                         qa        : ["onovosad"],
+    //                         production: ["onovosad"]]
+
+    /* jobTimeoutMinutes - defines the timeout for job execution. If the parameter is omitted the default timeout(30 mins) will be used */
+    // jobTimeoutMinutes = 30
+
+    /* buildNumToKeepStr - defines a number of builds to keep in thread. If the parameter is omitted the default value 7 will be used */
+    // buildNumToKeepStr = '7'
+
+    /* artifactNumToKeepStr - defines a number of artifacts to keep. If the parameter is omitted the default value 7 will be used */
+    // artifactNumToKeepStr = '7'
+
+    /* NEWRELIC_APP_ID_MAP - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id */
+    // NEWRELIC_APP_ID_MAP = ['production': '87818090']
+
+    /* JDK_VERSION - defines the JDK Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under JDK for options */
+    // JDK_VERSION = 'Java 8 Install automatically'
+
+    /* MAVEN_VERSION - defines the Maven Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under Maven for options  */
+    // MAVEN_VERSION = 'Maven 3.5.4 Install automatically'
+}

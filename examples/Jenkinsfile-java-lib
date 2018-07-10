@@ -1,0 +1,79 @@
+#!groovy
+@Library('pipelines') _
+
+import static com.nextiva.SharedJobsStaticVars.*
+import com.nextiva.*
+
+jobConfig {
+    APP_NAME = "nextutils"
+    CHANNEL_TO_NOTIFY = "utilities-builds"
+    projectFlow =  ['language'       : 'java']
+    branchPermissionsMap = [dev       : ["authenticated"],
+                            production: ["authenticated"]]
+
+}
+def securityPermissions = jobConfig.branchProperties
+
+//noinspection GroovyAssignabilityCheck
+pipeline {
+
+    agent { label DEFAULT_NODE_LABEL }
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+        disableConcurrentBuilds()
+        authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
+        timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
+    }
+
+    stages {
+        stage('Set additional properties') {
+            steps {
+                script {
+                    utils = jobConfig.getUtils()
+                    jobConfig.setBuildVersion()
+
+                    env.APP_NAME = jobConfig.APP_NAME
+                    env.CHANNEL_TO_NOTIFY = jobConfig.CHANNEL_TO_NOTIFY
+                    env.VERSION = jobConfig.version
+                    env.BUILD_VERSION = jobConfig.BUILD_VERSION
+                    env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
+                }
+            }
+        }
+        stage('Unit tests') {
+            steps {
+                script {
+                    utils.runTests(jobConfig.projectFlow)
+                }
+            }
+        }
+        stage('Sonar analyzing') {
+            steps {
+                script {
+                    utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                }
+            }
+        }
+        stage('Publish to nexus') {
+            when {
+                expression {
+                    env.BRANCH_NAME ==~ /^master$/
+                }
+            }
+            steps {
+                script {
+                    utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                }
+            }
+
+        }
+    }
+    post {
+        always {
+            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+        }
+    }
+}

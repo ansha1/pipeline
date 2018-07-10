@@ -12,6 +12,6 @@ def checkState() {
     // check if RC in locked state
     if (env.BRANCH_NAME ==~ ~/^release\/.+$/ && isRCLocked()) {
         currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("\nAll RC deploy jobs are locked !!!\nPlease contact QA Core Team.\n")
+        throw new hudson.AbortException(RC_JOB_LOCK_MESSAGE)
     }
 }
