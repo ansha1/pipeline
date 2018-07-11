@@ -87,7 +87,7 @@ def call(body) {
             }
             stage('Pre build verification') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^release\/.+$|implement_PIPELINE-16/ && jobConfig.ANSIBLE_ENV == 'production'}
+                    expression { jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(release\/.+|implement_PIPELINE-16)$/ && jobConfig.ANSIBLE_ENV == 'production'}
                 }
                 steps {
                     script {
