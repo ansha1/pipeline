@@ -85,6 +85,22 @@ def call(body) {
                     }
                 }
             }
+            stage('Pre build verification') {
+                when {
+                    expression { jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^release\/.+$/ && jobConfig.ANSIBLE_ENV == 'production'}
+                }
+                steps {
+                    script {
+                        timeout(time: 5, unit: 'MINUTES') {
+//                    utils.verifyPackageInNexus() // check if version from proprties file already exists in Nexus
+                            getAnswer = approve("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. Do you want to auto increase a minor version ?",
+                                    jobConfig.CHANNEL_TO_NOTIFY, jobConfig.branchPermissions.join(","))
+                            log.info("the answer we get is: " + getAnswer)
+
+                        }
+                    }
+                }
+            }
             stage('Unit tests') {
                 when {
                     expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }

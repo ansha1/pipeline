@@ -54,6 +54,9 @@ def runSonarScanner(String projectVersion) {
 }
 
 
+def verifyPackageInNexus() {}
+
+
 void runTests(Map args) {
     //TODO: add publish test report step
 

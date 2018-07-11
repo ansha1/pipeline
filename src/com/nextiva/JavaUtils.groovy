@@ -47,6 +47,9 @@ def runSonarScanner(String projectVersion) {
 }
 
 
+def verifyPackageInNexus() {}
+
+
 void runTests(Map args) {
     log.info("Start unit tests Java")
     def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')

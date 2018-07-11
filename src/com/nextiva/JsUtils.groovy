@@ -36,6 +36,9 @@ def runSonarScanner(String projectVersion) {
 }
 
 
+def verifyPackageInNexus() {}
+
+
 void runTests(Map args) {
     try {
         log.info("Start unit tests JavaScript")
