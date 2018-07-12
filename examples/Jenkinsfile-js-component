@@ -1,7 +1,6 @@
 #!groovy
 @Library('pipelines') _
 
-
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
@@ -12,7 +11,7 @@ CHANNEL_TO_NOTIFY = 'js-ui-component'
 //noinspection GroovyAssignabilityCheck
 pipeline {
 
-    agent { label "nodejs" }
+    agent { label JS_NODE_LABEL }
 
     options {
         timestamps()
