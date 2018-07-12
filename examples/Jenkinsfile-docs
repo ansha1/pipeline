@@ -5,7 +5,7 @@
 *
 * More info about Jenkins Shared Library can be found here: https://jenkins.io/doc/book/pipeline/shared-libraries/
 */
-@Library('pipelines') _
+@Library('pipeline') _
 /*
 * jobTemplate is a groovy closure that is used to pass the Application parameters to the predefined template:
 * http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobTemplate.groovy

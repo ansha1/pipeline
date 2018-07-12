@@ -1,10 +1,11 @@
-@Library('pipelines') _
+@Library('pipeline') _
 import static com.nextiva.SharedJobsStaticVars.*
+
 
 def lockableResource = "nextiva-pipelines-test"
 
 properties properties: [
-        disableConcurrentBuilds()
+    disableConcurrentBuilds()
 ]
 
 sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : BRANCH_NAME
@@ -25,6 +26,13 @@ lock(lockableResource) {
                         stage('run unit tests') {
                             echo 'unit tests'
                             sh './gradlew clean test'
+                        }
+
+                        stage('sonarqube analysing') {
+                            echo 'sonarqube analysing'
+                            script {
+                                sonarScanner('1.0.0')
+                            }
                         }
 
                         stage('run downstream jobs') {
