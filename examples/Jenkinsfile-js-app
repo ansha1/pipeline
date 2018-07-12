@@ -1,5 +1,5 @@
 #!groovy
-@Library('pipelines') _
+@Library('pipeline') _
 
 import static com.nextiva.SharedJobsStaticVars.*
 
