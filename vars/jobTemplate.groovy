@@ -9,7 +9,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    jobConfig.call {
+    jobConfig {
         extraEnvs = pipelineParams.extraEnvs
         projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
@@ -180,8 +180,8 @@ def call(body) {
                         }
                         steps {
                             script {
-                                def repoDir = prepareRepoDir.call(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                runAnsiblePlaybook.call(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 try {
                                     if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
@@ -223,7 +223,7 @@ def call(body) {
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
                                     log.info('channel to notify is: ' + channel)
-                                    slackNotify.call(channel)
+                                    slackNotify(channel)
                                 }
                             }
                         }

@@ -8,7 +8,7 @@ def call(String deployEnvironment, String assetDir, String version, String packa
     def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
 
     if (deployEnvironment in LIST_OF_ENVS) {
-        generateBuildProperties.call(deployEnvironment, version, jobName)
+        generateBuildProperties(deployEnvironment, version, jobName)
 
         def verbose = ''
         if( log.isDebug() ) {

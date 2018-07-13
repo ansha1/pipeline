@@ -1,5 +1,7 @@
 package utils
 
+import org.codehaus.groovy.reflection.CachedMethod
+
 /**
  * Common mocks
  */
@@ -23,6 +25,12 @@ trait Mocks implements BasePipelineAccessor {
         scriptNames.each { String scriptName ->
             def script = basePipelineTest.loadScript "vars/" + scriptName + ".groovy"
             basePipelineTest.binding.setVariable(scriptName, script)
+            script.metaClass.methods.findAll { m -> m.getName() == 'call' }.each { m ->
+                basePipelineTest.helper.registerAllowedMethod(
+                        scriptName,
+                        ((CachedMethod) m).cachedMethod.parameterTypes.findAll(),
+                        { Object[] args -> script.call(*args) })
+            }
         }
     }
 
