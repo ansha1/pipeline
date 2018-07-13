@@ -8,7 +8,7 @@ def call(String deployEnvironment, String assetDir, String version, String packa
     def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
 
     if (deployEnvironment in LIST_OF_ENVS) {
-      generateBuildProperties(deployEnvironment, version, jobName)
+      generateBuildProperties.call(deployEnvironment, version, jobName)
       sh """
           cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./
           curl --show-error --fail --write-out "\nStatus: %{http_code}\n" -v -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}

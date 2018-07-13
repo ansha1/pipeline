@@ -9,7 +9,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    jobConfig {
+    jobConfig.call {
         extraEnvs = pipelineParams.extraEnvs
         projectFlow = pipelineParams.projectFlow
         healthCheckMap = pipelineParams.healthCheckMap
@@ -90,13 +90,13 @@ def call(body) {
                         utils.runTests(jobConfig.projectFlow)
 
                         // This needs for sending all python projects to the Veracode DEVOPS-1289
-                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
+                        if (env.BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
                             stage('Veracode analyzing'){
                                 build job: 'VeracodeScan',
                                         parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                                      string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                     string(name: 'repoUrl', value: GIT_URL),
-                                                     string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
+                                                     string(name: 'repoUrl', value: env.GIT_URL),
+                                                     string(name: 'repoBranch', value: env.BRANCH_NAME)], wait: false
                             }
                         }
                     }
@@ -177,8 +177,8 @@ def call(body) {
                         }
                         steps {
                             script {
-                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                def repoDir = prepareRepoDir.call(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                runAnsiblePlaybook.call(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
                                 if (jobConfig.healthCheckUrl.size > 0) {
                                     stage('Wait until service is up') {
@@ -212,7 +212,7 @@ def call(body) {
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
                                     println('channel to notify is: ' + channel)
-                                    slackNotify(channel)
+                                    slackNotify.call(channel)
                                 }
                             }
                         }

@@ -19,8 +19,8 @@ class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator 
                     some_other_property: 'Keepo'
             ]
         }
-        helper.registerAllowedMethod "sh", [Map.class], { c -> "sh command output" }
-        helper.registerAllowedMethod "writeFile", [Map.class], { c -> "Write file" }
+        helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
+        helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
     }
 
     @Override
