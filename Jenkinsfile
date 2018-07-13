@@ -2,13 +2,13 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def lockableResource = "nextiva-pipelines-test"
+def lockableResource = "nextiva-pipeline-test"
 
 properties properties: [
     disableConcurrentBuilds()
 ]
 
-sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : BRANCH_NAME
+sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
