@@ -1,19 +1,16 @@
 #!groovy
 @Library('pipeline') _
 
-
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
 jobConfig {
-    projectFlow =  ['language'       : 'python',
-                    'languageVersion': 'python3']
-
+    APP_NAME = "nextutils"
+    CHANNEL_TO_NOTIFY = "utilities-builds"
+    projectFlow =  ['language'       : 'java']
     branchPermissionsMap = [dev       : ["authenticated"],
                             production: ["authenticated"]]
 
-    APP_NAME = "test-python-lib"
-    CHANNEL_TO_NOTIFY = "testchannel"
 }
 def securityPermissions = jobConfig.branchProperties
 
@@ -23,12 +20,12 @@ pipeline {
     agent { label DEFAULT_NODE_LABEL }
 
     options {
+        ansiColor('xterm')
         timestamps()
         disableConcurrentBuilds()
         authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
         timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
-        ansiColor('xterm')
     }
 
     stages {
@@ -60,7 +57,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Publish pypi-package') {
+        stage('Publish to nexus') {
             when {
                 expression {
                     env.BRANCH_NAME ==~ /^master$/
@@ -68,7 +65,7 @@ pipeline {
             }
             steps {
                 script {
-                    buildPublishPypiPackage('.', null, jobConfig.projectFlow['languageVersion'])
+                    utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
                 }
             }
 

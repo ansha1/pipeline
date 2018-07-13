@@ -1,6 +1,5 @@
 #!groovy
-@Library('pipelines') _
-
+@Library('pipeline') _
 
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
@@ -12,13 +11,14 @@ CHANNEL_TO_NOTIFY = 'js-ui-component'
 //noinspection GroovyAssignabilityCheck
 pipeline {
 
-    agent { label "nodejs" }
+    agent { label JS_NODE_LABEL }
 
     options {
         timestamps()
         disableConcurrentBuilds()
         timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
+        ansiColor('xterm')
     }
 
     stages {
@@ -31,11 +31,11 @@ pipeline {
         }
         stage('Info') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
-                sh 'env'
-                print "APP_NAME: ${APP_NAME}"
-                print "BUILD_VERSION: ${BUILD_VERSION}"
+                log.info(sh(script: 'node -v', returnStdout: true))
+                log.info(sh(script: 'npm -v', returnStdout: true))
+                log.info("APP_NAME: ${APP_NAME}")
+                log.info("BUILD_VERSION: ${BUILD_VERSION}")
+                log.info(sh(script: 'printenv', returnStdout: true))
             }
         }
         stage('Install') {

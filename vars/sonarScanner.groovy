@@ -9,15 +9,15 @@ def call(String projectVersion='0.1.0') {
             sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectVersion=${projectVersion}"
         }
     
-        timeout(time: 10, unit: 'MINUTES') {
+        /*timeout(time: 10, unit: 'MINUTES') {
             def qg = waitForQualityGate()
             if (qg.status != 'OK') {
-                print('Sonar Quality Gate failed')
-                // currentBuild.rawBuild.result = Result.UNSTABLE
+                log.warning('Sonar Quality Gate failed')
+                currentBuild.rawBuild.result = Result.UNSTABLE
             }
-        }
+        }*/
     } catch (e) {
-        print e
+        log.warning(e)
         currentBuild.rawBuild.result = Result.UNSTABLE
     }
 }

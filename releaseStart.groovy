@@ -5,6 +5,13 @@ import static com.nextiva.SharedJobsStaticVars.*
 //noinspection GroovyAssignabilityCheck
 pipeline {
     agent any
+
+    options {
+        timestamps()
+        //skipStagesAfterUnstable()
+        ansiColor('xterm')
+    }
+
     tools {
         jdk 'Java 8 Install automatically'
         maven 'Maven 3.3.3 Install automatically'
@@ -15,6 +22,15 @@ pipeline {
         string(defaultValue: 'autoincrement', description: 'enter release version, or left empty to use version autoincrement', name: 'releaseVersion', trim: false)
     }
     stages {
+        stage('Deprecation warning') {
+            steps {
+                script {
+                    log.warning('DEPRECATED: Please urgently migrate to the latest realization of Release Start job!!!.' +
+                                'If you have any questions please contact DevOps by email: devopsteam@nextiva.com or by slack: #devops-support')
+                    currentBuild.rawBuild.result = Result.UNSTABLE
+                }
+            }
+        }
         stage('Checkout repo') {
             steps {
                 cleanWs()
@@ -78,11 +94,11 @@ def prepareVersion(String projectType) {
                 if (projectVersion.endsWith("-SNAPSHOT")) {
                     releaseVersion = projectVersion - "-SNAPSHOT"
                 } else {
-                    error("ERROR: Branch contains non-snapshot version: " + projectVersion)
+                    error("Branch contains non-snapshot version: " + projectVersion)
                 }
             } else {
                 if (!releaseVersion =~ (/^\d+\.\d+\.\d+$/)) {
-                    error("ERROR: Invalid release version: " + releaseVersion)
+                    error("Invalid release version: " + releaseVersion)
                 }
             }
 
@@ -93,7 +109,7 @@ def prepareVersion(String projectType) {
             if (patch.isNumber()) {
                 developmentVersion = major + "." + (minor.toInteger() + 1) + "." + "0" + "-SNAPSHOT"
             } else {
-                error("ERROR: Invalid version: " + projectVersion)
+                error("Invalid version: " + projectVersion)
             }
             break
         case 'javascript':

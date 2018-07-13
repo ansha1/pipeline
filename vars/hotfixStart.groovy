@@ -22,6 +22,10 @@ def call(body) {
         options {
             timestamps()
             skipStagesAfterUnstable()
+            ansiColor('xterm')
+            disableConcurrentBuilds()
+            timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
+            buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
         }
         tools {
             jdk 'Java 8 Install automatically'
@@ -40,17 +44,28 @@ def call(body) {
                 steps {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
+
+                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "hotfix/" || true'
+                        hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
+
+                        if (hotfixBranchCount.toInteger() > 0) {
+                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
+                            log.error("hotfix branch count: <<${hotfixBranchCount}>>")
+                            log.error("List of hotfix branches:\n${hotfixBranchList}\n")
+                            currentBuild.rawBuild.result = Result.ABORTED
+                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing release branches and restart hotfixStart Job!!!\n\n")
+                        }
                     }
                 }
             }
             stage('Collecting hotfix version') {
                 steps {
                     script {
-                        echo "\nUserDefinedHotfixVersion: ${hotfixVersion}\n"
+                        log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
                         hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
-                            echo("\n\nSelected hotfix version: ${hotfixVersion}")
+                            log.info("Selected hotfix version: ${hotfixVersion}")
                         } else {
                             error("""\n\nWrong hotfix version : ${hotfixVersion}
                                     please use git-flow naming convention\n\n""")

@@ -28,6 +28,9 @@ def call(body) {
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
+        NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
+        jdkVersion = pipelineParams.JDK_VERSION
+        mavenVersion = pipelineParams.MAVEN_VERSION
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -41,8 +44,8 @@ def call(body) {
         agent { label jobConfig.nodeLabel }
 
         tools {
-            jdk 'Java 8 Install automatically'
-            maven 'Maven 3.3.3 Install automatically'
+            jdk jobConfig.jdkVersion
+            maven jobConfig.mavenVersion
         }
 
         options {
@@ -51,11 +54,12 @@ def call(body) {
             authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
             timeout(time: jobTimeoutMinutes, unit: 'MINUTES')
             buildDiscarder(logRotator(numToKeepStr: buildNumToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
+            ansiColor('xterm')
         }
 
         parameters {
             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                    'or leave empty for start full build')
+                   'or leave empty for start full build')
         }
 
         stages {
@@ -75,9 +79,9 @@ def call(body) {
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        print("\n\n GLOBAL ENVIRONMENT VARIABLES: \n")
-                        sh "printenv"
-                        print("\n\n ============================= \n")
+                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
+                        log.info(sh(script: 'printenv', returnStdout: true))
+                        log.info('=============================')
                     }
                 }
             }
@@ -92,11 +96,10 @@ def call(body) {
                         // This needs for sending all python projects to the Veracode DEVOPS-1289
                         if (env.BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
                             stage('Veracode analyzing'){
-                                build job: 'VeracodeScan',
-                                        parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                                     string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                     string(name: 'repoUrl', value: env.GIT_URL),
-                                                     string(name: 'repoBranch', value: env.BRANCH_NAME)], wait: false
+                                build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                                                        string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
+                                                                        string(name: 'repoUrl', value: env.GIT_URL),
+                                                                        string(name: 'repoBranch', value: env.BRANCH_NAME)], wait: false
                             }
                         }
                     }
@@ -146,7 +149,7 @@ def call(body) {
                     script {
                         if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
 //TODO: add approve step, check CR step
-//                        approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
+//                            approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
                             isApproved = true //    = approve.isApproved()
                         } else {
                             //always approve for dev branch
@@ -166,7 +169,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                echo("\n\nBUILD_VERSION: ${jobConfig.BUILD_VERSION}\n\n")
+                                log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
                             }
                         }
@@ -180,7 +183,17 @@ def call(body) {
                                 def repoDir = prepareRepoDir.call(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                 runAnsiblePlaybook.call(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
-                                if (jobConfig.healthCheckUrl.size > 0) {
+                                try {
+                                    if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
+                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID_MAP[jobConfig.ANSIBLE_ENV], NEWRELIC_API_KEY_MAP[jobConfig.ANSIBLE_ENV],
+                                                                  jobConfig.BUILD_VERSION)
+                                    }
+                                }
+                                catch (e) {
+                                    log.warning("An error occurred: Could not log deployment to New Relic. Check integration configuration.\n${e}")
+                                }
+
+                                if (jobConfig.healthCheckUrl.size() > 0) {
                                     stage('Wait until service is up') {
                                         healthCheck.list(jobConfig.healthCheckUrl)
                                     }
@@ -196,11 +209,9 @@ def call(body) {
                 }
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration tests with this application
-                    build job: 'QA_Incoming_Integration',
-                            parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
-                                         string(name: 'env', value: jobConfig.ANSIBLE_ENV),
-                                         string(name: 'runId', value: '')],
-                            wait: false
+                    build job: 'QA_Incoming_Integration', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV),
+                                                                       string(name: 'runId', value: '')], wait: false
                 }
             }
         }
@@ -211,11 +222,14 @@ def call(body) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
-                                    println('channel to notify is: ' + channel)
+                                    log.info('channel to notify is: ' + channel)
                                     slackNotify.call(channel)
                                 }
                             }
                         }
+                    }
+                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/ ) {
+                        slackNotify.commitersOnly()
                     }
                 }
             }

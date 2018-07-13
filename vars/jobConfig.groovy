@@ -30,8 +30,11 @@ def call(body) {
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-    defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY) : LIST_OF_DEFAULT_BRANCH_PATTERNS]
+    defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
+    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP.equals(null) ? [:] : pipelineParams.NEWRELIC_APP_ID_MAP
+    jdkVersion = pipelineParams.jdkVersion.equals(null) ?  DEFAULT_JDK_VERSION : pipelineParams.jdkVersion
+    mavenVersion = pipelineParams.mavenVersion.equals(null) ? DEFAULT_MAVEN_VERSION : pipelineParams.mavenVersion
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -39,7 +42,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
-            echo('\nDEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.\n')
+            //log('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
             break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
@@ -82,20 +85,24 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    echo('\n\n==============Job config complete ==================\n\n')
-    echo("nodeLabel: ${nodeLabel}\n")
-    echo("APP_NAME: ${APP_NAME}\n")
-    echo("ansibleRepo: ${ansibleRepo}\n")
-    echo("ansibleRepoBranch: ${ansibleRepoBranch}\n")
-    echo("INVENTORY_PATH: ${INVENTORY_PATH}\n")
-    echo("PLAYBOOK_PATH: ${PLAYBOOK_PATH}\n")
-    echo("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}\n")
-    echo("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}\n")
-    echo("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}\n")
-    echo("CHANNEL_TO_NOTIFY: ${slackNotifictionScope}\n")
-    echo("healthCheckUrl:")
-    healthCheckUrl.each { print(it) }
-    echo('\n======================================================\n\n')
+    log('')
+    log('============== Job config complete ==================')
+    log("nodeLabel: ${nodeLabel}")
+    log("APP_NAME: ${APP_NAME}")
+    log("ansibleRepo: ${ansibleRepo}")
+    log("ansibleRepoBranch: ${ansibleRepoBranch}")
+    log("INVENTORY_PATH: ${INVENTORY_PATH}")
+    log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
+    log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
+    log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
+    log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
+    log("slackNotifictionScope: ${slackNotifictionScope}")
+    log("healthCheckUrl:")
+    healthCheckUrl.each { log("  - ${it}") }
+    log("jdkVersion: ${jdkVersion}")
+    log("mavenVersion: ${mavenVersion}")
+    log('=====================================================')
+    log('')
 }
 
 
@@ -108,22 +115,22 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
         version = userDefinedBuildVersion.trim()
         DEPLOY_ONLY = true
+        BUILD_VERSION = version
     } else {
         version = utils.getVersion()
         DEPLOY_ONLY = false
+
+        if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
+            BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
+        } else {
+            BUILD_VERSION = version
+        }
     }
 
-    if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-        BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
-    } else {
-        BUILD_VERSION = version
-    }
-
-    echo('===============================')
-    echo('BUILD_VERSION: ' + BUILD_VERSION)
-    echo('===============================')
-    echo('DEPLOY_ONLY: ' + DEPLOY_ONLY)
-    echo('===============================')
+    log.info('===============================')
+    log.info('BUILD_VERSION: ' + BUILD_VERSION)
+    log.info('DEPLOY_ONLY: ' + DEPLOY_ONLY)
+    log.info('===============================')
 }
 
 

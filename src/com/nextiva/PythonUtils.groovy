@@ -17,12 +17,12 @@ String getVersion() {
             }
             else {
                 currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("ERROR: Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+                throw new hudson.AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
             }
         }
         else {
             currentBuild.rawBuild.result = Result.ABORTED
-            throw new hudson.AbortException("ERROR: File ${BUILD_PROPERTIES_FILENAME} not found.")
+            throw new hudson.AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
         }
     }
 }
@@ -57,14 +57,14 @@ def runSonarScanner(String projectVersion) {
 void runTests(Map args) {
     //TODO: add publish test report step
 
-    println('============================')
-    println('Start Python unit tests')
-    println('============================')
+    log.info('============================')
+    log.info('Start Python unit tests')
+    log.info('============================')
     
     def languageVersion = args.get('languageVersion', 'python3.6')
     def testCommands = args.get('testCommands', '''pip install -r requirements.txt
-                                                       pip install -r requirements-test.txt
-                                                       python setup.py test''')
+                                                   pip install -r requirements-test.txt
+                                                   python setup.py test''')
     def testPostCommands = args.get('testPostCommands')
 
     dir(pathToSrc) {
@@ -74,10 +74,47 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
+            try {
+                step([$class: 'WarningsPublisher',
+                      canComputeNew: false,
+                      canResolveRelativePaths: false,
+                      consoleParsers: [[parserName: 'ESLint'], [parserName: 'Flake8'], [parserName: 'Stylelint']],
+                      defaultEncoding: '',
+                      excludePattern: '',
+                      healthy: '',
+                      includePattern: '',
+                      messagesPattern: '',
+                      unHealthy: ''])
+                step([$class: 'AnalysisPublisher',
+                      canComputeNew: false,
+                      checkStyleActivated: false,
+                      defaultEncoding: '',
+                      findBugsActivated: false,
+                      healthy: '',
+                      unHealthy: ''])
+
+                junit '**/junit.xml'
+
+                step([$class: 'CoberturaPublisher', 
+                      autoUpdateHealth: false, 
+                      autoUpdateStability: false, 
+                      coberturaReportFile: '**/coverage.xml', 
+                      failUnhealthy: false, 
+                      failUnstable: false, 
+                      maxNumberOfBuilds: 0, 
+                      onlyStable: false, 
+                      sourceEncoding: 'ASCII', 
+                      zoomCoverageChart: false])
+
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
+            } catch (e) {
+                log.warning("there was a problem with test coverage pubish step: ${e}")
+            }
+
             if(testPostCommands) {
-                println('============================')
-                println('Starting a cleanup after unit tests execution')
-                println('============================')
+                log.info('============================')
+                log.info('Starting a cleanup after unit tests execution')
+                log.info('============================')
                 
                 pythonUtils.venvSh(testPostCommands)
             }
@@ -87,8 +124,10 @@ void runTests(Map args) {
 
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
-    print("\n\n build and publish Python \n\n ")
-    print("APP_NAME: ${appName} \n BUILD_VERSION: ${buildVersion} \n ENV: ${environment}")
+    log.info("Build and publish Python.")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
 
     debPackage.build(appName, buildVersion, environment, pathToSrc)
     debPackage.publish(appName, environment, pathToSrc)

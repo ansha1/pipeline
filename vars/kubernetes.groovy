@@ -14,10 +14,10 @@ def deploy(String serviceName, String nameSpace, String configSet, String buildV
             withEnv(["BUILD_VERSION=${buildVersion}"]) {
                 sh "/bin/bash ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"
             }            
-            echo "Deploy to Kubernetes namespace ${nameSpace} has been complited."
+            log.info("Deploy to Kubernetes namespace ${nameSpace} has been complited.")
         } catch (e) {
-            echo "\nERROR: Deploy to Kubernetes failed!"
-            echo "${e}\n"
+            log.warning("Deploy to Kubernetes failed!")
+            log.warning(e)
         }
     }
 }

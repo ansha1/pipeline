@@ -2,14 +2,14 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def createVirtualEnv(String pythonName='python', String venvDir=VENV_DIR) {
-    println 'Create virtualenv.'
-    sh(script: "virtualenv --python=${pythonName} ${venvDir}")
+    log.info("Create virtualenv (${venvDir})")
+    sh "virtualenv --python=${pythonName} ${venvDir}"
 }
 
 def getVirtualEnv(String venvDir=VENV_DIR) {
     if ( ! fileExists(venvDir) ) {
         currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("ERROR: There is no virtualenv dir - ${venvDir}.")
+        throw new hudson.AbortException("There is no virtualenv dir - ${venvDir}.")
     }
     
     // get the absolute path of a env dir
@@ -34,7 +34,7 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
 }
 
 def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
-    println "Activate virtualenv and run command (${venvDir})."
+    log.info("Activate virtualenv and run command (${venvDir})")
     withEnv(getVirtualEnv(venvDir)) {
         output = sh(returnStdout: returnStdout, script: cmd)
     }
@@ -43,6 +43,6 @@ def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
 
 def pipInstall(String filename, String venvDir=VENV_DIR) {
     withEnv(getVirtualEnv(venvDir)) {
-        sh(script: "pip install -r ${filename}")
+        sh "pip install -r ${filename}"
     }
 }

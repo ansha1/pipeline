@@ -13,7 +13,7 @@ def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_
     
     def finalRepoDir = sharedLibraryRepoDir + '/' + formattedRepo + '/' + formattedBranch
     def lockableResource = "lock_" + env.NODE_NAME.replace(' ', '_') + "_" + finalRepoDir
-    println "lockableResource: " + lockableResource
+    log.info("lockableResource: " + lockableResource)
     
     lock(lockableResource) {
         dir(finalRepoDir) {
