@@ -84,7 +84,6 @@ String getSoruceBranchFromPr(String url) {
 
 def runDownstreamJobs() {
 
-    //TODO:add building release start/release finish jobs for this projects before starting multibranch job
     parallel jsReleaseStartFinish: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
