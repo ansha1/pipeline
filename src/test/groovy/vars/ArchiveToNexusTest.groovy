@@ -20,8 +20,9 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
                 BRANCH_NAME: 'dev',
                 NODE_NAME  : 'Debian Slave 3'
         ]
+        binding.setVariable 'params', [:]
 
-        attachScript 'generateBuildProperties'
+        attachScript 'generateBuildProperties', 'log'
 
         helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
         helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
