@@ -84,8 +84,8 @@ jobTemplate {
     *    distPath  - <JS only> defines commands to perform on build step. The default value: "export OUTPUT_PATH=${distPath} && npm install && npm run dist"
     *    testCommands - list of the commands that should be performed on Test stage. If the parameter is omitted
     *                   the default predefined tests from the appropriate class(pipelines/src/com/(JavaUtils|JsUtils|PythonUtils).groovy) will be used
-    *    testPostCommands - list of the commands that should be performed as post step after test execution
-    *    postDeployCommands - list of the commands that should be executed after successfully deploy on environment(e.g end to end tests)
+    *    testPostCommands - a list of the commands that should be performed as post step after test execution
+    *    postDeployCommands - a list of the commands that should be executed after a successful deployment on an environment(e.g end to end tests)
     */
     projectFlow = ['language'         : 'python',
                    'languageVersion'  : 'python3.6'
