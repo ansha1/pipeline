@@ -8,8 +8,8 @@ import utils.Mocks
 import utils.Validator
 
 class CreatePrTest extends BasePipelineTest implements Validator, Mocks {
-    private static
-    final String PR_URL = "http://git.nextiva.xyz/users/oleksandr.kramarenko/repos/qa_integration/pull-requests/1"
+    private static final String PR_URL = "http://git.nextiva.xyz/users/oleksandr.kramarenko/" +
+            "repos/qa_integration/pull-requests/1"
 
     @Override
     @Before

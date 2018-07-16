@@ -6,6 +6,8 @@ import org.codehaus.groovy.reflection.CachedMethod
  * Common mocks
  */
 trait Mocks implements BasePipelineAccessor {
+    MocksAdjustment mocksAdjustment = new MocksAdjustment(basePipelineTest)
+
     /**
      * Mocks the required data for sendSlack function
      */
@@ -16,6 +18,13 @@ trait Mocks implements BasePipelineAccessor {
                 BUILD_ID : 'Build Id',
                 BUILD_URL: 'https://jenkins.nextiva.xyz/jenkins/'
         ]
+    }
+
+    /**
+     * Mocks methods available through the docker variable
+     */
+    void mockDocker() {
+        basePipelineTest.binding.setVariable('docker', mocksAdjustment.getDocker())
     }
 
     /**

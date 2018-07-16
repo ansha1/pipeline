@@ -34,7 +34,9 @@ trait Validator implements BasePipelineAccessor {
                                              int executionCount = 1,
                                              int parameterIndex = 0) {
         List<MethodCall> methodCalls = basePipelineTest.helper.callStack.findAll { method ->
-            ((methodName == method.methodName) && basePipelineTest.matchParameter(method.getArgs()[parameterIndex], expectedValue))
+            ((methodName == method.methodName)
+                    && method.getArgs().size() > parameterIndex
+                    && basePipelineTest.matchParameter(method.getArgs()[parameterIndex], expectedValue))
         }
         assertEquals('Method ' + methodName + ' was not executed with argument value ' + expectedValue, executionCount, methodCalls.size())
 
