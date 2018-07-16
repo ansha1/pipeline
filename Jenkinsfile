@@ -2,13 +2,13 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def lockableResource = "nextiva-pipelines-test"
+def lockableResource = "nextiva-pipeline-test"
 
 properties properties: [
     disableConcurrentBuilds()
 ]
 
-sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : BRANCH_NAME
+sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
@@ -84,7 +84,6 @@ String getSoruceBranchFromPr(String url) {
 
 def runDownstreamJobs() {
 
-    //TODO:add building release start/release finish jobs for this projects before starting multibranch job
     parallel jsReleaseStartFinish: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'

@@ -198,6 +198,12 @@ def call(body) {
                                         healthCheck.list(jobConfig.healthCheckUrl)
                                     }
                                 }
+
+                                if (jobConfig.projectFlow.get('postDeployCommands')){
+                                    stage("Post deploy/E2E stage"){
+                                        sh jobConfig.projectFlow.get('postDeployCommands')
+                                    }
+                                }
                             }
                         }
                     }
