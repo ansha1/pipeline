@@ -1,6 +1,10 @@
 package vars
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import hudson.AbortException
+import hudson.model.Result
+import org.hamcrest.core.StringContains
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import utils.Mocks
@@ -13,6 +17,9 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         super.setUp()
 
         binding.setVariable 'WORKSPACE', 'WORKSPACE'
+        binding.setVariable 'Result', Result
+        binding.setVariable 'currentBuild', [rawBuild: [:]]
+        helper.registerAllowedMethod 'fileExists', [String], { String s -> return !s.contains('not_existing') }
 
         mockEnv()
         mockGenerateBuildProperties()
@@ -27,7 +34,6 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void build_without_extra_parameters() {
-        helper.registerAllowedMethod 'fileExists', [String], {true}
         def script = loadScript "vars/debPackage.groovy"
         script.build 'packageName', 'version', 'deployEnvironment'
         printCallStack()
@@ -35,7 +41,6 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void build_with_extra_path() {
-        helper.registerAllowedMethod 'fileExists', [String], {true}
         def script = loadScript "vars/debPackage.groovy"
         script.build 'packageName', 'version', 'deployEnvironment', 'extra/path'
         printCallStack()
@@ -44,9 +49,21 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void build_with_extra_docker_image() {
-        helper.registerAllowedMethod 'fileExists', [String], {true}
         def script = loadScript "vars/debPackage.groovy"
         script.build 'packageName', 'version', 'deployEnvironment', 'extra/path', mocksAdjustment.docker
+        printCallStack()
+    }
+
+    @Test
+    void cannot_build_with_not_existing_path() {
+        def script = loadScript "vars/debPackage.groovy"
+        try {
+            script.build 'packageName', 'version', 'deployEnvironment', 'not_existing/path'
+            Assert.fail('AbortException is expected')
+        } catch (AbortException e) {
+            Assert.assertThat(e.getMessage(), StringContains.containsString('not_existing'))
+            Assert.assertEquals('Wrong result', Result.ABORTED, binding.currentBuild.rawBuild.result)
+        }
         printCallStack()
     }
 }
