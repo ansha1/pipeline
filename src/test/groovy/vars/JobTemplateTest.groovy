@@ -72,13 +72,6 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
-        binding.setVariable 'env', [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3'
-        ]
         binding.setVariable 'params', [
                 deploy_version: '1.0'
         ]
@@ -89,10 +82,12 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
         helper.registerAllowedMethod 'sh', [Map], { c -> 'some output' }
 
+        mockEnv()
+        mockDocker()
+
         mockClosure 'pipeline', 'agent', 'tools', 'options', 'parameters', 'stages', 'steps', 'script',
                 'when', 'expression', 'parallel', 'post', 'always'
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
-        //TODO: try to find a way to use real buildPublishDockerImage script
         mockStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit'

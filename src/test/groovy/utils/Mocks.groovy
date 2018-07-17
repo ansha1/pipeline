@@ -21,10 +21,39 @@ trait Mocks implements BasePipelineAccessor {
     }
 
     /**
+     * Mocks the required data for generateBuildProperties script
+     */
+    void mockGenerateBuildProperties() {
+        basePipelineTest.helper.registerAllowedMethod 'readProperties', [Map], { c ->
+            [
+                    deploy_environment : 'deploy_environment_from_file',
+                    some_property      : 'Kappa123',
+                    some_other_property: 'Keepo'
+            ]
+        }
+        basePipelineTest.helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
+        basePipelineTest.helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
+
+    }
+
+    /**
      * Mocks methods available through the docker variable
      */
     void mockDocker() {
         basePipelineTest.binding.setVariable('docker', mocksAdjustment.getDocker())
+    }
+
+    /**
+     * Mocks Jenkins env property
+     */
+    void mockEnv() {
+        basePipelineTest.binding.setVariable 'env', [
+                JOB_NAME   : 'Job name',
+                BUILD_ID   : 'Build Id',
+                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
+                BRANCH_NAME: 'dev',
+                NODE_NAME  : 'Debian Slave 3'
+        ]
     }
 
     /**

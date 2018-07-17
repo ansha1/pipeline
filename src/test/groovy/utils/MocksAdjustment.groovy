@@ -44,6 +44,10 @@ class MocksAdjustment {
                 MocksAdjustment.updateInterceptors(customImage, basePipelineTest.helper)
                 return customImage
             }
+
+            def inside(String s, Closure c) {
+                basePipelineTest.helper.callClosure(c, s)
+            }
         }
         //noinspection UnnecessaryQualifiedReference
         MocksAdjustment.updateInterceptors(docker, basePipelineTest.helper)

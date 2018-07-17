@@ -13,15 +13,9 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
-        binding.setVariable 'env', [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3'
-        ]
         binding.setVariable 'params', [:]
 
+        mockEnv()
         attachScript 'generateBuildProperties', 'log'
 
         helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
