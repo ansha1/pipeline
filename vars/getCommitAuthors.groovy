@@ -1,6 +1,7 @@
 def call(){
     def changeSet = currentBuild.changeSets
-    for (int i = 0; i < changeSet.items(); i++) {
+    for (int i = 0; i < changeSet.size(); i++) {
+    def entries = changeSet[i].items
         Set authors = [];
         if (changeSet != null) {
             for (change in changeSet.items) {
