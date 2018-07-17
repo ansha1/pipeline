@@ -94,12 +94,12 @@ def call(body) {
                         utils.runTests(jobConfig.projectFlow)
 
                         // This needs for sending all python projects to the Veracode DEVOPS-1289
-                        if (env.BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')) {
+                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')) {
                             stage('Veracode analyzing') {
                                 build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                                                         string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                                        string(name: 'repoUrl', value: env.GIT_URL),
-                                                                        string(name: 'repoBranch', value: env.BRANCH_NAME)], wait: false
+                                                                        string(name: 'repoUrl', value: GIT_URL),
+                                                                        string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                             }
                         }
                     }

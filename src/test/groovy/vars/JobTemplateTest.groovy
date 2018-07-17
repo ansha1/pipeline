@@ -72,6 +72,9 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
+        binding.setVariable 'NODE_NAME', 'Debian Slave 3'
+        binding.setVariable 'BRANCH_NAME', 'dev'
+        binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
                 deploy_version: '1.0'
         ]

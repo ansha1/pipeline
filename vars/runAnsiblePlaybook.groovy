@@ -3,7 +3,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def call(String repoDir, String inventoryPath, String playbookPath, Map extraVars) {
 
-    node(env.NODE_NAME) {
+    node(NODE_NAME) {
         def playbookContext = getPlaybookContext(inventoryPath, playbookPath, extraVars)
         execute(repoDir, playbookContext, playbookPath)
     }
