@@ -10,9 +10,8 @@ def call(String notifyChannel) {
 def commitersOnly() {
     try {
         def uploadSpec = buildStatusMessageBody()
-        def commitAuthor = getCommitAuthors()
-        def slackUserId = getSlackUserIdByEmail(commitAuthor.trim())
-        commitAuthor.each {
+        def commitAuthors = getCommitAuthors()
+        commitAuthors.each {
             def slackUserId = getSlackUserIdByEmail(it)
             privateMessage(slackUserId, uploadSpec)
         }
