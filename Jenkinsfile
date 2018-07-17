@@ -84,14 +84,20 @@ String getSoruceBranchFromPr(String url) {
 
 def runDownstreamJobs() {
 
-    parallel jsReleaseStartFinish: {
+    parallel jsReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-js-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build 'nextiva-pipeline-tests/test-js-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
-    }, javaReleaseStartFinish: {
+    }, javaReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-java-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build 'nextiva-pipeline-tests/test-java-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
-    }, pythonReleaseStartFinish: {
+    }, pythonReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build 'nextiva-pipeline-tests/test-python-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-finish'
     }
 

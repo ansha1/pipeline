@@ -17,11 +17,10 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -37,7 +36,6 @@ def call(body) {
             stage('Checkout repo') {
                 steps {
                     cleanWs()
-
                     git branch: developBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
 
                 }
@@ -85,12 +83,11 @@ def call(body) {
                                 releaseBranch = releaseVersion
                             } else {
                                 log.info("Getting releaseVersion from build properties file")
-                                releaseBranch = major + '.' + minor 
+                                releaseBranch = major + '.' + minor
                             }
-                        } 
-                        else {
+                        } else {
                             error('\n\nWrong release version : ' + releaseVersion +
-                                '\nplease use git-flow naming convention\n\n')
+                                    '\nplease use git-flow naming convention\n\n')
                         }
                     }
                 }
@@ -100,10 +97,12 @@ def call(body) {
                 steps {
                     script {
                         utils.setVersion(releaseVersion)
-                        sh """
-                            git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
-                        """
-                        sh "git branch release/${releaseBranch}"
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
+                                git branch release/${releaseBranch}
+                            """
+                        }
                     }
                 }
             }
@@ -124,9 +123,11 @@ def call(body) {
                         log.info('developmentVersion: ' + developmentVersion)
                         utils.setVersion(developmentVersion)
 
-                        sh """
-                          git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
+                            """
+                        }
                     }
                 }
             }
@@ -134,9 +135,11 @@ def call(body) {
             stage('Push to bitbucket repo') {
                 steps {
                     script {
-                        sh """
-                          git push --all
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git push --all
+                            """
+                        }
                     }
                 }
             }
