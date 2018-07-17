@@ -1,11 +1,9 @@
 def call(){
-    def changeSet = currentBuild.changeSets
-        Set authors = [];
-        if (changeSet != null) {
-            for (change in changeSet.items) {
-            print(change.getClass())
+    def changeSet = currentBuild.changeSetsz
+    Set authors = [];
+    if (changeSet != null) {
+        for (change in changeSet.items) {
             authors.add(getUserEmail { user = change.author })
-            }
         }
     }
     log.info("Commit authors:")
