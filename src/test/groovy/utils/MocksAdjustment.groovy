@@ -1,6 +1,7 @@
 package utils
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import com.lesfurets.jenkins.unit.PipelineTestHelper
 
 class MocksAdjustment {
     private final BasePipelineTest basePipelineTest
@@ -39,16 +40,19 @@ class MocksAdjustment {
                     }
 
                 }
-                customImage.metaClass.invokeMethod = basePipelineTest.helper.getMethodInterceptor()
-                customImage.metaClass.static.invokeMethod = basePipelineTest.helper.getMethodInterceptor()
-                customImage.metaClass.methodMissing = basePipelineTest.helper.getMethodMissingInterceptor()
+                //noinspection UnnecessaryQualifiedReference
+                MocksAdjustment.updateInterceptors(customImage, basePipelineTest.helper)
                 return customImage
             }
         }
-        docker.metaClass.invokeMethod = basePipelineTest.helper.getMethodInterceptor()
-        docker.metaClass.static.invokeMethod = basePipelineTest.helper.getMethodInterceptor()
-        docker.metaClass.methodMissing = basePipelineTest.helper.getMethodMissingInterceptor()
+        //noinspection UnnecessaryQualifiedReference
+        MocksAdjustment.updateInterceptors(docker, basePipelineTest.helper)
         return docker
     }
 
+    static def updateInterceptors(script, PipelineTestHelper helper) {
+        script.metaClass.invokeMethod = helper.getMethodInterceptor()
+        script.metaClass.static.invokeMethod = helper.getMethodInterceptor()
+        script.metaClass.methodMissing = helper.getMethodMissingInterceptor()
+    }
 }
