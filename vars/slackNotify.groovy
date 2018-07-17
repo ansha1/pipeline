@@ -10,9 +10,12 @@ def call(String notifyChannel) {
 def commitersOnly() {
     try {
         def uploadSpec = buildStatusMessageBody()
-        def commitAuthor = sh returnStdout: true, script: "git show --pretty=format:'%ae' | sed -n 1p"
+        def commitAuthor = getCommitAuthors()
         def slackUserId = getSlackUserIdByEmail(commitAuthor.trim())
-        privateMessage(slackUserId, uploadSpec)
+        commitAuthor.each {
+            def slackUserId = getSlackUserIdByEmail(it)
+            privateMessage(slackUserId, uploadSpec)
+        }
     } catch (e) {
         log.warn("Failed send Slack notication to the commit authors: " + e.toString())
     }
