@@ -81,10 +81,10 @@ class MergeBranchesTest extends BasePipelineTest implements Validator, Mocks {
                            'build.properties'],
                 ['  <version>1.0.0-SNAPSHOT</version>',
                  '  <version>1.0.1-SNAPSHOT</version>',
-                 '"version": "1.0.0"',
-                 '"version": "1.0.1"',
-                 'build_version=0.2.0-5419',
-                 'build_version=0.2.0-5420'
+                 '"version": "1.0.0",',
+                 '"version": "1.0.1",',
+                 'version=1.5.0',
+                 'version=1.5.1'
                 ])
         def script = loadScript "vars/mergeBranches.groovy"
         script.call 'origin/feature/Kappa123', 'origin/develop', 'some_channel', false, true
