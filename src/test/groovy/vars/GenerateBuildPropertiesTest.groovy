@@ -11,7 +11,6 @@ class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator,
     @Override
     @Before
     void setUp() throws Exception {
-        scriptRoots += '/'
         super.setUp()
         mockGenerateBuildProperties()
     }

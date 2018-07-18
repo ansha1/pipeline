@@ -11,7 +11,6 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
     @Override
     @Before
     void setUp() throws Exception {
-        scriptRoots += '/'
         super.setUp()
         binding.setVariable 'params', [:]
 
