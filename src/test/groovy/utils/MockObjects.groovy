@@ -3,10 +3,10 @@ package utils
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import com.lesfurets.jenkins.unit.PipelineTestHelper
 
-class MocksAdjustment {
+class MockObjects {
     private final BasePipelineTest basePipelineTest
 
-    MocksAdjustment(basePipelineTest) {
+    MockObjects(basePipelineTest) {
         this.basePipelineTest = basePipelineTest
     }
 
@@ -41,7 +41,7 @@ class MocksAdjustment {
 
                 }
                 //noinspection UnnecessaryQualifiedReference
-                MocksAdjustment.updateInterceptors(customImage, basePipelineTest.helper)
+                MockObjects.updateInterceptors(customImage, basePipelineTest.helper)
                 return customImage
             }
 
@@ -50,7 +50,7 @@ class MocksAdjustment {
             }
         }
         //noinspection UnnecessaryQualifiedReference
-        MocksAdjustment.updateInterceptors(docker, basePipelineTest.helper)
+        MockObjects.updateInterceptors(docker, basePipelineTest.helper)
         return docker
     }
 

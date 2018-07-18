@@ -51,7 +51,7 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
     @Test
     void build_with_extra_docker_image() {
         def script = loadScript "vars/debPackage.groovy"
-        script.build 'packageName', 'version', 'deployEnvironment', 'extra/path', mocksAdjustment.docker
+        script.build 'packageName', 'version', 'deployEnvironment', 'extra/path', mockObjects.docker
         printCallStack()
     }
 
@@ -87,7 +87,7 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void if_deploy_failed_than_build_is_aborted() {
-        helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? -1 : 'sh command output' }
+        helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? 1 : 'sh command output' }
         try {
             def script = loadScript "vars/debPackage.groovy"
             script.publish 'packageName', 'dev'
