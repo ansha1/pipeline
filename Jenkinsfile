@@ -45,6 +45,14 @@ lock(lockableResource) {
             currentBuild.result = "FAILED"
             throw e
         } finally {
+            publishHTML([allowMissing         : true,
+                         alwaysLinkToLastBuild: false,
+                         keepAll              : true,
+                         reportDir            : 'build/reports/tests/test/',
+                         reportFiles          : 'index.html',
+                         reportName           : 'Test Report',
+                         reportTitles         : ''])
+
             slackNotify('testchannel')
         }
     }
