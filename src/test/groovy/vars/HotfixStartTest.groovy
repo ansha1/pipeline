@@ -55,8 +55,8 @@ class HotfixStartTest extends BasePipelineTest implements Validator, Mocks {
             }
             return 'sh command output'
         }
+        def script = loadScript "vars/hotfixStart.groovy"
         try {
-            def script = loadScript "vars/hotfixStart.groovy"
             script.call {}
             Assert.fail('AbortException is expected')
         } catch (AbortException ignored) {
