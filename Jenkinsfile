@@ -1,4 +1,4 @@
-@Library('pipeline@PIPELINE_20') _
+@Library('pipelines@PIPELINE_20') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 
