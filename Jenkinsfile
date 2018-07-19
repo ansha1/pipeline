@@ -3,7 +3,6 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def lockableResource = "nextiva-pipeline-test"
-def changeUrl = env.CHANGE_URL
 
 properties properties: [
     disableConcurrentBuilds()
@@ -70,7 +69,7 @@ def changeSharedLibBranch(String libBranch) {
 
 String getSoruceBranchFromPr(String url) {
 
-    def props = bitbucket.getPrFromUrl(changeUrl)
+    def props = bitbucket.getPrFromUrl(url)
 
     def sourceBranch = props.fromRef.displayId.trim()
     log("SourceBranch: ${sourceBranch}")

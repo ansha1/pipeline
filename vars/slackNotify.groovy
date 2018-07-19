@@ -20,8 +20,8 @@ def commitersOnly() {
     }
 }
 
-def prOwnerPrivateMessage() {
-    def prOwner = bitbucket.prOwnerEmail()
+def prOwnerPrivateMessage(String url) {
+    def prOwner = bitbucket.prOwnerEmail(url)
     privateMessage(prOwner, uploadSpec)
 }
 
