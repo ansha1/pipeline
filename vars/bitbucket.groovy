@@ -1,3 +1,6 @@
+#!groovy
+import static com.nextiva.SharedJobsStaticVars.*
+
 def prOwnerEmail(String url) {
     def pr = getPrFromUrl(url)
     return pr.author.user.emailAddress
