@@ -1,5 +1,5 @@
-def prOwnerEmail(String changeUrl) {
-    def pr = getPrFromUrl(changeUrl)
+def prOwnerEmail() {
+    def pr = getPrFromUrl(env.CHANGE_URL)
     return pr.author.user.emailAddress
 }
 
