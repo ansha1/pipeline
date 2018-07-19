@@ -59,7 +59,7 @@ def call(body) {
 
         parameters {
             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                   'or leave empty for start full build')
+                    'or leave empty for start full build')
         }
 
         stages {
@@ -94,8 +94,8 @@ def call(body) {
                         utils.runTests(jobConfig.projectFlow)
 
                         // This needs for sending all python projects to the Veracode DEVOPS-1289
-                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')){
-                            stage('Veracode analyzing'){
+                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')) {
+                            stage('Veracode analyzing') {
                                 build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                                                         string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                                                         string(name: 'repoUrl', value: GIT_URL),
@@ -186,7 +186,7 @@ def call(body) {
                                 try {
                                     if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
                                         newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID_MAP[jobConfig.ANSIBLE_ENV], NEWRELIC_API_KEY_MAP[jobConfig.ANSIBLE_ENV],
-                                                                  jobConfig.BUILD_VERSION)
+                                                jobConfig.BUILD_VERSION)
                                     }
                                 }
                                 catch (e) {
@@ -234,7 +234,7 @@ def call(body) {
                             }
                         }
                     }
-                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/ ) {
+                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/) {
                         slackNotify.commitersOnly()
                     }
                 }
