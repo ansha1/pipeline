@@ -8,7 +8,7 @@ def getPrFromUrl(Sting url) {
     return readJSON text: prResponce.content
 }
 
-def prOwner() {
+def prOwnerEmail() {
     def pr = bitbucket.getPrFromUrl(env.CHANGE_URL)
     return pr.author.user.emailAddress
 }
