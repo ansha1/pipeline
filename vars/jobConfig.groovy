@@ -22,7 +22,7 @@ def call(body) {
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
     APP_NAME = pipelineParams.APP_NAME
-    nodeLabel = pipelineParams.nodeLabel.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.nodeLabel
+    nodeLabel = pipelineParams.nodeLabel
     ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
     ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
@@ -85,7 +85,7 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
-    if (nodeLabel = null){
+    if (nodeLabel.equals(null)){
            nodeLabel = projectFlow.get('language')
     }
 
