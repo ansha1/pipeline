@@ -9,7 +9,7 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
+class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
 
     @Override
     @Before
@@ -33,14 +33,18 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
     }
 
     @Test
-    void hotfix_finish() {
+    void release_finish() {
         helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git branch -r.*') {
-                return 'origin/hotfix/0.0.1\norigin/release/0.0.0'
+                if (map.get('script') ==~ '.*wc -l') {
+                    return '1'
+                } else {
+                    return 'origin/release/0.0.1'
+                }
             }
             return 'sh command output'
         }
-        def script = loadScript "vars/hotfixFinish.groovy"
+        def script = loadScript "vars/releaseFinish.groovy"
         script.call { developBranch = 'develop' }
         printCallStack()
         checkThatMockedMethodWasExecuted 'warn', 0
@@ -48,14 +52,18 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
     }
 
     @Test
-    void cannot_finish_hotfix_if_not_branches() {
+    void cannot_finish_release_if_not_branches() {
         helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git branch -r.*') {
-                return ''
+                if (map.get('script') ==~ '.*wc -l') {
+                    return '0'
+                } else {
+                    return ''
+                }
             }
             return 'sh command output'
         }
-        def script = loadScript "vars/hotfixFinish.groovy"
+        def script = loadScript "vars/releaseFinish.groovy"
         try {
             script.call { developBranch = 'develop' }
             Assert.fail('AbortException is expected')
@@ -63,18 +71,22 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
             printCallStack()
             Assert.assertEquals('Wrong result', Result.ABORTED, binding.currentBuild.rawBuild.result)
         }
-        checkThatMethodWasExecutedWithValue 'error', '.*There are no hotfix branches.*'
+        checkThatMethodWasExecutedWithValue 'error', '.*There are no release branches.*'
     }
 
     @Test
-    void cannot_finish_hotfix_if_multiple_branches() {
+    void cannot_finish_release_if_multiple_branches() {
         helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git branch -r.*') {
-                return 'origin/hotfix/0.0.1\norigin/hotfix/0.0.2'
+                if (map.get('script') ==~ '.*wc -l') {
+                    return '2'
+                } else {
+                    return 'origin/release/0.0.1, origin/release/0.0.2'
+                }
             }
             return 'sh command output'
         }
-        def script = loadScript "vars/hotfixFinish.groovy"
+        def script = loadScript "vars/releaseFinish.groovy"
         try {
             script.call { developBranch = 'develop' }
             Assert.fail('AbortException is expected')
@@ -82,28 +94,36 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
             printCallStack()
             Assert.assertEquals('Wrong result', Result.ABORTED, binding.currentBuild.rawBuild.result)
         }
-        checkThatMethodWasExecutedWithValue 'error', '.*more then 1 hotfix.*'
+        checkThatMethodWasExecutedWithValue 'error', '.*more then 1 release.*'
     }
 
     @Test
-    void cannot_finish_hotfix_with_not_valid_dev_branch() {
+    void cannot_finish_release_with_not_valid_dev_branch() {
         helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git branch -r.*') {
-                return 'origin/hotfix/0.0.1\norigin/release/0.0.0'
+                if (map.get('script') ==~ '.*wc -l') {
+                    return '1'
+                } else {
+                    return 'origin/release/0.0.1'
+                }
             }
             return 'sh command output'
         }
-        def script = loadScript "vars/hotfixFinish.groovy"
+        def script = loadScript "vars/releaseFinish.groovy"
         script.call { developBranch = 'developer' }
         printCallStack()
         checkThatMethodWasExecutedWithValue 'error', '.*Wrong develop branch name.*'
     }
 
     @Test
-    void cannot_finish_hotfix_if_merge_to_master_failed() {
+    void cannot_finish_release_if_merge_to_master_failed() {
         helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git branch -r.*') {
-                return 'origin/hotfix/0.0.1'
+                if (map.get('script') ==~ '.*wc -l') {
+                    return '1'
+                } else {
+                    return 'origin/release/0.0.1'
+                }
             }
             return 'sh command output'
         }
@@ -115,7 +135,7 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
                         return 'sh command output'
                     }
                 }
-        def script = loadScript "vars/hotfixFinish.groovy"
+        def script = loadScript "vars/releaseFinish.groovy"
         try {
             script.call { developBranch = 'develop' }
             printCallStack()
