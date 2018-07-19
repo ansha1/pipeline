@@ -10,5 +10,6 @@ def getPrFromUrl(Sting url) {
     log("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
-    return readJSON text: prResponce.content
+    def returnBody = readJSON text: prResponce.content
+    return returnBody
 }
