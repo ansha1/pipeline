@@ -30,7 +30,7 @@ def call(body) {
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-    defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS]
+    defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
