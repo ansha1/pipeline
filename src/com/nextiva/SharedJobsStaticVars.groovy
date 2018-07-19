@@ -22,7 +22,6 @@ class SharedJobsStaticVars {
     static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
-    static final DEFAULT_NODE_LABEL = 'debian'
     static final ANSIBLE_NODE_LABEL = 'ansible'
     static final JS_NODE_LABEL = 'js'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
