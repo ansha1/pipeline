@@ -3,7 +3,7 @@ def prOwnerEmail() {
     return pr.author.user.emailAddress
 }
 
-def getPrFromUrl(Sting url) {
+def getPrFromUrl(String url) {
 
     log("Received PR url: ${url}")
     prUrl = url.replaceAll("git.nextiva.xyz/projects", "git.nextiva.xyz/rest/api/1.0/projects") - "/overview"
