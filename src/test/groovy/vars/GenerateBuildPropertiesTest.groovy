@@ -3,24 +3,17 @@ package vars
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
+import utils.Mocks
 import utils.Validator
 
-class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator {
+class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator, Mocks {
 
     @Override
     @Before
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
-        helper.registerAllowedMethod 'readProperties', [Map], { c ->
-            [
-                    deploy_environment : 'deploy_environment_from_file',
-                    some_property      : 'Kappa123',
-                    some_other_property: 'Keepo'
-            ]
-        }
-        helper.registerAllowedMethod "sh", [Map.class], { c -> "sh command output" }
-        helper.registerAllowedMethod "writeFile", [Map.class], { c -> "Write file" }
+        mockGenerateBuildProperties()
     }
 
     @Override

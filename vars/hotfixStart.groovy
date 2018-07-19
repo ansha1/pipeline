@@ -1,6 +1,5 @@
 #!groovy
 import com.nextiva.*
-
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(body) {
@@ -17,11 +16,10 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -45,7 +43,7 @@ def call(body) {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
 
-                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "hotfix/" || true'
+                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/hotfix/" || true'
                         hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
 
                         if (hotfixBranchCount.toInteger() > 0) {
@@ -77,25 +75,30 @@ def call(body) {
                 steps {
                     script {
                         utils.setVersion(hotfixVersion)
-                        sh """
-                          git checkout -b hotfix/${hotfixVersion}
-                          git commit -a -m "Release engineering - bumped to ${hotfixVersion} patch version "
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git checkout -b hotfix/${hotfixVersion}
+                              git commit -a -m "Release engineering - bumped to ${hotfixVersion} patch version "
+                            """
+                        }
                     }
                 }
             }
             stage('Push to bitbucket repo') {
                 steps {
                     script {
-                        sh """
-                          git push --all
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git push --all
+                            """
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 String getNextVersion(utils) {
     def version = utils.getVersion()
