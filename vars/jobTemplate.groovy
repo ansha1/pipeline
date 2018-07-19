@@ -41,7 +41,7 @@ def call(body) {
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        setNodeLabelPerLanguage()
+        agent { label jobConfig.nodeLabel }
 
         tools {
             jdk jobConfig.jdkVersion

@@ -24,7 +24,7 @@ class SharedJobsStaticVars {
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final DEFAULT_NODE_LABEL = 'debian'
     static final ANSIBLE_NODE_LABEL = 'ansible'
-    static final JS_NODE_LABEL = 'nodejs'
+    static final JS_NODE_LABEL = 'js'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'

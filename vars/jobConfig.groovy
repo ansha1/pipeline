@@ -85,6 +85,10 @@ def call(body) {
         branchProperties.add("hudson.model.Item.Cancel:${it}")
     }
 
+    if (nodeLabel = null){
+           nodeLabel = projectFlow.get('language')
+    }
+
     log('')
     log('============== Job config complete ==================')
     log("nodeLabel: ${nodeLabel}")
