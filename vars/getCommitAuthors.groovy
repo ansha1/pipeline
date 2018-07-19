@@ -2,7 +2,7 @@ def call(){
     def changeSets = currentBuild.changeSets
     Set authors = [];
     changeSets.each{
-        if (it != null) {
+        if (it) {
             for (change in it.items) {
                 authors.add(getUserEmail { user = change.author })
             }
