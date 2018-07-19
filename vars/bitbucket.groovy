@@ -1,3 +1,8 @@
+def prOwnerEmail(String changeUrl) {
+    def pr = getPrFromUrl(changeUrl)
+    return pr.author.user.emailAddress
+}
+
 def getPrFromUrl(Sting url) {
 
     log("Received PR url: ${url}")
@@ -6,9 +11,4 @@ def getPrFromUrl(Sting url) {
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
     return readJSON text: prResponce.content
-}
-
-def prOwnerEmail() {
-    def pr = getPrFromUrl(env.CHANGE_URL)
-    return pr.author.user.emailAddress
 }
