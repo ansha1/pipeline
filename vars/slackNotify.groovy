@@ -21,8 +21,8 @@ def commitersOnly() {
 }
 
 def prOwnerPrivateMessage() {
-    def slackUserId = bitbucket.prOwnerEmail()
-    privateMessage(slackUserId, uploadSpec)
+    def prOwner = bitbucket.prOwnerEmail()
+    privateMessage(prOwner, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
