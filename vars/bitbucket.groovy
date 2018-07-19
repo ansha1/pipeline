@@ -1,7 +1,7 @@
 #!groovy
 import static com.nextiva.SharedJobsStaticVars.*
 
-String getSoruceBranchFromPr(String url) {
+String getSourceBranchFromPr(String url) {
 
     def props = getPrFromUrl(url)
     def sourceBranch = props.fromRef.displayId.trim()

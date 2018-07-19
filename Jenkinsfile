@@ -1,4 +1,4 @@
-@Library('pipelines@PIPELINE_20') _
+@Library('pipelines@PIPELINE-20') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 
@@ -8,7 +8,7 @@ properties properties: [
     disableConcurrentBuilds()
 ]
 
-sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? bitbucket.getSoruceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
+sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? bitbucket.getSourceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
