@@ -1,6 +1,16 @@
 #!groovy
 import static com.nextiva.SharedJobsStaticVars.*
 
+String getSoruceBranchFromPr(String url) {
+
+    def props = getPrFromUrl(url)
+
+    def sourceBranch = props.fromRef.displayId.trim()
+    log("SourceBranch: ${sourceBranch}")
+
+    return sourceBranch
+}
+
 def prOwnerEmail(String url) {
     def pr = getPrFromUrl(url)
     return pr.author.user.emailAddress

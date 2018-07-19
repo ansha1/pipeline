@@ -8,7 +8,7 @@ properties properties: [
     disableConcurrentBuilds()
 ]
 
-sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
+sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? bitbucket.getSoruceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
@@ -65,16 +65,6 @@ def changeSharedLibBranch(String libBranch) {
     }
     testFolder.save()
     log('pipeline branch changed to ' + libBranch)
-}
-
-String getSoruceBranchFromPr(String url) {
-
-    def props = bitbucket.getPrFromUrl(url)
-
-    def sourceBranch = props.fromRef.displayId.trim()
-    log("SourceBranch: ${sourceBranch}")
-
-    return sourceBranch
 }
 
 def runDownstreamJobs() {
