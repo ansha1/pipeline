@@ -9,6 +9,6 @@ def getPrFromUrl(Sting url) {
 }
 
 def prOwnerEmail() {
-    def pr = bitbucket.getPrFromUrl(env.CHANGE_URL)
+    def pr = getPrFromUrl(env.CHANGE_URL)
     return pr.author.user.emailAddress
 }
