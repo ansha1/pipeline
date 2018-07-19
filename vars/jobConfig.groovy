@@ -14,27 +14,27 @@ def call(body) {
                             production: "production"]
 
     projectFlow = pipelineParams.projectFlow
-    extraEnvs = pipelineParams.extraEnvs.equals(null) ? [:] : pipelineParams.extraEnvs
-    healthCheckMap = pipelineParams.healthCheckMap.equals(null) ? [:] : pipelineParams.healthCheckMap
+    extraEnvs = pipelineParams.extraEnvs ?: [:]
+    healthCheckMap = pipelineParams.healthCheckMap ?: [:]
     branchPermissionsMap = pipelineParams.branchPermissionsMap
-    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
-    buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
-    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
+    ansibleEnvMap = pipelineParams.ansibleEnvMap ?: ansibleEnvMapDefault
+    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
+    buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
+    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
     APP_NAME = pipelineParams.APP_NAME
-    nodeLabel = pipelineParams.nodeLabel ?: projectFlow.get('language')
-    ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
-    ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
+    nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
+    ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
+    ansibleRepoBranch = pipelineParams.ansibleRepoBranch ?: RELEASE_MANAGEMENT_REPO_BRANCH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
+    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS]
-    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
-    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP.equals(null) ? [:] : pipelineParams.NEWRELIC_APP_ID_MAP
-    jdkVersion = pipelineParams.jdkVersion.equals(null) ? DEFAULT_JDK_VERSION : pipelineParams.jdkVersion
-    mavenVersion = pipelineParams.mavenVersion.equals(null) ? DEFAULT_MAVEN_VERSION : pipelineParams.mavenVersion
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
+    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
+    jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
+    mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
 
     switch (env.BRANCH_NAME) {
         case 'dev':
