@@ -20,6 +20,11 @@ def commitersOnly() {
     }
 }
 
+def prOwnerPrivateMessage() {
+    def slackUserId = bitbucket.prOwner()
+    privateMessage(slackUserId, uploadSpec)
+}
+
 def privateMessage(String slackUserId, String message) {
     log.debug("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")

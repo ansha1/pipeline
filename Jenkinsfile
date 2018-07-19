@@ -69,12 +69,7 @@ def changeSharedLibBranch(String libBranch) {
 
 String getSoruceBranchFromPr(String url) {
 
-    log("Received PR url: ${url}")
-    prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-    log("Transform Url for access via rest api: ${prUrl}")
-
-    def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
-    def props = readJSON text: prResponce.content
+    def props = bitbucket.getPrFromUrl(url)
 
     def sourceBranch = props.fromRef.displayId.trim()
     log("SourceBranch: ${sourceBranch}")
