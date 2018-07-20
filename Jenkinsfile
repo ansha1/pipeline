@@ -1,4 +1,4 @@
-@Library('pipeline') _
+@Library('pipelines@PIPELINE-20') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 
@@ -8,7 +8,7 @@ properties properties: [
     disableConcurrentBuilds()
 ]
 
-sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
+sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? bitbucket.getSourceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
@@ -73,21 +73,6 @@ def changeSharedLibBranch(String libBranch) {
     }
     testFolder.save()
     log('pipeline branch changed to ' + libBranch)
-}
-
-String getSoruceBranchFromPr(String url) {
-
-    log("Received PR url: ${url}")
-    prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-    log("Transform Url for access via rest api: ${prUrl}")
-
-    def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
-    def props = readJSON text: prResponce.content
-
-    def sourceBranch = props.fromRef.displayId.trim()
-    log("SourceBranch: ${sourceBranch}")
-
-    return sourceBranch
 }
 
 def runDownstreamJobs() {

@@ -234,8 +234,9 @@ def call(body) {
                             }
                         }
                     }
-                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/) {
+                    if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                         slackNotify.commitersOnly()
+                        slackNotify.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                 }
             }
