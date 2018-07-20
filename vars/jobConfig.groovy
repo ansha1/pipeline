@@ -83,6 +83,7 @@ def call(body) {
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
         branchProperties.add("hudson.model.Item.Cancel:${it}")
+        branchProperties.add("hudson.model.Item.Workspace:${it}")
     }
 
     log('')
