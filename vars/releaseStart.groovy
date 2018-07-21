@@ -12,7 +12,7 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -47,7 +47,7 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" || true'
-                        releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
+                        releaseBranchCount = releaseBranchList ? releaseBranchList.split().size() : '0'
 
                         if (releaseBranchCount.toInteger() > 0) {
                             log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with ReleaseStart Job!!!\n\n')
@@ -64,7 +64,7 @@ def call(body) {
                 steps {
                     script {
 
-                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
+                        releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {

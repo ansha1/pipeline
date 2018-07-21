@@ -11,7 +11,7 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -44,7 +44,7 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/hotfix/" || true'
-                        hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
+                        hotfixBranchCount = hotfixBranchList ? hotfixBranchList.split().size() : '0'
 
                         if (hotfixBranchCount.toInteger() > 0) {
                             log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
@@ -60,7 +60,7 @@ def call(body) {
                 steps {
                     script {
                         log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
-                        hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
+                        hotfixVersion = hotfixVersion ?: getNextVersion(utils)
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
                             log.info("Selected hotfix version: ${hotfixVersion}")
