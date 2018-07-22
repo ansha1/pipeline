@@ -1,7 +1,8 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(String jobName = 'RCJobsLock') {
-    response = httpRequest authentication: JENKINS_AUTH_CREDENTIALS, quiet: true, url: "${JENKINS_URL}job/${jobName}/api/json"
+    response = httpRequest authentication: JENKINS_AUTH_CREDENTIALS, url: "${JENKINS_URL}job/${jobName}/api/json",
+        quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug()
     def responsebody = readJSON text: response.content;
     boolean result = responsebody.buildable
 

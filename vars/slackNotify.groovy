@@ -28,8 +28,8 @@ def prOwnerPrivateMessage(String url) {
 def privateMessage(String slackUserId, String message) {
     log.debug("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")
-    httpRequest contentType: 'APPLICATION_JSON', quiet: env.DEBUG.toBoolean(),
-        consoleLogResponseBody: env.DEBUG.toBoolean(), httpMode: 'POST',
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+        consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
         url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
 }
 
@@ -63,7 +63,7 @@ def buildStatusMessageBody() {
 }
 
 def getSlackUserIdByEmail(String userMail) {
-    def response = httpRequest quiet: env.DEBUG.toBoolean(), consoleLogResponseBody: env.DEBUG.toBoolean(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
+    def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
     return responseJson.user.id
 }
