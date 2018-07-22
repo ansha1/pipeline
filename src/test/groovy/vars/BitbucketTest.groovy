@@ -16,7 +16,7 @@ class BitbucketTest extends BasePipelineTest implements Validator, Mocks {
     void setUp() throws Exception {
         super.setUp()
 
-        mockCommon()
+        mockEnv()
         attachScript 'log'
 
         helper.registerAllowedMethod 'httpRequest', [Map], {

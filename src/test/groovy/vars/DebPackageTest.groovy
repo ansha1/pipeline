@@ -21,7 +21,7 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         binding.setVariable 'currentBuild', [rawBuild: [:]]
         helper.registerAllowedMethod 'fileExists', [String], { String s -> return !s.contains('not_existing') }
 
-        mockCommon()
+        mockEnv()
         mockGenerateBuildProperties()
         mockDocker()
         attachScript 'log', 'generateBuildProperties'

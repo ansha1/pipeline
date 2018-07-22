@@ -11,18 +11,9 @@ trait Mocks implements BasePipelineAccessor {
     /**
      * Mocks Jenkins common property
      */
-    void mockCommon() {
+    void mockLog() {
         basePipelineTest.binding.setVariable 'params', [
                 DEBUG: 'true'
-        ]
-    
-        basePipelineTest.binding.setVariable 'env', [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3',
-                DEBUG      : 'true'
         ]
     }
 
