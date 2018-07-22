@@ -9,7 +9,7 @@ trait Mocks implements BasePipelineAccessor {
     MocksAdjustment mocksAdjustment = new MocksAdjustment(basePipelineTest)
 
     /**
-     * Mocks Jenkins common property
+     * Mocks Jenkins log property
      */
     void mockLog() {
         basePipelineTest.binding.setVariable 'params', [
