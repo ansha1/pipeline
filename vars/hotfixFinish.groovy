@@ -11,8 +11,8 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
-    autoPullRequest = pipelineParams.autoPullRequest.toBoolean()
-    autoMerge = pipelineParams.autoMerge.toBoolean()
+    autoPullRequest = new Boolean(pipelineParams.autoPullRequest)
+    autoMerge = new Boolean(pipelineParams.autoMerge)
     slackChannel = pipelineParams.slackChannel
     versionPath = pipelineParams.versionPath ?: '.'
 
