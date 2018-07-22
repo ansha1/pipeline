@@ -81,7 +81,7 @@ def runDownstreamJobs() {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
-    }, parallel releaseFinsh: {
+    }, releaseFinsh: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-finish'
