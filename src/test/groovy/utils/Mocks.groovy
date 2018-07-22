@@ -27,6 +27,19 @@ trait Mocks implements BasePipelineAccessor {
     }
 
     /**
+     * Mocks Jenkins env property
+     */
+    void mockEnv() {
+        basePipelineTest.binding.setVariable 'env', [
+                JOB_NAME   : 'Job name',
+                BUILD_ID   : 'Build Id',
+                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
+                BRANCH_NAME: 'dev',
+                NODE_NAME  : 'Debian Slave 3'
+        ]
+    }
+
+    /**
      * Mocks the required data for sendSlack function
      */
     void mockSendSlack() {
