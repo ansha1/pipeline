@@ -85,7 +85,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
         helper.registerAllowedMethod 'sh', [Map], { c -> 'some output' }
 
-        mockEnv()
+        mockCommon()
         mockDocker()
 
         mockClosure 'pipeline', 'agent', 'tools', 'options', 'parameters', 'stages', 'steps', 'script',

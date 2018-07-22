@@ -9,6 +9,24 @@ trait Mocks implements BasePipelineAccessor {
     MocksAdjustment mocksAdjustment = new MocksAdjustment(basePipelineTest)
 
     /**
+     * Mocks Jenkins common property
+     */
+    void mockCommon() {
+        basePipelineTest.binding.setVariable 'params', [
+                DEBUG: 'true'
+        ]
+    
+        basePipelineTest.binding.setVariable 'env', [
+                JOB_NAME   : 'Job name',
+                BUILD_ID   : 'Build Id',
+                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
+                BRANCH_NAME: 'dev',
+                NODE_NAME  : 'Debian Slave 3',
+                DEBUG      : 'true'
+        ]
+    }
+
+    /**
      * Mocks the required data for sendSlack function
      */
     void mockSendSlack() {
@@ -41,19 +59,6 @@ trait Mocks implements BasePipelineAccessor {
      */
     void mockDocker() {
         basePipelineTest.binding.setVariable('docker', mocksAdjustment.getDocker())
-    }
-
-    /**
-     * Mocks Jenkins env property
-     */
-    void mockEnv() {
-        basePipelineTest.binding.setVariable 'env', [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3'
-        ]
     }
 
     /**

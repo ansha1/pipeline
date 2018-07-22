@@ -15,7 +15,7 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
         super.setUp()
         binding.setVariable 'params', [:]
 
-        mockEnv()
+        mockCommon()
         attachScript 'generateBuildProperties', 'log'
 
         helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
