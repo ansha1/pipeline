@@ -77,21 +77,22 @@ def changeSharedLibBranch(String libBranch) {
 
 def runDownstreamJobs() {
 
-    parallel jsReleaseHotfixStartFinish: {
+    parallel releaseStart: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
-        build job: 'nextiva-pipeline-tests/test-js-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
-        build 'nextiva-pipeline-tests/test-js-pipeline-hotfix-finish'
-        build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
-    }, javaReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
-        build job: 'nextiva-pipeline-tests/test-java-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
-        build 'nextiva-pipeline-tests/test-java-pipeline-hotfix-finish'
-        build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
-    }, pythonReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
-        build job: 'nextiva-pipeline-tests/test-python-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
-        build 'nextiva-pipeline-tests/test-python-pipeline-hotfix-finish'
+    }, parallel releaseFinsh: {
+        build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
+        build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-finish'
+    }, hotfixStart: {
+        build job: 'nextiva-pipeline-tests/test-js-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build job: 'nextiva-pipeline-tests/test-java-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+    }, hotfixFinish: {   
+        build 'nextiva-pipeline-tests/test-js-pipeline-hotfix-finish'
+        build 'nextiva-pipeline-tests/test-java-pipeline-hotfix-finish'
+        build 'nextiva-pipeline-tests/test-python-pipeline-hotfix-finish' 
     }
 
     parallel jsIntegration: {
