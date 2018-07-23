@@ -2,7 +2,7 @@ def call(String healthCheckUrl, Integer timeLimit=2) {
     timeout(timeLimit) {   //default 2 minutes for starting
         waitUntil {
             try {
-                httpRequest url: healthCheckUrl, consoleLogResponseBody: true
+                httpRequest url: healthCheckUrl, consoleLogResponseBody: true, quiet: !log.isDebug()
                 return true
             } catch (e) {
                 return false

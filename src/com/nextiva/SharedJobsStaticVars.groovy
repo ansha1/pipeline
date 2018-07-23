@@ -44,4 +44,5 @@ class SharedJobsStaticVars {
     static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
+    static final BITBUCKET_URL = 'http://git.nextiva.xyz'
 }

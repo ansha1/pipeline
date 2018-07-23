@@ -4,7 +4,7 @@ def call(String componentName, String deployEnvironment, String deployVersion, S
     static final BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/static-deploy'
     static final PLAYBOOK_PATH = 'ansible/role-based_playbooks/static-deploy.yml'
 
-    def repo = nextivaRepo.equals(null) ? deployEnvironment : nextivaRepo
+    def repo = nextivaRepo ?: deployEnvironment
 
     runAnsiblePlaybook.releaseManagement("${BASIC_INVENTORY_PATH}/${deployEnvironment}", PLAYBOOK_PATH,
                                          ['version': deployVersion, 'component_name': componentName,
