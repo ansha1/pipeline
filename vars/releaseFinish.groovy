@@ -12,17 +12,17 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
-    autoPullRequest = pipelineParams.autoPullRequest.equals(null) ? false : pipelineParams.autoPullRequest
+    autoPullRequest = pipelineParams.autoPullRequest.equals(null) ? true : pipelineParams.autoPullRequest
+    autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -73,10 +73,12 @@ def call(body) {
                         log.info('Check branch naming for compliance with git-flow')
                         if (releaseBranch ==~ /^(origin\/release\/\d+.\d+(.\d+)?)$/) {
                             log.info('Parse release version')
-                            sh """
-                                git fetch
-                                git checkout ${releaseBranch}
-                            """
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                    git fetch
+                                    git checkout ${releaseBranch}
+                                """
+                            }
                             releaseVersion = utils.getVersion()
                             log.info("Find release version: ${releaseVersion}")
                         } else {
@@ -97,49 +99,7 @@ def call(body) {
             stage('Merge release branch to develop') {
                 steps {
                     script {
-                        try {
-                            sh """
-                            git checkout ${developBranch}
-                            git merge --no-ff ${releaseBranch}
-                        """
-                        } catch (e) {
-                            if (autoPullRequest) {
-                                log.info("AUTO CREATING PULL REQUEST IS ENABLED  autoPullRequest: ${autoPullRequest}")
-                                stage("Create temporary branch")
-                                def tmpBranch = "resolve-conflicts-from-${releaseBranch.replaceAll("origin/","")}-to-${developBranch.replaceAll("origin/","")}"
-                                sh """
-                                    git reset --merge           
-                                    git checkout ${releaseBranch}
-                                    git checkout -b ${tmpBranch} ${releaseBranch}
-                                    git push origin ${tmpBranch}
-                                """
-                                stage("Create pull request from ${releaseBranch} to ${developBranch}")
-                                def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts for finishing ${env.JOB_NAME}#${env.BUILD_ID} "
-                                def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR (if its enabled for the repository). Auto created pull request from ${env.JOB_NAME} #${env.BUILD_ID}"
-                                pullRequestLink = createPr(repositoryUrl, tmpBranch, developBranch, title, description)
-
-                                def uploadSpec = """[{
-                                                        "title": "${title}",
-                                                        "text": "${description}",
-                                                        "color": "#73797a",
-                                                        "attachment_type": "default",
-                                                        "actions": [
-                                                            {
-                                                                "text": "Link on pull request",
-                                                                "type": "button",
-                                                                "url": "${pullRequestLink}"
-                                                            }
-                                                        ]
-                                                    }]"""
-                                slackSend(channel: CHANNEL_TO_NOTIFY, attachments: uploadSpec, tokenCredentialId: "slackToken")
-                                currentBuild.result = 'UNSTABLE'
-                                error("\n\nCan`t merge ${releaseBranch} to ${developBranch} \n You need to resolve merge conflicts in branch: ${tmpBranch} pull request: ${pullRequestLink} and restart ReleaseFinish Job\n\n")
-                            } else {
-                                log.info("AUTO CREATING PULL REQUEST IS DISABLED  autoPullRequest: ${autoPullRequest}")
-                                currentBuild.rawBuild.result = Result.ABORTED
-                                throw new hudson.AbortException("\n\nCan`t merge ${releaseBranch} to ${developBranch} \n You need to resolve merge conflicts manually and restart ReleaseFinish Job\n\n")
-                            }
-                        }
+                        mergeBranches(releaseBranch, developBranch, CHANNEL_TO_NOTIFY, autoPullRequest, autoMerge)
                     }
                 }
             }
@@ -148,13 +108,13 @@ def call(body) {
                 steps {
                     script {
                         try {
-                            sh """
-                                git fetch
-                                git checkout ${releaseBranch}
-                                git checkout master
-                                git merge --no-ff ${releaseBranch}
-                                git tag -a ${releaseVersion} -m "Merge release branch ${releaseBranch} to master"
-                            """
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                    git checkout master
+                                    git merge --no-ff ${releaseBranch}
+                                    git tag -a ${releaseVersion} -m "Merge release branch ${releaseBranch} to master"
+                                """
+                            }
                         } catch (e) {
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nCan`t merge ${releaseBranch} to master \n You need to resolve merge conflicts manually and restart ReleaseFinish Job\n\n")
@@ -165,19 +125,23 @@ def call(body) {
 
             stage('Push changes in bitbucket') {
                 steps {
-                    sh """
-                        git push --all
-                        git push --tags
-                    """
+                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                        sh """
+                            git push --all
+                            git push --tags
+                        """
+                    }
                 }
             }
             stage('Delete release branch') {
                 steps {
                     script {
                         releaseBranch = releaseBranch.replace("origin/", "")
-                        sh """
-                            git push origin --delete ${releaseBranch}
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git push origin --delete ${releaseBranch}
+                            """
+                        }
                     }
                 }
             }

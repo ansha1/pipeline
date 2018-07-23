@@ -10,12 +10,19 @@ def call(String notifyChannel) {
 def commitersOnly() {
     try {
         def uploadSpec = buildStatusMessageBody()
-        def commitAuthor = sh returnStdout: true, script: "git show --pretty=format:'%ae' | sed -n 1p"
-        def slackUserId = getSlackUserIdByEmail(commitAuthor.trim())
-        privateMessage(slackUserId, uploadSpec)
+        def commitAuthors = getCommitAuthors()
+        commitAuthors.each {
+            def slackUserId = getSlackUserIdByEmail(it)
+            privateMessage(slackUserId, uploadSpec)
+        }
     } catch (e) {
         log.warn("Failed send Slack notication to the commit authors: " + e.toString())
     }
+}
+
+def prOwnerPrivateMessage(String url) {
+    def prOwner = bitbucket.prOwnerEmail(url)
+    privateMessage(prOwner, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
