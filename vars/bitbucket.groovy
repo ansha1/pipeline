@@ -18,7 +18,7 @@ def prOwnerEmail(String url) {
 def getPrFromUrl(String url) {
 
     log.info("Received PR url: ${url}")
-    prUrl = url.replaceAll("${BITBUCKET_ADDRESS}/projects", "${BITBUCKET_ADDRESS}/rest/api/1.0/projects") - "/overview"
+    prUrl = url.replaceAll("${BITBUCKET_URL}/projects", "${BITBUCKET_URL}/rest/api/1.0/projects") - "/overview"
     log.info("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
@@ -35,8 +35,8 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
     log.info('projectKey: ' + projectKey)
     log.info('repositorySlug: ' + repositorySlug)
 
-    String reviewersUrl = "${BITBUCKET_ADDRESS}/rest/default-reviewers/1.0/projects/${projectKey}/repos/${repositorySlug}/conditions"
-    String createPrUrl = "${BITBUCKET_ADDRESS}/rest/api/1.0/projects/${projectKey}/repos/${repositorySlug}/pull-requests"
+    String reviewersUrl = "${BITBUCKET_URL}/rest/default-reviewers/1.0/projects/${projectKey}/repos/${repositorySlug}/conditions"
+    String createPrUrl = "${BITBUCKET_URL}/rest/api/1.0/projects/${projectKey}/repos/${repositorySlug}/pull-requests"
 
     //Getting default reviewers list from target repo
     def reviewersResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: reviewersUrl,
