@@ -4,6 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def call(String notifyChannel, def uploadSpec) {
+    log.debug(uploadSpec)
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
