@@ -23,9 +23,9 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
     }
 
     @Test
-    void send_slack_notification() {
+    void send_build_status_notification() {
         def script = loadScript "vars/slack.groovy"
-        script.call 'some_channel'
+        script.sendBuildStatus 'some_channel'
         checkThatMockedMethodWasExecuted 'slackSend', 1
         printCallStack()
     }
