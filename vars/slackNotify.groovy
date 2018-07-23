@@ -1,6 +1,6 @@
 def call(String notifyChannel) {
     log.warning('DEPRECATED: Use slack.sendBuildStatus() method.')
-    slack.sendBuildStatus(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+    slack.sendBuildStatus(notifyChannel)
 }
 
 def commitersOnly() {

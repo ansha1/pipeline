@@ -31,4 +31,3 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
     }
 
 }
-
