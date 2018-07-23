@@ -22,6 +22,7 @@ def commitersOnly() {
 
 def prOwnerPrivateMessage(String url) {
     def prOwner = bitbucket.prOwnerEmail(url)
+    def uploadSpec = buildStatusMessageBody()
     privateMessage(prOwner, uploadSpec)
 }
 
