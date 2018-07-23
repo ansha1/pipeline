@@ -127,5 +127,5 @@ def pullRequest(String sourceBranch, String destinationBranch, String channelToN
                                 "url": "${pullRequestLink}"
                             }]
                     }]"""
-    slackSend(channel: channelToNotify, attachments: uploadSpec, tokenCredentialId: "slackToken")
+    slack(channelToNotify, uploadSpec)
 }

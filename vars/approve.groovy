@@ -16,7 +16,7 @@ def call(String message='Should we proceed', String slackChannel, String authori
         }
         ]"""
 
-        slackSend(channel: slackChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+        slack(slackChannel, uploadSpec)
         def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
     }
 }
