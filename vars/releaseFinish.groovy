@@ -12,8 +12,8 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     versionPath = pipelineParams.versionPath ?: '.'
-    autoPullRequest = new Boolean(pipelineParams.autoPullRequest)
-    autoMerge = new Boolean(pipelineParams.autoMerge)
+    autoPullRequest = pipelineParams.autoPullRequest ?: true
+    autoMerge = pipelineParams.autoMerge ?: true
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
 
 //noinspection GroovyAssignabilityCheck
