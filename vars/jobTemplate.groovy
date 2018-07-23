@@ -229,14 +229,14 @@ def call(body) {
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
                                     log.info('channel to notify is: ' + channel)
-                                    slackNotify(channel)
+                                    slack.sendBuildStatus(channel)
                                 }
                             }
                         }
                     }
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
-                        slackNotify.commitersOnly()
-                        slackNotify.prOwnerPrivateMessage(env.CHANGE_URL)
+                        slack.commitersOnly()
+                        slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                 }
             }

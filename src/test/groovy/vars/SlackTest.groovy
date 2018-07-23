@@ -6,7 +6,7 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class SlackNotifyTest extends BasePipelineTest implements Mocks, Validator {
+class SlackTest extends BasePipelineTest implements Mocks, Validator {
 
     @Override
     @Before
@@ -24,7 +24,7 @@ class SlackNotifyTest extends BasePipelineTest implements Mocks, Validator {
 
     @Test
     void send_slack_notification() {
-        def script = loadScript "vars/slackNotify.groovy"
+        def script = loadScript "vars/slack.groovy"
         script.call 'some_channel'
         checkThatMockedMethodWasExecuted 'slackSend', 1
         printCallStack()
