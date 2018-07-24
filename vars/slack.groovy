@@ -42,7 +42,6 @@ def privateMessage(String slackUserId, String message) {
 
 def buildStatusMessageBody() {
     buildStatus = currentBuild.currentResult
-    notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     commitinforaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
     commitinfo = commitinforaw.trim()
     def subject = "Build status: ${buildStatus} Job: ${env.JOB_NAME.replaceAll("%2F", "_")} #${env.BUILD_ID}"
@@ -50,7 +49,7 @@ def buildStatusMessageBody() {
         {
             "title": "${subject}",
             "text": "${commitinfo}",
-            "color": "${notifyColor.get(buildStatus)}",
+            "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
             "attachment_type": "default",
             "actions": [
                 {
