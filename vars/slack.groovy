@@ -74,7 +74,7 @@ def getSlackUserIdByEmail(String userMail) {
     return responseJson.user.id
 }
 
-/*def notifyReleaseHotfix(String, notifyChannel, String ver, String actionType  = 'Release', String actionState = 'started'){
+def notifyReleaseHotfix(String, notifyChannel, String ver, String actionType  = 'Release', String actionState = 'started'){
     buildStatus = currentBuild.currentResult
     user = common.getCurrentUser()
 
@@ -92,7 +92,7 @@ def getSlackUserIdByEmail(String userMail) {
     ]"""
 
     call(notifyChannel, uploadSpec)
-}*/
+}
 
 def sendBuildStatusPrivatMessage(String userEmail){
     def slackUserId = getSlackUserIdByEmail(userEmail)
