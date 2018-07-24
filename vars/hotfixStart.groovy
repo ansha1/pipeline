@@ -99,11 +99,15 @@ def call(body) {
         }
         post {
             success {
-                slack.notifyReleaseHotfixStartFinish(CHANNEL_TO_NOTIFY, hotfixVersion, 'Hotfix', 'started')
+                script {
+                    slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, hotfixVersion, 'Hotfix', 'started')
+                }
             }
             always {
-                if(currentBuild.currentResult != 'SUCCESS'){
-                    slack.sendBuildStatusPrivatMessage(common.getCurrentUserEmail())
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserEmail())
+                    }
                 }
             }
         }
