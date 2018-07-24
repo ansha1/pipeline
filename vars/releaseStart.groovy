@@ -38,7 +38,6 @@ def call(body) {
                 steps {
                     cleanWs()
                     git branch: developBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 

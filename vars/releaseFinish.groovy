@@ -39,7 +39,6 @@ def call(body) {
                     cleanWs()
 
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 

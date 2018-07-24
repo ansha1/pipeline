@@ -37,9 +37,7 @@ def call(body) {
             stage('Checkout repo') {
                 steps {
                     cleanWs()
-
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -166,7 +164,7 @@ def call(body) {
         post {
             success {
                 script {
-                    slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, hotfixVersion, 'Hotfix', 'finished')
+                    slack.notifyReleaseHotfix(slackChannel, hotfixVersion, 'Hotfix', 'finished')
                 }
             }
             always {

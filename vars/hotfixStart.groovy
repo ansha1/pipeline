@@ -12,7 +12,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: ''
+    slackChannel = pipelineParams.slackChannel ?: ''
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -36,7 +36,6 @@ def call(body) {
                     cleanWs()
 
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
             stage('Prepare for starting release') {
