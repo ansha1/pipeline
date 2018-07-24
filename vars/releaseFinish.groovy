@@ -148,11 +148,11 @@ def call(body) {
         post {
             success {
                 script {
-                    //slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, releaseVersion, 'Release', 'finished')
-                    user = common.getCurrentUser()
+                    slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, releaseVersion, 'Release', 'finished')
+                    /*user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Release ${developmentVersion} finished successfully!", "text": "Author: ${user}",
                                         "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
-                    call(CHANNEL_TO_NOTIFY, uploadSpec)
+                    call(CHANNEL_TO_NOTIFY, uploadSpec)*/
                 }
             }
             always {
