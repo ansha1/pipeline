@@ -146,5 +146,15 @@ def call(body) {
                 }
             }
         }
+        post {
+            success {
+                slack.notifyReleaseHotfixStartFinish(CHANNEL_TO_NOTIFY, developmentVersion, 'Release', 'finished')
+            }
+            always {
+                if(currentBuild.currentResult != 'SUCCESS'){
+                    slack.sendBuildStatusPrivatMessage(common.getCurrentUserEmail())
+                }
+            }
+        }
     }
 }

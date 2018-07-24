@@ -13,6 +13,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
     versionPath = pipelineParams.versionPath ?: '.'
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -141,6 +142,16 @@ def call(body) {
                             """
                         }
                     }
+                }
+            }
+        }
+        post {
+            success {
+                slack.notifyReleaseHotfixStartFinish(CHANNEL_TO_NOTIFY, developmentVersion, 'Release', 'started')
+            }
+            always {
+                if(currentBuild.currentResult != 'SUCCESS'){
+                    slack.sendBuildStatusPrivatMessage(common.getCurrentUserEmail())
                 }
             }
         }
