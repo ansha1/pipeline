@@ -74,3 +74,22 @@ def getSlackUserIdByEmail(String userMail) {
     def responseJson = readJSON text: response.content
     return responseJson.user.id
 }
+
+def notifyReleaseHotfixStartFinish(String, notifyChannel, String ver){
+    buildStatus = currentBuild.currentResult
+    notifyColor = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
+    userName = getCurrentUserName()
+
+    def subject = "Release ${ver} started successfully!"
+    def message = "Author: ${userName}"
+    def uploadSpec = """[
+        {
+            "title": "${subject}",
+            "text": "${message}",
+            "color": "${notifyColor.get(buildStatus)}",
+            "attachment_type": "default"
+        }
+    ]"""
+
+    call(notifyChannel, uploadSpec)
+}
