@@ -13,6 +13,8 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
+        mockLog()
+        attachScript 'log'
         helper.registerAllowedMethod 'sh', [Map.class], { c -> 'commit message' }
         mockSendSlack()
     }
