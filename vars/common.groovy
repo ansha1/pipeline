@@ -1,6 +1,6 @@
 def getCurrentUser() {
-    def build = currentBuild.rawBuild
-    def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
+    build = currentBuild.rawBuild
+    cause = build.getCause(hudson.model.Cause.UserIdCause.class)
 
     if( !cause ){
         return null
