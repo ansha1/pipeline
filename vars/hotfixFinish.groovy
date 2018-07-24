@@ -11,7 +11,7 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
-    autoPullRequest = true  // mondatory parameter for hotfix finish
+    autoPullRequest = true  // mandatory parameter for hotfix finish
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
     slackChannel = pipelineParams.slackChannel
     versionPath = pipelineParams.versionPath ?: '.'
@@ -165,7 +165,11 @@ def call(body) {
         post {
             success {
                 script {
-                    slack.notifyReleaseHotfix(slackChannel, hotfixVersion, 'Hotfix', 'finished')
+                    //slack.notifyReleaseHotfix(slackChannel, hotfixVersion, 'Hotfix', 'finished')
+                    slackUserId = slack.getSlackUserIdByEmail(common.getCurrentUserEmail())
+                    def uploadSpec = """[{"title": "Hotfix ${hotfixVersion} finished successfully!","text": "Author: ${common.getCurrentUser}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                    call(slackChannel, uploadSpec)
                 }
             }
             always {
