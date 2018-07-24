@@ -127,13 +127,14 @@ def call(body) {
                                 .collect({ it.trim().replace("origin/", "") })
                         branches.add(developBranch)
                         log.info("Branches to merge to: ${branches}")
-                        try {
-                            branches.each { destinationBranch ->
+                        
+                        branches.each { destinationBranch ->
+                            try {
                                 mergeBranches(hotfixBranch, destinationBranch, slackChannel, autoPullRequest, autoMerge)
+                            } catch (e) {
+                                log.warn(e)
+                                currentBuild.rawBuild.result = Result.UNSTABLE
                             }
-                        } catch (e) {
-                            log.warn(e)
-                            currentBuild.rawBuild.result = Result.UNSTABLE
                         }
                     }
                 }
