@@ -100,7 +100,8 @@ def call(body) {
             success {
                 script {
                     //slack.notifyReleaseHotfix(slackChannel, hotfixVersion, 'Hotfix', 'started')
-                    def uploadSpec = """[{"title": "Hotfix ${hotfixVersion} started successfully!", "text": "Author: ${common.getCurrentUser()}",
+                    def user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Hotfix ${hotfixVersion} started successfully!", "text": "Author: ${user}",
                                         "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
                     call(slackChannel, uploadSpec)
                 }
