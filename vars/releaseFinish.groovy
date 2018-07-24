@@ -148,7 +148,7 @@ def call(body) {
         post {
             success {
                 script {
-                    slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, developmentVersion, 'Release', 'finished')
+                    slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, releaseVersion, 'Release', 'finished')
                 }
             }
             always {
