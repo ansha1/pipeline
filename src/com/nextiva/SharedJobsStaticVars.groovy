@@ -46,4 +46,5 @@ class SharedJobsStaticVars {
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
     static final BITBUCKET_URL = 'http://git.nextiva.xyz'
+    static final BLUE_GREEN_DEPLOY_DEFAULT = false
 }

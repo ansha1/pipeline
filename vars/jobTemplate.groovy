@@ -31,6 +31,7 @@ def call(body) {
         NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
         jdkVersion = pipelineParams.JDK_VERSION
         mavenVersion = pipelineParams.MAVEN_VERSION
+        BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -60,6 +61,7 @@ def call(body) {
         parameters {
             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
                     'or leave empty for start full build')
+            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
         }
 
         stages {
@@ -68,6 +70,9 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
+                        if(jobConfig.BLUE_GREEN_DEPLOY) {
+                            jobConfig.setBlueGreenDeploy(params.stack)
+                        }
 
                         env.APP_NAME = jobConfig.APP_NAME
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH

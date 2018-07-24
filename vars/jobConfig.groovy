@@ -35,6 +35,7 @@ def call(body) {
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
+    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY ?: BLUE_GREEN_DEPLOY_DEFAULT
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -156,4 +157,10 @@ Map getAnsibleExtraVars() {
     }
 
     return ANSIBLE_EXTRA_VARS
+}
+
+void setBlueGreenDeploy(String stack) {
+    if(env.BRANCH_NAME == 'master') {
+        INVENTORY_PATH += "-" + stack
+    }
 }

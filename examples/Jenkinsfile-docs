@@ -118,4 +118,7 @@ jobTemplate {
 
     /* MAVEN_VERSION - defines the Maven Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under Maven for options  */
     // MAVEN_VERSION = 'Maven 3.5.4 Install automatically'
+
+    /* BLUE_GREEN_DEPLOY - is use to allow the user to decided which blue green stack to deploy - a or b */
+    // BLUE_GREEN_DEPLOY = true
 }
