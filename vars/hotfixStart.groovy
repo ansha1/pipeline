@@ -12,7 +12,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: ''
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
