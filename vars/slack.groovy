@@ -97,5 +97,9 @@ def notifyReleaseHotfix(String, notifyChannel, String ver, String actionType  = 
 def sendBuildStatusPrivatMessage(String userEmail){
     def slackUserId = getSlackUserIdByEmail(userEmail)
     def uploadSpec = buildStatusMessageBody()
-    privateMessage(slackUserId, uploadSpec)
+    try {
+        privateMessage(slackUserId, uploadSpec)
+    } catch (e) {
+        log.warn("Failed send Slack notication to the authors: " + e.toString())
+    }
 }
