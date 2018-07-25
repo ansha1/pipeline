@@ -158,9 +158,3 @@ Map getAnsibleExtraVars() {
 
     return ANSIBLE_EXTRA_VARS
 }
-
-void setBlueGreenDeploy(String stack) {
-    if(env.BRANCH_NAME == 'master') {
-        INVENTORY_PATH += "-" + stack
-    }
-}
