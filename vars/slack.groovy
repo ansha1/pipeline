@@ -74,26 +74,6 @@ def getSlackUserIdByEmail(String userMail) {
     return responseJson.user.id
 }
 
-/*def notifyReleaseHotfix(String, notifyChannel, String ver, String actionType  = 'Release', String actionState = 'started'){
-    buildStatus = currentBuild.currentResult
-    user = common.getCurrentUser()
-
-    def actionResult = buildStatus == 'SUCCESS' ? 'successfully' : 'unsuccessfully'
-    def subject = "${actionType} ${ver} ${actionState} ${actionResult}!"  // example: Release 1.2.0 started successfuly
-
-    def message = "Author: ${user}"
-    def uploadSpec = """[
-        {
-            "title": "${subject}",
-            "text": "${message}",
-            "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-            "attachment_type": "default"
-        }
-    ]"""
-
-    call(notifyChannel, uploadSpec)
-}*/
-
 def sendBuildStatusPrivatMessage(String userEmail){
     def slackUserId = getSlackUserIdByEmail(userEmail)
     def uploadSpec = buildStatusMessageBody()

@@ -147,7 +147,6 @@ def call(body) {
         post {
             success {
                 script {
-                    //slack.notifyReleaseHotfix(CHANNEL_TO_NOTIFY, developmentVersion, 'Release', 'started')
                     String user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Release ${developmentVersion} started successfully!", "text": "Author: ${user}",
                                         "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
