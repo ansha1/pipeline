@@ -54,8 +54,11 @@ lock(lockableResource) {
                          reportTitles         : ''])
             
             if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
-                slack.commitersOnly()
                 slack.prOwnerPrivateMessage(env.CHANGE_URL)
+                slack.commitersOnly()
+            }
+            else {
+                slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
             }
         }
     }

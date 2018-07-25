@@ -1,18 +1,12 @@
-def getCurrentUser() {
+def getCurrentUserLogin() {
     def build = currentBuild.rawBuild
     def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
+    return cause.getUserId()
+}
 
-    if( !cause ){
-        return null
-    }
-    
-    String userId = cause.getUserId()
-    User user = User.get(userId)   
-    //print userId  // login
-    //print user  // user full name
-    //def umail = user.getProperty(Mailer.UserProperty.class)
-    //print umail.getAddress()  //email
-
+def getCurrentUser() {  
+    String userId = getCurrentUserLogin()
+    User user = User.get(userId)
     return user
 }
 
@@ -20,4 +14,9 @@ def getCurrentUserEmail() {
     def user = getCurrentUser()
     def umail = user.getProperty(Mailer.UserProperty.class)
     return umail.getAddress()
+}
+
+def getCurrentUserSlackId() {
+    String userEmail = getCurrentUserEmail()
+    return slack.getSlackUserIdByEmail(userEmail)
 }

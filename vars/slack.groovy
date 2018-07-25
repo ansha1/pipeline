@@ -74,8 +74,7 @@ def getSlackUserIdByEmail(String userMail) {
     return responseJson.user.id
 }
 
-def sendBuildStatusPrivatMessage(String userEmail){
-    def slackUserId = getSlackUserIdByEmail(userEmail)
+def sendBuildStatusPrivatMessage(String slackUserId){
     def uploadSpec = buildStatusMessageBody()
     try {
         privateMessage(slackUserId, uploadSpec)

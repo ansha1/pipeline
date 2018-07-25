@@ -13,6 +13,7 @@ def call(body) {
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
     slackChannel = pipelineParams.slackChannel ?: ''
+    APP_NAME = pipelineParams.APP_NAME ?: repositoryUrl.split("/")[-1].replaceAll('.git', '')
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -100,7 +101,7 @@ def call(body) {
             success {
                 script {
                     String user = common.getCurrentUser()
-                    def uploadSpec = """[{"title": "Hotfix ${hotfixVersion} started successfully!", "text": "Author: ${user}",
+                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} started successfully!", "text": "Author: ${user}",
                                         "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
                     slack(slackChannel, uploadSpec)
                 }
@@ -108,7 +109,7 @@ def call(body) {
             always {
                 script {
                     if(currentBuild.currentResult != 'SUCCESS'){
-                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserEmail())
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }
