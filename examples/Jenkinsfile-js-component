@@ -129,7 +129,8 @@ pipeline {
                 reportFiles          : 'test-report.html',
                 reportName           : 'Test Report',
                 reportTitles         : ''])
-            slackNotify(CHANNEL_TO_NOTIFY)
+
+            slack.sendBuildStatus(CHANNEL_TO_NOTIFY)
         }
     }
 }
