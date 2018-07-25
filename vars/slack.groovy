@@ -73,3 +73,12 @@ def getSlackUserIdByEmail(String userMail) {
     def responseJson = readJSON text: response.content
     return responseJson.user.id
 }
+
+def sendBuildStatusPrivatMessage(String slackUserId){
+    def uploadSpec = buildStatusMessageBody()
+    try {
+        privateMessage(slackUserId, uploadSpec)
+    } catch (e) {
+        log.warn("Failed send Slack notication to the authors: " + e.toString())
+    }
+}

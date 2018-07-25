@@ -11,10 +11,11 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
-    autoPullRequest = pipelineParams.autoPullRequest.equals(null) ? true : pipelineParams.autoPullRequest
+    autoPullRequest = true  // mandatory parameter for hotfix finish
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
     slackChannel = pipelineParams.slackChannel
     versionPath = pipelineParams.versionPath ?: '.'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
     //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -37,9 +38,7 @@ def call(body) {
             stage('Checkout repo') {
                 steps {
                     cleanWs()
-
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -129,13 +128,14 @@ def call(body) {
                                 .collect({ it.trim().replace("origin/", "") })
                         branches.add(developBranch)
                         log.info("Branches to merge to: ${branches}")
-                        try {
-                            branches.each { destinationBranch ->
+                        
+                        branches.each { destinationBranch ->
+                            try {
                                 mergeBranches(hotfixBranch, destinationBranch, slackChannel, autoPullRequest, autoMerge)
+                            } catch (e) {
+                                log.warn(e)
+                                currentBuild.rawBuild.result = Result.UNSTABLE
                             }
-                        } catch (e) {
-                            log.warn(e)
-                            currentBuild.rawBuild.result = Result.UNSTABLE
                         }
                     }
                 }
@@ -159,6 +159,23 @@ def call(body) {
                                 git push origin --delete ${hotfixBranch}
                             """
                         }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} finished successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                    slack(slackChannel, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

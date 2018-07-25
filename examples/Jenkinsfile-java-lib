@@ -73,7 +73,7 @@ pipeline {
     }
     post {
         always {
-            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+            slack.sendBuildStatus(jobConfig.CHANNEL_TO_NOTIFY)
         }
     }
 }
