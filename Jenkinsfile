@@ -52,8 +52,11 @@ lock(lockableResource) {
                          reportFiles          : 'index.html',
                          reportName           : 'Test Report',
                          reportTitles         : ''])
-
-            slackNotify('testchannel')
+            
+            if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
+                slack.commitersOnly()
+                slack.prOwnerPrivateMessage(env.CHANGE_URL)
+            }
         }
     }
 }
