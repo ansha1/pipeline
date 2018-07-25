@@ -39,6 +39,25 @@ def call(body) {
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
+    node {
+        if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
+            properties([
+                    parameters([
+                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build'),
+                            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
+                    ])
+            ])
+        } else {
+            properties([
+                    parameters([
+                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build')
+                    ])
+            ])
+        }
+    }
+
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
@@ -58,22 +77,15 @@ def call(body) {
             ansiColor('xterm')
         }
 
-        parameters {
-            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                    'or leave empty for start full build')
-            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
-        }
-
         stages {
             stage('Set additional properties') {
                 steps {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
-                        if(jobConfig.BLUE_GREEN_DEPLOY) {
-                            jobConfig.setBlueGreenDeploy(params.stack)
+                        if (params.stack) {
+                            jobConfig.INVENTORY_PATH += "-${params.stack}"
                         }
-
                         env.APP_NAME = jobConfig.APP_NAME
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
@@ -204,8 +216,8 @@ def call(body) {
                                     }
                                 }
 
-                                if (jobConfig.projectFlow.get('postDeployCommands')){
-                                    stage("Post deploy/E2E stage"){
+                                if (jobConfig.projectFlow.get('postDeployCommands')) {
+                                    stage("Post deploy/E2E stage") {
                                         sh jobConfig.projectFlow.get('postDeployCommands')
                                     }
                                 }
