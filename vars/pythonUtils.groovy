@@ -33,7 +33,7 @@ def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
     withEnv(getVirtualEnv(venvDir)) {
         output = sh(returnStdout: returnStdout, script: cmd)
     }
-    return output
+    return returnStdout ?: ''
 }
 
 def pipInstall(String filename, String venvDir=VENV_DIR) {
