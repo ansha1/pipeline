@@ -27,5 +27,5 @@ def getCurrentUserSlackId() {
 }
 
 String getAppNameFromGitUrl(String gitUrl) {
-    return ?: gitUrl.split("/")[-1].replaceAll('.git', '')
+    return gitUrl.split("/")[-1].replaceAll('.git', '')
 }
