@@ -34,7 +34,7 @@ def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
         if (returnStdout) {
             output = sh(returnStdout: returnStdout, script: cmd)
         } else {
-            sh(script: cmd)
+            sh(returnStdout: cmd, script: cmd)
         }
     }
     return output ?: ''
