@@ -13,7 +13,7 @@ def call(body) {
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
     slackChannel = pipelineParams.slackChannel ?: ''
-    APP_NAME = pipelineParams.APP_NAME ?: repositoryUrl.split("/")[-1].replaceAll('.git', '')
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {

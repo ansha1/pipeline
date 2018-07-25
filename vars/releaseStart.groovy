@@ -14,7 +14,7 @@ def call(body) {
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
     versionPath = pipelineParams.versionPath ?: '.'
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: ''
-    APP_NAME = pipelineParams.APP_NAME ?: repositoryUrl.split("/")[-1].replaceAll('.git', '')
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
