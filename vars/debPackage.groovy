@@ -101,7 +101,7 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
             log.info("FOUND deb-package: " + debName)
 
             // upload deb-package to Nexus 3
-            def verbose = log.isDebug() ? "--verbose --include" : "--silent"
+            def verbose = log.isDebug() ? "--verbose --include" : ""
 
             def isDeployedToNexus = sh(returnStatus: true, script: """curl ${verbose} --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
                                     --data-binary @${debName} ${nexusDebRepoUrl}""")

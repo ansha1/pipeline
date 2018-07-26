@@ -5,7 +5,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
 
-    def verbose = log.isDebug() ? "--verbose --include" : "--silent"
+    def verbose = log.isDebug() ? "--verbose --include" : ""
     if (log.isDebug()) {
         log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
     }
