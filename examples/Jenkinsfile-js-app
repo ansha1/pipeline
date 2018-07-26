@@ -1,6 +1,7 @@
 #!groovy
-@Library('pipelines') _
+@Library('pipeline') _
 
+import static com.nextiva.SharedJobsStaticVars.*
 
 jobTemplate {
 
@@ -8,6 +9,7 @@ jobTemplate {
     BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/static-deploy/'
     PLAYBOOK_PATH = 'ansible/role-based_playbooks/static-deploy.yml'
     CHANNEL_TO_NOTIFY = 'js-app'
+    NODE_LABEL = JS_NODE_LABEL
 
     ansibleEnvMap = [dev       : "dev",
                      qa        : "rc",

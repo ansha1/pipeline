@@ -5,13 +5,12 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
 
-    def verbose = ''
+    def verbose = log.isDebug() ? "--verbose --include" : "--silent"
     if (log.isDebug()) {
-        verbose = "--verbose"
         log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
     }
 
-    def status = sh(returnStatus: true, script: "curl ${verbose} --silent --show-error --fail -I ${nexusDebPackageUrl}")
+    def status = sh(returnStatus: true, script: "curl ${verbose} --show-error --fail -I ${nexusDebPackageUrl}")
 
     if (status == 0) {
         log.info("Deb package ${packageName} with version ${packageVersion} exists in Nexus.")
@@ -48,23 +47,17 @@ Boolean checkStatus(Map searchQueryResult, String packageName, String packageVer
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=static-assets-production&format=raw&name=agent-0.1.21
 Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo, String format = 'raw') {
-
     checkNexusPackage(repo, format, packageName, packageVersion)
-
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=pypi-dev&format=pypi&name=crm-models&version=0.1.1
 Boolean isPypiPackageExists(String packageName, String packageVersion, String repo, String format = 'pypi') {
-
     checkNexusPackage(repo, format, packageName, packageVersion)
-
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=docker&format=docker&name=analytics&version=0.1.504
 Boolean isDockerPackageExists(String packageName, String packageVersion, String repo = 'docker', String format = 'docker') {
-
     checkNexusPackage(repo, format, packageName, packageVersion)
-
 }
 
 

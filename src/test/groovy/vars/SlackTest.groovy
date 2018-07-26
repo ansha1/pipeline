@@ -6,13 +6,15 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class SlackNotifyTest extends BasePipelineTest implements Mocks, Validator {
+class SlackTest extends BasePipelineTest implements Mocks, Validator {
 
     @Override
     @Before
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
+        mockLog()
+        attachScript 'log'
         helper.registerAllowedMethod 'sh', [Map.class], { c -> 'commit message' }
         mockSendSlack()
     }
@@ -23,12 +25,11 @@ class SlackNotifyTest extends BasePipelineTest implements Mocks, Validator {
     }
 
     @Test
-    void send_slack_notification() {
-        def script = loadScript "vars/slackNotify.groovy"
-        script.call 'some_channel'
+    void send_build_status_notification() {
+        def script = loadScript "vars/slack.groovy"
+        script.sendBuildStatus 'some_channel'
         checkThatMockedMethodWasExecuted 'slackSend', 1
         printCallStack()
     }
 
 }
-

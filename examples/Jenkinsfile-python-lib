@@ -1,5 +1,5 @@
 #!groovy
-@Library('pipelines') _
+@Library('pipeline') _
 
 
 import static com.nextiva.SharedJobsStaticVars.*
@@ -76,7 +76,7 @@ pipeline {
     }
     post {
         always {
-            slackNotify(jobConfig.CHANNEL_TO_NOTIFY)
+            slack.sendBuildStatus(jobConfig.CHANNEL_TO_NOTIFY)
         }
     }
 }

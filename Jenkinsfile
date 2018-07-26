@@ -1,13 +1,14 @@
-@Library('pipelines') _
+@Library('pipeline@develop') _
 import static com.nextiva.SharedJobsStaticVars.*
 
-def lockableResource = "nextiva-pipelines-test"
+
+def lockableResource = "nextiva-pipeline-test"
 
 properties properties: [
-        disableConcurrentBuilds()
+    disableConcurrentBuilds()
 ]
 
-sourceBranch = (BRANCH_NAME ==~ /PR-.*/) ? getSoruceBranchFromPr(CHANGE_URL) : BRANCH_NAME
+sourceBranch = (env.BRANCH_NAME ==~ /PR-.*/) ? bitbucket.getSourceBranchFromPr(env.CHANGE_URL) : env.BRANCH_NAME
 lock(lockableResource) {
     changeSharedLibBranch(sourceBranch)
 
@@ -27,6 +28,13 @@ lock(lockableResource) {
                             sh './gradlew clean test'
                         }
 
+                        stage('sonarqube analysing') {
+                            echo 'sonarqube analysing'
+                            script {
+                                sonarScanner('1.0.0')
+                            }
+                        }
+
                         stage('run downstream jobs') {
                             runDownstreamJobs()
                         }
@@ -37,7 +45,21 @@ lock(lockableResource) {
             currentBuild.result = "FAILED"
             throw e
         } finally {
-            slackNotify('testchannel')
+            publishHTML([allowMissing         : true,
+                         alwaysLinkToLastBuild: false,
+                         keepAll              : true,
+                         reportDir            : 'build/reports/tests/test/',
+                         reportFiles          : 'index.html',
+                         reportName           : 'Test Report',
+                         reportTitles         : ''])
+            
+            if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
+                slack.prOwnerPrivateMessage(env.CHANGE_URL)
+                slack.commitersOnly()
+            }
+            else {
+                slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
+            }
         }
     }
 }
@@ -59,32 +81,22 @@ def changeSharedLibBranch(String libBranch) {
     log('pipeline branch changed to ' + libBranch)
 }
 
-String getSoruceBranchFromPr(String url) {
-
-    log("Received PR url: ${url}")
-    prUrl = url.replaceAll("xyz/projects", "xyz/rest/api/1.0/projects") - "/overview"
-    log("Transform Url for access via rest api: ${prUrl}")
-
-    def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl
-    def props = readJSON text: prResponce.content
-
-    def sourceBranch = props.fromRef.displayId.trim()
-    log("SourceBranch: ${sourceBranch}")
-
-    return sourceBranch
-}
-
 def runDownstreamJobs() {
 
-    //TODO:add building release start/release finish jobs for this projects before starting multibranch job
-    parallel jsReleaseStartFinish: {
+    parallel jsReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-js-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build job: 'nextiva-pipeline-tests/test-js-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-js-pipeline-release-finish'
-    }, javaReleaseStartFinish: {
+    }, javaReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-java-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build job: 'nextiva-pipeline-tests/test-java-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-java-pipeline-release-finish'
-    }, pythonReleaseStartFinish: {
+    }, pythonReleaseHotfixStartFinish: {
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-start', parameters: [string(name: 'USER_DEFINED_RELEASE_VERSION', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-hotfix-start', parameters: [string(name: 'hotfixVersion', value: '')]
+        build job: 'nextiva-pipeline-tests/test-python-pipeline-hotfix-finish'
         build job: 'nextiva-pipeline-tests/test-python-pipeline-release-finish'
     }
 
