@@ -93,6 +93,6 @@ def pushFile(String filePath, String repoUrl) {
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
-        sh "curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}"
+        sh """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}"""
     }
 }
