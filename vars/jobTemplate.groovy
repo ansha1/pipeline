@@ -129,8 +129,7 @@ def call(body) {
 
                             sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                 sh """
-                                    git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${developmentVersion}"
-                                    git push
+                                    git branch
                                 """
                             }
 
