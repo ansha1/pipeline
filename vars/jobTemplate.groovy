@@ -102,16 +102,20 @@ def call(body) {
                     }
                 }
             }
-            stage('Pre build verification') {
+            stage('Release build version verification') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(implement_PIPELINE-16|release\/.+)$/ && jobConfig.DEPLOY_ENVIRONMENT == 'production'}
+                    expression {
+                        jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(implement_PIPELINE-16|release\/.+)$/ && jobConfig.DEPLOY_ENVIRONMENT == 'production'
+                    }
                 }
                 steps {
                     script {
-//                    if(utils.verifyPackageInNexus()) {}// check if version from proprties file already exists in Nexus
+                        if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
+                            // check if version from proprties file already exists in Nexus
                             approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
-                                                  "Do you want to auto increase a minor version ?", common.getCurrentUserSlackId())
+                                    "Do you want to auto increase a minor version ?", common.getCurrentUserSlackId())
 
+                        }
                     }
                 }
             }
