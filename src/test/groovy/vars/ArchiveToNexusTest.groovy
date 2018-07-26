@@ -6,7 +6,7 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
+class NexusTest extends BasePipelineTest implements Validator, Mocks {
 
     @Override
     @Before
@@ -29,17 +29,17 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
     }
 
     @Test
-    void archive_to_valid_environment() {
-        def script = loadScript "vars/archiveToNexus.groovy"
-        script.call 'dev', 'assetDir', 'version', 'packageName'
+    void push_static_assets_to_valid_environment() {
+        def script = loadScript "vars/nexus.groovy"
+        script.pushStaticAssets 'dev', 'assetDir', 'version', 'packageName'
         checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*'
         printCallStack()
     }
 
     @Test(expected = IllegalArgumentException)
-    void archive_to_not_valid_environment() {
-        def script = loadScript "vars/archiveToNexus.groovy"
-        script.call 'Keepo', 'assetDir', 'version', 'packageName'
+    void push_static_assets_to_not_valid_environment() {
+        def script = loadScript "vars/nexus.groovy"
+        script.pushStaticAssets 'Keepo', 'assetDir', 'version', 'packageName'
         checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*', 0
     }
 }
