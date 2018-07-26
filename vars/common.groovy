@@ -12,7 +12,7 @@ def getCurrentUserLogin() {
 def getCurrentUser() {  
     String userId = getCurrentUserLogin()
     log.info('userId: ' + userId)
-    User user = User.get(userId)
+    User user = User.get('mvasylets')
     log.info('user object: '+ user)
     return user
 }
