@@ -114,9 +114,9 @@ def call(body) {
 //                                                common.getCurrentUserSlackId(), common.getCurrentUserLogin())
 //                            log.info("the answer we get is: " + getAnswer)
 
-                            log.info("getCurrentUserLogin :" + common.getCurrentUserLogin())
-                            log.info("getCurrentUser :" + common.getCurrentUser())
-                            log.info("getCurrentUserEmail :" + common.getCurrentUserEmail())
+                            log.info("getCurrentUserLogin: " + common.getCurrentUserLogin())
+                            log.info("getCurrentUser: " + common.getCurrentUser())
+                            log.info("getCurrentUserEmail: " + common.getCurrentUserEmail())
 
                         }
                     }
