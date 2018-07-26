@@ -14,6 +14,7 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
         scriptRoots += '/'
         super.setUp()
         binding.setVariable 'params', [:]
+        binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'
 
         mockEnv()
         attachScript 'generateBuildProperties', 'log'
@@ -21,6 +22,7 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
         helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
         helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
         helper.registerAllowedMethod "readProperties", [Map], { return [:] }
+        helper.registerAllowedMethod "file", [Map], { c -> "Secret file" }
     }
 
     @Override
