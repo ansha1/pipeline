@@ -1,3 +1,5 @@
+import static com.nextiva.SharedJobsStaticVars.*
+
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
@@ -60,6 +62,37 @@ Boolean isDockerPackageExists(String packageName, String packageVersion, String 
     checkNexusPackage(repo, format, packageName, packageVersion)
 }
 
+def pushStaticAssets(String deployEnvironment, String assetDir, String version, String packageName) {
 
+    def jobName = "${env.JOB_NAME}"
+    def nexusRepoUrl = NEXUS_STATIC_ASSETS_REPO_URL + deployEnvironment
+    def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
 
+    if (deployEnvironment in LIST_OF_ENVS) {
+        generateBuildProperties(deployEnvironment, version, jobName)
 
+        def verbose = log.isDebug() ? "--verbose --include" : ""
+
+        sh "cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./"
+        /*curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
+            curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
+        """*/
+        dir(assetDir){
+            pushFile(assetPath, "${nexusRepoUrl}/${packageName}")
+            pushFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
+        }
+    }
+    else {
+        throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
+    }
+}
+
+def pushFile(String filePath, String repoUrl) {
+    def verbose = log.isDebug() ? "--verbose --include" : ""
+
+    withCredentials([
+        file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
+    ]) {
+        sh "curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}"
+    }
+}
