@@ -11,7 +11,9 @@ def getCurrentUserLogin() {
 
 def getCurrentUser() {  
     String userId = getCurrentUserLogin()
+    log.info('userId: ' + userId)
     User user = User.get(userId)
+    log.info('user object: '+ user)
     return user
 }
 
