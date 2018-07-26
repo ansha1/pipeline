@@ -111,10 +111,30 @@ def call(body) {
                 steps {
                     script {
                         if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
-                            // check if version from proprties file already exists in Nexus
-                            approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
-                                    "Do you want to auto increase a minor version ?", common.getCurrentUserSlackId())
 
+                            approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
+                                                  "Do you want to increase a minor version ?", common.getCurrentUserSlackId())
+
+                            try {
+                                tokens = jobConfig.BUILD_VERSION.tokenize('.')
+                                def major = tokens.get(0)
+                                def minor = tokens.get(1)
+                                def patch = tokens.get(2)
+                            } catch (e) {
+                                error('\n\nWrong BUILD_VERSION: ' + jobConfig.BUILD_VERSION + '\nplease use git-flow naming convention\n\n')
+                            }
+
+                            def developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+                            utils.setVersion(developmentVersion)
+
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                    git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${developmentVersion}"
+                                    git push
+                                """
+                            }
+
+                            jobConfig.BUILD_VERSION = developmentVersion
                         }
                     }
                 }

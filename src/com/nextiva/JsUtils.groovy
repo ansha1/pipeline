@@ -36,7 +36,9 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-def verifyPackageInNexus() {}
+Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+    return false
+}
 
 
 void runTests(Map args) {
