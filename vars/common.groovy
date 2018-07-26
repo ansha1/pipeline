@@ -12,14 +12,14 @@ def getCurrentUserLogin() {
 def getCurrentUser() {  
     String userId = getCurrentUserLogin()
     log.info('userId: ' + userId)
-    User user = User.get('mvasylets')
+    User user = User.get(userId)
     log.info('user object: '+ user)
     return user
 }
 
 def getCurrentUserEmail() {
     def user = getCurrentUser()
-    def umail = user.getProperty(Mailer.UserProperty.class)
+    def umail = user.getProperty(hudson.tasks.Mailer.UserProperty.class)
     return umail.getAddress()
 }
 
