@@ -117,9 +117,9 @@ def call(body) {
 
                             try {
                                 tokens = jobConfig.BUILD_VERSION.tokenize('.')
-                                def major = tokens.get(0)
-                                def minor = tokens.get(1)
-                                def patch = tokens.get(2)
+                                major = tokens.get(0)
+                                minor = tokens.get(1)
+                                patch = tokens.get(2)
                             } catch (e) {
                                 error('\n\nWrong BUILD_VERSION: ' + jobConfig.BUILD_VERSION + '\nplease use git-flow naming convention\n\n')
                             }
