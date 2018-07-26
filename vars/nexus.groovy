@@ -1,3 +1,5 @@
+import static com.nextiva.SharedJobsStaticVars.*
+
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
