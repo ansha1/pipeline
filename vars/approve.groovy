@@ -16,8 +16,8 @@ def call(String message='Should we proceed', String slackChannel, String authori
         }
         ]"""
 
-        slack(slackChannel, uploadSpec)
+//        slack(slackChannel, uploadSpec)
+        slack.privateMessage(slackChannel, uploadSpec)
         def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
-        println('the anwer we get is: ' + inputResponse)
     }
 }
