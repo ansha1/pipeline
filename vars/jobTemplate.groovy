@@ -83,22 +83,22 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
-                        if (params.stack) {
-                            jobConfig.INVENTORY_PATH += "-${params.stack}"
-                        }
-                        env.APP_NAME = jobConfig.APP_NAME
-                        env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
-                        env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
-                        env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
-                        env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
-                        env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
-                        env.VERSION = jobConfig.version
-                        env.BUILD_VERSION = jobConfig.BUILD_VERSION
-
-                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
-                        log.info(sh(script: 'printenv', returnStdout: true))
-                        log.info('=============================')
+//                        if (params.stack) {
+//                            jobConfig.INVENTORY_PATH += "-${params.stack}"
+//                        }
+//                        env.APP_NAME = jobConfig.APP_NAME
+//                        env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
+//                        env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
+//                        env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
+//                        env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
+//                        env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
+//                        env.VERSION = jobConfig.version
+//                        env.BUILD_VERSION = jobConfig.BUILD_VERSION
+//
+//                        jobConfig.extraEnvs.each { k, v -> env[k] = v }
+//                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
+//                        log.info(sh(script: 'printenv', returnStdout: true))
+//                        log.info('=============================')
                     }
                 }
             }
