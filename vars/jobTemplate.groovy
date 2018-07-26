@@ -109,9 +109,9 @@ def call(body) {
                 steps {
                     script {
                         timeout(time: 5, unit: 'MINUTES') {
-//                    utils.verifyPackageInNexus() // check if version from proprties file already exists in Nexus
+//                    if(utils.verifyPackageInNexus()) {}// check if version from proprties file already exists in Nexus
                             getAnswer = approve("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. Do you want to auto increase a minor version ?",
-                                    jobConfig.CHANNEL_TO_NOTIFY, jobConfig.branchPermissions.join(","))
+                                                common.getCurrentUserSlackId(), common.getCurrentUserLogin())
                             log.info("the answer we get is: " + getAnswer)
 
                         }
