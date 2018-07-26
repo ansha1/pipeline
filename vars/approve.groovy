@@ -3,7 +3,7 @@ def call(String message = 'Should we proceed', String slackChannel, String autho
 
         def buildMessage = buildApproveMessageBody(message)
         slack(slackChannel, buildMessage)
-        def inputResponse = input(id: 'Proceed', message: buildMessage, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
+        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
     }
 }
 
@@ -23,14 +23,12 @@ def buildApproveMessageBody(String message) {
             ]
         }
         ]"""
-
-    return uploadSpec
 }
 
 def sendToPrivate(String message = 'Should we proceed' , String UserSlackId, Integer minutes = 5 ) {
     timeout(minutes) {
         def buildMessage = buildApproveMessageBody(message)
         slack.privateMessage(UserSlackId, buildMessage)
-        def inputResponse = input(id: 'Proceed', message: buildMessage, ok: 'Approve')
+        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve')
     }
 }
