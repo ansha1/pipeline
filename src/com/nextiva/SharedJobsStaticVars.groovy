@@ -5,6 +5,7 @@ class SharedJobsStaticVars {
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
+    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.env'

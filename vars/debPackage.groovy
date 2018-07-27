@@ -105,11 +105,10 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
 
             //def isDeployedToNexus = sh(returnStatus: true, script: """curl ${verbose} --show-error --fail -K /etc/nexus_curl_config -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
             //                        --data-binary @${debName} ${nexusDebRepoUrl}""")
-            nexus.postFile(debName, nexusDebRepoUrl)
+            def isDeployedToNexus = nexus.postFile(debName, nexusDebRepoUrl, returnStatus=true)
             log.info("Deployment to Nexus finished with status: " + isDeployedToNexus)
             if ( isDeployedToNexus != 0 ) {
-                currentBuild.rawBuild.result = Result.ABORTED
-                throw new hudson.AbortException("There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
+                error("There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
             }
         }
     }

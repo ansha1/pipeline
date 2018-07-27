@@ -74,9 +74,6 @@ def uploadStaticAssets(String deployEnvironment, String assetDir, String version
         def verbose = log.isDebug() ? "--verbose --include" : ""
 
         sh "cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./"
-        /*curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}
-            curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
-        """*/
         dir(assetDir){
             uploadFile(assetPath, "${nexusRepoUrl}/${packageName}")
             uploadFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
@@ -94,18 +91,18 @@ def uploadFile(String filePath, String repoUrl, Boolean returnStatus = false) {
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
         sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
-                                                                -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")
-        
+                                                                -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")   
     }
 }
 
-def postFile(String filePath, String repoUrl) {
+def postFile(String filePath, String repoUrl, Boolean returnStatus = false) {
     def verbose = log.isDebug() ? "--verbose --include" : ""
 
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
-        sh """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
-              --data-binary @${filePath} ${repoUrl}"""
+        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                                -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+                                                                --data-binary @${filePath} ${repoUrl}""")
     }
 }
