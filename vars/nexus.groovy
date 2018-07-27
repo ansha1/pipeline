@@ -48,7 +48,7 @@ Boolean checkStatus(Map searchQueryResult, String packageName, String packageVer
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=static-assets-production&format=raw&name=agent-0.1.21
-Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo, String format = 'raw') {
+Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo = 'static-assets-production', String format = 'raw') {
     checkNexusPackage(repo, format, packageName, packageVersion)
 }
 

@@ -102,6 +102,7 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|implement_PIPELINE-16)$/) {
                             stage('Release build version verification') {
+                                log.warning('We are inside Release build version verification step')
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +

@@ -36,8 +36,8 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
-    return false
+def verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+    nexus.isAssetsPackageExists(packageName, packageVersion)
 }
 
 
