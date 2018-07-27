@@ -105,7 +105,7 @@ def call(body) {
             stage('Release build version verification') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(implement_PIPELINE-16|release\/.+)$/ && jobConfig.DEPLOY_ENVIRONMENT == 'production'
+                        jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.DEPLOY_ENVIRONMENT == 'production'
                     }
                 }
                 steps {
