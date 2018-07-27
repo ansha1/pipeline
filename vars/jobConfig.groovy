@@ -147,13 +147,13 @@ def autoIncrementVersion() {
     }
 
     Integer patch = patch.toInteger() + 1
-    developmentVersion = major + "." + minor + "." + patch
-    while (utils.verifyPackageInNexus(APP_NAME, developmentVersion, DEPLOY_ENVIRONMENT)) {
+    patchedBuildVersion = major + "." + minor + "." + patch
+    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
         patch += 1
-        developmentVersion = major + "." + minor + "." + patch
+        patchedBuildVersion = major + "." + minor + "." + patch
     }
 
-    return developmentVersion
+    return patchedBuildVersion
 }
 
 Map getAnsibleExtraVars() {

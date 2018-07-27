@@ -99,33 +99,27 @@ def call(body) {
                         log.info('GLOBAL ENVIRONMENT VARIABLES:')
                         log.info(sh(script: 'printenv', returnStdout: true))
                         log.info('=============================')
-                    }
-                }
-            }
-            stage('Release build version verification') {
-                when {
-                    expression {
-                        jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.DEPLOY_ENVIRONMENT == 'production'
-                    }
-                }
-                steps {
-                    script {
-                        if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-                            approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
-                                                  "Do you want to increase a minor version ?", common.getCurrentUserSlackId())
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|PIPELINE-16)$/) {
+                            stage('Release build version verification') {
+                                if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-                            def developmentVersion = jobConfig.autoIncrementVersion()
-                            utils.setVersion(developmentVersion)
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
+                                                          "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
 
-                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                sh """
-                                    git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${developmentVersion}"
-                                    git push origin HEAD:${BRANCH_NAME}
-                                """
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
+                                    utils.setVersion(patchedBuildVersion)
+
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        sh """
+                                            git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${patchedBuildVersion}"
+                                            git push origin HEAD:${BRANCH_NAME}
+                                        """
+                                    }
+
+                                    jobConfig.BUILD_VERSION = patchedBuildVersion
+                                }
                             }
-
-                            jobConfig.BUILD_VERSION = developmentVersion
                         }
                     }
                 }
