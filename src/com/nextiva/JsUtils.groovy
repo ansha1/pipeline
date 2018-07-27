@@ -69,6 +69,6 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
 
     dir(pathToSrc) {
         sh "${buildCommands}"
-        archiveToNexus(environment, distPath, buildVersion, appName)
+        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName)
     }
 }
