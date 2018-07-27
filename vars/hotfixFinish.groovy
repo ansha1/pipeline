@@ -13,7 +13,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     autoPullRequest = true  // mandatory parameter for hotfix finish
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
-    slackChannel = pipelineParams.slackChannel
+    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
     versionPath = pipelineParams.versionPath ?: '.'
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
