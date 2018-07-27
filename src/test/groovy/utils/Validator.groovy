@@ -39,7 +39,6 @@ trait Validator implements BasePipelineAccessor {
                     && basePipelineTest.matchParameter(method.getArgs()[parameterIndex], expectedValue))
         }
         assertEquals('Method ' + methodName + ' was not executed with argument value ' + expectedValue, executionCount, methodCalls.size())
-
     }
 
     /**
