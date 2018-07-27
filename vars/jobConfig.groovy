@@ -142,6 +142,21 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 }
 
 
+def getAutoIncrementNum(String version) {
+    try {
+        tokens = version.tokenize('.')
+        major = tokens.get(0)
+        minor = tokens.get(1)
+        patch = tokens.get(2)
+    } catch (e) {
+        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use git-flow naming convention\n\n')
+    }
+
+    developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+
+    return developmentVersion
+}
+
 Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {

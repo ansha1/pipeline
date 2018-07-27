@@ -115,21 +115,11 @@ def call(body) {
                             approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
                                                   "Do you want to increase a minor version ?", common.getCurrentUserSlackId())
 
-                            try {
-                                tokens = jobConfig.BUILD_VERSION.tokenize('.')
-                                major = tokens.get(0)
-                                minor = tokens.get(1)
-                                patch = tokens.get(2)
-                            } catch (e) {
-                                error('\n\nWrong BUILD_VERSION: ' + jobConfig.BUILD_VERSION + '\nplease use git-flow naming convention\n\n')
-                            }
-
-                            def developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+                            def developmentVersion = getAutoIncrementNum(jobConfig.BUILD_VERSION)
                             utils.setVersion(developmentVersion)
 
                             sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                 sh """
-                                    git branch
                                     git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${developmentVersion}"
                                     git push origin HEAD:${BRANCH_NAME}
                                 """
