@@ -49,7 +49,7 @@ def runSonarScanner(String projectVersion) {
 
 void runTests(Map args) {
     log.info("Start unit tests Java")
-    def testCommands = args.get('testCommands', 'mvn clean install jacoco:report && mvn checkstyle:checkstyle')
+    def testCommands = args.get('testCommands', 'mvn --batch-mode clean install jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
             sh testCommands

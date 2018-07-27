@@ -13,7 +13,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     autoPullRequest = true  // mandatory parameter for hotfix finish
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
-    slackChannel = pipelineParams.slackChannel
+    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
     versionPath = pipelineParams.versionPath ?: '.'
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
@@ -168,7 +168,7 @@ def call(body) {
                 script {
                     String user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} finished successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
                     slack(slackChannel, uploadSpec)
                 }
             }
