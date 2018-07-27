@@ -252,7 +252,7 @@ def call(body) {
                         }
                     }
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
-                        slack.commitersOnly()
+                        //slack.commitersOnly()
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                 }

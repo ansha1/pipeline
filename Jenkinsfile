@@ -55,7 +55,7 @@ lock(lockableResource) {
             
             if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                 slack.prOwnerPrivateMessage(env.CHANGE_URL)
-                slack.commitersOnly()
+                //slack.commitersOnly()
             }
             else {
                 slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
