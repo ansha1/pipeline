@@ -13,7 +13,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: ''
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
@@ -150,7 +150,7 @@ def call(body) {
                 script {
                     String user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Release ${APP_NAME} ${releaseVersion} started successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
                     slack(CHANNEL_TO_NOTIFY, uploadSpec)
                 }
             }

@@ -12,7 +12,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    slackChannel = pipelineParams.slackChannel ?: ''
+    slackChannel = pipelineParams.slackChannel
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
@@ -102,7 +102,7 @@ def call(body) {
                 script {
                     String user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} started successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
                     slack(slackChannel, uploadSpec)
                 }
             }
