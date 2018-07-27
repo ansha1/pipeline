@@ -153,7 +153,7 @@ def autoIncrementVersion() {
     }
 
     developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
-    while (!utils.verifyPackageInNexus(APP_NAME, developmentVersion, DEPLOY_ENVIRONMENT)) {
+    while (utils.verifyPackageInNexus(APP_NAME, developmentVersion, DEPLOY_ENVIRONMENT)) {
         developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
     }
 
