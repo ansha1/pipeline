@@ -142,7 +142,7 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 }
 
 
-def getAutoIncrementNum(String version) {
+def autoIncrementVersion(String version) {
     try {
         tokens = version.tokenize('.')
         major = tokens.get(0)
@@ -153,6 +153,9 @@ def getAutoIncrementNum(String version) {
     }
 
     developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+    while (!utils.verifyPackageInNexus(jobConfig.APP_NAME, developmentVersion, jobConfig.DEPLOY_ENVIRONMENT)) {
+        developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+    }
 
     return developmentVersion
 }

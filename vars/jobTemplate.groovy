@@ -115,7 +115,7 @@ def call(body) {
                             approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
                                                   "Do you want to increase a minor version ?", common.getCurrentUserSlackId())
 
-                            def developmentVersion = jobConfig.getAutoIncrementNum('2.5')
+                            def developmentVersion = jobConfig.autoIncrementVersion(jobConfig.BUILD_VERSION)
                             utils.setVersion(developmentVersion)
 
                             sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
