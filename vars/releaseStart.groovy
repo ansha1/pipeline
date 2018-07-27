@@ -13,7 +13,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: ''
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck

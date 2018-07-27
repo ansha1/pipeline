@@ -12,7 +12,7 @@ def call(body) {
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
     versionPath = pipelineParams.versionPath ?: '.'
-    slackChannel = pipelineParams.slackChannel ?: ''
+    slackChannel = pipelineParams.slackChannel
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
