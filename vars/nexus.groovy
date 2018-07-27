@@ -90,8 +90,8 @@ def uploadFile(String filePath, String repoUrl, Boolean returnStatus = false) {
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
-        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
-                                                                -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")   
+        sh(returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                  -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")   
     }
 }
 
@@ -101,8 +101,8 @@ def postFile(String filePath, String repoUrl, Boolean returnStatus = false) {
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
-        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
-                                                                -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
-                                                                --data-binary @${filePath} ${repoUrl}""")
+        sh(returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                  -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+                                                  --data-binary @${filePath} ${repoUrl}""")
     }
 }
