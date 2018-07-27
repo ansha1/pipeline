@@ -142,9 +142,9 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 }
 
 
-def autoIncrementVersion(String version) {
+def autoIncrementVersion() {
     try {
-        tokens = version.tokenize('.')
+        tokens = BUILD_VERSION.tokenize('.')
         major = tokens.get(0)
         minor = tokens.get(1)
         patch = tokens.get(2)
