@@ -28,6 +28,7 @@ Boolean checkNexusPackage(String repo, String format, String packageName, String
     def nexusRestApi = "http://repository.nextiva.xyz/service/rest/beta/search?repository="
     def searchNexusQuery = nexusRestApi + repo + "&format=" + format + "&name=" + packageName + "&version=" + packageVersion
 
+    log.warning('searchNexusQuery: ' + searchNexusQuery)
     def res = new groovy.json.JsonSlurper().parseText(new URL(searchNexusQuery).getText())
     if (log.isDebug()) {
         log.debug("searchNexusQuery: ${searchNexusQuery}")
