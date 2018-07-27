@@ -1,4 +1,4 @@
 def call(String deployEnvironment, String assetDir, String version, String packageName) {
-    log.warning('DEPRECATED: Use nexus.pushStaticAssets() method.')
-    nexus.pushStaticAssets(deployEnvironment, assetDir, version, packageName)
+    log.warning('DEPRECATED: Use nexus.uploadStaticAssets() method.')
+    nexus.uploadStaticAssets(deployEnvironment, assetDir, version, packageName)
 }

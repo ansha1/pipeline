@@ -62,7 +62,7 @@ Boolean isDockerPackageExists(String packageName, String packageVersion, String 
     checkNexusPackage(repo, format, packageName, packageVersion)
 }
 
-def pushStaticAssets(String deployEnvironment, String assetDir, String version, String packageName) {
+def uploadStaticAssets(String deployEnvironment, String assetDir, String version, String packageName) {
 
     def jobName = "${env.JOB_NAME}"
     def nexusRepoUrl = NEXUS_STATIC_ASSETS_REPO_URL + deployEnvironment
@@ -78,8 +78,8 @@ def pushStaticAssets(String deployEnvironment, String assetDir, String version, 
             curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K /etc/nexus_curl_config --upload-file ${assetPath} ${nexusRepoUrl}/${packageName}-${version}
         """*/
         dir(assetDir){
-            pushFile(assetPath, "${nexusRepoUrl}/${packageName}")
-            pushFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
+            uploadFile(assetPath, "${nexusRepoUrl}/${packageName}")
+            uploadFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
         }
     }
     else {
@@ -87,12 +87,23 @@ def pushStaticAssets(String deployEnvironment, String assetDir, String version, 
     }
 }
 
-def pushFile(String filePath, String repoUrl) {
+def uploadFile(String filePath, String repoUrl) {
     def verbose = log.isDebug() ? "--verbose --include" : ""
 
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
         sh """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}"""
+    }
+}
+
+def postFile(String filePath, String repoUrl) {
+    def verbose = log.isDebug() ? "--verbose --include" : ""
+
+    withCredentials([
+        file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
+    ]) {
+        sh """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+              --data-binary @${filePath} ${repoUrl}"""
     }
 }
