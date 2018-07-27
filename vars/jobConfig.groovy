@@ -57,6 +57,12 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
+        case 'implement_PIPELINE-16':
+            ANSIBLE_ENV = ansibleEnvMap.get('qa')
+            healthCheckUrl = healthCheckMap.get('qa')
+            branchPermissions = branchPermissionsMap.get('qa')
+            DEPLOY_ENVIRONMENT = 'production'
+            break
         case ~/^hotfix\/.+$/:
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
