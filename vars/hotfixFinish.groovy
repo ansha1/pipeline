@@ -168,7 +168,7 @@ def call(body) {
                 script {
                     String user = common.getCurrentUser()
                     def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} finished successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"]"""
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
                     slack(slackChannel, uploadSpec)
                 }
             }
