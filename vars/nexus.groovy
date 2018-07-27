@@ -87,13 +87,15 @@ def uploadStaticAssets(String deployEnvironment, String assetDir, String version
     }
 }
 
-def uploadFile(String filePath, String repoUrl) {
+def uploadFile(String filePath, String repoUrl, Boolean returnStatus = false) {
     def verbose = log.isDebug() ? "--verbose --include" : ""
 
     withCredentials([
         file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
     ]) {
-        sh """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}"""
+        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                                -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")
+        
     }
 }
 
