@@ -152,9 +152,11 @@ def autoIncrementVersion() {
         error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use git-flow naming convention\n\n')
     }
 
-    developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+    Integer patch = patch.toInteger() + 1
+    developmentVersion = major + "." + minor + "." + patch
     while (utils.verifyPackageInNexus(APP_NAME, developmentVersion, DEPLOY_ENVIRONMENT)) {
-        developmentVersion = major + "." + minor + "." + (patch.toInteger() + 1)
+        patch += 1
+        developmentVersion = major + "." + minor + "." + patch
     }
 
     return developmentVersion
