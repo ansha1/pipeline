@@ -102,7 +102,7 @@ def publish(String packageName, String deployEnvironment, String extraPath = nul
 
             // upload deb-package to Nexus 3
             def verbose = log.isDebug() ? "--verbose --include" : ""
-            def isDeployedToNexus = nexus.postFile(debName, nexusDebRepoUrl, returnStatus=true)
+            def isDeployedToNexus = nexus.postFile(debName, nexusDebRepoUrl, true)
             log.info("Deployment to Nexus finished with status: " + isDeployedToNexus)
             if ( isDeployedToNexus != 0 ) {
                 error("There was a problem with pushing ${debName} to ${nexusDebRepoUrl}.")
