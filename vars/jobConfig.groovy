@@ -143,7 +143,7 @@ def autoIncrementVersion() {
         minor = tokens.get(1)
         patch = tokens.get(2)
     } catch (e) {
-        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use git-flow naming convention\n\n')
+        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
     }
 
     Integer patch = patch.toInteger() + 1
