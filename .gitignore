@@ -35,3 +35,4 @@ pipelines.iml
 .gradle/*
 .settings/*
 bin/*
+build/*

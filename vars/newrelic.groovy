@@ -2,7 +2,7 @@
 
 
 def postBuildVersion(String appId, String apiKey, String version) {
-    def verbose = log.isDebug() ? "--verbose --include" : "--silent"
+    def verbose = log.isDebug() ? "--verbose --include" : ""
 
     sh "curl ${verbose} -X POST 'https://api.newrelic.com/v2/applications/${appId}/deployments.json' \
         -H 'X-Api-Key: ${apiKey}' -i \

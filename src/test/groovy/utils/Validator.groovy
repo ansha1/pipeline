@@ -35,11 +35,9 @@ trait Validator implements BasePipelineAccessor {
                                              int parameterIndex = 0) {
         List<MethodCall> methodCalls = basePipelineTest.helper.callStack.findAll { method ->
             ((methodName == method.methodName)
-                    && method.getArgs().size() > parameterIndex
-                    && basePipelineTest.matchParameter(method.getArgs()[parameterIndex], expectedValue))
+                    && basePipelineTest.matchParameter(method.getArgs(), expectedValue, parameterIndex))
         }
         assertEquals('Method ' + methodName + ' was not executed with argument value ' + expectedValue, executionCount, methodCalls.size())
-
     }
 
     /**
@@ -49,7 +47,20 @@ trait Validator implements BasePipelineAccessor {
      * @param expected value or pattern
      * @return match result
      */
-    boolean matchParameter(Object actual, Object expected) {
+    boolean matchParameter(Object[] parameters, Object expected, int parameterIndex) {
+        def actual
+        if (parameters.length == 1 && parameters[0] instanceof LinkedHashMap) {
+            if (parameterIndex >= parameters[0].values().size()) {
+                return false
+            }
+            actual = ((LinkedHashMap) parameters[0]).values()[parameterIndex]
+        } else {
+            if (parameterIndex >= parameters.length) {
+                return false
+            }
+            actual = parameters[parameterIndex]
+        }
+
         if (actual instanceof GString || actual instanceof String) {
             return Pattern.compile(expected as String, Pattern.DOTALL).matcher(actual as CharSequence).matches()
         } else {

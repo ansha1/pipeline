@@ -1,3 +1,5 @@
+import static com.nextiva.SharedJobsStaticVars.*
+
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
@@ -5,7 +7,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
 
-    def verbose = log.isDebug() ? "--verbose --include" : "--silent"
+    def verbose = log.isDebug() ? "--verbose --include" : ""
     if (log.isDebug()) {
         log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
     }
@@ -60,6 +62,47 @@ Boolean isDockerPackageExists(String packageName, String packageVersion, String 
     checkNexusPackage(repo, format, packageName, packageVersion)
 }
 
+def uploadStaticAssets(String deployEnvironment, String assetDir, String version, String packageName) {
 
+    def jobName = "${env.JOB_NAME}"
+    def nexusRepoUrl = NEXUS_STATIC_ASSETS_REPO_URL + deployEnvironment
+    def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
 
+    if (deployEnvironment in LIST_OF_ENVS) {
+        generateBuildProperties(deployEnvironment, version, jobName)
 
+        def verbose = log.isDebug() ? "--verbose --include" : ""
+
+        sh "cd ${assetDir} && cp ${env.WORKSPACE}/${BUILD_PROPERTIES_FILENAME} ./ && tar -czvf ${assetPath} ./"
+        dir(assetDir){
+            uploadFile(assetPath, "${nexusRepoUrl}/${packageName}")
+            uploadFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
+        }
+    }
+    else {
+        throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
+    }
+}
+
+def uploadFile(String filePath, String repoUrl, Boolean returnStatus = false) {
+    def verbose = log.isDebug() ? "--verbose --include" : ""
+
+    withCredentials([
+        file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
+    ]) {
+        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                                -K ${NEXUS_CURL_CONFIG} --upload-file ${filePath} ${repoUrl}""")   
+    }
+}
+
+def postFile(String filePath, String repoUrl, Boolean returnStatus = false) {
+    def verbose = log.isDebug() ? "--verbose --include" : ""
+
+    withCredentials([
+        file(credentialsId: 'nexus_curl_config', variable: 'NEXUS_CURL_CONFIG')
+    ]) {
+        sh(name: 'curl', returnStatus: returnStatus, script: """curl ${verbose} --show-error --fail --write-out "\nStatus: %{http_code}\n" \\
+                                                                -K ${NEXUS_CURL_CONFIG} -X POST -H ${DEB_PKG_CONTENT_TYPE_PUBLISH} \\
+                                                                --data-binary @${filePath} ${repoUrl}""")
+    }
+}
