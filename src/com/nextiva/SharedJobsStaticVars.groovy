@@ -7,6 +7,7 @@ class SharedJobsStaticVars {
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
     static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
+    static final NEXUS_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.env'
     static final DOCKER_REGISTRY = 'repository.nextiva.xyz'

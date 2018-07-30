@@ -36,6 +36,11 @@ def runSonarScanner(String projectVersion) {
 }
 
 
+Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+    nexus.isAssetsPackageExists(packageName, packageVersion)
+}
+
+
 void runTests(Map args) {
     try {
         log.info("Start unit tests JavaScript")

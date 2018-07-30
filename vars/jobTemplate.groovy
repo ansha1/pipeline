@@ -99,6 +99,28 @@ def call(body) {
                         log.info('GLOBAL ENVIRONMENT VARIABLES:')
                         log.info(sh(script: 'printenv', returnStdout: true))
                         log.info('=============================')
+
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
+                            stage('Release build version verification') {
+                                if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
+
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
+                                                          "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
+
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
+                                    utils.setVersion(patchedBuildVersion)
+
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        sh """
+                                            git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${patchedBuildVersion}"
+                                            git push origin HEAD:${BRANCH_NAME}
+                                        """
+                                    }
+
+                                    jobConfig.BUILD_VERSION = patchedBuildVersion
+                                }
+                            }
+                        }
                     }
                 }
             }

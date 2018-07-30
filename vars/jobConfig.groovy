@@ -136,6 +136,26 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 }
 
 
+def autoIncrementVersion() {
+    try {
+        tokens = BUILD_VERSION.tokenize('.')
+        major = tokens.get(0)
+        minor = tokens.get(1)
+        patch = tokens.get(2)
+    } catch (e) {
+        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
+    }
+
+    Integer patch = patch.toInteger() + 1
+    patchedBuildVersion = major + "." + minor + "." + patch
+    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patch += 1
+        patchedBuildVersion = major + "." + minor + "." + patch
+    }
+
+    return patchedBuildVersion
+}
+
 Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
