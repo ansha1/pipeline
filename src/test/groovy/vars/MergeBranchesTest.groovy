@@ -13,9 +13,7 @@ class MergeBranchesTest extends BasePipelineTest implements Validator, Mocks {
     void setUp() throws Exception {
         super.setUp()
         mockCreatePr()
-        mockEnv()
         mockSendSlack()
-        attachScript 'createPr'
         mockMapClosure 'sshagent'
         mockString 'stage'
     }

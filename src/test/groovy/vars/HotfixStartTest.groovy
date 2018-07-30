@@ -15,11 +15,30 @@ class HotfixStartTest extends BasePipelineTest implements Validator, Mocks {
     @Before
     void setUp() throws Exception {
         super.setUp()
-        binding.setVariable 'currentBuild', [rawBuild: [:]]
+        binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
+        binding.setVariable 'User', mockObjects.user
         binding.setVariable 'Result', Result
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
-        attachScript 'log'
-        mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script'
+        helper.registerAllowedMethod 'httpRequest', [Map], {
+            Map m ->
+                if (((String) m.get('url')).contains('users.lookupByEmail')) {
+                    return [content: 'lookupByEmailResponse']
+                } else {
+                    return 'httpRequestResponse'
+                }
+        }
+        helper.registerAllowedMethod 'readJSON', [Map], {
+            Map m ->
+                if (((String) m.get('text')).contains('lookupByEmailResponse')) {
+                    return [user: [id: 'userId']]
+                } else {
+                    return [:]
+                }
+        }
+        attachScript 'log', 'common'
+        mockSendSlack()
+        mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
+                'success', 'always'
         mockString 'label', 'ansiColor', 'jdk', 'maven'
         mockNoArgs 'timestamps', 'cleanWs'
         mockMap 'timeout', 'git'
@@ -33,16 +52,34 @@ class HotfixStartTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void hotfix_start() {
+        helper.registerAllowedMethod 'sh', [Map], { Map map ->
+            if (map.get('script') ==~ 'git branch -r.*') {
+                return null
+            }
+            return 'sh command output'
+        }
         def script = loadScript "vars/hotfixStart.groovy"
-        script.call {hotfixVersion = '1.0.1'}
+        script.call {
+            hotfixVersion = '1.0.1'
+            repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+        }
         printCallStack()
         checkThatMethodWasExecutedWithValue 'error', '.*Wrong hotfix version.*', 0
     }
 
     @Test
     void cannot_start_hotfix_with_wrong_version() {
+        helper.registerAllowedMethod 'sh', [Map], { Map map ->
+            if (map.get('script') ==~ 'git branch -r.*') {
+                return null
+            }
+            return 'sh command output'
+        }
         def script = loadScript "vars/hotfixStart.groovy"
-        script.call {hotfixVersion = '1.0.Kappa'}
+        script.call {
+            hotfixVersion = '1.0.Kappa'
+            repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+        }
         printCallStack()
         checkThatMethodWasExecutedWithValue 'error', '.*Wrong hotfix version.*'
     }
@@ -57,7 +94,9 @@ class HotfixStartTest extends BasePipelineTest implements Validator, Mocks {
         }
         def script = loadScript "vars/hotfixStart.groovy"
         try {
-            script.call {}
+            script.call {
+                repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+            }
             Assert.fail('AbortException is expected')
         } catch (AbortException ignored) {
             printCallStack()

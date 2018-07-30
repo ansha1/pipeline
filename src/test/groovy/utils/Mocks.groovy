@@ -34,8 +34,11 @@ trait Mocks implements BasePipelineAccessor {
      * Mocks the required data for sendSlack function
      */
     void mockSendSlack() {
-        basePipelineTest.helper.registerAllowedMethod "slackSend", [Map.class], { println 'Slack message mock' }
-        basePipelineTest.mockEnv()
+        mockLog()
+        mockEnv()
+        attachScript 'slack'
+        basePipelineTest.helper.registerAllowedMethod 'slackSend', [Map], { println 'Slack message mock' }
+        basePipelineTest.helper.registerAllowedMethod 'sh', [Map], {'sh command output'}
     }
 
     /**
@@ -58,7 +61,8 @@ trait Mocks implements BasePipelineAccessor {
      * Mocks the required data for createPr script
      */
     void mockCreatePr(prUrl = 'some_url') {
-        attachScript 'log'
+        attachScript 'log', 'bitbucket'
+        mockLog()
 
         basePipelineTest.helper.registerAllowedMethod 'httpRequest', [Map], {
             Map m ->
@@ -82,7 +86,7 @@ trait Mocks implements BasePipelineAccessor {
      * Mocks methods available through the docker variable
      */
     void mockDocker() {
-        basePipelineTest.binding.setVariable('docker', mockObjects.getDocker())
+        basePipelineTest.binding.setVariable('docker', mockObjects.docker)
     }
 
     /**

@@ -17,15 +17,17 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         super.setUp()
 
         binding.setVariable 'WORKSPACE', 'WORKSPACE'
+        binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'
         binding.setVariable 'Result', Result
         binding.setVariable 'currentBuild', [rawBuild: [:]]
         binding.setVariable 'params', [:]
         helper.registerAllowedMethod 'fileExists', [String], { String s -> return !s.contains('not_existing') }
 
+        attachScript 'log', 'generateBuildProperties', 'nexus'
         mockEnv()
         mockGenerateBuildProperties()
         mockDocker()
-        attachScript 'log', 'generateBuildProperties'
+        mockMap 'file'
     }
 
     @Override
@@ -86,16 +88,11 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
     }
 
     @Test
-    void if_deploy_failed_than_build_is_aborted() {
+    void check_error_on_failed_deploy() {
         helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? 1 : 'sh command output' }
-        try {
-            def script = loadScript "vars/debPackage.groovy"
-            script.publish 'packageName', 'dev'
-            Assert.fail('AbortException is expected')
-        } catch (AbortException e) {
-            Assert.assertThat(e.getMessage(), StringContains.containsString('problem with pushing'))
-            Assert.assertEquals('Wrong result', Result.ABORTED, binding.currentBuild.rawBuild.result)
-        }
+        def script = loadScript "vars/debPackage.groovy"
+        script.publish 'packageName', 'dev'
+        checkThatMockedMethodWasExecuted 'error', 1
         printCallStack()
     }
 
@@ -105,7 +102,6 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         script.publish 'packageName', 'Kappa123'
         printCallStack()
     }
-
 
 
 }

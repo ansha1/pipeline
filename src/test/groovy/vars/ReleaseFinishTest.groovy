@@ -15,12 +15,31 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
     @Before
     void setUp() throws Exception {
         super.setUp()
-        binding.setVariable 'currentBuild', [rawBuild: [:]]
+        binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
+        binding.setVariable 'User', mockObjects.user
         binding.setVariable 'Result', Result
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'readMavenPom', [Map], { [version: '1.0.1'] }
-        attachScript 'log', 'mergeBranches'
-        mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script'
+        helper.registerAllowedMethod 'httpRequest', [Map], {
+            Map m ->
+                if (((String) m.get('url')).contains('users.lookupByEmail')) {
+                    return [content: 'lookupByEmailResponse']
+                } else {
+                    return 'httpRequestResponse'
+                }
+        }
+        helper.registerAllowedMethod 'readJSON', [Map], {
+            Map m ->
+                if (((String) m.get('text')).contains('lookupByEmailResponse')) {
+                    return [user: [id: 'userId']]
+                } else {
+                    return [:]
+                }
+        }
+        mockSendSlack()
+        attachScript 'log', 'mergeBranches', 'common'
+        mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
+                'success', 'always'
         mockString 'label', 'ansiColor', 'jdk', 'maven'
         mockNoArgs 'timestamps', 'cleanWs'
         mockMap 'timeout', 'git'
@@ -45,7 +64,10 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
             return 'sh command output'
         }
         def script = loadScript "vars/releaseFinish.groovy"
-        script.call { developBranch = 'develop' }
+        script.call {
+            developBranch = 'develop'
+            repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+        }
         printCallStack()
         checkThatMockedMethodWasExecuted 'warn', 0
         checkThatMockedMethodWasExecuted 'error', 0
@@ -65,7 +87,10 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
         }
         def script = loadScript "vars/releaseFinish.groovy"
         try {
-            script.call { developBranch = 'develop' }
+            script.call {
+                developBranch = 'develop'
+                repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+            }
             Assert.fail('AbortException is expected')
         } catch (AbortException ignored) {
             printCallStack()
@@ -88,7 +113,10 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
         }
         def script = loadScript "vars/releaseFinish.groovy"
         try {
-            script.call { developBranch = 'develop' }
+            script.call {
+                developBranch = 'develop'
+                repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+            }
             Assert.fail('AbortException is expected')
         } catch (AbortException ignored) {
             printCallStack()
@@ -110,7 +138,10 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
             return 'sh command output'
         }
         def script = loadScript "vars/releaseFinish.groovy"
-        script.call { developBranch = 'developer' }
+        script.call {
+            developBranch = 'developer'
+            repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+        }
         printCallStack()
         checkThatMethodWasExecutedWithValue 'error', '.*Wrong develop branch name.*'
     }
@@ -137,7 +168,10 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                 }
         def script = loadScript "vars/releaseFinish.groovy"
         try {
-            script.call { developBranch = 'develop' }
+            script.call {
+                developBranch = 'develop'
+                repositoryUrl = 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
+            }
             printCallStack()
             Assert.fail('AbortException is expected')
         } catch (AbortException ignored) {

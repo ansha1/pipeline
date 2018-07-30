@@ -11,7 +11,7 @@ def getCurrentUserLogin() {
 
 def getCurrentUser() {  
     String userId = getCurrentUserLogin()
-    User user = User.get(userId)
+    def user = User.get(userId)
 
     return user
 }
