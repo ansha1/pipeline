@@ -17,12 +17,7 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
         absoluteVenvDir = pwd()
     }
 
-    if(env.DEPLOY_ENVIRONMENT.equals(null) || env.DEPLOY_ENVIRONMENT == '') {
-        pipRepo = PIP_EXTRA_INDEX_DEFAULT_REPO
-    }
-    else {
-        pipRepo = env.DEPLOY_ENVIRONMENT
-    }
+    pipRepo = env.DEPLOY_ENVIRONMENT ?: PIP_EXTRA_INDEX_DEFAULT_REPO
 
     return [
         "VIRTUAL_ENV=${absoluteVenvDir}",
@@ -36,7 +31,7 @@ def getVirtualEnv(String venvDir=VENV_DIR) {
 def venvSh(String cmd, Boolean returnStdout=false, String venvDir=VENV_DIR) {
     log.info("Activate virtualenv and run command (${venvDir})")
     withEnv(getVirtualEnv(venvDir)) {
-        output = sh(returnStdout: returnStdout, script: cmd)
+        output = sh(name: 'Run sh script', returnStdout: returnStdout, script: cmd)
     }
     return output
 }

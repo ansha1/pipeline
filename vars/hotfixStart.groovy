@@ -11,7 +11,9 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
+    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -35,7 +37,6 @@ def call(body) {
                     cleanWs()
 
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
             stage('Prepare for starting release') {
@@ -44,7 +45,7 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/hotfix/" || true'
-                        hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
+                        hotfixBranchCount = hotfixBranchList ? hotfixBranchList.split().size() : '0'
 
                         if (hotfixBranchCount.toInteger() > 0) {
                             log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
@@ -60,7 +61,7 @@ def call(body) {
                 steps {
                     script {
                         log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
-                        hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
+                        hotfixVersion = hotfixVersion ?: getNextVersion(utils)
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
                             log.info("Selected hotfix version: ${hotfixVersion}")
@@ -92,6 +93,23 @@ def call(body) {
                               git push --all
                             """
                         }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} started successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(slackChannel, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

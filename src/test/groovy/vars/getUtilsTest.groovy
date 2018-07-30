@@ -43,4 +43,3 @@ class getUtilsTest extends BasePipelineTest {
         printCallStack()
     }
 }
-

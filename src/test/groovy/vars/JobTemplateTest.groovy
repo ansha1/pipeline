@@ -75,19 +75,21 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
-                deploy_version: '1.0'
+                deploy_version: '1.0',
+                stack: 'a'
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
-                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slackNotify', 'log'
+                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log'
 
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
         helper.registerAllowedMethod 'sh', [Map], { c -> 'some output' }
+        helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
 
         mockEnv()
         mockDocker()
 
-        mockClosure 'pipeline', 'agent', 'tools', 'options', 'parameters', 'stages', 'steps', 'script',
+        mockClosure 'pipeline', 'agent', 'tools', 'options', 'stages', 'steps', 'script',
                 'when', 'expression', 'parallel', 'post', 'always'
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
         mockStringString 'buildPublishDockerImage'
@@ -95,6 +97,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
+        mockList 'parameters'
     }
 
     @Override

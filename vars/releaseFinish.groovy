@@ -11,10 +11,11 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
     autoPullRequest = pipelineParams.autoPullRequest.equals(null) ? true : pipelineParams.autoPullRequest
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -39,7 +40,6 @@ def call(body) {
                     cleanWs()
 
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -142,6 +142,23 @@ def call(body) {
                                 git push origin --delete ${releaseBranch}
                             """
                         }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Release ${APP_NAME} ${releaseVersion} finished successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(CHANNEL_TO_NOTIFY, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

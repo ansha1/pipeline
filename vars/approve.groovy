@@ -1,6 +1,22 @@
-def call(String message='Should we proceed', String slackChannel, String authorizedApprovers, Integer minutes=5) {
+def call(String message = 'Should we proceed', String slackChannel, String authorizedApprovers, Integer minutes = 5) {
     timeout(minutes) {
-        def uploadSpec = """[
+
+        def buildMessage = buildApproveMessageBody(message)
+        slack(slackChannel, buildMessage)
+        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
+    }
+}
+
+def sendToPrivate(String message = 'Should we proceed' , String UserSlackId, Integer minutes = 5) {
+    timeout(minutes) {
+        def buildMessage = buildApproveMessageBody(message)
+        slack.privateMessage(UserSlackId, buildMessage)
+        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve')
+    }
+}
+
+def buildApproveMessageBody(String message) {
+    def uploadSpec = """[
         {
             "title": "${message}",
             "text": "STAGE ${env.STAGE_NAME} in ${JOB_NAME} is waiting for your approval",
@@ -16,7 +32,5 @@ def call(String message='Should we proceed', String slackChannel, String authori
         }
         ]"""
 
-        slackSend(channel: slackChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
-        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
-    }
+    return uploadSpec
 }

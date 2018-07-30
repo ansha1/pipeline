@@ -31,12 +31,32 @@ def call(body) {
         NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
         jdkVersion = pipelineParams.JDK_VERSION
         mavenVersion = pipelineParams.MAVEN_VERSION
+        BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
     }
 
     def securityPermissions = jobConfig.branchProperties
     def jobTimeoutMinutes = jobConfig.jobTimeoutMinutes
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
+
+    node {
+        if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
+            properties([
+                    parameters([
+                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build'),
+                            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
+                    ])
+            ])
+        } else {
+            properties([
+                    parameters([
+                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build')
+                    ])
+            ])
+        }
+    }
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -57,18 +77,15 @@ def call(body) {
             ansiColor('xterm')
         }
 
-        parameters {
-            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                    'or leave empty for start full build')
-        }
-
         stages {
             stage('Set additional properties') {
                 steps {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
-
+                        if (params.stack) {
+                            jobConfig.INVENTORY_PATH += "-${params.stack}"
+                        }
                         env.APP_NAME = jobConfig.APP_NAME
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
@@ -82,6 +99,28 @@ def call(body) {
                         log.info('GLOBAL ENVIRONMENT VARIABLES:')
                         log.info(sh(script: 'printenv', returnStdout: true))
                         log.info('=============================')
+
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
+                            stage('Release build version verification') {
+                                if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
+
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
+                                                          "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
+
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
+                                    utils.setVersion(patchedBuildVersion)
+
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        sh """
+                                            git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${patchedBuildVersion}"
+                                            git push origin HEAD:${BRANCH_NAME}
+                                        """
+                                    }
+
+                                    jobConfig.BUILD_VERSION = patchedBuildVersion
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -199,8 +238,8 @@ def call(body) {
                                     }
                                 }
 
-                                if (jobConfig.projectFlow.get('postDeployCommands')){
-                                    stage("Post deploy/E2E stage"){
+                                if (jobConfig.projectFlow.get('postDeployCommands')) {
+                                    stage("Post deploy/E2E stage") {
                                         sh jobConfig.projectFlow.get('postDeployCommands')
                                     }
                                 }
@@ -229,13 +268,14 @@ def call(body) {
                             branches.each {
                                 if (env.BRANCH_NAME ==~ it) {
                                     log.info('channel to notify is: ' + channel)
-                                    slackNotify(channel)
+                                    slack.sendBuildStatus(channel)
                                 }
                             }
                         }
                     }
-                    if (env.BRANCH_NAME ==~ /^(PR.+|bugfix\/.+|feature\/.+)$/) {
-                        slackNotify.commitersOnly()
+                    if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
+                        //slack.commitersOnly()
+                        slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                 }
             }

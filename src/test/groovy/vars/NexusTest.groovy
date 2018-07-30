@@ -6,13 +6,14 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
+class NexusTest extends BasePipelineTest implements Validator, Mocks {
 
     @Override
     @Before
     void setUp() throws Exception {
         super.setUp()
         binding.setVariable 'params', [:]
+        binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'
 
         mockEnv()
         attachScript 'generateBuildProperties', 'log'
@@ -20,6 +21,7 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
         helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
         helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
         helper.registerAllowedMethod "readProperties", [Map], { return [:] }
+        helper.registerAllowedMethod "file", [Map], { c -> "Secret file" }
     }
 
     @Override
@@ -28,17 +30,17 @@ class ArchiveToNexusTest extends BasePipelineTest implements Validator, Mocks {
     }
 
     @Test
-    void archive_to_valid_environment() {
-        def script = loadScript "vars/archiveToNexus.groovy"
-        script.call 'dev', 'assetDir', 'version', 'packageName'
-        checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*'
+    void push_static_assets_to_valid_environment() {
+        def script = loadScript "vars/nexus.groovy"
+        script.uploadStaticAssets 'dev', 'assetDir', 'version', 'packageName'
+        checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*', 2, 2
         printCallStack()
     }
 
     @Test(expected = IllegalArgumentException)
-    void archive_to_not_valid_environment() {
-        def script = loadScript "vars/archiveToNexus.groovy"
-        script.call 'Keepo', 'assetDir', 'version', 'packageName'
-        checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*', 0
+    void push_static_assets_to_not_valid_environment() {
+        def script = loadScript "vars/nexus.groovy"
+        script.uploadStaticAssets 'Keepo', 'assetDir', 'version', 'packageName'
+        checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*', 0, 2
     }
 }

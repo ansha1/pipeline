@@ -1,6 +1,6 @@
 #!groovy
+import com.nextiva.*
 import static com.nextiva.SharedJobsStaticVars.*
-
 
 def call(body) {
     def pipelineParams = [:]
@@ -12,7 +12,9 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -37,7 +39,6 @@ def call(body) {
                 steps {
                     cleanWs()
                     git branch: developBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -47,7 +48,7 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" || true'
-                        releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
+                        releaseBranchCount = releaseBranchList ? releaseBranchList.split().size() : '0'
 
                         if (releaseBranchCount.toInteger() > 0) {
                             log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with ReleaseStart Job!!!\n\n')
@@ -64,7 +65,7 @@ def call(body) {
                 steps {
                     script {
 
-                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
+                        releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
@@ -140,6 +141,23 @@ def call(body) {
                                 git push --all
                             """
                         }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Release ${APP_NAME} ${releaseVersion} started successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(CHANNEL_TO_NOTIFY, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

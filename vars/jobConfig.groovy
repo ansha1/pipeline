@@ -21,7 +21,7 @@ def call(body) {
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
-    APP_NAME = pipelineParams.APP_NAME
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(env.GIT_URL)
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
     ansibleRepoBranch = pipelineParams.ansibleRepoBranch ?: RELEASE_MANAGEMENT_REPO_BRANCH
@@ -35,6 +35,7 @@ def call(body) {
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
+    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY ?: BLUE_GREEN_DEPLOY_DEFAULT
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -83,6 +84,7 @@ def call(body) {
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
         branchProperties.add("hudson.model.Item.Cancel:${it}")
+        branchProperties.add("hudson.model.Item.Workspace:${it}")
     }
 
     log('')
@@ -133,6 +135,26 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
     log.info('===============================')
 }
 
+
+def autoIncrementVersion() {
+    try {
+        tokens = BUILD_VERSION.tokenize('.')
+        major = tokens.get(0)
+        minor = tokens.get(1)
+        patch = tokens.get(2)
+    } catch (e) {
+        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
+    }
+
+    Integer patch = patch.toInteger() + 1
+    patchedBuildVersion = major + "." + minor + "." + patch
+    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patch += 1
+        patchedBuildVersion = major + "." + minor + "." + patch
+    }
+
+    return patchedBuildVersion
+}
 
 Map getAnsibleExtraVars() {
 
