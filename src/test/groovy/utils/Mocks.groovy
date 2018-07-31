@@ -6,7 +6,7 @@ import org.codehaus.groovy.reflection.CachedMethod
  * Common mocks
  */
 trait Mocks implements BasePipelineAccessor {
-    MocksAdjustment mocksAdjustment = new MocksAdjustment(basePipelineTest)
+    MockObjects mockObjects = new MockObjects(basePipelineTest)
 
     /**
      * Mocks Jenkins log property
@@ -34,12 +34,11 @@ trait Mocks implements BasePipelineAccessor {
      * Mocks the required data for sendSlack function
      */
     void mockSendSlack() {
-        basePipelineTest.helper.registerAllowedMethod "slackSend", [Map.class], { println 'Slack message mock' }
-        basePipelineTest.binding.setVariable 'env', [
-                JOB_NAME : 'Job name',
-                BUILD_ID : 'Build Id',
-                BUILD_URL: 'https://jenkins.nextiva.xyz/jenkins/'
-        ]
+        mockLog()
+        mockEnv()
+        attachScript 'slack'
+        basePipelineTest.helper.registerAllowedMethod 'slackSend', [Map], { println 'Slack message mock' }
+        basePipelineTest.helper.registerAllowedMethod 'sh', [Map], {'sh command output'}
     }
 
     /**
@@ -59,10 +58,35 @@ trait Mocks implements BasePipelineAccessor {
     }
 
     /**
+     * Mocks the required data for createPr script
+     */
+    void mockCreatePr(prUrl = 'some_url') {
+        attachScript 'log', 'bitbucket'
+        mockLog()
+
+        basePipelineTest.helper.registerAllowedMethod 'httpRequest', [Map], {
+            Map m ->
+                if (((String) m.get('url')).contains('reviewers')) {
+                    return [content: 'reviewersResponse']
+                } else {
+                    return [content: 'pullRequestResponse']
+                }
+        }
+        basePipelineTest.helper.registerAllowedMethod 'readJSON', [Map], {
+            Map m ->
+                if (((String) m.get('text')).contains('reviewers')) {
+                    return [[name: 'mvasylets'], [name: 'okutsenko']]
+                } else {
+                    return [links: ["self": [["href": prUrl]]]]
+                }
+        }
+    }
+
+    /**
      * Mocks methods available through the docker variable
      */
     void mockDocker() {
-        basePipelineTest.binding.setVariable('docker', mocksAdjustment.getDocker())
+        basePipelineTest.binding.setVariable('docker', mockObjects.docker)
     }
 
     /**
@@ -92,7 +116,15 @@ trait Mocks implements BasePipelineAccessor {
     void mockStringClosure(String... methodNames) {
         methodNames.each { String methodName ->
             basePipelineTest.helper.registerAllowedMethod(methodName, [String, Closure], { String s, Closure c ->
-                basePipelineTest.helper.callClosure(c)
+                basePipelineTest.helper.callClosure(c, s)
+            })
+        }
+    }
+
+    void mockMapClosure(String... methodNames) {
+        methodNames.each { String methodName ->
+            basePipelineTest.helper.registerAllowedMethod(methodName, [Map, Closure], { Map m, Closure c ->
+                basePipelineTest.helper.callClosure(c, m)
             })
         }
     }
@@ -100,7 +132,7 @@ trait Mocks implements BasePipelineAccessor {
     void mockStringStringClosure(String... methodNames) {
         methodNames.each { String methodName ->
             basePipelineTest.helper.registerAllowedMethod(methodName, [String, String, Closure], { String s1, String s2, Closure c ->
-                basePipelineTest.helper.callClosure(c)
+                basePipelineTest.helper.callClosure(c, s1, s1)
             })
         }
     }

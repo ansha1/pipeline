@@ -114,7 +114,7 @@ def pullRequest(String sourceBranch, String destinationBranch, String channelToN
     def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR (if its enabled for the repository), otherwise there will be conflicts when merging because missing commit history. Auto created pull request from ${env.JOB_NAME} #${env.BUILD_ID}"
     def repositoryUrl = sh returnStdout: true, script: "git config --get remote.origin.url"
     repositoryUrl = repositoryUrl.trim()
-    pullRequestLink = createPr(repositoryUrl, tmpBranch, destinationBranch, title, description)
+    pullRequestLink = bitbucket.createPr(repositoryUrl, tmpBranch, destinationBranch, title, description)
 
     def uploadSpec = """[{
                         "title": "Failed to automatically merge ${sourceBranch} into ${destinationBranch}.",

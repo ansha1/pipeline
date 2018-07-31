@@ -2,7 +2,6 @@ package vars
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import utils.Mocks
 import utils.Validator
@@ -126,22 +125,4 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
     void execute_pipeline_python() {
         executeJobTemplate JENKINS_FILE_PYTHON
     }
-
-    @Test
-    void execute_with_qg_ok() {
-        helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
-        executeJobTemplate JENKINS_FILE_JAVA
-        checkThatMethodWasExecutedWithValue('print', 'Sonar Quality Gate failed', 0)
-    }
-
-    //Ignored due to the commented code
-    @Ignore
-    @Test
-    void execute_with_qg_failed() {
-        helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'FAILED'] }
-        executeJobTemplate JENKINS_FILE_JAVA
-        checkThatMethodWasExecutedWithValue('print', 'Sonar Quality Gate failed', 1)
-    }
-
-
 }

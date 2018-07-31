@@ -11,7 +11,6 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
     @Override
     @Before
     void setUp() throws Exception {
-        scriptRoots += '/'
         super.setUp()
         binding.setVariable 'params', [:]
         binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'

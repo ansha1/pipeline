@@ -17,14 +17,17 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         super.setUp()
 
         binding.setVariable 'WORKSPACE', 'WORKSPACE'
+        binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'
         binding.setVariable 'Result', Result
         binding.setVariable 'currentBuild', [rawBuild: [:]]
+        binding.setVariable 'params', [:]
         helper.registerAllowedMethod 'fileExists', [String], { String s -> return !s.contains('not_existing') }
 
+        attachScript 'log', 'generateBuildProperties', 'nexus'
         mockEnv()
         mockGenerateBuildProperties()
         mockDocker()
-        attachScript 'log', 'generateBuildProperties'
+        mockMap 'file'
     }
 
     @Override
@@ -50,7 +53,7 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
     @Test
     void build_with_extra_docker_image() {
         def script = loadScript "vars/debPackage.groovy"
-        script.build 'packageName', 'version', 'deployEnvironment', 'extra/path', mocksAdjustment.docker
+        script.build 'packageName', 'version', 'deployEnvironment', 'extra/path', mockObjects.docker
         printCallStack()
     }
 
@@ -66,4 +69,39 @@ class DebPackageTest extends BasePipelineTest implements Validator, Mocks {
         }
         printCallStack()
     }
+
+    @Test
+    void publish_without_extra_parameters() {
+        helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? 0 : 'sh command output' }
+        def script = loadScript "vars/debPackage.groovy"
+        script.publish 'packageName', 'dev'
+        printCallStack()
+    }
+
+    @Test
+    void publish_with_extra_path() {
+        helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? 0 : 'sh command output' }
+        def script = loadScript "vars/debPackage.groovy"
+        script.publish 'packageName', 'dev', 'extra/path'
+        checkThatMethodWasExecutedWithValue 'dir', '.*extra/path'
+        printCallStack()
+    }
+
+    @Test
+    void check_error_on_failed_deploy() {
+        helper.registerAllowedMethod 'sh', [Map], { Map m -> return m.get('returnStatus') == true ? 1 : 'sh command output' }
+        def script = loadScript "vars/debPackage.groovy"
+        script.publish 'packageName', 'dev'
+        checkThatMockedMethodWasExecuted 'error', 1
+        printCallStack()
+    }
+
+    @Test(expected = IllegalArgumentException)
+    void cannot_publish_with_not_valid_env() {
+        def script = loadScript "vars/debPackage.groovy"
+        script.publish 'packageName', 'Kappa123'
+        printCallStack()
+    }
+
+
 }

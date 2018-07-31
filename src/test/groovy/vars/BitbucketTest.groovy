@@ -15,27 +15,7 @@ class BitbucketTest extends BasePipelineTest implements Validator, Mocks {
     @Before
     void setUp() throws Exception {
         super.setUp()
-
-        mockEnv()
-        mockLog()
-        attachScript 'log'
-
-        helper.registerAllowedMethod 'httpRequest', [Map], {
-            Map m ->
-                if (((String) m.get('url')).contains('reviewers')) {
-                    return [content: 'reviewersResponse']
-                } else {
-                    return [content: 'pullRequestResponse']
-                }
-        }
-        helper.registerAllowedMethod 'readJSON', [Map], {
-            Map m ->
-                if (((String) m.get('text')).contains('reviewers')) {
-                    return [[name: 'mvasylets'], [name: 'okutsenko']]
-                } else {
-                    return [links: ["self": [["href": PR_URL]]]]
-                }
-        }
+        mockCreatePr(PR_URL)
     }
 
     @Override
