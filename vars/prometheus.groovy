@@ -7,7 +7,8 @@ import io.prometheus.client.Summary
 
 
 def getRequestsCounter(){
-    def requests = Counter.build()
-        .name("requests_total5").help("Total requests5.").register();
-    return requests
+  CollectorRegistry registry = new CollectorRegistry();
+  Gauge duration = Gauge.build()
+     .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
+  Gauge.Timer durationTimer = duration.startTimer();
 }
