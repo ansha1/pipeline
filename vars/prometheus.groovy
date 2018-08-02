@@ -7,7 +7,7 @@ import io.prometheus.client.Summary
 
 
 def getRequestsCounter(){
-    static final Counter requests = Counter.build()
-        .name("requests_total2").help("Total requests2.").register();
+    def requests = Counter.build()
+        .name("requests_total3").help("Total requests3.").register();
     return requests
 }
