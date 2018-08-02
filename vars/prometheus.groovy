@@ -20,7 +20,7 @@ def event(){
         .register(registry);
 
     try {
-        activeTransactions.inc()
+        //activeTransactions.inc()
         // Your code here.
     
         // This is only added to the registry after success,
@@ -29,7 +29,7 @@ def event(){
              .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
         lastSuccess.setToCurrentTime();
 
-        sleep(20000)
+        sleep(20)
 
         //activeTransactions.dec()
     } finally {
