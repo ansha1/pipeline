@@ -8,16 +8,19 @@ import io.prometheus.client.Summary
 import io.prometheus.client.exporter.PushGateway
 
 
+@NonCPS
 def getRegistry(){
     return new CollectorRegistry()
 }
 
+@NonCPS
 def getDurationTimer(def registry){
     def duration = Gauge.build()
         .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
     return duration.startTimer();
 }
 
+@NonCPS
 def pushGateway(def registry){
     def pg = new PushGateway("10.103.50.110:9091");
     pg.pushAdd(registry, "my_batch_job");
