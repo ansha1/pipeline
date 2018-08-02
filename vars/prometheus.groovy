@@ -29,7 +29,8 @@ def event(){
              .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
         lastSuccess.setToCurrentTime();
 
-        sleep(20)
+        //sleep(20)
+        echo('222')
 
         //activeTransactions.dec()
     } finally {
