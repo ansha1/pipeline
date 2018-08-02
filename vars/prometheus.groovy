@@ -14,10 +14,10 @@ def event(){
         .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
     Gauge.Timer durationTimer = duration.startTimer();
 
-    Gauge activeTransactions = Gauge.build()
+    /*Gauge activeTransactions = Gauge.build()
         .name("my_library_transactions_active")
         .help("Active transactions.")
-        .register(registry);
+        .register(registry);*/
 
     try {
         //activeTransactions.inc()
