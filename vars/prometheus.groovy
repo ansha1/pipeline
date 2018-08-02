@@ -13,3 +13,8 @@ def getRequestsCounter(){
      .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
   Gauge.Timer durationTimer = duration.startTimer();
 }
+
+def getPushgateway(){
+    PushGateway pg = new PushGateway("10.103.50.110:9091");
+    return pg
+}
