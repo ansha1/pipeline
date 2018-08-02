@@ -9,7 +9,7 @@ import io.prometheus.client.exporter.PushGateway
 
 
 def getRegistry(){
-    result new CollectorRegistry()
+    return new CollectorRegistry()
 }
 
 def getDurationTimer(def registry){
