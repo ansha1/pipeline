@@ -13,6 +13,7 @@ def getDuration(){
   def duration = Gauge.build()
      .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
   //def durationTimer = duration.startTimer();
+  log.warning('Duration')
   return duration
 }
 
