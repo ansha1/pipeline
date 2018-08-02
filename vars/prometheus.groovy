@@ -8,6 +8,7 @@ import io.prometheus.client.Summary
 import io.prometheus.client.exporter.PushGateway
 
 
+@NonCPS
 def getDurationTimer(){
   CollectorRegistry registry = new CollectorRegistry();
   Gauge duration = Gauge.build()
@@ -16,6 +17,7 @@ def getDurationTimer(){
   return durationTimer
 }
 
+@NonCPS
 def getPushGateway(){
     def pg = new PushGateway("10.103.50.110:9091");
     return pg
