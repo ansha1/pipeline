@@ -8,6 +8,13 @@ import io.prometheus.client.Summary
 import io.prometheus.client.exporter.PushGateway
 
 
+def getDurationTimer(){
+    def registry = new CollectorRegistry();
+    def duration = Gauge.build()
+        .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
+    return duration.startTimer();
+}
+
 def event(){
     def registry = new CollectorRegistry();
     def duration = Gauge.build()
@@ -29,7 +36,7 @@ def event(){
              .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
         lastSuccess.setToCurrentTime();
 
-        sleep(20)
+        //sleep(20)
         echo('222')
 
         activeTransactions.dec()
