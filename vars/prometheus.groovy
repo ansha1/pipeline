@@ -31,7 +31,7 @@ def event(){
 
         sleep(20000)
 
-        activeTransactions.dec()
+        //activeTransactions.dec()
     } finally {
         durationTimer.setDuration();
         PushGateway pg = new PushGateway("10.103.50.110:9091");
