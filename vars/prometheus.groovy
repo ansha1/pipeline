@@ -14,13 +14,13 @@ def event(){
         .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
     def durationTimer = duration.startTimer();
 
-    /*Gauge activeTransactions = Gauge.build()
+    Gauge activeTransactions = Gauge.build()
         .name("my_library_transactions_active")
         .help("Active transactions.")
-        .register(registry);*/
+        .register(registry);
 
     try {
-        //activeTransactions.inc()
+        activeTransactions.inc()
         // Your code here.
     
         // This is only added to the registry after success,
@@ -32,7 +32,7 @@ def event(){
         //sleep(20)
         echo('222')
 
-        //activeTransactions.dec()
+        activeTransactions.dec()
     } finally {
         durationTimer.setDuration();
         def pg = new PushGateway("10.103.50.110:9091");
