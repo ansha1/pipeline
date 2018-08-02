@@ -4,6 +4,7 @@ import io.prometheus.client.Counter
 import io.prometheus.client.Gauge
 import io.prometheus.client.Histogram
 import io.prometheus.client.Summary
+import io.prometheus.client.PushGateway
 
 
 def getRequestsCounter(){
