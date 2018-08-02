@@ -9,12 +9,12 @@ import io.prometheus.client.exporter.PushGateway
 
 
 @NonCPS
-def getDurationTimer(){
+def getDuration(){
   CollectorRegistry registry = new CollectorRegistry();
   def duration = Gauge.build()
      .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
-  def durationTimer = duration.startTimer();
-  return durationTimer
+  //def durationTimer = duration.startTimer();
+  return duration
 }
 
 @NonCPS
