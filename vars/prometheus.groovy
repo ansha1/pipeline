@@ -9,10 +9,10 @@ import io.prometheus.client.exporter.PushGateway
 
 
 def event(){
-    CollectorRegistry registry = new CollectorRegistry();
-    Gauge duration = Gauge.build()
+    def registry = new CollectorRegistry();
+    def duration = Gauge.build()
         .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
-    Gauge.Timer durationTimer = duration.startTimer();
+    def durationTimer = duration.startTimer();
 
     /*Gauge activeTransactions = Gauge.build()
         .name("my_library_transactions_active")
@@ -25,16 +25,16 @@ def event(){
     
         // This is only added to the registry after success,
         // so that a previous success in the Pushgateway isn't overwritten on failure.
-        Gauge lastSuccess = Gauge.build()
+        def lastSuccess = Gauge.build()
              .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
         lastSuccess.setToCurrentTime();
 
-        //sleep(20)
+        sleep(20)
 
         //activeTransactions.dec()
     } finally {
         durationTimer.setDuration();
-        PushGateway pg = new PushGateway("10.103.50.110:9091");
+        def pg = new PushGateway("10.103.50.110:9091");
         pg.pushAdd(registry, "my_batch_job");
     }
 }
