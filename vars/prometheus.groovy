@@ -8,6 +8,6 @@ import io.prometheus.client.Summary
 
 def getRequestsCounter(){
     def requests = Counter.build()
-        .name("requests_total4").help("Total requests4.").register();
+        .name("requests_total5").help("Total requests5.").register();
     return requests
 }
