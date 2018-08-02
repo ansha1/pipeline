@@ -27,19 +27,19 @@ def event(){
         .register(registry);
 
     try {
-        activeTransactions.inc()
+        activeTransactions.inc(10)
         // Your code here.
     
         // This is only added to the registry after success,
         // so that a previous success in the Pushgateway isn't overwritten on failure.
         def lastSuccess = Gauge.build()
-             .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
+            .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
         lastSuccess.setToCurrentTime();
 
         //sleep(20)
         echo('222')
 
-        activeTransactions.dec()
+        activeTransactions.set(5)
     } finally {
         durationTimer.setDuration();
         def pg = new PushGateway("10.103.50.110:9091");
