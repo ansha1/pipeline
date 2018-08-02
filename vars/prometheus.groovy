@@ -25,4 +25,5 @@ def event(){
         durationTimer.setDuration();
         PushGateway pg = new PushGateway("10.103.50.110:9091");
         pg.pushAdd(registry, "my_batch_job");
+    }
 }
