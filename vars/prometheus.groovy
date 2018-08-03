@@ -22,5 +22,5 @@ def sendMetric() {
 
     def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: java.net.URLEncoder.encode(requestBody, "UTF-8"),
             url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
-            contentType: 'APPLICATION_OCTETSTREAM'
+            contentType: 'APPLICATION_FORM'
 }
