@@ -22,5 +22,5 @@ def sendMetric() {
 
     def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: requestBody,
             url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
-            customHeaders: [['Content-type': 'application/x-www-form-urlencoded']]
+            customHeaders: ['Content-type': 'application/x-www-form-urlencoded']
 }
