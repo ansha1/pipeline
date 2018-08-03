@@ -20,7 +20,7 @@ def sendMetric() {
                     telemetry_requests_metrics_latency_microseconds_sum 1.7560473e+07
                     telemetry_requests_metrics_latency_microseconds_count 2693"""
 
-    def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: java.net.URLEncoder.encode(requestBody, "UTF-8"),
+    def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: requestBody,
             url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
             contentType: 'APPLICATION_FORM'
 }
