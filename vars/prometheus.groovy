@@ -1,59 +1,25 @@
-@Grab('io.prometheus:simpleclient:0.4.0')
-@Grab('io.prometheus:simpleclient_pushgateway:0.4.0')
-import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.Counter
-import io.prometheus.client.Gauge
-import io.prometheus.client.Histogram
-import io.prometheus.client.Summary
-import io.prometheus.client.exporter.PushGateway
+import java.net.URLEncoder
+import static com.nextiva.SharedJobsStaticVars.*
 
 
-@NonCPS
-def getRegistry(){
-    return new CollectorRegistry()
-}
+/*def sendGauge() {
+    def pullRequestResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: requestBody, url: createPrUrl,
+            consoleLogResponseBody: log.isDebug()
+}*/
 
-@NonCPS
-def getDurationTimer(def registry){
-    def duration = Gauge.build()
-        .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
-    return duration.startTimer();
-}
 
-@NonCPS
-def pushGateway(def registry){
-    def pg = new PushGateway("10.103.50.110:9091");
-    pg.pushAdd(registry, "my_batch_job");
-}
+def sendMetric() {
+    String requestBody = """
+                    # HELP telemetry_requests_metrics_latency_microseconds A histogram of the response latency.
+                    # TYPE telemetry_requests_metrics_latency_microseconds summary
+                    telemetry_requests_metrics_latency_microseconds{quantile="0.01"} 3102
+                    telemetry_requests_metrics_latency_microseconds{quantile="0.05"} 3272
+                    telemetry_requests_metrics_latency_microseconds{quantile="0.5"} 4773
+                    telemetry_requests_metrics_latency_microseconds{quantile="0.9"} 9001
+                    telemetry_requests_metrics_latency_microseconds{quantile="0.99"} 76656
+                    telemetry_requests_metrics_latency_microseconds_sum 1.7560473e+07
+                    telemetry_requests_metrics_latency_microseconds_count 2693"""
 
-def event(){
-    def registry = new CollectorRegistry();
-    def duration = Gauge.build()
-        .name("my_batch_job_duration_seconds").help("Duration of my batch job in seconds.").register(registry);
-    def durationTimer = duration.startTimer();
-
-    Gauge activeTransactions = Gauge.build()
-        .name("my_library_transactions_active")
-        .help("Active transactions.")
-        .register(registry);
-
-    try {
-        activeTransactions.inc()
-        // Your code here.
-    
-        // This is only added to the registry after success,
-        // so that a previous success in the Pushgateway isn't overwritten on failure.
-        def lastSuccess = Gauge.build()
-            .name("my_batch_job_last_success").help("Last time my batch job succeeded, in unixtime.").register(registry);
-        lastSuccess.setToCurrentTime();
-
-        //sleep(20)
-        echo('222')
-
-        activeTransactions.dec()
-    } finally {
-        durationTimer.setDuration();
-        def pg = new PushGateway("10.103.50.110:9091");
-        pg.pushAdd(registry, "my_batch_job");
-    }
+    def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: java.net.URLEncoder.encode(requestBody, "UTF-8"),
+            url: PROMETHEUS_PUSHGATEWAY_URL, consoleLogResponseBody: log.isDebug()
 }

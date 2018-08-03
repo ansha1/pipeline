@@ -49,4 +49,5 @@ class SharedJobsStaticVars {
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
     static final BITBUCKET_URL = 'http://git.nextiva.xyz'
     static final BLUE_GREEN_DEPLOY_DEFAULT = false
+    static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
 }
