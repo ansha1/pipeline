@@ -71,7 +71,13 @@ def buildStatusMessageBody() {
 def getSlackUserIdByEmail(String userMail) {
     def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
-    return responseJson.user.id
+
+    if( responseJson.ok ) {
+        return responseJson.user.id
+    } else {
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("\n\nUser mail in Slack ${userMail} doesn't match the one that is defined in Jenkins (LDAP) !!!\n\n")
+    }
 }
 
 def sendBuildStatusPrivatMessage(String slackUserId){
