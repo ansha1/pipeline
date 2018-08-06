@@ -40,7 +40,7 @@ def getBuildInfoMap(def jobConfig) {
     return [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
             language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
             path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
-            node_label: jobConfig.nodeLabel]
+            node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION]
 }
 
 def getBuildInfoLabelsStr(def jobConfig) {
