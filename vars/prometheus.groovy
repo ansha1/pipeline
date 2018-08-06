@@ -18,7 +18,7 @@ def sendSummary(def value, String helpMessage = '') {
     sendMetric('summary', value)
 }
 
-def sendMetric(String metricType, String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
+def sendMetric(String job_name, String instance, String metricName, def metricValue, String metricType, Map metricLabels = [:], String metricHelpMessage = '') {
     /*String requestBody = """
                     # HELP telemetry_requests_metrics_latency_microseconds A histogram of the response latency.
                     # TYPE telemetry_requests_metrics_latency_microseconds summary
@@ -40,7 +40,7 @@ def sendMetric(String metricType, String metricName, def metricValue, Map metric
 
     log.debug(requestBody)
     httpRequest httpMode: 'POST', requestBody: requestBody,
-        url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
+        url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${job_name}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
         contentType: 'APPLICATION_FORM'
 }
 
@@ -57,4 +57,9 @@ def mapToLabelsStr(Map labelsMap) {
     String labels = ''
     labelsMap.each { k, v -> labels += "${k}=\"${v}\","}
     return labels
+}
+
+def sendBuildInfo(def jobConfig) {
+    sendMetric('deploy', 'jenkins', 'tst_build_info', 1, 'gauge',
+            getBuildInfoMap(jobConfig))
 }
