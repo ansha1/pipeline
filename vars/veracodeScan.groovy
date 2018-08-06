@@ -26,7 +26,7 @@ def call(body) {
                 stage("create archive") {
                     sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
                 }
-                stage("Start Seracode Scan") {
+                stage("Start Veracode Scan") {
                     withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         veracode applicationName: 'NextOS Platform (CRM)',
                                 criticality: 'VeryHigh',
