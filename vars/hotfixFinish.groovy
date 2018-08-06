@@ -1,6 +1,5 @@
 #!groovy
 import com.nextiva.*
-
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(body) {
@@ -12,18 +11,19 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
-    autoPullRequest = pipelineParams.autoPullRequest
-    slackChannel = pipelineParams.slackChannel
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    autoPullRequest = true  // mandatory parameter for hotfix finish
+    autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
+    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
+    versionPath = pipelineParams.versionPath ?: '.'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
     //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -38,9 +38,7 @@ def call(body) {
             stage('Checkout repo') {
                 steps {
                     cleanWs()
-
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -76,10 +74,12 @@ def call(body) {
                         log.info('Check branch naming for compliance with git-flow')
                         if (hotfixBranch ==~ /^(hotfix\/\d+.\d+.\d+)$/) {
                             log.info('Parse hotfix version')
-                            sh """
-                                git fetch
-                                git checkout ${hotfixBranch}
-                            """
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                    git fetch
+                                    git checkout ${hotfixBranch}
+                                """
+                            }
                             hotfixVersion = utils.getVersion()
                             log.info("Found hotfix version: ${hotfixVersion}")
                         } else {
@@ -101,13 +101,15 @@ def call(body) {
                 steps {
                     script {
                         try {
-                            sh """
-                                git fetch
-                                git checkout ${hotfixBranch}
-                                git checkout master
-                                git merge --no-ff ${hotfixBranch}
-                                git tag -a ${hotfixVersion} -m "Merge hotfix branch ${hotfixBranch} to master"
-                            """
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                    git fetch
+                                    git checkout ${hotfixBranch}
+                                    git checkout master
+                                    git merge --no-ff ${hotfixBranch}
+                                    git tag -a ${hotfixVersion} -m "Merge hotfix branch ${hotfixBranch} to master"
+                                """
+                            }
                         } catch (e) {
                             currentBuild.rawBuild.result = Result.ABORTED
                             throw new hudson.AbortException("\n\nCan`t merge ${hotfixBranch} to master \n You need to resolve merge conflicts manually and restart HotfixFinish Job\n\n")
@@ -126,8 +128,14 @@ def call(body) {
                                 .collect({ it.trim().replace("origin/", "") })
                         branches.add(developBranch)
                         log.info("Branches to merge to: ${branches}")
-                        branches.each { branchToMerge ->
-                            mergeBranch(repositoryUrl, hotfixBranch, branchToMerge, slackChannel, autoPullRequest)
+                        
+                        branches.each { destinationBranch ->
+                            try {
+                                mergeBranches(hotfixBranch, destinationBranch, slackChannel, autoPullRequest, autoMerge)
+                            } catch (e) {
+                                log.warn(e)
+                                currentBuild.rawBuild.result = Result.UNSTABLE
+                            }
                         }
                     }
                 }
@@ -135,47 +143,42 @@ def call(body) {
 
             stage('Push changes in bitbucket') {
                 steps {
-                    sh """
-                        git push --all
-                        git push --tags
-                    """
+                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                        sh """
+                            git push --all
+                            git push --tags
+                        """
+                    }
                 }
             }
             stage('Delete hotfix branch') {
                 steps {
                     script {
-                        sh """
-                            git push origin --delete ${hotfixBranch}
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git push origin --delete ${hotfixBranch}
+                            """
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-def mergeBranch(repositoryUrl, source, destination, channelToNotify, autoPullRequest) {
-    try {
-        sh """
-            git checkout ${destination}
-            git checkout ${source}
-            git merge --no-ff ${destination}
-        """
-        slackSend(color: '#00FF00', channel: channelToNotify, message: "merged ${source} into ${destination}")
-    } catch (e) {
-        log.warning(e)
-        if (autoPullRequest) {
-            def newBranch = "${source}-to-${destination}"
-            sh """
-                git reset --hard
-                git checkout -b ${newBranch}
-                git push origin ${newBranch}
-            """
-            def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts ${source}->${destination}"
-            def prLink = createPr(repositoryUrl, newBranch, destination, title, 'DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR(if its enabled for the repository), otherwise there will be conflicts when merging release to master and releaseFinish job fill fail')
-            slackSend(color: '#6600cc',
-                    channel: channelToNotify,
-                    message: "Failed to automatically merge ${source} into ${destination}. Resolve conflicts and merge pull request (${prLink})")
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} finished successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(slackChannel, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
+                    }
+                }
+            }
         }
     }
 }

@@ -5,7 +5,9 @@ class SharedJobsStaticVars {
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
+    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
+    static final NEXUS_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.env'
     static final DOCKER_REGISTRY = 'repository.nextiva.xyz'
@@ -24,7 +26,7 @@ class SharedJobsStaticVars {
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final DEFAULT_NODE_LABEL = 'debian'
     static final ANSIBLE_NODE_LABEL = 'ansible'
-    static final JS_NODE_LABEL = 'nodejs'
+    static final JS_NODE_LABEL = 'js'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
@@ -42,6 +44,9 @@ class SharedJobsStaticVars {
     static final NEWRELIC_API_KEY_MAP = ['production': '83904bdc782deef7783afde4a50348538b758577a208889']
     //Slack app bot token for getting slack userID over email
     static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
+    static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
+    static final BITBUCKET_URL = 'http://git.nextiva.xyz'
+    static final BLUE_GREEN_DEPLOY_DEFAULT = false
 }

@@ -1,6 +1,6 @@
 #!groovy
+import com.nextiva.*
 import static com.nextiva.SharedJobsStaticVars.*
-
 
 def call(body) {
     def pipelineParams = [:]
@@ -12,16 +12,17 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -37,9 +38,7 @@ def call(body) {
             stage('Checkout repo') {
                 steps {
                     cleanWs()
-
                     git branch: developBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
 
@@ -49,7 +48,7 @@ def call(body) {
                         utils = getUtils(projectLanguage, versionPath)
 
                         releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/release/" || true'
-                        releaseBranchCount = releaseBranchList.equals(null) ? '0' : releaseBranchList.split().size()
+                        releaseBranchCount = releaseBranchList ? releaseBranchList.split().size() : '0'
 
                         if (releaseBranchCount.toInteger() > 0) {
                             log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with ReleaseStart Job!!!\n\n')
@@ -66,7 +65,7 @@ def call(body) {
                 steps {
                     script {
 
-                        releaseVersion = userDefinedReleaseVersion.equals('') ? utils.getVersion() : userDefinedReleaseVersion
+                        releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
                         releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
 
                         if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
@@ -85,12 +84,11 @@ def call(body) {
                                 releaseBranch = releaseVersion
                             } else {
                                 log.info("Getting releaseVersion from build properties file")
-                                releaseBranch = major + '.' + minor 
+                                releaseBranch = major + '.' + minor
                             }
-                        } 
-                        else {
+                        } else {
                             error('\n\nWrong release version : ' + releaseVersion +
-                                '\nplease use git-flow naming convention\n\n')
+                                    '\nplease use git-flow naming convention\n\n')
                         }
                     }
                 }
@@ -100,10 +98,12 @@ def call(body) {
                 steps {
                     script {
                         utils.setVersion(releaseVersion)
-                        sh """
-                            git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
-                        """
-                        sh "git branch release/${releaseBranch}"
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git commit --allow-empty -a -m "Release engineering - bumped to ${releaseBranch} release candidate version "
+                                git branch release/${releaseBranch}
+                            """
+                        }
                     }
                 }
             }
@@ -124,9 +124,11 @@ def call(body) {
                         log.info('developmentVersion: ' + developmentVersion)
                         utils.setVersion(developmentVersion)
 
-                        sh """
-                          git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
+                            """
+                        }
                     }
                 }
             }
@@ -134,9 +136,28 @@ def call(body) {
             stage('Push to bitbucket repo') {
                 steps {
                     script {
-                        sh """
-                          git push --all
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                                git push --all
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Release ${APP_NAME} ${releaseVersion} started successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(CHANNEL_TO_NOTIFY, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

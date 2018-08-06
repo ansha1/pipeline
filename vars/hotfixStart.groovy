@@ -1,6 +1,5 @@
 #!groovy
 import com.nextiva.*
-
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(body) {
@@ -12,16 +11,17 @@ def call(body) {
     repositoryUrl = pipelineParams.repositoryUrl
     projectLanguage = pipelineParams.projectLanguage
     hotfixVersion = pipelineParams.hotfixVersion
-    versionPath = pipelineParams.versionPath.equals(null) ? '.' : pipelineParams.versionPath
+    versionPath = pipelineParams.versionPath ?: '.'
+    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
 
-        agent any
+        agent { label DEFAULT_NODE_LABEL }
 
         options {
             timestamps()
-            skipStagesAfterUnstable()
             ansiColor('xterm')
             disableConcurrentBuilds()
             timeout(time: JOB_TIMEOUT_MINUTES_DEFAULT, unit: 'MINUTES')
@@ -37,23 +37,22 @@ def call(body) {
                     cleanWs()
 
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
-
                 }
             }
-            stage('Prepare for starting release') {
+            stage('Prepare for starting hotfix') {
                 steps {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
 
-                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "hotfix/" || true'
-                        hotfixBranchCount = hotfixBranchList.equals(null) ? '0' : hotfixBranchList.split().size()
+                        hotfixBranchList = sh returnStdout: true, script: 'git branch -r | grep "origin/hotfix/" || true'
+                        hotfixBranchCount = hotfixBranchList ? hotfixBranchList.split().size() : '0'
 
                         if (hotfixBranchCount.toInteger() > 0) {
-                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
+                            log.error('\n\nInterrupting...\nSeems you already have a hotfix branch so we cannot go further with hotfixStart Job!!!\n\n')
                             log.error("hotfix branch count: <<${hotfixBranchCount}>>")
                             log.error("List of hotfix branches:\n${hotfixBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
-                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing release branches and restart hotfixStart Job!!!\n\n")
+                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing hotfix branches and restart hotfixStart Job!!!\n\n")
                         }
                     }
                 }
@@ -62,7 +61,7 @@ def call(body) {
                 steps {
                     script {
                         log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
-                        hotfixVersion = hotfixVersion.equals('') ? getNextVersion(utils) : hotfixVersion
+                        hotfixVersion = hotfixVersion ?: getNextVersion(utils)
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
                             log.info("Selected hotfix version: ${hotfixVersion}")
@@ -77,25 +76,47 @@ def call(body) {
                 steps {
                     script {
                         utils.setVersion(hotfixVersion)
-                        sh """
-                          git checkout -b hotfix/${hotfixVersion}
-                          git commit -a -m "Release engineering - bumped to ${hotfixVersion} patch version "
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git checkout -b hotfix/${hotfixVersion}
+                              git commit -a -m "Release engineering - bumped to ${hotfixVersion} patch version "
+                            """
+                        }
                     }
                 }
             }
             stage('Push to bitbucket repo') {
                 steps {
                     script {
-                        sh """
-                          git push --all
-                        """
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh """
+                              git push --all
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        post {
+            success {
+                script {
+                    String user = common.getCurrentUser()
+                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} started successfully!", "text": "Author: ${user}",
+                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
+                    slack(slackChannel, uploadSpec)
+                }
+            }
+            always {
+                script {
+                    if(currentBuild.currentResult != 'SUCCESS'){
+                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
                 }
             }
         }
     }
 }
+
 
 String getNextVersion(utils) {
     def version = utils.getVersion()

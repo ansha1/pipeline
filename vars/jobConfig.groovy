@@ -14,27 +14,28 @@ def call(body) {
                             production: "production"]
 
     projectFlow = pipelineParams.projectFlow
-    extraEnvs = pipelineParams.extraEnvs.equals(null) ? [:] : pipelineParams.extraEnvs
-    healthCheckMap = pipelineParams.healthCheckMap.equals(null) ? [:] : pipelineParams.healthCheckMap
+    extraEnvs = pipelineParams.extraEnvs ?: [:]
+    healthCheckMap = pipelineParams.healthCheckMap ?: [:]
     branchPermissionsMap = pipelineParams.branchPermissionsMap
-    ansibleEnvMap = pipelineParams.ansibleEnvMap.equals(null) ? ansibleEnvMapDefault : pipelineParams.ansibleEnvMap
-    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes.equals(null) ? JOB_TIMEOUT_MINUTES_DEFAULT : pipelineParams.jobTimeoutMinutes
-    buildNumToKeepStr = pipelineParams.buildNumToKeepStr.equals(null) ? BUILD_NUM_TO_KEEP_STR : pipelineParams.buildNumToKeepStr
-    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr.equals(null) ? ARTIFACT_NUM_TO_KEEP_STR : pipelineParams.artifactNumToKeepStr
-    APP_NAME = pipelineParams.APP_NAME
-    nodeLabel = pipelineParams.nodeLabel.equals(null) ? DEFAULT_NODE_LABEL : pipelineParams.nodeLabel
-    ansibleRepo = pipelineParams.ansibleRepo.equals(null) ? RELEASE_MANAGEMENT_REPO_URL : pipelineParams.ansibleRepo
-    ansibleRepoBranch = pipelineParams.ansibleRepoBranch.equals(null) ? RELEASE_MANAGEMENT_REPO_BRANCH : pipelineParams.ansibleRepoBranch
+    ansibleEnvMap = pipelineParams.ansibleEnvMap ?: ansibleEnvMapDefault
+    jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
+    buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
+    artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
+    APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(env.GIT_URL)
+    nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
+    ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
+    ansibleRepoBranch = pipelineParams.ansibleRepoBranch ?: RELEASE_MANAGEMENT_REPO_BRANCH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S.equals(null) ? false : pipelineParams.DEPLOY_ON_K8S
+    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
-    defaultSlackNotificationMap = CHANNEL_TO_NOTIFY.equals(null) ? [:] : [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS]
-    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch.equals(null) ? defaultSlackNotificationMap : pipelineParams.channelToNotifyPerBranch
-    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP.equals(null) ? [:] : pipelineParams.NEWRELIC_APP_ID_MAP
-    jdkVersion = pipelineParams.jdkVersion.equals(null) ?  DEFAULT_JDK_VERSION : pipelineParams.jdkVersion
-    mavenVersion = pipelineParams.mavenVersion.equals(null) ? DEFAULT_MAVEN_VERSION : pipelineParams.mavenVersion
+    defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
+    slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
+    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
+    jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
+    mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
+    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY ?: BLUE_GREEN_DEPLOY_DEFAULT
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -83,6 +84,7 @@ def call(body) {
     branchPermissions.each {
         branchProperties.add("hudson.model.Item.Build:${it}")
         branchProperties.add("hudson.model.Item.Cancel:${it}")
+        branchProperties.add("hudson.model.Item.Workspace:${it}")
     }
 
     log('')
@@ -133,6 +135,26 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
     log.info('===============================')
 }
 
+
+def autoIncrementVersion() {
+    try {
+        tokens = BUILD_VERSION.tokenize('.')
+        major = tokens.get(0)
+        minor = tokens.get(1)
+        patch = tokens.get(2)
+    } catch (e) {
+        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
+    }
+
+    Integer patch = patch.toInteger() + 1
+    patchedBuildVersion = major + "." + minor + "." + patch
+    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patch += 1
+        patchedBuildVersion = major + "." + minor + "." + patch
+    }
+
+    return patchedBuildVersion
+}
 
 Map getAnsibleExtraVars() {
 

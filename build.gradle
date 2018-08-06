@@ -65,11 +65,15 @@ asciidoctor {
 
 dependencies {
     compile group: 'org.jenkins-ci.main', name: 'jenkins-core', version: '2.47'
+    compile group: 'org.eclipse.hudson', name: 'hudson-core', version: '3.3.0', {
+        exclude group: 'org.eclipse.hudson', module: 'hudson-remoting'
+    }
     compile 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.4.1'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'com.lesfurets', name: 'jenkins-pipeline-unit', version: '1.1'
+    testCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
 }
 
 sourceSets {

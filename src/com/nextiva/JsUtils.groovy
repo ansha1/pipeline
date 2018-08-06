@@ -36,6 +36,11 @@ def runSonarScanner(String projectVersion) {
 }
 
 
+Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+    nexus.isAssetsPackageExists(packageName, packageVersion)
+}
+
+
 void runTests(Map args) {
     try {
         log.info("Start unit tests JavaScript")
@@ -69,6 +74,6 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
 
     dir(pathToSrc) {
         sh "${buildCommands}"
-        archiveToNexus(environment, distPath, buildVersion, appName)
+        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName)
     }
 }

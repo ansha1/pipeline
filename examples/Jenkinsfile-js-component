@@ -99,7 +99,7 @@ pipeline {
             }
             steps {
                 script {
-                    archiveToNexus('dev', 'storybook-static', BUILD_VERSION, APP_NAME)
+                    nexus.uploadStaticAssets('dev', 'storybook-static', BUILD_VERSION, APP_NAME)
                 }
             }
         }
@@ -129,7 +129,8 @@ pipeline {
                 reportFiles          : 'test-report.html',
                 reportName           : 'Test Report',
                 reportTitles         : ''])
-            slackNotify(CHANNEL_TO_NOTIFY)
+
+            slack.sendBuildStatus(CHANNEL_TO_NOTIFY)
         }
     }
 }

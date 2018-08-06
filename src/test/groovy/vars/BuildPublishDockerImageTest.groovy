@@ -6,13 +6,12 @@ import org.junit.Test
 import utils.Mocks
 import utils.Validator
 
-class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator, Mocks {
-
+class BuildPublishDockerImageTest extends BasePipelineTest implements Validator, Mocks {
     @Override
     @Before
     void setUp() throws Exception {
         super.setUp()
-        mockGenerateBuildProperties()
+        mockDocker()
     }
 
     @Override
@@ -21,10 +20,11 @@ class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator,
     }
 
     @Test
-    void write_property_file() {
-        def script = loadScript "vars/generateBuildProperties.groovy"
-        script.call 'deployEnvironment', 'version', 'jobName'
-        checkThatMockedMethodWasExecuted 'writeFile', 1
+    void build_and_publish() {
+        def script = loadScript "vars/buildPublishDockerImage.groovy"
+        script.call 'appName', 'buildVersion'
         printCallStack()
+        checkThatMethodWasExecutedWithValue 'push', '.*latest.*'
+        checkThatMockedMethodWasExecuted 'sh', 1
     }
 }
