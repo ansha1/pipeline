@@ -18,8 +18,8 @@ def sendSummary(def value, String helpMessage = '') {
     sendMetric('summary', value)
 }
 
-def sendMetric(String metricType, String metricName, Map metricLabels = [:], String helpMessage = '') {
-    String requestBody = """
+def sendMetric(String metricType, String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
+    /*String requestBody = """
                     # HELP telemetry_requests_metrics_latency_microseconds A histogram of the response latency.
                     # TYPE telemetry_requests_metrics_latency_microseconds summary
                     telemetry_requests_metrics_latency_microseconds{quantile="0.01"} 3102
@@ -29,7 +29,14 @@ def sendMetric(String metricType, String metricName, Map metricLabels = [:], Str
                     telemetry_requests_metrics_latency_microseconds{quantile="0.99"} 76656
                     telemetry_requests_metrics_latency_microseconds_sum 1.7560473e+07
                     telemetry_requests_metrics_latency_microseconds_count 2693
-                    """
+                    """*/
+
+    String labels = mapToLabelsStr(metricLabels)
+    String requestBody = """
+        # HELP ${metricName} ${metricHelpMessage}
+        # TYPE ${metricName} ${metricType}
+        ${metricName}{${labels}} ${metricValue}
+    """
 
     log.debug(requestBody)
     def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: requestBody,
@@ -44,8 +51,8 @@ def getBuildInfoMap(def jobConfig) {
             node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION]
 }
 
-def getBuildInfoLabelsStr(def jobConfig) {
-    Map labelsMap = getBuildInfoMap(jobConfig)
+def mapToLabelsStr(Map labelsMap) {
+    //Map labelsMap = getBuildInfoMap(jobConfig)
     String labels = ''
     labelsMap.each { k, v -> labels += "${k}=\"${v}\","}
     return labels
