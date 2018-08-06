@@ -46,6 +46,6 @@ def getBuildInfoMap(def jobConfig) {
 def getBuildInfoLabelsStr(def jobConfig) {
     Map labelsMap = getBuildInfoMap(jobConfig)
     String labels = ''
-    labelsMap.each { k, v -> labels += ",${k}=\"${v}\""}
+    labelsMap.each { k, v -> labels += "${k}=\"${v}\","}
     return labels
 }
