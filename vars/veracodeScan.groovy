@@ -26,7 +26,7 @@ def call(body) {
                 stage("create archive") {
                     sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
                 }
-                stage("start veracode scan") {
+                stage("Start Veracode Scan") {
                     withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         veracode applicationName: 'NextOS Platform (CRM)',
                                 criticality: 'VeryHigh',
@@ -39,6 +39,18 @@ def call(body) {
                                 vuser: USERNAME, vpassword: PASSWORD
                     }
                 }
+            }
+        }
+    }
+}
+
+def dynamicRescan() {
+    node {
+        stage("Start Veracode Dynamic Rescan") {
+            withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                veracodeDynamicRescan applicationName: 'NextOS Platform (CRM)',
+                        debug: true,
+                        vuser: USERNAME, vpassword: PASSWORD
             }
         }
     }
