@@ -39,16 +39,17 @@ def sendMetric(String metricType, String metricName, def metricValue, Map metric
     """
 
     log.debug(requestBody)
-    def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: requestBody,
-            url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
-            contentType: 'APPLICATION_FORM'
+    httpRequest httpMode: 'POST', requestBody: requestBody,
+        url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
+        contentType: 'APPLICATION_FORM'
 }
 
 def getBuildInfoMap(def jobConfig) {
     return [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
             language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
             path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
-            node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION]
+            node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
+            current_user: common.getCurrentUser()]
 }
 
 def mapToLabelsStr(Map labelsMap) {
