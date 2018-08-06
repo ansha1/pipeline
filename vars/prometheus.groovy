@@ -2,13 +2,23 @@ import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-/*def sendGauge() {
-    def pullRequestResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: requestBody, url: createPrUrl,
-            consoleLogResponseBody: log.isDebug()
-}*/
+def sendCounter(def value, String helpMessage = '') {
+    sendMetric('counter', value)
+}
 
+def sendGauge(def value, String helpMessage = '') {
+    sendMetric('gauge', value)
+}
 
-def sendMetric() {
+def sendHistogram(def value, String helpMessage = '') {
+    sendMetric('histogram', value)
+}
+
+def sendSummary(def value, String helpMessage = '') {
+    sendMetric('summary', value)
+}
+
+def sendMetric(String metricType, String metricName, Map metricLabels = [:], String helpMessage = '') {
     String requestBody = """
                     # HELP telemetry_requests_metrics_latency_microseconds A histogram of the response latency.
                     # TYPE telemetry_requests_metrics_latency_microseconds summary
@@ -22,6 +32,20 @@ def sendMetric() {
                     """
 
     def pullRequestResponce = httpRequest httpMode: 'POST', requestBody: requestBody,
-            url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: true,
+            url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/some_job/instance/some_instance", consoleLogResponseBody: log.isDebug(),
             contentType: 'APPLICATION_FORM'
+}
+
+def getBuildInfoMap(def jobConfig) {
+    return [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
+            language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
+            path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
+            node_label: jobConfig.nodeLabel]
+}
+
+def getBuildInfoLabelsStr(def jobConfig) {
+    Map labelsMap = getBuildInfoMap(jobConfig)
+    String labels = ''
+    labelsMap.each { k, v -> labels += ',${k}="${v}"'}
+    return labels
 }
