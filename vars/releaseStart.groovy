@@ -156,8 +156,6 @@ def call(body) {
             }
             always {
                 script {
-                    prometheus.sendGauge(env.JOB_NAME, 'build_info', 1, prometheus.getBuildInfoMap(jobConfig))
-
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
