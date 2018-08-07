@@ -50,6 +50,5 @@ class SharedJobsStaticVars {
     static final BITBUCKET_URL = 'http://git.nextiva.xyz'
     static final BLUE_GREEN_DEPLOY_DEFAULT = false
     static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
-    static final PROMETHEUS_JOB_NAME = 'deployment'
     static final PROMETHEUS_INSTANCE_NAME = 'jenkins'
 }
