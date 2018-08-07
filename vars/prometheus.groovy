@@ -21,10 +21,10 @@ def sendSummary(String metricName, def metricValue, Map metricLabels = [:], Stri
             'summary', metricLabels, metricHelpMessage)
 }
 
-def sendMetric(String instance, String job_name, String metricName, def metricValue, String metricType,
+def sendMetric(String instance, String jobName, String metricName, def metricValue, String metricType,
                Map metricLabels = [:], String metricHelpMessage = '') {
     String labels = mapToLabelsStr(metricLabels)
-
+    String shortJobName = jobName.split('/')[-1]
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
         # TYPE ${metricName} ${metricType}
@@ -36,7 +36,7 @@ def sendMetric(String instance, String job_name, String metricName, def metricVa
     timeout(time: 10, unit: 'SECONDS') {
         try {
             httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${job_name}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
+                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${shortJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
                     contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
