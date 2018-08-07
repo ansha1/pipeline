@@ -16,7 +16,7 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         mockLog()
         attachScript 'log'
         helper.registerAllowedMethod 'sh', [Map.class], { c -> 'commit message' }
-        mockSendSlack()
+        mockSlack()
     }
 
     @Override

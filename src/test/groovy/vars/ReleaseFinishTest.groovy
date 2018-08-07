@@ -36,7 +36,7 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                     return [:]
                 }
         }
-        mockSendSlack()
+        mockSlack()
         attachScript 'log', 'mergeBranches', 'common'
         mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
                 'success', 'always'

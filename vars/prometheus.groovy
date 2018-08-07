@@ -8,17 +8,17 @@ def sendCounter(String metricName, def metricValue, Map metricLabels = [:], Stri
 
 def sendGauge(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'gauge', getBuildInfoMap() + metricLabels, metricHelpMessage)
+            'gauge', metricLabels, metricHelpMessage)
 }
 
 def sendHistogram(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'histogram', getBuildInfoMap() + metricLabels, metricHelpMessage)
+            'histogram', metricLabels, metricHelpMessage)
 }
 
 def sendSummary(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'summary', getBuildInfoMap() + metricLabels, metricHelpMessage)
+            'summary', metricLabels, metricHelpMessage)
 }
 
 def sendMetric(String job_name, String instance, String metricName, def metricValue, String metricType,

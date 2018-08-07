@@ -36,7 +36,7 @@ class ReleaseStartTest extends BasePipelineTest implements Validator, Mocks {
                 }
         }
         attachScript 'log', 'common'
-        mockSendSlack()
+        mockSlack()
         mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
                 'success', 'always'
         mockString 'label', 'ansiColor', 'jdk', 'maven'
