@@ -39,7 +39,7 @@ def call(body) {
                     git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repositoryUrl
                 }
             }
-            stage('Prepare for starting release') {
+            stage('Prepare for starting hotfix') {
                 steps {
                     script {
                         utils = getUtils(projectLanguage, versionPath)
@@ -48,11 +48,11 @@ def call(body) {
                         hotfixBranchCount = hotfixBranchList ? hotfixBranchList.split().size() : '0'
 
                         if (hotfixBranchCount.toInteger() > 0) {
-                            log.error('\n\nInterrupting...\nSeems you already have a release branch so we cannot go further with hotfixStart Job!!!\n\n')
+                            log.error('\n\nInterrupting...\nSeems you already have a hotfix branch so we cannot go further with hotfixStart Job!!!\n\n')
                             log.error("hotfix branch count: <<${hotfixBranchCount}>>")
                             log.error("List of hotfix branches:\n${hotfixBranchList}\n")
                             currentBuild.rawBuild.result = Result.ABORTED
-                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing release branches and restart hotfixStart Job!!!\n\n")
+                            throw new hudson.AbortException("\n\nhotfix branch(es) already exist, please remove/merge all existing hotfix branches and restart hotfixStart Job!!!\n\n")
                         }
                     }
                 }
