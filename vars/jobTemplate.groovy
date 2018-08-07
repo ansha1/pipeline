@@ -81,6 +81,8 @@ def call(body) {
             stage('Set additional properties') {
                 steps {
                     script {
+                        prometheus.sendGauge('build_started', 1, prometheus.getBuildInfoMap(jobConfig))
+
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
                         if (params.stack) {
@@ -263,6 +265,9 @@ def call(body) {
         post {
             always {
                 script {
+                    prometheus.sendGauge('build_finished', 0, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', 1, prometheus.getBuildInfoMap(jobConfig))
+
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
