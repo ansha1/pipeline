@@ -84,7 +84,7 @@ def call(body) {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
 
-                        prometheus.sendGauge(env.JOB_NAME, 'build_running', 1, prometheus.getBuildInfoMap(jobConfig))
+                        prometheus.sendGauge(env.JOB_NAME, 'build_running', 10, prometheus.getBuildInfoMap(jobConfig))
 
                         if (params.stack) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"

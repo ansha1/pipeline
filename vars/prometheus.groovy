@@ -57,5 +57,7 @@ def getBuildInfoMap(def jobConfig) {
             node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
             current_user: common.getCurrentUser(), build_status: currentBuild.result, node_name: env.NODE_NAME,
             time_in_millis: currentBuild.timeInMillis, start_time_in_millis: currentBuild.startTimeInMillis,
-            duration: currentBuild.duration, duration_string: currentBuild.durationString, pipeline_version: env['library.pipelines.version']]
+            duration: currentBuild.duration, duration_string: currentBuild.durationString,
+            pipeline_version: env['library.pipelines.version'], branch_name: env['BRANCH_NAME'],
+            change_author: env['CHANGE_AUTHOR']]
 }
