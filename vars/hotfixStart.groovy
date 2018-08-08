@@ -107,11 +107,11 @@ def call(body) {
                 }
             }
             always {
-                prometheus.sendGauge(env.JOB_NAME, 'hotfix_start_info', 1, prometheus.getJenkinsInfoMap() +
-                        [appName: APP_NAME, projectLanguage: projectLanguage,
-                         versionPath: versionPath, hotfix_version: hotfixVersion, channel_to_notify: slackChannel])
-
                 script {
+                    prometheus.sendGauge(env.JOB_NAME, 'hotfix_start_info', 1, prometheus.getJenkinsInfoMap() +
+                            [appName: APP_NAME, projectLanguage: projectLanguage,
+                             versionPath: versionPath, hotfix_version: hotfixVersion, channel_to_notify: slackChannel])
+
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
                     }
