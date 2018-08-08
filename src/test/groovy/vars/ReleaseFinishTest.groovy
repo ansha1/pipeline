@@ -37,12 +37,12 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                 }
         }
         mockSlack()
-        attachScript 'log', 'mergeBranches', 'common'
+        attachScript 'log', 'mergeBranches', 'common', 'prometheus'
         mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
                 'success', 'always'
         mockString 'label', 'ansiColor', 'jdk', 'maven'
         mockNoArgs 'timestamps', 'cleanWs'
-        mockMap 'timeout', 'git'
+        mockMap 'timeout', 'git', 'httpRequest'
         mockMapClosure 'sshagent'
     }
 

@@ -108,9 +108,8 @@ def call(body) {
             }
             always {
                 prometheus.sendGauge(env.JOB_NAME, 'hotfix_start_info', 1, prometheus.getJenkinsInfoMap() +
-                        [appName: APP_NAME, projectLanguage: projectLanguage, developBranch: developBranch,
-                         versionPath: versionPath, userDefinedReleaseVersion: userDefinedReleaseVersion,
-                         hotfix_version: hotfixVersion, channel_to_notify: slackChannel])
+                        [appName: APP_NAME, projectLanguage: projectLanguage,
+                         versionPath: versionPath, hotfix_version: hotfixVersion, channel_to_notify: slackChannel])
 
                 script {
                     if(currentBuild.currentResult != 'SUCCESS'){
