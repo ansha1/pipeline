@@ -3,22 +3,22 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def sendCounter(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
-            'counter', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
+            'counter', metricLabels + getBasicInfoMap(), metricHelpMessage)
 }
 
 def sendGauge(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
-            'gauge', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
+            'gauge', metricLabels + getBasicInfoMap(), metricHelpMessage)
 }
 
 def sendHistogram(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
-            'histogram', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
+            'histogram', metricLabels + getBasicInfoMap(), metricHelpMessage)
 }
 
 def sendSummary(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
     sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
-            'summary', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
+            'summary', metricLabels + getBasicInfoMap(), metricHelpMessage)
 }
 
 def sendMetric(String instance, String jobName, String metricName, def metricValue, String metricType,
@@ -53,15 +53,15 @@ def mapToLabelsStr(Map labelsMap) {
 }
 
 def getBuildInfoMap(def jobConfig) {
-    return getJenkinsInfoMap() + [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
-            language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
-            path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
-            node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
-            channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY]
+    return getBasicInfoMap() + [app_name         : jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
+                                language         : jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
+                                path_to_src      : jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
+                                node_label       : jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
+                                channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY]
 
 }
 
-def getJenkinsInfoMap() {
+def getBasicInfoMap() {
     return [current_user: common.getCurrentUser(), build_status: currentBuild.result, node_name: env.NODE_NAME,
             time_in_millis: currentBuild.timeInMillis, start_time_in_millis: currentBuild.startTimeInMillis,
             duration: currentBuild.duration, duration_string: currentBuild.durationString,
