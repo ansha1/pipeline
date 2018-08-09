@@ -66,5 +66,5 @@ def getJenkinsInfoMap() {
             time_in_millis: currentBuild.timeInMillis, start_time_in_millis: currentBuild.startTimeInMillis,
             duration: currentBuild.duration, duration_string: currentBuild.durationString,
             pipeline_version: env['library.pipelines.version'], branch_name: env['BRANCH_NAME'],
-            change_author: env['CHANGE_AUTHOR']]
+            change_author: env['CHANGE_AUTHOR'], job_name: env['JOB_NAME']]
 }
