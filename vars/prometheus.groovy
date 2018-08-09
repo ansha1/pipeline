@@ -2,29 +2,31 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def sendCounter(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
-    sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'counter', metricLabels, metricHelpMessage)
+    sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
+            'counter', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
 }
 
-def sendGauge(String job_name, String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
-    sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), job_name, metricName, metricValue,
-            'gauge', metricLabels, metricHelpMessage)
+def sendGauge(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
+    sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
+            'gauge', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
 }
 
 def sendHistogram(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
-    sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'histogram', metricLabels, metricHelpMessage)
+    sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
+            'histogram', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
 }
 
 def sendSummary(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
-    sendMetric(PROMETHEUS_JOB_NAME.toString(), PROMETHEUS_INSTANCE_NAME.toString(), metricName, metricValue,
-            'summary', metricLabels, metricHelpMessage)
+    sendMetric(PROMETHEUS_INSTANCE_NAME.toString(), env.JOB_NAME.toString(), metricName, metricValue,
+            'summary', metricLabels + getJenkinsInfoMap(), metricHelpMessage)
 }
 
 def sendMetric(String instance, String jobName, String metricName, def metricValue, String metricType,
                Map metricLabels = [:], String metricHelpMessage = '') {
+
     String labels = mapToLabelsStr(metricLabels)
     String shortJobName = jobName.replace('/', '_')
+
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
         # TYPE ${metricName} ${metricType}

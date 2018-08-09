@@ -157,10 +157,11 @@ def call(body) {
             }
             always {
                 script {
-                    prometheus.sendGauge(env.JOB_NAME, 'release_finish_info', 1, prometheus.getJenkinsInfoMap() +
-                            [appName: APP_NAME, projectLanguage: projectLanguage, developBranch: developBranch,
-                             versionPath: versionPath, autoPullRequest: autoPullRequest, autoMerge: autoMerge,
-                             release_version: releaseVersion, channel_to_notify: CHANNEL_TO_NOTIFY])
+                    prometheusLabels = [appName: APP_NAME, projectLanguage: projectLanguage, developBranch: developBranch,
+                                        versionPath: versionPath, autoPullRequest: autoPullRequest, autoMerge: autoMerge,
+                                        release_version: releaseVersion, channel_to_notify: CHANNEL_TO_NOTIFY]
+
+                    prometheus.sendGauge('release_finish_info', 1, prometheusLabels)
 
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
