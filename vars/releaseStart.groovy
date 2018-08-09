@@ -156,8 +156,8 @@ def call(body) {
             }
             always {
                 script {
-                    prometheusLabels = [appName: APP_NAME, projectLanguage: projectLanguage, developBranch: developBranch,
-                             versionPath: versionPath, userDefinedReleaseVersion: userDefinedReleaseVersion,
+                    prometheusLabels = [app_name: APP_NAME, project_language: projectLanguage, develop_branch: developBranch,
+                             version_path: versionPath, user_defined_release_version: userDefinedReleaseVersion,
                              release_version: releaseVersion, development_version: developmentVersion,
                              channel_to_notify: CHANNEL_TO_NOTIFY]
 
