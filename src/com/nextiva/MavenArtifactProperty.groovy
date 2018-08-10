@@ -6,7 +6,7 @@ import groovy.transform.ToString
 
 @ToString
 @TupleConstructor()
-class MavenArtifactProperty {
+class MavenArtifactProperty implement Serializable {
     String groupId
     String version
     String artifactId
