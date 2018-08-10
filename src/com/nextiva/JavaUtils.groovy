@@ -57,8 +57,8 @@ def getArtifactsProperties() {
         artifactsProperties.eachLine {
             def propertiesList = it.split()
             log.info("properties: ${propertiesList}")
-            def myObject = new MavenArtifactProperty(groupId: propertiesList[0], artifactVersion: propertiesList[1], artifactId: propertiesList[2], packaging: propertiesList[3])
-//            javaObjectListProperties << new MavenArtifactProperty(propertiesList[0], propertiesList[1], propertiesList[2], propertiesList[3])
+//            def myObject = new MavenArtifactProperty(groupId: propertiesList[0], artifactVersion: propertiesList[1], artifactId: propertiesList[2], packaging: propertiesList[3])
+            javaObjectListProperties << new MavenArtifactProperty(groupId: propertiesList[0], artifactVersion: propertiesList[1], artifactId: propertiesList[2], packaging: propertiesList[3])
         }
     }
 
