@@ -8,7 +8,7 @@ package com.nextiva
 //@TupleConstructor()
 class MavenArtifactProperty implements Serializable {
     String groupId
-    String version
+    String artifactVersion
     String artifactId
     String packaging
 
