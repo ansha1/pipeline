@@ -104,11 +104,7 @@ def call(body) {
                             stage('Release build version verification') {
                                     List mavenArtifactProperties = utils.getArtifactsProperties()
                                     mavenArtifactProperties.each {
-                                        println it
-                                        println it.artifactId
-                                        println it.artifactVersion
-                                        println it.groupId
-                                        println it.packaging
+                                        log.info('artifact properties: ' + it)
                                     }
                                     if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
