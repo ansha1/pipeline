@@ -2,7 +2,6 @@ package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
-import com.nextiva.MavenArtifactProperty
 
 
 @Field
@@ -47,7 +46,7 @@ def runSonarScanner(String projectVersion) {
     }
 }
 
-def getArtifactsProperties() {
+List getArtifactsProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List javaObjectListProperties = []
     dir(pathToSrc) {
@@ -57,8 +56,7 @@ def getArtifactsProperties() {
         artifactsProperties.eachLine {
             def propertiesList = it.split()
             log.info("properties: ${propertiesList}")
-//            def myObject = new MavenArtifactProperty(groupId: propertiesList[0], artifactVersion: propertiesList[1], artifactId: propertiesList[2], packaging: propertiesList[3])
-            javaObjectListProperties << new MavenArtifactProperty(groupId: propertiesList[0], artifactVersion: propertiesList[1], artifactId: propertiesList[2], packaging: propertiesList[3])
+            javaObjectListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[1], 'artifactId': propertiesList[2], 'packaging': propertiesList[3]]
         }
     }
 

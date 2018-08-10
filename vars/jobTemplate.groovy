@@ -102,7 +102,7 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|implement_PIPELINE-45)$/) {
                             stage('Release build version verification') {
-                                    def mavenArtifactProperties = utils.getArtifactsProperties()
+                                    List mavenArtifactProperties = utils.getArtifactsProperties()
                                     mavenArtifactProperties.each {
                                         println it
                                         println it.artifactId
