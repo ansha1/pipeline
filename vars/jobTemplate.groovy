@@ -105,7 +105,7 @@ def call(body) {
                                     def mavenArtifactProperties = utils.getArtifactsProperties()
                                     mavenArtifactProperties.each {
                                         println it.artifactId
-                                        println it.version
+                                        println it.artifactVersion
                                         println it.groupId
                                         println it.packaging
                                     }
