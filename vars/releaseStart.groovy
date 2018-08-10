@@ -158,7 +158,8 @@ def call(body) {
                 script {
                     prometheusLabels = [app_name: APP_NAME, project_language: projectLanguage, develop_branch: developBranch,
                                         version_path: versionPath, user_defined_release_version: userDefinedReleaseVersion,
-                                        release_version: releaseVersion, development_version: developmentVersion,
+                                        release_version: common.getPropertyValue('releaseVersion'),
+                                        development_version: common.getPropertyValue('developmentVersion'),
                                         channel_to_notify: CHANNEL_TO_NOTIFY]
 
                     prometheus.sendGauge('release_start_info', 1, prometheusLabels)
