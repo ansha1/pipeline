@@ -71,6 +71,8 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
     void setUp() throws Exception {
         scriptRoots += '/'
         super.setUp()
+        binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
+        binding.setVariable 'User', mockObjects.user
         binding.setVariable 'NODE_NAME', 'Debian Slave 3'
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
@@ -79,7 +81,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
                 stack: 'a'
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
-                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log'
+                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common'
 
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
@@ -94,7 +96,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
         mockStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
-        mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit'
+        mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit', 'httpRequest'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'

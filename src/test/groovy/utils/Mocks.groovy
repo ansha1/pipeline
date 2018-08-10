@@ -33,7 +33,7 @@ trait Mocks implements BasePipelineAccessor {
     /**
      * Mocks the required data for sendSlack function
      */
-    void mockSendSlack() {
+    void mockSlack() {
         mockLog()
         mockEnv()
         attachScript 'slack'

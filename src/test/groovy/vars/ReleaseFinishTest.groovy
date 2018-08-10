@@ -36,13 +36,13 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                     return [:]
                 }
         }
-        mockSendSlack()
-        attachScript 'log', 'mergeBranches', 'common'
+        mockSlack()
+        attachScript 'log', 'mergeBranches', 'common', 'prometheus'
         mockClosure 'pipeline', 'agent', 'options', 'tools', 'stages', 'steps', 'script', 'post',
                 'success', 'always'
         mockString 'label', 'ansiColor', 'jdk', 'maven'
         mockNoArgs 'timestamps', 'cleanWs'
-        mockMap 'timeout', 'git'
+        mockMap 'timeout', 'git', 'httpRequest'
         mockMapClosure 'sshagent'
     }
 

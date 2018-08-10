@@ -88,7 +88,7 @@ jobTemplate {
     *    postDeployCommands - a list of the commands that should be executed after a successful deployment on an environment(e.g end to end tests)
     */
     projectFlow = ['language'         : 'python',
-                   'languageVersion'  : 'python3.6'
+                   'languageVersion'  : 'python3.6',
                    'pathToSrc'        : 'backend']
 
     /* healthCheckMap - defines a map with the appropriate healthcheck per environment that will be checked after ansible playbook deployment. This parameter is MANDATORY */

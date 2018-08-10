@@ -83,6 +83,9 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
+
+                        prometheus.sendGauge('build_running', 10, prometheus.getBuildInfoMap(jobConfig))
+
                         if (params.stack) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"
                         }
@@ -263,6 +266,9 @@ def call(body) {
         post {
             always {
                 script {
+                    prometheus.sendGauge('build_running', 0, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', 1, prometheus.getBuildInfoMap(jobConfig))
+
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
