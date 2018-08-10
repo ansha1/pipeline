@@ -62,7 +62,7 @@ def getBuildInfoMap(def jobConfig) {
 }
 
 def getBasicInfoMap() {
-    return [current_user: common.getCurrentUser(), build_status: currentBuild.result, node_name: env.NODE_NAME,
+    return [current_user: common.getCurrentUser().toString(), build_status: currentBuild.result, node_name: env['NODE_NAME'],
             time_in_millis: currentBuild.timeInMillis, start_time_in_millis: currentBuild.startTimeInMillis,
             duration: currentBuild.duration, duration_string: currentBuild.durationString,
             pipeline_version: env['library.pipelines.version'], branch_name: env['BRANCH_NAME'],

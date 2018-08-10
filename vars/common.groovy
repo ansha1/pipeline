@@ -30,3 +30,11 @@ def getCurrentUserSlackId() {
 String getAppNameFromGitUrl(String gitUrl) {
     return gitUrl.split("/")[-1].replaceAll('.git', '')
 }
+
+def getPropertyValue(String propertyName, def defaultValue = null) {
+    try {
+        return getProperty(propertyName)
+    } catch (MissingPropertyException e) {
+        return defaultValue
+    }
+}
