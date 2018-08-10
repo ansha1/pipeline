@@ -25,7 +25,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String shortJobName = jobName.replace('/', '_')
+    String shortJobName = jobName.replaceAll('/|%2F|%20', '_')
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}

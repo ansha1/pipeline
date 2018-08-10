@@ -41,10 +41,11 @@ def privateMessage(String slackUserId, String message) {
 }
 
 def buildStatusMessageBody() {
-    buildStatus = currentBuild.currentResult
-    commitinforaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
-    commitinfo = commitinforaw.trim()
-    def subject = "Build status: ${buildStatus} Job: ${env.JOB_NAME.replaceAll("%2F", "_")} #${env.BUILD_ID}"
+    def buildStatus = currentBuild.currentResult
+    def commitinforaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
+    def commitinfo = commitinforaw.trim()
+    String jobName = env.JOB_NAME.replaceAll('%2F', '-').replaceAll('%20', ' ')
+    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
             "title": "${subject}",
