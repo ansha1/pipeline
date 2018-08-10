@@ -1,9 +1,8 @@
 package com.nextiva
 
-import com.nextiva.MavenArtifactProperty
-
 import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
+import MavenArtifactProperty
 
 
 @Field
