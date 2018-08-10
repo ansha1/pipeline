@@ -52,12 +52,12 @@ def getArtifactsProperties() {
     List javaObjectListProperties = []
     dir(pathToSrc) {
         def artifactsProperties = sh(returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.version} \${project.artifactId} \${project.packaging}\' exec:exec -U""")
-        println("artifactsProperties: ", artifactsProperties)
+        log.info("artifactsProperties: ${artifactsProperties}")
 
-        artifactsProperties.eachLine {
-            def propertiesList = it.split()
-            javaObjectListProperties << new MavenArtifactProperty(propertiesList[0], propertiesList[1], propertiesList[2], propertiesList[3])
-        }
+//        artifactsProperties.eachLine {
+//            def propertiesList = it.split()
+//            javaObjectListProperties << new MavenArtifactProperty(propertiesList[0], propertiesList[1], propertiesList[2], propertiesList[3])
+//        }
     }
 
     return javaObjectListProperties
