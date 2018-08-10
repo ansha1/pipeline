@@ -104,6 +104,7 @@ def call(body) {
                             stage('Release build version verification') {
                                     def mavenArtifactProperties = utils.getArtifactsProperties()
                                     mavenArtifactProperties.each {
+                                        println it
                                         println it.artifactId
                                         println it.artifactVersion
                                         println it.groupId
