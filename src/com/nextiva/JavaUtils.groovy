@@ -2,10 +2,22 @@ package com.nextiva
 
 import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
+import groovy.transform.TupleConstructor
+import groovy.transform.ToString
 
 
 @Field
 String pathToSrc = '.'
+
+
+@ToString
+@TupleConstructor()
+class ArtifactProperty {
+    String groupId
+    String version
+    String artifactId
+    String packaging
+}
 
 
 String getVersion() {
@@ -46,6 +58,19 @@ def runSonarScanner(String projectVersion) {
     }
 }
 
+List getArtifactsProperties() {
+    log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
+    List javaObjectListProperties = []
+    dir(pathToSrc) {
+        def artifactsProperties = sh(returnStdout: true, script: "mvn -q -Dexec.executable=\"echo\" -Dexec.args='${project.groupId} ${project.version} ${project.artifactId} ${project.packaging}' exec:exec -U")
+        artifactsProperties.eachLine {
+            propertiesList = it.split()
+            javaObjectListProperties << new ArtifactProperty(propertiesList[0], propertiesList[1], propertiesList[2], propertiesList[3])
+        }
+    }
+
+    return javaObjectListProperties
+}
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
     return false

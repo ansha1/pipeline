@@ -102,7 +102,14 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
-                                if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
+                                    def javaObjectListProperties = utils.getArtifactsProperties()
+                                    javaObjectListProperties.each {
+                                        println it.artifactId
+                                        println it.version
+                                        println it.groupId
+                                        println it.packaging
+                                    }
+                                    if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
                                                           "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
