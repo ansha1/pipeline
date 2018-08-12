@@ -3,7 +3,7 @@ def call(String message = 'Should we proceed', String slackChannel, String autho
 
         def buildMessage = buildApproveMessageBody(message)
         slack(slackChannel, buildMessage)
-        def inputResponse = input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
+        return input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers, submitterParameter: 'approver')
     }
 }
 
