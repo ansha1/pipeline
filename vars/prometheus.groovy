@@ -26,7 +26,8 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String uncodedJobName = URLEncoder.encode(jobName.replaceAll('/| |%', '_'), 'UTF-8')
+    String uncodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
+            .replaceAll('%', '_')
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
