@@ -1,4 +1,5 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import java.net.URLDecoder
 
 
 def call(String deployEnvironment, String version, String jobName) {
@@ -7,7 +8,7 @@ def call(String deployEnvironment, String version, String jobName) {
 
     buildProperties.deploy_environment = deployEnvironment
     buildProperties.build_version = version
-    buildProperties.job_name = jobName.replaceAll('%2F', '/').replaceAll('%20', ' ')
+    buildProperties.job_name = URLDecoder.decode(jobName, 'UTF-8')
     buildProperties.commit = sh returnStdout: true, script: 'git rev-parse HEAD'
     buildProperties.build_date_time = sh returnStdout: true, script: 'date'
     buildProperties.repository_url = sh returnStdout: true, script: 'git config --get remote.origin.url'
