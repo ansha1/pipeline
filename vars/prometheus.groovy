@@ -26,7 +26,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String uncodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
+    String encodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
             .replaceAll('%', '_')
 
     String requestBody = """
@@ -40,7 +40,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
     timeout(time: 10, unit: 'SECONDS') {
         try {
             httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${uncodedJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
+                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
                     contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
