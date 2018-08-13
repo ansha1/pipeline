@@ -56,7 +56,6 @@ List getArtifactsProperties() {
 
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
-            log.info("properties: ${propertiesList}")
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
@@ -72,7 +71,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
     mavenArtifactsProperties.each { artifact ->
-        log.info('artifact properties: ' + artifact)
         if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
             counter++
         }
