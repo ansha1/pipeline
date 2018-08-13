@@ -1,4 +1,5 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import java.io.FileNotFoundException;
 
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
@@ -39,7 +40,12 @@ Boolean checkNexus3Package(String repo, String format, String packageName, Strin
 
 Boolean checkNexus2Package(String repo, String format, String packageName, String packageVersion, String groupId) {
     def searchNexusQuery = NEXUS_2_REST_API + "?g=" + groupId + "&a=" + packageName + "&v=" + packageVersion + "&r=" + repo + "&p=" + format
-    checkStatusNexus2(getApiNexusCall(searchNexusQuery), artifactId, artifactVersion)
+    try {
+        checkStatusNexus2(getApiNexusCall(searchNexusQuery), artifactId, artifactVersion)
+    } catch (FileNotFoundException e) {
+        log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
+        return false
+    }
 }
 
 Boolean checkStatusNexus3(Map searchQueryResult, String packageName, String packageVersion) {
@@ -53,14 +59,9 @@ Boolean checkStatusNexus3(Map searchQueryResult, String packageName, String pack
 }
 
 Boolean checkStatusNexus2(Map searchQueryResult, String packageName, String packageVersion) {
-    try {
-        if (searchQueryResult.data.size() > 0) {
-            log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
-            return true
-        }
-    } catch (e) {
-            log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
-            return false
+    if (searchQueryResult.data.size() > 0) {
+        log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
+        return true
     }
 }
 
