@@ -69,5 +69,5 @@ def getBasicInfoMap() {
             duration: currentBuild.duration, duration_string: currentBuild.durationString,
             pipeline_version: env['library.pipeline.version'], branch_name: env['BRANCH_NAME'],
             change_author: env['CHANGE_AUTHOR'], jenkins_job_name: env['JOB_NAME'], build_id: env['BUILD_ID'],
-            build_url: ['BUILD_URL']]
+            build_url: env['BUILD_URL']]
 }
