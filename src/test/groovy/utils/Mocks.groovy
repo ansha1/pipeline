@@ -33,12 +33,13 @@ trait Mocks implements BasePipelineAccessor {
     /**
      * Mocks the required data for sendSlack function
      */
-    void mockSendSlack() {
+    void mockSlack() {
         mockLog()
         mockEnv()
         attachScript 'slack'
         basePipelineTest.helper.registerAllowedMethod 'slackSend', [Map], { println 'Slack message mock' }
         basePipelineTest.helper.registerAllowedMethod 'sh', [Map], {'sh command output'}
+        basePipelineTest.helper.registerAllowedMethod 'getSlackUserIdByEmail', [String], { return 'testuser' }
     }
 
     /**
