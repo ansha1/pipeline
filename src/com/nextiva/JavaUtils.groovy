@@ -46,9 +46,10 @@ def runSonarScanner(String projectVersion) {
     }
 }
 
+
 List getArtifactsProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
-    List javaObjectListProperties = []
+    List artifactsListProperties = []
     dir(pathToSrc) {
         def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.version} \${project.artifactId} \${project.packaging}\' exec:exec -U"""
         log.info("artifactsProperties: ${artifactsProperties}")
@@ -56,15 +57,33 @@ List getArtifactsProperties() {
         artifactsProperties.eachLine {
             def propertiesList = it.split()
             log.info("properties: ${propertiesList}")
-            javaObjectListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[1], 'artifactId': propertiesList[2], 'packaging': propertiesList[3]]
+            artifactsListProperties << propertiesList
         }
     }
 
-    return javaObjectListProperties
+    return artifactsListProperties
+}
+
+Boolean checkMavenArtifactVersion(List artifactsListProperties) {
+    return (new HashSet(artifactsListProperties.collect { it[1]}).size()  == 1)
 }
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
-    return false
+    List mavenArtifactsProperties = getArtifactsProperties()
+    Integer counter = 0
+    mavenArtifactsProperties.each { artifact ->
+        log.info('artifact properties: ' + artifact)
+        if (checkNexus2Package(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
+            counter++
+        }
+    }
+    log.info('number of artifacts found: ${counter}')
+    log.info('is version of artifacts equal: ', checkMavenArtifactVersion(mavenArtifactsProperties))
+//    if (counter.equals(0)) {
+//        return false
+//    } else if (counter.equals(4) && checkMavenArtifactVersion(mavenArtifactsProperties)){
+//
+//    }
 }
 
 

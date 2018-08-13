@@ -102,11 +102,8 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|implement_PIPELINE-45)$/) {
                             stage('Release build version verification') {
-                                    List mavenArtifactProperties = utils.getArtifactsProperties()
-                                    mavenArtifactProperties.each {
-                                        log.info('artifact properties: ' + it)
-                                    }
-                                    if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
+
+                                if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
                                                           "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
