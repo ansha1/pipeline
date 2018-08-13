@@ -1,4 +1,5 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import java.net.URLEncoder
 
 
 def sendCounter(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
@@ -25,7 +26,8 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String shortJobName = jobName.replace('/', '_')
+    String encodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
+            .replaceAll('%', '_')
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
@@ -38,7 +40,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
     timeout(time: 10, unit: 'SECONDS') {
         try {
             httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${shortJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
+                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
                     contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
