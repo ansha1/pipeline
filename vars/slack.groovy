@@ -43,14 +43,14 @@ def privateMessage(String slackUserId, String message) {
 
 def buildStatusMessageBody() {
     def buildStatus = currentBuild.currentResult
-    def commitinforaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
-    def commitinfo = commitinforaw.trim()
+    def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
+    def commitInfo = commitInfoRaw.trim()
     String jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
             "title": "${subject}",
-            "text": "${commitinfo}",
+            "text": "${commitInfo}",
             "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
             "attachment_type": "default",
             "actions": [
