@@ -54,7 +54,7 @@ List getArtifactsProperties() {
         def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U"""
         log.info("artifactsProperties: ${artifactsProperties}")
 
-        artifactsProperties.split('\n').eachLine {
+        artifactsProperties.split('\n').each {
             def propertiesList = it.split()
             log.info("properties: ${propertiesList}")
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
