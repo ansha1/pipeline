@@ -51,13 +51,13 @@ List getArtifactsProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List artifactsListProperties = []
     dir(pathToSrc) {
-        def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.version} \${project.artifactId} \${project.packaging}\' exec:exec -U"""
+        def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U"""
         log.info("artifactsProperties: ${artifactsProperties}")
 
         artifactsProperties.eachLine {
             def propertiesList = it.split()
             log.info("properties: ${propertiesList}")
-            artifactsListProperties << propertiesList
+            artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
     log.info("method getArtifactsProperties() returned: ${artifactsListProperties}")
@@ -65,7 +65,7 @@ List getArtifactsProperties() {
 }
 
 Boolean checkMavenArtifactVersion(List artifactsListProperties) {
-    return (new HashSet(artifactsListProperties.collect { it[1]}).size() == 1)
+    return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion')}).size() == 1)
 }
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
@@ -73,7 +73,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     Integer counter = 0
     mavenArtifactsProperties.each { artifact ->
         log.info('artifact properties: ' + artifact)
-        if (nexus.isJavaArtifactExists(artifact[0], artifact[1], artifact[2], artifact[3])) {
+        if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging) {
             counter++
         }
     }
