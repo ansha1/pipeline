@@ -60,12 +60,12 @@ List getArtifactsProperties() {
             artifactsListProperties << propertiesList
         }
     }
-
+    log.info('method getArtifactsProperties() returned: ${artifactsListProperties}')
     return artifactsListProperties
 }
 
 Boolean checkMavenArtifactVersion(List artifactsListProperties) {
-    return (new HashSet(artifactsListProperties.collect { it[1]}).size()  == 1)
+    return (new HashSet(artifactsListProperties.collect { it[1]}).size() == 1)
 }
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
@@ -73,7 +73,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     Integer counter = 0
     mavenArtifactsProperties.each { artifact ->
         log.info('artifact properties: ' + artifact)
-        if (checkNexus2Package(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
+        if (isJavaArtifactExists(artifact[0], artifact[1], artifact[2], artifact[3])) {
             counter++
         }
     }
