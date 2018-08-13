@@ -34,21 +34,33 @@ def getApiNexusCall(String apiUrl) {
 
 Boolean checkNexus3Package(String repo, String format, String packageName, String packageVersion) {
     def searchNexusQuery = NEXUS_3_REST_API + repo + "&format=" + format + "&name=" + packageName + "-" + packageVersion
-    checkStatus(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
+    checkStatusNexus3(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
 }
 
 Boolean checkNexus2Package(String repo, String format, String packageName, String packageVersion, String groupId) {
     def searchNexusQuery = NEXUS_2_REST_API + "?g=" + groupId + "&a=" + packageName + "&v=" + packageVersion + "&r=" + repo + "&p=" + format
-    checkStatus(getApiNexusCall(searchNexusQuery), artifactId, artifactVersion)
+    checkStatusNexus2(getApiNexusCall(searchNexusQuery), artifactId, artifactVersion)
 }
 
-Boolean checkStatus(Map searchQueryResult, String packageName, String packageVersion) {
+Boolean checkStatusNexus3(Map searchQueryResult, String packageName, String packageVersion) {
     if (searchQueryResult.items.size() > 0) {
         log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
     } else {
         log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
         return false
+    }
+}
+
+Boolean checkStatusNexus2(Map searchQueryResult, String packageName, String packageVersion) {
+    try {
+        if (searchQueryResult.data.size() > 0) {
+            log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
+            return true
+        }
+    } catch (e) {
+            log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
+            return false
     }
 }
 
