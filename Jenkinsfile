@@ -19,6 +19,10 @@ lock(lockableResource) {
                 ansiColor('xterm') {
                     timeout(time: 50, unit: 'MINUTES') {
 
+                        stage('prep downstream repos') {
+                            cleanDownStreamRepos()
+                        }
+
                         stage('checkout') {
                             checkout scm
                         }
@@ -109,4 +113,32 @@ def runDownstreamJobs() {
     }, pythonIntegration: {
         build job: 'nextiva-pipeline-tests/test-python-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }
+}
+
+def cleanDownStreamRepos() {
+    script {
+        repos = ['ssh://git@git.nextiva.xyz:7999/pipeline/test-js-pipeline.git',
+                 'ssh://git@git.nextiva.xyz:7999/pipeline/test-java-pipeline.git',
+                 'ssh://git@git.nextiva.xyz:7999/pipeline/test-python-pipeline.git']
+        for(repo in repos) {
+
+            git branch: 'dev', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repo
+
+            releaseBranchList = sh returnStdout: true, script: 'git branch -r | grep -e "origin/release/" -e hotfix || true'
+            // Checking out repo to make it easier to delete them
+            for (branch in releaseBranchList.split()) {
+                sh 'git checkout ' + branch.replace('origin/', "")
+
+            }
+            // checking out developBranch to allow us to delete other branches
+            sh 'git checkout ' + 'dev'
+            // deleting all release and hotfix branches
+            for (branch in releaseBranchList.split()) {
+                sh 'git push --delete origin ' + branch.replace('origin/', "")
+
+            }
+            cleanWs()
+        }
+    }
+
 }
