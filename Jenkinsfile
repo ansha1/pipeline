@@ -20,7 +20,7 @@ lock(lockableResource) {
                     timeout(time: 50, unit: 'MINUTES') {
 
                         stage('prep downstream repos') {
-                            cleanDownStreamRepos()
+                            cleanDownstreamRepos()
                         }
 
                         stage('checkout') {
@@ -115,7 +115,7 @@ def runDownstreamJobs() {
     }
 }
 
-def cleanDownStreamRepos() {
+def cleanDownstreamRepos() {
     script {
         repos = ['ssh://git@git.nextiva.xyz:7999/pipeline/test-js-pipeline.git',
                  'ssh://git@git.nextiva.xyz:7999/pipeline/test-java-pipeline.git',
