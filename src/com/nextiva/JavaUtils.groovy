@@ -64,7 +64,7 @@ List getArtifactsProperties() {
     return artifactsListProperties
 }
 
-Boolean checkMavenArtifactVersion(List artifactsListProperties) {
+Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
     return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion')}).size() == 1)
 }
 
@@ -77,8 +77,9 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
             counter++
         }
     }
-    log.info('number of artifacts found: ${counter}')
-    log.info('is version of artifacts equal: ', checkMavenArtifactVersion(mavenArtifactsProperties))
+    log.info("number of artifacts found: ${counter}")
+    def resultOfComparison = isMavenArtifactVersionsEqual(mavenArtifactsProperties)
+    log.info("is version of artifacts equal: ${resultOfComparison}")
 //    if (counter.equals(0)) {
 //        return false
 //    } else if (counter.equals(4) && checkMavenArtifactVersion(mavenArtifactsProperties)){
