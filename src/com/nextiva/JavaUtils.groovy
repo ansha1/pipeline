@@ -73,7 +73,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     Integer counter = 0
     mavenArtifactsProperties.each { artifact ->
         log.info('artifact properties: ' + artifact)
-        if (isJavaArtifactExists(artifact[0], artifact[1], artifact[2], artifact[3])) {
+        if (nexus.isJavaArtifactExists(artifact[0], artifact[1], artifact[2], artifact[3])) {
             counter++
         }
     }
