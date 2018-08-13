@@ -60,7 +60,7 @@ List getArtifactsProperties() {
             artifactsListProperties << propertiesList
         }
     }
-    log.info('method getArtifactsProperties() returned: ${artifactsListProperties}')
+    log.info("method getArtifactsProperties() returned: ${artifactsListProperties}")
     return artifactsListProperties
 }
 
