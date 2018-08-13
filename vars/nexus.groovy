@@ -68,7 +68,7 @@ Boolean isDockerPackageExists(String packageName, String packageVersion, String 
 }
 
 // example of url: http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve?g=com.nextiva&a=provisioning-service-war&v=1.12.0&r=releases&p=war"
-Boolean isJavaArtifactExists(String groupId, String artifactVersion, String artifactId, String packaging, String repo = 'releases') {
+Boolean isJavaArtifactExists(String groupId, String artifactId, String artifactVersion, String packaging, String repo = 'releases') {
     checkNexus2Package(repo, packaging, artifactId, artifactVersion, groupId)
 }
 
