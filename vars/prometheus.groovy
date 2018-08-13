@@ -55,18 +55,19 @@ def mapToLabelsStr(Map labelsMap) {
 }
 
 def getBuildInfoMap(def jobConfig) {
-    return getBasicInfoMap() + [app_name         : jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
-                                language         : jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
-                                path_to_src      : jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
-                                node_label       : jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
+    return getBasicInfoMap() + [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
+                                language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
+                                path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
+                                node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
                                 channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY]
 
 }
 
 def getBasicInfoMap() {
-    return [current_user: common.getCurrentUser().toString(), build_status: currentBuild.result, node_name: env['NODE_NAME'],
+    return [current_user: common.getCurrentUser().toString(), build_status: currentBuild.currentResult, node_name: env['NODE_NAME'],
             time_in_millis: currentBuild.timeInMillis, start_time_in_millis: currentBuild.startTimeInMillis,
             duration: currentBuild.duration, duration_string: currentBuild.durationString,
-            pipeline_version: env['library.pipelines.version'], branch_name: env['BRANCH_NAME'],
-            change_author: env['CHANGE_AUTHOR'], jenkins_job_name: env['JOB_NAME']]
+            pipeline_version: env['library.pipeline.version'], branch_name: env['BRANCH_NAME'],
+            change_author: env['CHANGE_AUTHOR'], jenkins_job_name: env['JOB_NAME'], build_id: env['BUILD_ID'],
+            build_url: env['BUILD_URL']]
 }
