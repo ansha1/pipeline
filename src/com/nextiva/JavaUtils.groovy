@@ -102,7 +102,8 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     } else {
         log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
         currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("Can't apply autoincrement version.")
+        throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used sub modules pom.xml" +
+                                        "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
     }
 }
 
