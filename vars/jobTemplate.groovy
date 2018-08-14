@@ -103,7 +103,7 @@ def call(body) {
                         log.info(sh(script: 'printenv', returnStdout: true))
                         log.info('=============================')
 
-                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|implement_PIPELINE-45)$/) {
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
