@@ -83,6 +83,9 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
+
+                        prometheus.sendGauge('build_running', 10, prometheus.getBuildInfoMap(jobConfig))
+
                         if (params.stack) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"
                         }
@@ -105,8 +108,10 @@ def call(body) {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
-                                                          "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                                          "already exists in Nexus (maven repository). " +
+                                                          "Do you want to increase a patch version and continuing process ?",
+                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
                                     utils.setVersion(patchedBuildVersion)
@@ -264,6 +269,9 @@ def call(body) {
         post {
             always {
                 script {
+                    prometheus.sendGauge('build_running', 0, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', 1, prometheus.getBuildInfoMap(jobConfig))
+
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->
                             branches.each {
