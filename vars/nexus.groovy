@@ -25,7 +25,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
 }
 
 def getApiNexusCall(String apiUrl) {
-    def result = new groovy.json.JsonSlurper().parseText(new URL(apiUrl).getText())
+    def result = new groovy.json.JsonSlurper().parseText(new URL(apiUrl).getText(requestProperties: [Accept: 'application/json']))
     if (log.isDebug()) {
         log.debug("searchNexusQuery: ${searchNexusQuery}")
         log.debug("The result of query: ${res}")
@@ -41,7 +41,7 @@ Boolean checkNexus3Package(String repo, String format, String packageName, Strin
 Boolean checkNexus2Package(String repo, String format, String packageName, String packageVersion, String groupId) {
     def searchNexusQuery = NEXUS_2_REST_API + "?g=" + groupId + "&a=" + packageName + "&v=" + packageVersion + "&r=" + repo + "&p=" + format
     try {
-        log.info("searchNexusQuery: ${searchNexusQuery}")
+        log.info("searchNexusQuery: ${searchNexusQuery}")K
         checkStatusNexus2(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
     } catch (FileNotFoundException e) {
         log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
