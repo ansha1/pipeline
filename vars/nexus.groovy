@@ -41,7 +41,6 @@ Boolean checkNexus3Package(String repo, String format, String packageName, Strin
 Boolean checkNexus2Package(String repo, String format, String packageName, String packageVersion, String groupId) {
     def searchNexusQuery = NEXUS_2_REST_API + "?g=" + groupId + "&a=" + packageName + "&v=" + packageVersion + "&r=" + repo + "&p=" + format
     try {
-        log.info("searchNexusQuery: ${searchNexusQuery}")
         checkStatusNexus2(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
     } catch (FileNotFoundException e) {
         log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
@@ -83,7 +82,6 @@ Boolean isDockerPackageExists(String packageName, String packageVersion, String 
 
 // example of url: http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve?g=com.nextiva&a=provisioning-service-war&v=1.12.0&r=releases&p=war"
 Boolean isJavaArtifactExists(String groupId, String artifactId, String artifactVersion, String packaging, String repo = 'releases') {
-    log.info("Calling method isJavaArtifactExists with parameters: ${groupId}, ${artifactId}, ${artifactVersion}, ${packaging}, ${repo}")
     checkNexus2Package(repo, packaging, artifactId, artifactVersion, groupId)
 }
 

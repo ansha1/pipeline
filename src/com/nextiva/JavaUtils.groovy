@@ -51,7 +51,6 @@ List getArtifactsProperties() {
     List artifactsListProperties = []
     dir(pathToSrc) {
         def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U"""
-        log.info("artifactsProperties: ${artifactsProperties}")
 
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
@@ -71,28 +70,21 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
-//    Map artifactsInNexus = [:]
 
-    log.warning("are artifacts collected: ${isArtifactsCollected}")
     mavenArtifactsProperties.each { artifact ->
         if (isArtifactsCollected) {
             artifact.artifactVersion = packageVersion
         }
         if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
             counter++
-//            artifactsInNexus << [artifact.get('artifactId'):artifact.get('artifactVersion')]
         }
     }
-
-//    log.info("number of artifacts found: ${counter}")
-//    def resultOfComparison = isMavenArtifactVersionsEqual(mavenArtifactsProperties)
-//    log.info("is version of artifacts equal: ${resultOfComparison}")
 
     isArtifactsCollected = true
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
         return true
-    } else if (counter == 0 ) { // && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
+    } else if (counter == 0 ) {
         return false
     } else {
         log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
