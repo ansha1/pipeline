@@ -70,7 +70,6 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
-
     /*
     *  method getArtifactsProperties() is used to collect the maven modules properties from local build
     *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
