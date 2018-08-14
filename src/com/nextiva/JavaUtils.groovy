@@ -48,7 +48,7 @@ def runSonarScanner(String projectVersion) {
 
 List getModulesProperties() {
     /*
-    *  method getModulesProperties() is used to collect the maven modules properties from a local build
+    *  method getModulesProperties() is used to collect the maven modules properties from a local source
     *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
     */
 
