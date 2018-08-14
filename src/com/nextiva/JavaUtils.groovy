@@ -46,7 +46,7 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-List getArtifactsProperties() {
+List getModulesProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List artifactsListProperties = []
     dir(pathToSrc) {
@@ -57,9 +57,9 @@ List getArtifactsProperties() {
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
-    if (log.isDebug()) {
-        log.debug("method getArtifactsProperties() returned: ${artifactsListProperties}")
-    }
+    
+    log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
+    
     return artifactsListProperties
 }
 
@@ -71,13 +71,13 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
     /*
-    *  method getArtifactsProperties() is used to collect the maven modules properties from local build
+    *  method getModulesProperties() is used to collect the maven modules properties from local build
     *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
     *  Based on a packageVersion that is passed to verifyPackageInNexus() we decide whether
     *  to use the version that was collected from mvn build locally or operate with the one that was passed explicitly
     */
 
-    List mavenArtifactsProperties = getArtifactsProperties()
+    List mavenArtifactsProperties = getModulesProperties()
     Integer counter = 0
     List artifactsInNexus = []
 

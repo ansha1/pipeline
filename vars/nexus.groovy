@@ -26,10 +26,9 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
 
 def getApiNexusCall(String apiUrl) {
     def result = new groovy.json.JsonSlurper().parseText(new URL(apiUrl).getText(requestProperties: [Accept: 'application/json']))
-    if (log.isDebug()) {
-        log.debug("searchNexusQuery: ${searchNexusQuery}")
-        log.debug("The result of query: ${res}")
-    }
+    log.debug("searchNexusQuery: ${searchNexusQuery}")
+    log.debug("The result of query: ${res}")
+
     return result
 }
 
