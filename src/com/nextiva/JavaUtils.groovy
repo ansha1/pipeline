@@ -73,6 +73,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     Integer counter = 0
 //    Map artifactsInNexus = [:]
 
+    log.warning("are artifacts collected: ${isArtifactsCollected}")
     mavenArtifactsProperties.each { artifact ->
         if (isArtifactsCollected) {
             artifact.artifactVersion = packageVersion
