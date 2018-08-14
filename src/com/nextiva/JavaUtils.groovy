@@ -5,7 +5,7 @@ import groovy.transform.Field
 
 
 @Field String pathToSrc = '.'
-@Field Boolean isArtifactsCollected = false
+
 
 String getVersion() {
     dir(pathToSrc) {
@@ -71,7 +71,13 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
 
-    // isArtifactsCollected is set to false so we are collecting artifacts properties from local build
+    /*
+    *  method getArtifactsProperties() is used to collect the maven modules properties from local build
+    *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
+    *  Based on a packageVersion that is passed to verifyPackageInNexus() we decide whether
+    *  to use the version that was collected from mvn build locally or operate with the one that was passed explicitly
+    */
+
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
     List artifactsInNexus = []
@@ -85,9 +91,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
             artifactsInNexus << artifact
         }
     }
-    // use Class field "isArtifactsCollected" to conrtol the process of artifacts version verification in Nexus
-    // if "isArtifactsCollected" is true we are using packageVersion that is passing to method from JobConfig.autoIncrementVersion()
-//    isArtifactsCollected = true
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
         return true
