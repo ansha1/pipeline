@@ -57,7 +57,9 @@ List getArtifactsProperties() {
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
-    log.info("method getArtifactsProperties() returned: ${artifactsListProperties}")
+    if (log.isDebug()) {
+        log.debug("method getArtifactsProperties() returned: ${artifactsListProperties}")
+    }
     return artifactsListProperties
 }
 
@@ -68,6 +70,8 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+
+    // isArtifactsCollected is set to false so we are collecting artifacts properties from local build
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
     List artifactsInNexus = []
@@ -81,7 +85,8 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
             artifactsInNexus << artifact
         }
     }
-
+    // use Class field "isArtifactsCollected" to conrtol the process of artifacts version verification in Nexus
+    // if "isArtifactsCollected" is true we are using packageVersion that is passing to method from JobConfig.autoIncrementVersion()
     isArtifactsCollected = true
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {

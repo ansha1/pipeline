@@ -63,12 +63,6 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
-        case 'implement_PIPELINE-45':
-            ANSIBLE_ENV = 'none'
-            healthCheckUrl = []
-            branchPermissions = branchPermissionsMap.get('implement_PIPELINE-45')
-            DEPLOY_ENVIRONMENT = ''
-            break
         case 'master':
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
@@ -102,7 +96,7 @@ def call(body) {
     log("INVENTORY_PATH: ${INVENTORY_PATH}")
     log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
-    log("branchPermissions: ${branchPermissions}")
+    log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("slackNotifictionScope: ${slackNotifictionScope}")

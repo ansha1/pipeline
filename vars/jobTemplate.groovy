@@ -111,7 +111,7 @@ def call(body) {
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
                                                           "already exists in Nexus (maven repository). " +
                                                           "Do you want to increase a patch version and continuing process ?",
-                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+                                                          common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
                                     utils.setVersion(patchedBuildVersion)
