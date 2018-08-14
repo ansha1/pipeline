@@ -47,6 +47,11 @@ def runSonarScanner(String projectVersion) {
 
 
 List getModulesProperties() {
+    /*
+    *  method getModulesProperties() is used to collect the maven modules properties from a local build
+    *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
+    */
+
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List artifactsListProperties = []
     dir(pathToSrc) {
@@ -70,18 +75,15 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
-    /*
-    *  method getModulesProperties() is used to collect the maven modules properties from local build
-    *  It returns a list of Maps with module's groupId, artifactId, artifactVersion and packaging
-    *  Based on a packageVersion that is passed to verifyPackageInNexus() we decide whether
-    *  to use the version that was collected from mvn build locally or operate with the one that was passed explicitly
-    */
 
     List mavenArtifactsProperties = getModulesProperties()
     Integer counter = 0
     List artifactsInNexus = []
 
     mavenArtifactsProperties.each { artifact ->
+        // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
+        // properties with getModulesProperties() and do Nexus verification for all found artifacts with their local versions.
+        // Otherwise the version that was explicitly passed to the method will be used instead of the local one - used for autoincrement
         if (!getVersion().equals(packageVersion)) {
             artifact.artifactVersion = packageVersion
         }
@@ -92,8 +94,10 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     }
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
+        // returning true only in case when all artifacts exist in Nexus and have the same version
         return true
     } else if (counter == 0 ) {
+        // returning false only when none of the artifacts exists in Nexus
         return false
     } else {
         log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
