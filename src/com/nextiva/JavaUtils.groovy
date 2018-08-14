@@ -4,9 +4,8 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
 
 
-@Field
-String pathToSrc = '.'
-
+@Field String pathToSrc = '.'
+@Field Boolean isArtifactsCollected = false
 
 String getVersion() {
     dir(pathToSrc) {
@@ -63,26 +62,42 @@ List getArtifactsProperties() {
     return artifactsListProperties
 }
 
+
 Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
     return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion')}).size() == 1)
 }
 
+
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
+//    Map artifactsInNexus = [:]
+
     mavenArtifactsProperties.each { artifact ->
+        if (isArtifactsCollected) {
+            artifact.artifactVersion = packageVersion
+        }
         if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
             counter++
+//            artifactsInNexus << [artifact.get('artifactId'):artifact.get('artifactVersion')]
         }
     }
-    log.info("number of artifacts found: ${counter}")
-    def resultOfComparison = isMavenArtifactVersionsEqual(mavenArtifactsProperties)
-    log.info("is version of artifacts equal: ${resultOfComparison}")
-//    if (counter.equals(0)) {
-//        return false
-//    } else if (counter.equals(4) && checkMavenArtifactVersion(mavenArtifactsProperties)){
-//
-//    }
+
+//    log.info("number of artifacts found: ${counter}")
+//    def resultOfComparison = isMavenArtifactVersionsEqual(mavenArtifactsProperties)
+//    log.info("is version of artifacts equal: ${resultOfComparison}")
+
+    isArtifactsCollected = true
+
+    if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
+        return true
+    } else if (counter == 0 ) { // && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
+        return false
+    } else {
+        log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("Can't apply autoincrement version.")
+    }
 }
 
 
