@@ -70,6 +70,7 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
     List mavenArtifactsProperties = getArtifactsProperties()
     Integer counter = 0
+    List artifactsInNexus = []
 
     mavenArtifactsProperties.each { artifact ->
         if (isArtifactsCollected) {
@@ -77,6 +78,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
         }
         if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
             counter++
+            artifactsInNexus << artifact
         }
     }
 
