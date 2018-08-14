@@ -77,7 +77,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     List artifactsInNexus = []
 
     mavenArtifactsProperties.each { artifact ->
-        if (isArtifactsCollected) {
+        if (!getVersion().equals(packageVersion)) {
             artifact.artifactVersion = packageVersion
         }
         if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
@@ -87,7 +87,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     }
     // use Class field "isArtifactsCollected" to conrtol the process of artifacts version verification in Nexus
     // if "isArtifactsCollected" is true we are using packageVersion that is passing to method from JobConfig.autoIncrementVersion()
-    isArtifactsCollected = true
+//    isArtifactsCollected = true
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
         return true
