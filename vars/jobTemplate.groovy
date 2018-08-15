@@ -105,12 +105,13 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
+
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
                                                           "already exists in Nexus (maven repository). " +
-                                                          "Do you want to increase a patch version and continuing process ?",
-                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+                                                          "Do you want to increase a patch version and continue the process?",
+                                                          common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
                                     utils.setVersion(patchedBuildVersion)

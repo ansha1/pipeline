@@ -96,6 +96,7 @@ def call(body) {
     log("INVENTORY_PATH: ${INVENTORY_PATH}")
     log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
+    log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
