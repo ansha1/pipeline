@@ -123,7 +123,7 @@ def call(body) {
                                         """
                                     }
 
-                                    jobConfig.BUILD_VERSION = patchedBuildVersion
+                                    jobConfig.setBuildVersion()
                                 }
                             }
                         }
