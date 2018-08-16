@@ -1,4 +1,5 @@
 import groovy.transform.Field
+import org.codehaus.groovy.runtime.StackTraceUtils
 
 
 @Field
@@ -37,6 +38,14 @@ def debug(message) {
         def list = message.toString().readLines()
         list.each{magnetaBold("[DEBUG] " + it)}
     }
+}
+
+def deprecated(message) {
+    def list = message.toString().readLines()
+    list.each{magnetaBold("[DEPRECATED] " + it)}
+
+    String upstreamMethod = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
+    prometheus.sendGauge('deprecated', PROMETHEUS_DEFAULT_METRIC, [upstream_method: upstreamMethod, message: message])
 }
 
 def blue(String message) {
