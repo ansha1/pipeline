@@ -1,5 +1,6 @@
 import groovy.transform.Field
 import org.codehaus.groovy.runtime.StackTraceUtils
+import static com.nextiva.SharedJobsStaticVars.*
 
 
 @Field
