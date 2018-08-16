@@ -109,7 +109,8 @@ def call(body) {
             always {
                 script {
                     prometheusLabels = [app_name: APP_NAME, project_language: projectLanguage, version_path: versionPath,
-                                        hotfix_version: common.getPropertyValue('hotfixVersion'), channel_to_notify: slackChannel]
+                                        hotfix_version: common.getPropertyValue('hotfixVersion'), channel_to_notify: slackChannel,
+                                        application: APP_NAME]
 
                     prometheus.sendGauge('hotfix_start_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 

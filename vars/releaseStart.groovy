@@ -160,7 +160,7 @@ def call(body) {
                                         version_path: versionPath, user_defined_release_version: userDefinedReleaseVersion,
                                         release_version: common.getPropertyValue('releaseVersion'),
                                         development_version: common.getPropertyValue('developmentVersion'),
-                                        channel_to_notify: CHANNEL_TO_NOTIFY]
+                                        channel_to_notify: CHANNEL_TO_NOTIFY, application: APP_NAME]
 
                     prometheus.sendGauge('release_start_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 
