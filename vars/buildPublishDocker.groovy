@@ -1,4 +1,4 @@
 def call(String appName, String buildVersion, String extraPath='.') {
-    log.warning('DEPRECATED: Use buildPublishDockerImage() method.')
+    log.deprecated('Use buildPublishDockerImage() method.')
     buildPublishDockerImage(appName, buildVersion, extraPath)
 }
