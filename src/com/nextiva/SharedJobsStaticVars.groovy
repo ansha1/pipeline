@@ -52,4 +52,7 @@ class SharedJobsStaticVars {
     static final BLUE_GREEN_DEPLOY_DEFAULT = false
     static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
     static final PROMETHEUS_INSTANCE_NAME = 'jenkins'
+    static final PROMETHEUS_DEFAULT_METRIC = 1
+    static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
+    static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
 }

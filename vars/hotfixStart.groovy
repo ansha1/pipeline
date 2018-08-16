@@ -111,7 +111,7 @@ def call(body) {
                     prometheusLabels = [app_name: APP_NAME, project_language: projectLanguage, version_path: versionPath,
                                         hotfix_version: common.getPropertyValue('hotfixVersion'), channel_to_notify: slackChannel]
 
-                    prometheus.sendGauge('hotfix_start_info', 1, prometheusLabels)
+                    prometheus.sendGauge('hotfix_start_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())

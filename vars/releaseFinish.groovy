@@ -161,7 +161,7 @@ def call(body) {
                                         version_path: versionPath, auto_pull_request: autoPullRequest, auto_merge: autoMerge,
                                         release_version: common.getPropertyValue('releaseVersion'), channel_to_notify: CHANNEL_TO_NOTIFY]
 
-                    prometheus.sendGauge('release_finish_info', 1, prometheusLabels)
+                    prometheus.sendGauge('release_finish_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
