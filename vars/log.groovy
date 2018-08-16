@@ -45,10 +45,13 @@ def deprecated(message) {
     def list = message.toString().readLines()
     list.each{magnetaBold("[DEPRECATED] " + it)}
 
+    print("1")
     String upstreamMethod = ''
     try {
+        print("2")
         upstreamMethod = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
     } catch (e) {
+        print("3")
         log.warning("Can't get upstream method name for deprecation message! ${e}")
         upstreamMethod = 'unknown'
     }
