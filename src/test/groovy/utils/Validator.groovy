@@ -18,7 +18,7 @@ trait Validator implements BasePipelineAccessor {
      */
     void checkThatMockedMethodWasExecuted(String methodName, int executionCount) {
         List<MethodCall> methodCalls = basePipelineTest.helper.callStack.findAll { call -> methodName == call.methodName }
-        assertEquals 'The ' + methodName + 'method has not been executed the expected number of times',
+        assertEquals 'The ' + methodName + ' method has not been executed the expected number of times',
                 executionCount, methodCalls.size()
     }
 
