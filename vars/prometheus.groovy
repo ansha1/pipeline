@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import java.net.URLEncoder
+import java.net.URLDecoder
 
 
 def sendCounter(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
@@ -26,8 +27,8 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String encodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
-            .replaceAll('%', '_')
+    String decodedJobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8').replaceAll('/| ', '_')
+    String encodedJobName = URLEncoder.encode(decodedJobName, 'UTF-8').replaceAll('%', '_')
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}

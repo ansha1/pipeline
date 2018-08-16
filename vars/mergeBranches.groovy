@@ -110,8 +110,9 @@ def pullRequest(String sourceBranch, String destinationBranch, String channelToN
     }
 
     stage("Create pull request from ${sourceBranch} to ${destinationBranch}")
+    String jobName = URLDecoder.decode(env.JOB_NAME.toString(),'UTF-8')
     def title = "DO NOT SQUASH THIS PR. Resolve merge conflicts ${sourceBranch}->${destinationBranch}"
-    def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR (if its enabled for the repository), otherwise there will be conflicts when merging because missing commit history. Auto created pull request from ${env.JOB_NAME} ${env.BUILD_ID}"
+    def description = "DO NOT SELECT SQUASH OPTION WHEN MERGING THIS PR (if its enabled for the repository), otherwise there will be conflicts when merging because missing commit history. Auto created pull request from ${jobName} ${env.BUILD_ID}"
     def repositoryUrl = sh returnStdout: true, script: "git config --get remote.origin.url"
     repositoryUrl = repositoryUrl.trim()
     pullRequestLink = bitbucket.createPr(repositoryUrl, tmpBranch, destinationBranch, title, description)
