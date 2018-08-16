@@ -45,14 +45,14 @@ def deprecated(message) {
     def list = message.toString().readLines()
     list.each{magnetaBold("[DEPRECATED] " + it)}
 
-    String upstreamMethod = ''
-    //try {
-        upstreamMethod = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
-//    } catch (e) {
-//        warning("Can't get upstream method name for deprecation message! ${e}")
-//        upstreamMethod = 'unknown'
-//    }
-    prometheus.sendGauge('deprecated', PROMETHEUS_DEFAULT_METRIC, [upstream_method: upstreamMethod, message: message])
+    String upstreamMethodName = ''
+    try {
+        upstreamMethodName = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
+    } catch (e) {
+        warning("Can't get upstream method name for deprecation message! ${e}")
+        upstreamMethodName = 'unknown'
+    }
+    prometheus.sendGauge('deprecated', PROMETHEUS_DEFAULT_METRIC, [upstream_method: upstreamMethodName, message: message])
 }
 
 def blue(String message) {
