@@ -46,10 +46,10 @@ def deprecated(message) {
     list.each{magnetaBold("[DEPRECATED] " + it)}
 
     try {
-        String upstreamMethod = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
+        def upstreamMethod = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
     } catch (e) {
         log.warning("Can't get upstream method name for deprecation message! ${e}")
-        String upstreamMethod = 'unknown'
+        def upstreamMethod = 'unknown'
     }
     prometheus.sendGauge('deprecated', PROMETHEUS_DEFAULT_METRIC, [upstream_method: upstreamMethod, message: message])
 }
