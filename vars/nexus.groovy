@@ -9,9 +9,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
 
     def verbose = log.isDebug() ? "--verbose --include" : ""
-    if (log.isDebug()) {
-        log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
-    }
+    log.debug("nexusDebPackageUrl: ${nexusDebPackageUrl}")
 
     def status = sh(returnStatus: true, script: "curl ${verbose} --show-error --fail -I ${nexusDebPackageUrl}")
 

@@ -27,8 +27,8 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String decodedJobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8').replaceAll('/| ', '_')
-    String encodedJobName = URLEncoder.encode(decodedJobName, 'UTF-8').replaceAll('%', '_')
+    String encodedJobName = urlEncode(jobName)
+    String encodedInstance = urlEncode(instance)
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
@@ -41,7 +41,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
     timeout(time: 10, unit: 'SECONDS') {
         try {
             httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
+                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}", consoleLogResponseBody: log.isDebug(),
                     contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
@@ -53,6 +53,11 @@ def mapToLabelsStr(Map labelsMap) {
     String labels = ''
     labelsMap.each { k, v -> labels += "${k}=\"${v}\","}
     return labels
+}
+
+def urlEncode(String value) {
+    String decodedValue = URLDecoder.decode(value, 'UTF-8').replaceAll('/| ', '_')
+    return URLEncoder.encode(decodedValue, 'UTF-8').replaceAll('%', '_')
 }
 
 def getBuildInfoMap(def jobConfig) {
