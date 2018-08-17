@@ -159,9 +159,10 @@ def call(body) {
                 script {
                     prometheusLabels = [app_name: APP_NAME, project_language: projectLanguage, develop_branch: developBranch,
                                         version_path: versionPath, auto_pull_request: autoPullRequest, auto_merge: autoMerge,
-                                        release_version: common.getPropertyValue('releaseVersion'), channel_to_notify: CHANNEL_TO_NOTIFY]
+                                        release_version: common.getPropertyValue('releaseVersion'), channel_to_notify: CHANNEL_TO_NOTIFY,
+                                        application: APP_NAME]
 
-                    prometheus.sendGauge('release_finish_info', 1, prometheusLabels)
+                    prometheus.sendGauge('release_finish_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 
                     if(currentBuild.currentResult != 'SUCCESS'){
                         slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
