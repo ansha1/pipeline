@@ -52,7 +52,7 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
         String newVersion = '1.1.1'
         dummyJavaObject.setVersion newVersion
         printCallStack()
-        checkThatMethodWasExecutedWithValue 'sh', 'mvn.*', 1, 0
+        checkThatMethodWasExecutedWithValue 'sh', '.*newVersion=1.1.1.*', 1, 0
 
     }
 
