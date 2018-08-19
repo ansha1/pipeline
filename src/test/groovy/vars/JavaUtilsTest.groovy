@@ -143,7 +143,6 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
         dummyJavaObject.nexus = ['isJavaArtifactExists': { groupId, artifactId, artifactVersion, packaging -> true }]
 
         def response = dummyJavaObject.verifyPackageInNexus "", "1.5.1", ""
-        assertEquals(response, true)
         printCallStack()
     }
 }
