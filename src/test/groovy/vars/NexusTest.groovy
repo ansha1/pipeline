@@ -13,6 +13,7 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
     void setUp() throws Exception {
         super.setUp()
         binding.setVariable 'params', [:]
+        binding.setVariable 'WORKSPACE', 'WORKSPACE'
         binding.setVariable 'NEXUS_CURL_CONFIG', 'nexus_curl_config_test'
 
         mockEnv()
