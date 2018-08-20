@@ -141,7 +141,7 @@ def cleanDownstreamRepos() {
     }
 }
 
-def cleanupAfterTest() {
+def cleanupAfterTests() {
     log.info("Stop applications and delete static assets")
     parallel cleanupJs: {
         common.remoteSh('10.103.50.60', 'rm -rf /data/js-test/dev/*')
