@@ -1,3 +1,5 @@
+import static com.nextiva.SharedJobsStaticVars.*
+
 def getCurrentUserLogin() {
     def build = currentBuild.rawBuild
     def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
@@ -9,7 +11,7 @@ def getCurrentUserLogin() {
     return cause.getUserId()
 }
 
-def getCurrentUser() {  
+def getCurrentUser() {
     String userId = getCurrentUserLogin()
     def user = User.get(userId)
 
@@ -37,4 +39,28 @@ def getPropertyValue(String propertyName, def defaultValue = null) {
     } catch (MissingPropertyException e) {
         return defaultValue
     }
+}
+
+def remoteSh(String hostname, String cmd) {
+    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+        sh """ssh -o StrictHostKeyChecking=no ${hostname} ' uname -a'
+              ssh ${hostname} '${cmd}'
+        """
+    }
+}
+
+def serviceStart(String hostname, String service) {
+    remoteSh(hostname, "sudo systemctl start ${service}")
+}
+
+def serviceStop(String hostname, String service) {
+    remoteSh(hostname, "sudo systemctl stop ${service}")
+}
+
+def serviceRestart(String hostname, String service) {
+    remoteSh(hostname, "sudo systemctl restart ${service}")
+}
+
+def serviceStatus(String hostname, String service) {
+    remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
