@@ -108,6 +108,8 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void check_verify_package_in_nexus_returns_false_case_1() {
+        // here we are checking the case when the artifacts weren't found in Nexus(nexus method returns false)
+        // it doesn't matter if versions of the artifacts are equal the result will be false
         def dummyJavaObject = getJavaClassObject()
         dummyJavaObject.log = ['error': {}]
         dummyJavaObject.metaClass.getModulesProperties = { -> MODULES_PROPERTIES_TRUE }
@@ -121,6 +123,8 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void check_verify_package_in_nexus_returns_false_case_2() {
+        // here we are checking the case when the artifacts weren't found in Nexus(nexus method returns false)
+        // it doesn't matter if versions of the artifacts aren't equal the result will be false
         def dummyJavaObject = getJavaClassObject()
         dummyJavaObject.log = ['error': {}]
         dummyJavaObject.metaClass.getModulesProperties = { -> MODULES_PROPERTIES_FALSE }
@@ -134,6 +138,10 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test(expected = hudson.AbortException)
     void check_verify_package_in_nexus_returns_exception_due_to_not_identical_versions() {
+        // here we are checking the case when the artifacts were found in Nexus(nexus method returns true)
+        // but versions of the artifacts aren't equal so in the result we'll get the exception: throw new hudson.AbortException
+        // Can't apply autoincrement method. Please review versions in used submodules pom.xml
+        // The used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus
         def dummyJavaObject = getJavaClassObject()
         dummyJavaObject.Result = ['ABORTED': 'Build should be aborted']
         dummyJavaObject.currentBuild = ['rawBuild': ['result': 'undefined']]
