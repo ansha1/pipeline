@@ -125,7 +125,6 @@ def cleanDownstreamRepos() {
 
     for (repo in repos) {
         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-
             git branch: 'dev', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repo
 
             def branchesOutput = sh script: 'git branch -r', returnStdout: true
@@ -134,6 +133,7 @@ def cleanDownstreamRepos() {
                     .findAll({ it ==~ /^origin\/(release|hotfix)\/\d+.\d+(.\d+)?$/ })
                     .collect({ it.trim().replace("origin/", "") })
             branchesToDelete.each {
+                log.info("Delete branch ${it}")
                 sh "git push --delete origin ${it}"
             }
             cleanWs()
