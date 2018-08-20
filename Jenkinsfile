@@ -121,7 +121,7 @@ def runDownstreamJobs() {
 def cleanDownstreamRepos() {
     repos = ['ssh://git@git.nextiva.xyz:7999/pipeline/test-js-pipeline.git',
              'ssh://git@git.nextiva.xyz:7999/pipeline/test-java-pipeline.git',
-             'ssh://git@git.nextiva.xyz:7999/pipeline/test-java-pipeline.git']
+             'ssh://git@git.nextiva.xyz:7999/pipeline/test-python-pipeline.git']
 
     for (repo in repos) {
         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
