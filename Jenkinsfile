@@ -63,7 +63,6 @@ lock(lockableResource) {
 
             if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                 slack.prOwnerPrivateMessage(env.CHANGE_URL)
-                //slack.commitersOnly()
             } else {
                 slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
             }
@@ -149,6 +148,6 @@ def cleanupAfterTests() {
     }, cleanupJava: {
         common.serviceStop('10.103.50.110', 'test-java-pipeline.service')
     }, cleanupPython: {
-        common.serviceStop('10.103.50.112', 'test-python-pipeline.service')
+        common.serviceStop('10.103.50.112', 'test-python-pipeline.uwsgi.service')
     }
 }
