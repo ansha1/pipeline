@@ -259,10 +259,9 @@ def call(body) {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
                 steps {
-                    //after successfully deploy on environment start QA CORE TEAM Integration tests with this application
-                    build job: 'QA_Incoming_Integration', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
-                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV),
-                                                                       string(name: 'runId', value: '')], wait: false
+                    //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
+                    build job: 'Post_deploy_smoke_tests/develop', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV)], wait: false
                 }
             }
         }
