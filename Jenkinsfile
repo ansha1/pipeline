@@ -1,4 +1,4 @@
-@Library('pipeline@feature/PIPELINE-21') _
+@Library('pipeline@develop') _
 import static com.nextiva.SharedJobsStaticVars.*
 
 
