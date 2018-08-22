@@ -260,7 +260,7 @@ def call(body) {
                 }
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
-                    build job: 'Post_deploy_smoke_tests/develop', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                    build job: 'test-runner-on-deploy/develop', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
                                                                        string(name: 'env', value: jobConfig.ANSIBLE_ENV)], wait: false
                 }
             }
