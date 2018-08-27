@@ -7,7 +7,8 @@ class SharedJobsStaticVars {
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
     static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
-    static final NEXUS_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
+    static final NEXUS_3_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
+    static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.env'
     static final DOCKER_REGISTRY = 'repository.nextiva.xyz'
@@ -51,4 +52,7 @@ class SharedJobsStaticVars {
     static final BLUE_GREEN_DEPLOY_DEFAULT = false
     static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
     static final PROMETHEUS_INSTANCE_NAME = 'jenkins'
+    static final PROMETHEUS_DEFAULT_METRIC = 1
+    static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
+    static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
 }

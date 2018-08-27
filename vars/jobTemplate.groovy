@@ -84,7 +84,7 @@ def call(body) {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
 
-                        prometheus.sendGauge('build_running', 10, prometheus.getBuildInfoMap(jobConfig))
+                        prometheus.sendGauge('build_running', PROMETHEUS_BUILD_RUNNING_METRIC, prometheus.getBuildInfoMap(jobConfig))
 
                         if (params.stack) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"
@@ -105,10 +105,13 @@ def call(body) {
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
+
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} already exists in Nexus. " +
-                                                          "Do you want to increase a patch version ?", common.getCurrentUserSlackId())
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                                          "already exists in Nexus (maven repository). " +
+                                                          "Do you want to increase a patch version and continue the process?",
+                                                          common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
                                     utils.setVersion(patchedBuildVersion)
@@ -120,7 +123,7 @@ def call(body) {
                                         """
                                     }
 
-                                    jobConfig.BUILD_VERSION = patchedBuildVersion
+                                    jobConfig.setBuildVersion()
                                 }
                             }
                         }
@@ -256,18 +259,17 @@ def call(body) {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
                 steps {
-                    //after successfully deploy on environment start QA CORE TEAM Integration tests with this application
-                    build job: 'QA_Incoming_Integration', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
-                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV),
-                                                                       string(name: 'runId', value: '')], wait: false
+                    //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
+                    build job: 'test-runner-on-deploy/develop', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
+                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV)], wait: false
                 }
             }
         }
         post {
             always {
                 script {
-                    prometheus.sendGauge('build_running', 0, prometheus.getBuildInfoMap(jobConfig))
-                    prometheus.sendGauge('build_info', 1, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_running', PROMETHEUS_BUILD_FINISHED_METRIC, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', PROMETHEUS_DEFAULT_METRIC, prometheus.getBuildInfoMap(jobConfig))
 
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->

@@ -9,7 +9,7 @@ trait Mocks implements BasePipelineAccessor {
     MockObjects mockObjects = new MockObjects(basePipelineTest)
 
     /**
-     * Mocks Jenkins log property
+     * Mocks for log
      */
     void mockLog() {
         basePipelineTest.binding.setVariable 'params', [

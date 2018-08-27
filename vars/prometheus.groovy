@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import java.net.URLEncoder
+import java.net.URLDecoder
 
 
 def sendCounter(String metricName, def metricValue, Map metricLabels = [:], String metricHelpMessage = '') {
@@ -26,8 +27,9 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
                Map metricLabels = [:], String metricHelpMessage = '') {
 
     String labels = mapToLabelsStr(metricLabels)
-    String encodedJobName = URLEncoder.encode(jobName.replaceAll('/| ', '_'), 'UTF-8')
-            .replaceAll('%', '_')
+    String encodedJobName = urlEncode(jobName)
+    String encodedInstance = urlEncode(instance)
+    String pushgatewayUrl = "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}"
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
@@ -35,13 +37,13 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
         ${metricName}{${labels}} ${metricValue}
     """
 
+    log.debug("Sending metrics to Prometheus - ${pushgatewayUrl}")
     log.debug(requestBody)
 
     timeout(time: 10, unit: 'SECONDS') {
         try {
-            httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${instance}", consoleLogResponseBody: log.isDebug(),
-                    contentType: 'APPLICATION_FORM'
+            httpRequest httpMode: 'POST', quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
+                    requestBody: requestBody, url: pushgatewayUrl, contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
         }
@@ -54,12 +56,18 @@ def mapToLabelsStr(Map labelsMap) {
     return labels
 }
 
+def urlEncode(String value) {
+    String decodedValue = URLDecoder.decode(value, 'UTF-8').replaceAll('/| ', '_')
+    return URLEncoder.encode(decodedValue, 'UTF-8').replaceAll('%', '_')
+}
+
 def getBuildInfoMap(def jobConfig) {
     return getBasicInfoMap() + [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
                                 language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
                                 path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
                                 node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
-                                channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY]
+                                channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY, application: jobConfig.APP_NAME,
+                                blue_green_deploy: jobConfig.BLUE_GREEN_DEPLOY]
 
 }
 

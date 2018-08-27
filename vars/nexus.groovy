@@ -1,4 +1,5 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import java.io.FileNotFoundException;
 
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
     // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
@@ -8,9 +9,7 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     log.debug("Deb-package URL: " + nexusDebPackageUrl)
 
     def verbose = log.isDebug() ? "--verbose --include" : ""
-    if (log.isDebug()) {
-        log.info("nexusDebPackageUrl: ${nexusDebPackageUrl}")
-    }
+    log.debug("nexusDebPackageUrl: ${nexusDebPackageUrl}")
 
     def status = sh(returnStatus: true, script: "curl ${verbose} --show-error --fail -I ${nexusDebPackageUrl}")
 
@@ -23,21 +22,30 @@ Boolean isDebPackageExists(String packageName, String packageVersion, String dep
     }
 }
 
-Boolean checkNexusPackage(String repo, String format, String packageName, String packageVersion) {
+def getApiNexusCall(String apiUrl) {
+    def result = new groovy.json.JsonSlurper().parseText(new URL(apiUrl).getText(requestProperties: [Accept: 'application/json']))
+    log.debug("searchNexusQuery: ${apiUrl}")
+    log.debug("The result of query: ${result}")
 
-    def nexusRestApi = "http://repository.nextiva.xyz/service/rest/beta/search?repository="
-    def searchNexusQuery = NEXUS_REST_API + repo + "&format=" + format + "&name=" + packageName + "-" + packageVersion
-
-    def res = new groovy.json.JsonSlurper().parseText(new URL(searchNexusQuery).getText())
-    if (log.isDebug()) {
-        log.debug("searchNexusQuery: ${searchNexusQuery}")
-        log.debug("The result of query: ${res}")
-    }
-    checkStatus(res, packageName, packageVersion)
+    return result
 }
 
-Boolean checkStatus(Map searchQueryResult, String packageName, String packageVersion) {
+Boolean checkNexus3Package(String repo, String format, String packageName, String packageVersion) {
+    def searchNexusQuery = NEXUS_3_REST_API + repo + "&format=" + format + "&name=" + packageName + "-" + packageVersion
+    checkStatusNexus3(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
+}
 
+Boolean checkNexus2Package(String repo, String format, String packageName, String packageVersion, String groupId) {
+    def searchNexusQuery = NEXUS_2_REST_API + "?g=" + groupId + "&a=" + packageName + "&v=" + packageVersion + "&r=" + repo + "&p=" + format
+    try {
+        checkStatusNexus2(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
+    } catch (FileNotFoundException e) {
+        log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
+        return false
+    }
+}
+
+Boolean checkStatusNexus3(Map searchQueryResult, String packageName, String packageVersion) {
     if (searchQueryResult.items.size() > 0) {
         log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
@@ -47,23 +55,34 @@ Boolean checkStatus(Map searchQueryResult, String packageName, String packageVer
     }
 }
 
+Boolean checkStatusNexus2(Map searchQueryResult, String packageName, String packageVersion) {
+    if (searchQueryResult.data.size() > 0) {
+        log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
+        return true
+    }
+}
+
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=static-assets-production&format=raw&name=agent-0.1.21
 Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo = 'static-assets-production', String format = 'raw') {
-    checkNexusPackage(repo, format, packageName, packageVersion)
+    checkNexus3Package(repo, format, packageName, packageVersion)
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=pypi-dev&format=pypi&name=crm-models&version=0.1.1
 Boolean isPypiPackageExists(String packageName, String packageVersion, String repo, String format = 'pypi') {
-    checkNexusPackage(repo, format, packageName, packageVersion)
+    checkNexus3Package(repo, format, packageName, packageVersion)
 }
 
 // example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=docker&format=docker&name=analytics&version=0.1.504
 Boolean isDockerPackageExists(String packageName, String packageVersion, String repo = 'docker', String format = 'docker') {
-    checkNexusPackage(repo, format, packageName, packageVersion)
+    checkNexus3Package(repo, format, packageName, packageVersion)
+}
+
+// example of url: http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve?g=com.nextiva&a=provisioning-service-war&v=1.12.0&r=releases&p=war"
+Boolean isJavaArtifactExists(String groupId, String artifactId, String artifactVersion, String packaging, String repo = 'releases') {
+    checkNexus2Package(repo, packaging, artifactId, artifactVersion, groupId)
 }
 
 def uploadStaticAssets(String deployEnvironment, String assetDir, String version, String packageName) {
-
     def jobName = "${env.JOB_NAME}"
     def nexusRepoUrl = NEXUS_STATIC_ASSETS_REPO_URL + deployEnvironment
     def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"

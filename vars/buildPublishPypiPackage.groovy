@@ -9,7 +9,7 @@ def call(String extraPath='.', String deployEnvironment=null, String pythonName=
             python setup.py sdist bdist bdist_egg bdist_wheel
         """)
 
-        log.warning('DEPRECATED: publishing pypi-package to old repo - pypi.nextiva.xyz')
+        log.deprecated('Publishing pypi-package to the old repo - pypi.nextiva.xyz')
         pythonUtils.venvSh("""
             pip install -U devpi-client
             devpi use http://pypi.nextiva.xyz
