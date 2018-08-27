@@ -10,6 +10,14 @@ String getSourceBranchFromPr(String url) {
     return sourceBranch
 }
 
+String getDestinationBranchFromPr(String url) {
+
+    def props = getPrFromUrl(url)
+    def destinationBranch = props.toRef.displayId.trim()
+    log.info("DestinationBranch: ${destinationBranch}")
+    return destinationBranch
+}
+
 def prOwnerEmail(String url) {
     def pr = getPrFromUrl(url)
     return pr.author.user.emailAddress
