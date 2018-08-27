@@ -109,7 +109,7 @@ def call(body) {
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
-                                                          "already exists in Nexus (maven repository). " +
+                                                          "already exists in Nexus. " +
                                                           "Do you want to increase a patch version and continue the process?",
                                                           common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
