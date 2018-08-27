@@ -29,6 +29,7 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
     String labels = mapToLabelsStr(metricLabels)
     String encodedJobName = urlEncode(jobName)
     String encodedInstance = urlEncode(instance)
+    String pushgatewayUrl = "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}"
 
     String requestBody = """
         # HELP ${metricName} ${metricHelpMessage}
@@ -36,13 +37,13 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
         ${metricName}{${labels}} ${metricValue}
     """
 
+    log.debug("Sending metrics to Prometheus - ${pushgatewayUrl}")
     log.debug(requestBody)
 
     timeout(time: 10, unit: 'SECONDS') {
         try {
-            httpRequest httpMode: 'POST', requestBody: requestBody,
-                    url: "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}", consoleLogResponseBody: log.isDebug(),
-                    contentType: 'APPLICATION_FORM'
+            httpRequest httpMode: 'POST', quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
+                    requestBody: requestBody, url: pushgatewayUrl, contentType: 'APPLICATION_FORM'
         } catch (e) {
             log.warning("Can't send metrics to Prometheus! ${e}")
         }
