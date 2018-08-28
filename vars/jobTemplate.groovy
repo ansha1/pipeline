@@ -246,15 +246,15 @@ def call(body) {
                             }
                         }
                     }
-                    stage("Post deploy stage") {
-                        when {
-                            expression { jobConfig.projectFlow.get('postDeployCommands') }
-                        }
-                        steps {
-                            script {
-                                sh jobConfig.projectFlow.get('postDeployCommands')
-                            }
-                        }
+                }
+            }
+            stage("Post deploy stage") {
+                when {
+                    expression { jobConfig.projectFlow.get('postDeployCommands') }
+                }
+                steps {
+                    script {
+                        sh jobConfig.projectFlow.get('postDeployCommands')
                     }
                 }
             }
