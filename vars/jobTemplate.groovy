@@ -109,9 +109,9 @@ def call(body) {
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
                                     approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
-                                                          "already exists in Nexus. " +
-                                                          "Do you want to increase a patch version and continue the process?",
-                                                          common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+                                            "already exists in Nexus. " +
+                                            "Do you want to increase a patch version and continue the process?",
+                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
                                     utils.setVersion(patchedBuildVersion)
@@ -243,14 +243,18 @@ def call(body) {
                                         healthCheck.list(jobConfig.healthCheckUrl)
                                     }
                                 }
-
-                                if (jobConfig.projectFlow.get('postDeployCommands')) {
-                                    stage("Post deploy/E2E stage") {
-                                        sh jobConfig.projectFlow.get('postDeployCommands')
-                                    }
-                                }
                             }
                         }
+                    }
+                }
+            }
+            stage("Post deploy stage") {
+                when {
+                    expression { jobConfig.projectFlow.get('postDeployCommands') }
+                }
+                steps {
+                    script {
+                        sh jobConfig.projectFlow.get('postDeployCommands')
                     }
                 }
             }
@@ -261,7 +265,7 @@ def call(body) {
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
                     build job: 'test-runner-on-deploy/develop', parameters: [string(name: 'Service', value: jobConfig.APP_NAME),
-                                                                       string(name: 'env', value: jobConfig.ANSIBLE_ENV)], wait: false
+                                                                             string(name: 'env', value: jobConfig.ANSIBLE_ENV)], wait: false
                 }
             }
         }
@@ -282,7 +286,6 @@ def call(body) {
                         }
                     }
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
-                        //slack.commitersOnly()
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                 }
