@@ -41,14 +41,14 @@ def call(body) {
         case 'dev':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
-            branchPermissions = branchPermissionsMap.get('dev')
+            branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
             DEPLOY_ENVIRONMENT = 'dev'
             //log('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
             break
         case 'develop':
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
-            branchPermissions = branchPermissionsMap.get('develop')
+            branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
             break
         case ~/^release\/.+$/:
@@ -72,7 +72,7 @@ def call(body) {
         default:
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
-            branchPermissions = branchPermissionsMap.get('dev')
+            branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
             DEPLOY_ENVIRONMENT = ''
             break
     }
