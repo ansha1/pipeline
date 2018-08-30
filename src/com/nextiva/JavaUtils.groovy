@@ -81,7 +81,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 
     try {
         mavenArtifactsProperties = getModulesProperties()
-
         mavenArtifactsProperties.each { artifact ->
             // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
             // properties with getModulesProperties() and do Nexus verification for all found artifacts with their local versions.
@@ -98,7 +97,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
         log.error("There was a problem with mvn artifacts version validation " + e)
         return false
     }
-    println("mavenArtifactsProperties: " + mavenArtifactsProperties)
+
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
         // returning true only in case when all artifacts exist in Nexus and have the same version
         return true
