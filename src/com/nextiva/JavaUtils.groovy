@@ -63,14 +63,14 @@ List getModulesProperties() {
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
-    
+
     log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
     return artifactsListProperties
 }
 
 
 Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
-    return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion')}).size() == 1)
+    return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion') }).size() == 1)
 }
 
 
@@ -92,22 +92,22 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
                 artifactsInNexus << artifact
             }
         }
-
-        if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
-            // returning true only in case when all artifacts exist in Nexus and have the same version
-            return true
-        } else if (counter == 0) {
-            // returning false only when none of the artifacts exists in Nexus
-            return false
-        } else {
-            log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
-            currentBuild.rawBuild.result = Result.ABORTED
-            throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used submodules pom.xml" +
-                    "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
-        }
     } catch (e) {
         log.error("There was a problem with mvn artifacts version validation " + e)
         return false
+    }
+
+    if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
+        // returning true only in case when all artifacts exist in Nexus and have the same version
+        return true
+    } else if (counter == 0) {
+        // returning false only when none of the artifacts exists in Nexus
+        return false
+    } else {
+        log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
+        currentBuild.rawBuild.result = Result.ABORTED
+        throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used submodules pom.xml" +
+                "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
     }
 }
 
