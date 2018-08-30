@@ -55,16 +55,20 @@ List getModulesProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List artifactsListProperties = []
     dir(pathToSrc) {
-        def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U"""
-
-        artifactsProperties.split('\n').each {
-            def propertiesList = it.split()
-            artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+        try {
+            def artifactsProperties = sh returnStdout: true, script: """mvn -q clean install -DskipTests=true
+                                                                        mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
+                                                                     """
+            artifactsProperties.split('\n').each {
+                def propertiesList = it.split()
+                artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+            }
+        } catch (e) {
+            error("There was a problem with mvn artifacts version validation")
         }
     }
     
     log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
-    
     return artifactsListProperties
 }
 
