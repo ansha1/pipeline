@@ -75,10 +75,10 @@ Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
 
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
+    Integer counter = 0
+    List artifactsInNexus = []
     try {
         List mavenArtifactsProperties = getModulesProperties()
-        Integer counter = 0
-        List artifactsInNexus = []
 
         mavenArtifactsProperties.each { artifact ->
             // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
