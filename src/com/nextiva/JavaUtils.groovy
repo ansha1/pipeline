@@ -55,55 +55,60 @@ List getModulesProperties() {
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
     List artifactsListProperties = []
     dir(pathToSrc) {
-        def artifactsProperties = sh returnStdout: true, script: """mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U"""
-
+        def artifactsProperties = sh returnStdout: true, script: """mvn -q clean install -DskipTests=true
+                                                                    mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
+                                                                 """
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
-    
+
     log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
-    
     return artifactsListProperties
 }
 
 
 Boolean isMavenArtifactVersionsEqual(List artifactsListProperties) {
-    return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion')}).size() == 1)
+    return (new HashSet(artifactsListProperties.collect { it.get('artifactVersion') }).size() == 1)
 }
 
 
 Boolean verifyPackageInNexus(String packageName, String packageVersion, String deployEnvironment) {
-
-    List mavenArtifactsProperties = getModulesProperties()
     Integer counter = 0
     List artifactsInNexus = []
+    List mavenArtifactsProperties = []
 
-    mavenArtifactsProperties.each { artifact ->
-        // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
-        // properties with getModulesProperties() and do Nexus verification for all found artifacts with their local versions.
-        // Otherwise the version that was explicitly passed to the method will be used instead of the local one - used for autoincrement
-        if (!getVersion().equals(packageVersion)) {
-            artifact.artifactVersion = packageVersion
+    try {
+        mavenArtifactsProperties = getModulesProperties()
+        mavenArtifactsProperties.each { artifact ->
+            // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
+            // properties with getModulesProperties() and do Nexus verification for all found artifacts with their local versions.
+            // Otherwise the version that was explicitly passed to the method will be used instead of the local one - used for autoincrement
+            if (!getVersion().equals(packageVersion)) {
+                artifact.artifactVersion = packageVersion
+            }
+            if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
+                counter++
+                artifactsInNexus << artifact
+            }
         }
-        if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
-            counter++
-            artifactsInNexus << artifact
-        }
+    } catch (e) {
+        log.error("There was a problem with mvn artifacts version validation " + e)
+        return false
     }
 
     if (counter == mavenArtifactsProperties.size() && isMavenArtifactVersionsEqual(mavenArtifactsProperties)) {
         // returning true only in case when all artifacts exist in Nexus and have the same version
         return true
-    } else if (counter == 0 ) {
+    } else if (counter == 0) {
         // returning false only when none of the artifacts exists in Nexus
         return false
     } else {
         log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
         currentBuild.rawBuild.result = Result.ABORTED
         throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used submodules pom.xml" +
-                                        "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
+                "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
     }
 }
 
