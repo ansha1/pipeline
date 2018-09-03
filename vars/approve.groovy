@@ -25,7 +25,7 @@ def buildApproveMessageBody(String title) {
     def uploadSpec = """[
         {
             "title": "${title}",
-            "text": "Stage \"${env.STAGE_NAME}\" in ${jobName} is waiting for your approval",
+            "text": "Stage ${env.STAGE_NAME} in ${jobName} is waiting for your approval",
             "color": "#022ef2",
             "attachment_type": "default",
             "actions": [
