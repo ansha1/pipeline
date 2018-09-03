@@ -96,7 +96,8 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
         mockStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
-        mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit', 'httpRequest'
+        mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
+                'httpRequest', 'booleanParam'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'

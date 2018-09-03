@@ -45,14 +45,16 @@ def call(body) {
                     parameters([
                             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
                                     'or leave empty for start full build'),
-                            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
+                            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack'),
+                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
                     ])
             ])
         } else {
             properties([
                     parameters([
                             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build')
+                                    'or leave empty for start full build'),
+                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
                     ])
             ])
         }
