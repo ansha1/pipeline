@@ -252,7 +252,7 @@ def call(body) {
             }
             stage("Post deploy stage") {
                 when {
-                    expression { jobConfig.projectFlow.get('postDeployCommands') }
+                    expression { jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
                 steps {
                     script {
