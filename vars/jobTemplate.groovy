@@ -227,6 +227,10 @@ def call(body) {
                         }
                         steps {
                             script {
+                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                }
+
                                 def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                 runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
 
@@ -289,6 +293,9 @@ def call(body) {
                     }
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
+                    }
+                    if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
+                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                     }
                 }
             }

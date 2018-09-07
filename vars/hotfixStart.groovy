@@ -115,7 +115,7 @@ def call(body) {
                     prometheus.sendGauge('hotfix_start_info', PROMETHEUS_DEFAULT_METRIC, prometheusLabels)
 
                     if(currentBuild.currentResult != 'SUCCESS'){
-                        slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
+                        slack.sendBuildStatusPrivateMessage(common.getCurrentUserSlackId())
                     }
                 }
             }

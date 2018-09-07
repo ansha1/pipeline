@@ -2,6 +2,7 @@
 import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
 import java.net.URLDecoder
+import java.util.Random
 
 
 def call(String notifyChannel, def uploadSpec) {
@@ -9,7 +10,7 @@ def call(String notifyChannel, def uploadSpec) {
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
-def sendBuildStatus(String notifyChannel){
+def sendBuildStatus(String notifyChannel) {
     def uploadSpec = buildStatusMessageBody()
     call(notifyChannel, uploadSpec)
 }
@@ -23,7 +24,7 @@ def commitersOnly() {
             privateMessage(slackUserId, uploadSpec)
         }
     } catch (e) {
-        log.warn("Failed send Slack notication to the commit authors: " + e.toString())
+        log.warn("Failed send Slack notification to the commit authors: " + e.toString())
     }
 }
 
@@ -74,19 +75,43 @@ def getSlackUserIdByEmail(String userMail) {
     def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
 
-    if( responseJson.ok ) {
+    if (responseJson.ok) {
         return responseJson.user.id
     } else {
-        currentBuild.rawBuild.result = Result.ABORTED
-        throw new hudson.AbortException("\n\nUser mail in Slack ${userMail} doesn't match the one that is defined in Jenkins (LDAP) !!!\n\n")
+        log.warn("\n\nUser mail in Slack ${userMail} doesn't match the one that is defined in Jenkins (LDAP) !!!\n\n return the default channel #testchannel <C9FRGVBPB>")
+        def defaultId = 'C9FRGVBPB'
+        return defaultId
     }
 }
 
-def sendBuildStatusPrivatMessage(String slackUserId){
+def sendBuildStatusPrivateMessage(String slackUserId) {
     def uploadSpec = buildStatusMessageBody()
     try {
         privateMessage(slackUserId, uploadSpec)
     } catch (e) {
-        log.warn("Failed send Slack notication to the authors: " + e.toString())
+        log.warn("Failed send Slack notification to the authors: " + e.toString())
     }
+}
+
+def deployStart(String appName, String version, String environment, String notifyChannel) {
+    def triggeredBy = getSlackUserIdByEmail(common.getCurrentUserEmail())
+    def message = "`${appName}:${version}` ${environment.toUpperCase()} deploy started by <@${triggeredBy}>"
+
+    slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
+}
+
+def deployFinish(String appName, String version, String environment, String notifyChannel) {
+
+    def wishList = libraryResource('wishes.txt').readLines()
+    def randomWish = wishList[pickRandomNumber(wishList.size())]
+    def buildStatus = currentBuild.currentResult == "SUCCESS" ? "deployed :tada: ${randomWish}" : "deploy failed! :disappointed:"
+
+    def message = "`${appName}:${version}` ${environment.toUpperCase()} ${buildStatus}"
+
+    slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
+}
+
+Integer pickRandomNumber(Integer max) {
+    Random rand = new Random()
+    return rand.nextInt(max)
 }
