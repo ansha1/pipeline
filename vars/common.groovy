@@ -4,7 +4,7 @@ def getCurrentUserLogin() {
     def build = currentBuild.rawBuild
     def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
 
-    if( !cause ){
+    if (!cause) {
         return null
     }
 
@@ -19,9 +19,14 @@ def getCurrentUser() {
 }
 
 def getCurrentUserEmail() {
-    def user = getCurrentUser()
-    def umail = user.getProperty(hudson.tasks.Mailer.UserProperty.class)
-    return umail.getAddress()
+    try {
+        def user = getCurrentUser()
+        def umail = user.getProperty(hudson.tasks.Mailer.UserProperty.class)
+        return umail.getAddress()
+    } catch (e) {
+        log.warn("Error in getCurrentUserEmail() ${e}")
+        return null
+    }
 }
 
 def getCurrentUserSlackId() {

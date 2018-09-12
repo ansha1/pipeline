@@ -64,7 +64,7 @@ lock(lockableResource) {
             if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                 slack.prOwnerPrivateMessage(env.CHANGE_URL)
             } else {
-                slack.sendBuildStatusPrivatMessage(common.getCurrentUserSlackId())
+                slack.sendBuildStatusPrivateMessage(common.getCurrentUserSlackId())
             }
         }
     }
