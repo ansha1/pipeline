@@ -115,7 +115,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 
 void runTests(Map args) {
     log.info("Start unit tests Java")
-    def testCommands = args.get('testCommands', 'mvn --batch-mode clean install jacoco:report && mvn checkstyle:checkstyle')
+    def testCommands = args.get('testCommands', 'mvn --batch-mode clean install -U jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
             sh testCommands
@@ -134,7 +134,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    def buildCommands = args.get('buildCommands', 'mvn deploy --batch-mode -DskipTests')
+    def buildCommands = args.get('buildCommands', 'mvn deploy -U --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
             sh "${buildCommands}"
