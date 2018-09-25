@@ -13,11 +13,16 @@ def call(body) {
                             qa        : "qa",
                             production: "production"]
 
+    kubernetesClusterMapDefault = [dev       : "dev.nextiva.io",
+                                   qa        : "qa.nextiva.io",
+                                   production: "production.io"]
+
     projectFlow = pipelineParams.projectFlow
     extraEnvs = pipelineParams.extraEnvs ?: [:]
     healthCheckMap = pipelineParams.healthCheckMap ?: [:]
     branchPermissionsMap = pipelineParams.branchPermissionsMap
     ansibleEnvMap = pipelineParams.ansibleEnvMap ?: ansibleEnvMapDefault
+    kubernetesClusterMap = pipelineParams.kubernetesClusterMap ?: kubernetesClusterMapDefault
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
@@ -29,6 +34,7 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
+    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT ?: true
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
@@ -39,37 +45,36 @@ def call(body) {
 
     switch (env.BRANCH_NAME) {
         case 'dev':
-            ANSIBLE_ENV = ansibleEnvMap.get('dev')
-            healthCheckUrl = healthCheckMap.get('dev')
-            branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
-            DEPLOY_ENVIRONMENT = 'dev'
-            //log('DEPRECATED: Please rename branch "dev" to "develop" to meet git-flow convention.')
-            break
         case 'develop':
+            kubernetesCluster = kubernetesClusterMap.get('dev')
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
             break
         case ~/^release\/.+$/:
+            kubernetesCluster = kubernetesClusterMap.get('qa')
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
         case ~/^hotfix\/.+$/:
+            kubernetesCluster = 'none'
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
         case 'master':
+            kubernetesCluster = kubernetesClusterMap.get('qa')
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
+            kubernetesCluster = 'none'
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
@@ -99,6 +104,7 @@ def call(body) {
     log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
+    log("ANSIBLE_DEPLOYMENT: ${ANSIBLE_DEPLOYMENT}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
     healthCheckUrl.each { log("  - ${it}") }
