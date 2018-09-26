@@ -97,7 +97,7 @@ void runTests(Map args) {
                       healthy: '',
                       unHealthy: ''])
 
-                junit '**/junit.xml'
+                junit allowEmptyResults: true, testResults: '**/junit.xml'
 
                 step([$class: 'CoberturaPublisher', 
                       autoUpdateHealth: false, 
