@@ -9,12 +9,12 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
     }
 
     node(nodeLabel) {
-        sh "docker pull repository.nextiva.xyz/kubelogin:0.1.0"
+        sh "docker pull repository.nextiva.xyz/kubelogin"
         withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
             withEnv(["BUILD_VERSION=${buildVersion}"]) {
                 def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
                 try {
-                    docker.image('repository.nextiva.xyz/kubelogin:0.1.0').inside("-v /etc/passwd:/etc/passwd:ro -v $repoDir:$repoDir:rw") {
+                    docker.image('repository.nextiva.xyz/kubelogin').inside("-v /etc/passwd:/etc/passwd:ro -v $repoDir:$repoDir:rw") {
                         sh """kubelogin -s login.${clusterDomain}
                            ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"""
                     }
