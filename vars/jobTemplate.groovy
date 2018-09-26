@@ -166,11 +166,11 @@ def call(body) {
                 }
             }
             stage('Build') {
-                when {
-                    expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
-                    }
-                }
+//                when {
+//                    expression {
+//                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+//                    }
+//                }
                 parallel {
                     stage('Publish build artifacts') {
                         when {
@@ -195,9 +195,9 @@ def call(body) {
                 }
             }
             stage('Deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
+//                when {
+//                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+//                }
                 parallel {
                     stage('Kubernetes deployment') {
                         when {
