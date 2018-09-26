@@ -15,6 +15,7 @@ def call(body) {
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
+        kubernetesClusterMap = pipelineParams.kubernetesClusterMap
         jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
         nodeLabel = pipelineParams.NODE_LABEL
         APP_NAME = pipelineParams.APP_NAME
