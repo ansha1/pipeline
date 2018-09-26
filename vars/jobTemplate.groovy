@@ -165,35 +165,35 @@ def call(body) {
                     }
                 }
             }
-            stage('Build') {
+//            stage('Build') {
 //                when {
 //                    expression {
 //                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
 //                    }
 //                }
-                parallel {
-                    stage('Publish build artifacts') {
-                        when {
-                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
-                        }
-                        steps {
-                            script {
-                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-                            }
-                        }
-                    }
-                    stage('Publish docker image') {
-                        when {
-                            expression { jobConfig.DEPLOY_ON_K8S == true }
-                        }
-                        steps {
-                            script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
-                            }
-                        }
-                    }
-                }
-            }
+//                parallel {
+//                    stage('Publish build artifacts') {
+//                        when {
+//                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
+//                        }
+//                        steps {
+//                            script {
+//                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+//                            }
+//                        }
+//                    }
+//                    stage('Publish docker image') {
+//                        when {
+//                            expression { jobConfig.DEPLOY_ON_K8S == true }
+//                        }
+//                        steps {
+//                            script {
+//                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
             stage('Deploy') {
 //                when {
 //                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
@@ -209,6 +209,7 @@ def call(body) {
                                     slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
+                                log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws  $jobConfig.BUILD_VERSION")
                                 kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, 'aws', jobConfig.BUILD_VERSION)
                             }
                         }
