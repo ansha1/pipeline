@@ -165,35 +165,35 @@ def call(body) {
                     }
                 }
             }
-//            stage('Build') {
-//                when {
-//                    expression {
-//                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
-//                    }
-//                }
-//                parallel {
-//                    stage('Publish build artifacts') {
-//                        when {
-//                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
-//                        }
-//                        steps {
-//                            script {
-//                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-//                            }
-//                        }
-//                    }
-//                    stage('Publish docker image') {
-//                        when {
-//                            expression { jobConfig.DEPLOY_ON_K8S == true }
-//                        }
-//                        steps {
-//                            script {
-//                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            stage('Build') {
+                when {
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                    }
+                }
+                parallel {
+                    stage('Publish build artifacts') {
+                        when {
+                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
+                        }
+                        steps {
+                            script {
+                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                            }
+                        }
+                    }
+                    stage('Publish docker image') {
+                        when {
+                            expression { jobConfig.DEPLOY_ON_K8S == true }
+                        }
+                        steps {
+                            script {
+                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                            }
+                        }
+                    }
+                }
+            }
             stage('Deploy') {
 //                when {
 //                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
