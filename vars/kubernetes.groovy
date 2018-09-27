@@ -16,7 +16,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                         pythonUtils.createVirtualEnv("python3.6")
                         pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/0.3.5/nextiva-kubelogin-0.3.5.tar.gz")
                         sh """export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
-                              kubelogin -s login.${clusterDomain}
+                              .env/bin/kubelogin -s login.${clusterDomain}
                               kubectl get nodes
                               ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"""
 
