@@ -23,7 +23,14 @@ jobTemplate {
     /*  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted label 'debian' will be used */
     // NODE_LABEL = 'slave5'
 
-    /* 
+    /* ANSIBLE_DEPLOYMENT - This flag used to enable ansible build and deployment way. Default = true  */
+    ANSIBLE_DEPLOYMENT = true
+    /*
+
+    /* DEPLOY_ON_K8S - This flag used to enable kubernetes build and deployment way. Default = false  */
+    DEPLOY_ON_K8S = false
+
+    /*
     * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
     * If the parameter is ommited the default ansible repo that will be used is http://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
     */
@@ -64,7 +71,15 @@ jobTemplate {
     // ansibleEnvMap = [dev : "dev",
     //                  qa : "rc",
     //                  production: "production"]
-    
+
+    /*
+    * kubernetesClusterMap - defines a map of kubernetes clusters
+    * If ommited the default value will be used:
+    */
+    //kubernetesClusterMap = [dev       : "dev.nextiva.io",
+    //                        qa        : "qa.nextiva.io",
+    //                        production: "production.io"]
+
 
     /* 
     * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
