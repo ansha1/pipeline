@@ -168,4 +168,12 @@ trait Mocks implements BasePipelineAccessor {
         }
     }
 
+    void mockListClosure(String... methodNames) {
+        methodNames.each { String methodName ->
+            basePipelineTest.helper.registerAllowedMethod(methodName, [List, Closure], { List m, Closure c ->
+                basePipelineTest.helper.callClosure(c, m)
+            })
+        }
+    }
+
 }
