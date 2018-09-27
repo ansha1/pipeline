@@ -67,14 +67,14 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case 'master':
-            kubernetesCluster = kubernetesClusterMap.get('qa')
+            kubernetesCluster = kubernetesClusterMap.get('production')
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            kubernetesCluster = kubernetesClusterMap.get('dev')
+            kubernetesCluster = 'none'
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
