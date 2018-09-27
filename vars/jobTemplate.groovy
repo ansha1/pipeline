@@ -41,7 +41,7 @@ def call(body) {
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
-    node {
+    node('debian') {
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
             properties([
                     parameters([
