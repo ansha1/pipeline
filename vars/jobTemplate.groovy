@@ -242,9 +242,9 @@ def call(body) {
                 }
             }
             stage('Healthcheck') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
+//                when {
+//                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+//                }
                 steps {
                     script {
                         if (jobConfig.healthCheckUrl.size() > 0) {
