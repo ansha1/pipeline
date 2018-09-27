@@ -16,8 +16,8 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                 try {
                     docker.image('repository.nextiva.xyz/kubelogin').inside("-v /etc/passwd:/etc/passwd:ro -v $repoDir:$repoDir:rw") {
                         sh """export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
-                              kubectl get nodes
                               kubelogin -s login.${clusterDomain}
+                              kubectl get nodes
                               ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"""
                     }
                     log.info("Deploy to the Kubernetes cluster has been completed.")
