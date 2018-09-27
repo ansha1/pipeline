@@ -166,11 +166,11 @@ def call(body) {
                 }
             }
             stage('Build') {
-//                when {
-//                    expression {
-//                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
-//                    }
-//                }
+                when {
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                    }
+                }
                 parallel {
                     stage('Publish build artifacts') {
                         when {
