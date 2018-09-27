@@ -26,6 +26,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                 } catch (e) {
                     log.warning("Deploy to the Kubernetes failed!")
                     log.warning(e)
+                    error("Deploy to the Kubernetes failed! $e")
                 }
             }
         }
