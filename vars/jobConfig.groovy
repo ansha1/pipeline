@@ -26,7 +26,7 @@ def call(body) {
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
-    publishBuildArtifact = pipelineParams.publishBuildArtifact ?: true
+    publishBuildArtifact = pipelineParams.publishBuildArtifact == null ? true : pipelineParams.publishBuildArtifact
     publishDockerImage = pipelineParams.publishDockerImage ?: false
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
@@ -36,7 +36,7 @@ def call(body) {
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
-    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT ?: true
+    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT == null ? true : pipelineParams.ANSIBLE_DEPLOYMENT
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
