@@ -175,23 +175,25 @@ def call(body) {
                         jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
                     }
                 }
-                stage('Publish build artifacts') {
-                    when {
-                        expression { jobConfig.publishBuildArtifact == true }
-                    }
-                    steps {
-                        script {
-                            utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                stages {
+                    stage('Publish build artifacts') {
+                        when {
+                            expression { jobConfig.publishBuildArtifact == true }
+                        }
+                        steps {
+                            script {
+                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                            }
                         }
                     }
-                }
-                stage('Publish docker image') {
-                    when {
-                        expression { jobConfig.publishDockerImage == true }
-                    }
-                    steps {
-                        script {
-                            buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                    stage('Publish docker image') {
+                        when {
+                            expression { jobConfig.publishDockerImage == true }
+                        }
+                        steps {
+                            script {
+                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
+                            }
                         }
                     }
                 }
