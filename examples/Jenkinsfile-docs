@@ -80,6 +80,16 @@ jobTemplate {
     //                        qa        : "qa.nextiva.io",
     //                        production: "production.io"]
 
+    /*
+    * publishDockerImage - if true that pipeline will publish docker image to the registry default: false
+    */
+    //publishDockerImage = true
+
+    /*
+    * publishBuildArtifact - if true that pipeline will publish build artifact to the Nexus default: true
+    */
+    //publishBuildArtifact = true
+
 
     /* 
     * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables

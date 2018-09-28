@@ -21,6 +21,8 @@ def call(body) {
         APP_NAME = pipelineParams.APP_NAME
         ansibleRepo = pipelineParams.ANSIBLE_REPO
         ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
+        publishBuildArtifact = pipelineParams.publishBuildArtifact
+        publishDockerImage = pipelineParams.publishDockerImage
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
@@ -174,7 +176,7 @@ def call(body) {
                 parallel {
                     stage('Publish build artifacts') {
                         when {
-                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
+                            expression { jobConfig.publishBuildArtifact == true }
                         }
                         steps {
                             script {
@@ -184,7 +186,7 @@ def call(body) {
                     }
                     stage('Publish docker image') {
                         when {
-                            expression { jobConfig.DEPLOY_ON_K8S == true }
+                            expression { jobConfig.publishDockerImage == true }
                         }
                         steps {
                             script {

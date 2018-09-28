@@ -26,6 +26,8 @@ def call(body) {
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
+    publishBuildArtifact = pipelineParams.publishBuildArtifact ?: true
+    publishDockerImage = pipelineParams.publishDockerImage ?: false
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
@@ -103,6 +105,8 @@ def call(body) {
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
     log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
+    log("publishBuildArtifact: ${publishBuildArtifact}")
+    log("publishDockerImage: ${publishDockerImage}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("ANSIBLE_DEPLOYMENT: ${ANSIBLE_DEPLOYMENT}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
