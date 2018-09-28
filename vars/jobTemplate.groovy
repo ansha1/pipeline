@@ -125,7 +125,9 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
-                                            git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${patchedBuildVersion}"
+                                            git commit -a -m "Auto increment of ${
+                                            jobConfig.BUILD_VERSION
+                                        } - bumped to ${patchedBuildVersion}"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
                                     }
@@ -173,25 +175,23 @@ def call(body) {
                         jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
                     }
                 }
-                parallel {
-                    stage('Publish build artifacts') {
-                        when {
-                            expression { jobConfig.publishBuildArtifact == true }
-                        }
-                        steps {
-                            script {
-                                utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-                            }
+                stage('Publish build artifacts') {
+                    when {
+                        expression { jobConfig.publishBuildArtifact == true }
+                    }
+                    steps {
+                        script {
+                            utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
                         }
                     }
-                    stage('Publish docker image') {
-                        when {
-                            expression { jobConfig.publishDockerImage == true }
-                        }
-                        steps {
-                            script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
-                            }
+                }
+                stage('Publish docker image') {
+                    when {
+                        expression { jobConfig.publishDockerImage == true }
+                    }
+                    steps {
+                        script {
+                            buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
                         }
                     }
                 }
@@ -257,7 +257,9 @@ def call(body) {
             }
             stage("Post deploy stage") {
                 when {
-                    expression { jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                    expression {
+                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/
+                    }
                 }
                 steps {
                     script {
