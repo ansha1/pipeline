@@ -43,8 +43,12 @@ def call(body) {
                         break
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
-                            sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
-                            sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
+                            try {
+                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
+                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
+                            } catch (e) {
+                                log.error("can`t cp files $e")
+                            }
                         }
                         break
                 }
