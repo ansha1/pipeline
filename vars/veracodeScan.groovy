@@ -24,8 +24,6 @@ def call(body) {
 
         timestamps {
             timeout(time: 240, unit: 'MINUTES') {
-
-
                 switch (projectLanguage) {
                     case 'python':
                     case 'js':
@@ -47,26 +45,28 @@ def call(body) {
                                 sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
                                 sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
-                                log.error("can`t cp files $e")
+                                log.warn("can`t cp files $e")
                             }
+                            fileNamePattern = "*.*"
+                            scanIncludesPattern = "*.*"
+                            uploadIncludesPattern = "*.*"
                         }
                         break
                 }
 
                 stage("Start Veracode Scan") {
                     echo 'scan'
-//                    withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-//                        veracode applicationName: veracodeApplicationScope,
-//                                criticality: 'VeryHigh',
-//                                createSandbox: true,
-//                                sandboxName: appName,
-//                                scanName: "${appName}-${buildVersion}", timeout: 240,
-//                                fileNamePattern: fileNamePattern,
-//                                scanIncludesPattern: scanIncludesPattern,
-//                                uploadIncludesPattern: uploadIncludesPattern,
-//                                vuser: USERNAME, vpassword: PASSWORD
-//
-//                    }
+                    withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        veracode applicationName: veracodeApplicationScope,
+                                criticality: 'VeryHigh',
+                                createSandbox: true,
+                                sandboxName: appName,
+                                scanName: "${appName}-${buildVersion}", timeout: 240,
+                                fileNamePattern: fileNamePattern,
+                                scanIncludesPattern: scanIncludesPattern,
+                                uploadIncludesPattern: uploadIncludesPattern,
+                                vuser: USERNAME, vpassword: PASSWORD
+                    }
                 }
             }
         }

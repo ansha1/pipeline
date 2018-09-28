@@ -56,4 +56,5 @@ class SharedJobsStaticVars {
     static final PROMETHEUS_DEFAULT_METRIC = 1
     static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
     static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
+    static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'NextOS Platform (CRM)'
 }

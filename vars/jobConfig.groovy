@@ -44,6 +44,8 @@ def call(body) {
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
+    isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled == null ? true : pipelineParams.isVeracodeScanEnabled
+    veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
 
     switch (env.BRANCH_NAME) {
         case 'dev':
