@@ -15,14 +15,18 @@ def call(body) {
         healthCheckMap = pipelineParams.healthCheckMap
         branchPermissionsMap = pipelineParams.branchPermissionsMap
         ansibleEnvMap = pipelineParams.ansibleEnvMap
+        kubernetesClusterMap = pipelineParams.kubernetesClusterMap
         jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes
         nodeLabel = pipelineParams.NODE_LABEL
         APP_NAME = pipelineParams.APP_NAME
         ansibleRepo = pipelineParams.ANSIBLE_REPO
         ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
+        publishBuildArtifact = pipelineParams.publishBuildArtifact
+        publishDockerImage = pipelineParams.publishDockerImage
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
+        ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT
         DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
@@ -39,7 +43,7 @@ def call(body) {
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
-    node {
+    node('debian') {
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
             properties([
                     parameters([
@@ -95,6 +99,7 @@ def call(body) {
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
                         env.DEPLOY_ON_K8S = jobConfig.DEPLOY_ON_K8S
+                        env.ANSIBLE_DEPLOYMENT = jobConfig.ANSIBLE_DEPLOYMENT
                         env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
                         env.VERSION = jobConfig.version
@@ -120,7 +125,9 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
-                                            git commit -a -m "Auto increment of ${jobConfig.BUILD_VERSION} - bumped to ${patchedBuildVersion}"
+                                            git commit -a -m "Auto increment of ${
+                                            jobConfig.BUILD_VERSION
+                                        } - bumped to ${patchedBuildVersion}"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
                                     }
@@ -168,8 +175,11 @@ def call(body) {
                         jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
                     }
                 }
-                parallel {
+                stages {
                     stage('Publish build artifacts') {
+                        when {
+                            expression { jobConfig.publishBuildArtifact == true }
+                        }
                         steps {
                             script {
                                 utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
@@ -178,7 +188,7 @@ def call(body) {
                     }
                     stage('Publish docker image') {
                         when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
+                            expression { jobConfig.publishDockerImage == true }
                         }
                         steps {
                             script {
@@ -188,42 +198,29 @@ def call(body) {
                     }
                 }
             }
-            stage('Check approvemets for deploy') {
-                when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
-                }
-                steps {
-                    script {
-                        if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
-//TODO: add approve step, check CR step
-//                            approve('Deploy on ' + jobConfig.ANSIBLE_ENV + '?', jobConfig.CHANNEL_TO_NOTIFY, jobConfig.DEPLOY_APPROVERS)
-                            isApproved = true //    = approve.isApproved()
-                        } else {
-                            //always approve for dev branch
-                            isApproved = true
-                        }
-                    }
-                }
-            }
             stage('Deploy') {
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
                 }
                 parallel {
-                    stage('Deploy in kubernetes') {
+                    stage('Kubernetes deployment') {
                         when {
-                            expression { env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.DEPLOY_ON_K8S ==~ true }
+                            expression { jobConfig.DEPLOY_ON_K8S == true }
                         }
                         steps {
                             script {
+                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
-                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.DEPLOY_ENVIRONMENT, 'dev', jobConfig.BUILD_VERSION)
+                                log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws-dev  $jobConfig.BUILD_VERSION")
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, 'aws-dev', jobConfig.BUILD_VERSION)
                             }
                         }
                     }
-                    stage('Deploy on environment') {
+                    stage('Ansible deployment') {
                         when {
-                            expression { isApproved ==~ true }
+                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
                         }
                         steps {
                             script {
@@ -243,20 +240,28 @@ def call(body) {
                                 catch (e) {
                                     log.warning("An error occurred: Could not log deployment to New Relic. Check integration configuration.\n${e}")
                                 }
-
-                                if (jobConfig.healthCheckUrl.size() > 0) {
-                                    stage('Wait until service is up') {
-                                        healthCheck.list(jobConfig.healthCheckUrl)
-                                    }
-                                }
                             }
+                        }
+                    }
+                }
+            }
+            stage('Healthcheck') {
+                when {
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                }
+                steps {
+                    script {
+                        if (jobConfig.healthCheckUrl.size() > 0) {
+                            healthCheck.list(jobConfig.healthCheckUrl)
                         }
                     }
                 }
             }
             stage("Post deploy stage") {
                 when {
-                    expression { jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                    expression {
+                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/
+                    }
                 }
                 steps {
                     script {
