@@ -27,7 +27,7 @@ def call(body) {
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
     publishBuildArtifact = pipelineParams.publishBuildArtifact == null ? true : pipelineParams.publishBuildArtifact
-    publishDockerImage = pipelineParams.publishDockerImage ?: false
+    publishDockerImage = pipelineParams.publishDockerImage == null ? false : pipelineParams.publishDockerImage
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
@@ -35,7 +35,7 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
+    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S == null ? false : pipelineParams.DEPLOY_ON_K8S
     ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT == null ? true : pipelineParams.ANSIBLE_DEPLOYMENT
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
@@ -43,7 +43,7 @@ def call(body) {
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
-    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY ?: BLUE_GREEN_DEPLOY_DEFAULT
+    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
 
     switch (env.BRANCH_NAME) {
         case 'dev':
