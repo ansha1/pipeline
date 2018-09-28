@@ -11,7 +11,7 @@ def call(body) {
     repoUrl = pipelineParams.repoUrl
     repoBranch = pipelineParams.repoBranch
     projectLanguage = pipelineParams.projectLanguage
-    veracodeApplicationScope = pipelineParams.veracodeApplicationScope: ? 'NextOS Platform (CRM)'
+    veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: 'NextOS Platform (CRM)'
     upstreamNodeName = pipelineParams.upstreamNodeName
     upstreamWorkspace = pipelineParams.upstreamWorkspace
 
