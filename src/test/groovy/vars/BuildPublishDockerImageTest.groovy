@@ -15,7 +15,6 @@ class BuildPublishDockerImageTest extends BasePipelineTest implements Validator,
         mockEnv()
         attachScript 'generateBuildProperties'
         mockGenerateBuildProperties()
-        //mockStringStringString 'generateBuildProperties'
         mockDocker()
     }
 
