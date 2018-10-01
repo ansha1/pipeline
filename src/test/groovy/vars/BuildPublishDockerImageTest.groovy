@@ -11,6 +11,11 @@ class BuildPublishDockerImageTest extends BasePipelineTest implements Validator,
     @Before
     void setUp() throws Exception {
         super.setUp()
+        binding.setVariable 'WORKSPACE', 'WORKSPACE'
+        mockEnv()
+        attachScript 'generateBuildProperties'
+        mockGenerateBuildProperties()
+        //mockStringStringString 'generateBuildProperties'
         mockDocker()
     }
 
@@ -25,6 +30,6 @@ class BuildPublishDockerImageTest extends BasePipelineTest implements Validator,
         script.call 'appName', 'buildVersion'
         printCallStack()
         checkThatMethodWasExecutedWithValue 'push', '.*latest.*'
-        checkThatMockedMethodWasExecuted 'sh', 1
+        checkThatMockedMethodWasExecuted 'sh', 4
     }
 }

@@ -94,7 +94,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockClosure 'pipeline', 'agent', 'tools', 'options', 'stages', 'steps', 'script',
                 'when', 'expression', 'parallel', 'post', 'always'
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
-        mockStringString 'buildPublishDockerImage'
+        mockStringStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
                 'httpRequest', 'booleanParam', 'usernamePassword'
