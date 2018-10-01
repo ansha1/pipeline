@@ -36,6 +36,8 @@ def call(body) {
         jdkVersion = pipelineParams.JDK_VERSION
         mavenVersion = pipelineParams.MAVEN_VERSION
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
+        isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled
+        veracodeApplicationScope = pipelineParams.veracodeApplicationScope
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -125,9 +127,7 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
-                                            git commit -a -m "Auto increment of ${
-                                            jobConfig.BUILD_VERSION
-                                        } - bumped to ${patchedBuildVersion}"
+                                            git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
                                     }
@@ -195,6 +195,25 @@ def call(body) {
                                 buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION)
                             }
                         }
+                    }
+                }
+            }
+            stage('Veracode analyzing') {
+                when {
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release\/.+)$/ && isVeracodeScanEnabled == true
+                    }
+                }
+                steps {
+                    script {
+                        build job: 'VeracodeScan',
+                                parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                             string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
+                                             string(name: 'repoUrl', value: GIT_URL),
+                                             string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
+                                             string(name: 'upstreamNodeName', value: NODE_NAME),
+                                             string(name: 'upstreamWorkspace', value: WORKSPACE),
+                                             string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
                 }
             }

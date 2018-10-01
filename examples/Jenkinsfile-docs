@@ -146,4 +146,10 @@ jobTemplate {
 
     /* BLUE_GREEN_DEPLOY - is use to allow the user to decided which blue green stack to deploy - a or b */
     // BLUE_GREEN_DEPLOY = true
+
+    /* isVeracodeScanEnabled - if this flag is activated, then veracode analyzing step been executed , default: true  */
+    // isVeracodeScanEnabled = true
+
+    /* veracodeApplicationScope - name of application scope in Veracode  , default: NextOS Platform (CRM)  */
+    // veracodeApplicationScope = 'NextOS Platform (CRM)'
 }

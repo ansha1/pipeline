@@ -74,6 +74,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
         binding.setVariable 'User', mockObjects.user
         binding.setVariable 'NODE_NAME', 'Debian Slave 3'
+        binding.setVariable 'WORKSPACE', '/opt/jenkins/workspace/some-workspace'
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
