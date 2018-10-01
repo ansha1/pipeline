@@ -1,9 +1,23 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def call(String appName, String buildVersion, String extraPath='.') {
+def call(String appName, String buildVersion, String extraPath = null, String deployEnvironment = '') {
+    def buildLocation = ''
+
+    if ( extraPath ) {
+        log.info("We are going to build docker image within " + extraPath)
+        buildLocation = WORKSPACE + "/" + extraPath
+    }
+    else {
+        buildLocation = WORKSPACE
+    }
+
+    dir(buildLocation) {
+        generateBuildProperties(deployEnvironment, buildVersion, "${env.JOB_NAME}")
+    }
+
     docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS_ID) {
-        def customImage = docker.build("${appName}:${buildVersion}", "-f ${extraPath}/Dockerfile --build-arg build_version=${buildVersion} ${extraPath}")
+        def customImage = docker.build("${appName}:${buildVersion}", "-f ${buildLocation}/Dockerfile --build-arg build_version=${buildVersion} ${buildLocation}")
         customImage.push()
         customImage.push("latest")
 
