@@ -192,7 +192,7 @@ def call(body) {
                         }
                         steps {
                             script {
-                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
+                                buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, null, jobConfig.DEPLOY_ENVIRONMENT)
                             }
                         }
                     }
