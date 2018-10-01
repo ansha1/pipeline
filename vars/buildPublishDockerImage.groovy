@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def call(String appName, String buildVersion, String extraPath = null, String deployEnvironment = 'docker') {
+def call(String appName, String buildVersion, String deployEnvironment = 'docker', String extraPath = null) {
     def buildLocation = ''
 
     if ( extraPath ) {
