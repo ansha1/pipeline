@@ -12,7 +12,7 @@ def call(String appName, String buildVersion, String extraPath = null, String de
         buildLocation = WORKSPACE
     }
 
-    dir(buildLocation) {
+    dir( buildLocation ) {
         generateBuildProperties(deployEnvironment, buildVersion, "${env.JOB_NAME}")
     }
 
