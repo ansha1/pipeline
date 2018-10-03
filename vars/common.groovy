@@ -46,6 +46,10 @@ def getPropertyValue(String propertyName, def defaultValue = null) {
     }
 }
 
+def getPropertyBooleanValue(String propertyName, boolean defaultValue) {
+    return new Boolean(getPropertyValue(propertyName, defaultValue))
+}
+
 def remoteSh(String hostname, String cmd) {
     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
         sh """ssh -o StrictHostKeyChecking=no ${hostname} ' uname -a'
