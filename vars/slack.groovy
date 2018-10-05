@@ -37,8 +37,9 @@ def prOwnerPrivateMessage(String url) {
 }
 
 def privateMessage(String slackUserId, String message) {
-    log.debug("Message: " + message)
+    log.info("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")
+    log.info("attachments: ${attachments}")
     httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
             consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
