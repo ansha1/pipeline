@@ -39,7 +39,6 @@ def prOwnerPrivateMessage(String url) {
 def privateMessage(String slackUserId, String message) {
     log.info("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")
-    log.info("attachments: ${attachments}")
     httpRequest contentType: 'APPLICATION_JSON', httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
 }
@@ -48,7 +47,7 @@ def buildStatusMessageBody() {
     def buildStatus = currentBuild.currentResult
     def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
     def commitInfo = commitInfoRaw.trim()
-    String jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8')
+    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
