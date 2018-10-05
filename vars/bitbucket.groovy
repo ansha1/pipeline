@@ -20,6 +20,7 @@ String getDestinationBranchFromPr(String url) {
 
 def prOwnerEmail(String url) {
     def pr = getPrFromUrl(url)
+    log.info("pr is ${pr}")
     return pr.author.user.emailAddress
 }
 
@@ -31,7 +32,9 @@ def getPrFromUrl(String url) {
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
          consoleLogResponseBody: log.isDebug()
+    log.info("prResponce is ${prResponce}")
     def returnBody = readJSON text: prResponce.content
+    log.info("returnBody is ${returnBody}")
     return returnBody
 }
 
