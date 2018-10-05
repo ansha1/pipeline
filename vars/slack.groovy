@@ -32,6 +32,7 @@ def prOwnerPrivateMessage(String url) {
     def prOwner = bitbucket.prOwnerEmail(url)
     log.info("prOwner - ${prOwner}")
     def uploadSpec = buildStatusMessageBody()
+    log.info("uploadSpec - ${uploadSpec}")
     privateMessage(prOwner, uploadSpec)
 }
 
