@@ -33,7 +33,7 @@ def prOwnerPrivateMessage(String url) {
     log.info("prOwner - ${prOwner}")
     def uploadSpec = buildStatusMessageBody()
     log.info("uploadSpec - ${uploadSpec}")
-    def getUserFromSlackObject = getSlackUserIdByEmail(userEmail)
+    def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
     log.info("getUserFromSlackObject - ${getUserFromSlackObject}")
     privateMessage(getUserFromSlackObject, uploadSpec)
 //    privateMessage(prOwner, uploadSpec)
