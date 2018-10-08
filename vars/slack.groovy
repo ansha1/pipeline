@@ -30,11 +30,8 @@ def commitersOnly() {
 
 def prOwnerPrivateMessage(String url) {
     def prOwner = bitbucket.prOwnerEmail(url)
-    log.info("prOwner - ${prOwner}")
     def uploadSpec = buildStatusMessageBody()
-    log.info("uploadSpec - ${uploadSpec}")
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
-    log.info("getUserFromSlackObject - ${getUserFromSlackObject}")
     privateMessage(getUserFromSlackObject, uploadSpec)
 //    privateMessage(prOwner, uploadSpec)
 }
