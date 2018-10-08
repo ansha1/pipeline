@@ -141,7 +141,7 @@ def call(body) {
             }
             stage('Unit tests') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(master)$/ }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
                 }
                 steps {
                     script {
