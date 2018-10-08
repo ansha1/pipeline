@@ -33,13 +33,13 @@ def prOwnerPrivateMessage(String url) {
     def uploadSpec = buildStatusMessageBody()
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
     privateMessage(getUserFromSlackObject, uploadSpec)
-//    privateMessage(prOwner, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
-    log.info("Message: " + message)
+    log.debug("Message: " + message)
     def attachments = java.net.URLEncoder.encode(message, "UTF-8")
-    httpRequest contentType: 'APPLICATION_JSON', httpMode: 'POST',
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
 }
 
