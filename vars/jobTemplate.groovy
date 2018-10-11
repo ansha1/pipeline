@@ -23,6 +23,7 @@ def call(body) {
         ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         publishBuildArtifact = pipelineParams.publishBuildArtifact
         publishDockerImage = pipelineParams.publishDockerImage
+        FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
