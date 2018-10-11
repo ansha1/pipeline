@@ -42,7 +42,10 @@ jobTemplate {
     */
     // ANSIBLE_REPO_BRANCH = 'master'
 
-    /* BASIC_INVENTORY_PATH defines a path to inventory files in ANSIBLE_REPO. This parameter is MANDATORY */
+    /* FULL_INVENTORY_PATH defines an absolute path to the inventory files in ANSIBLE_REPO. */
+    FULL_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/'
+
+    /* BASIC_INVENTORY_PATH defines a path to the inventory directory in ANSIBLE_REPO. This parameter is MANDATORY */
     BASIC_INVENTORY_PATH = 'analytics_playbook/inventory/analytics/'
 
     /* PLAYBOOK_PATH defines a path to ansible playbook in ANSIBLE_REPO. This parameter is MANDATORY */

@@ -32,6 +32,7 @@ def call(body) {
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
     ansibleRepoBranch = pipelineParams.ansibleRepoBranch ?: RELEASE_MANAGEMENT_REPO_BRANCH
+    FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
@@ -87,7 +88,7 @@ def call(body) {
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
-    INVENTORY_PATH = "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
+    INVENTORY_PATH = FULL_INVENTORY_PATH ?: "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
 
     branchProperties = ['hudson.model.Item.Read:authenticated']
     branchPermissions.each {
