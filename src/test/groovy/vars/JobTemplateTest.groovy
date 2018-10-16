@@ -74,6 +74,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
         binding.setVariable 'User', mockObjects.user
         binding.setVariable 'NODE_NAME', 'Debian Slave 3'
+        binding.setVariable 'WORKSPACE', '/opt/jenkins/workspace/some-workspace'
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
@@ -94,13 +95,14 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockClosure 'pipeline', 'agent', 'tools', 'options', 'stages', 'steps', 'script',
                 'when', 'expression', 'parallel', 'post', 'always'
         mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
-        mockStringString 'buildPublishDockerImage'
+        mockStringStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
-                'httpRequest', 'booleanParam'
+                'httpRequest', 'booleanParam', 'usernamePassword'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'
+        mockListClosure 'withEnv'
     }
 
     @Override

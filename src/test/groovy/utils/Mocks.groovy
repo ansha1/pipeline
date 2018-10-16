@@ -150,6 +150,12 @@ trait Mocks implements BasePipelineAccessor {
         }
     }
 
+    void mockStringStringString(String... methodNames) {
+        methodNames.each { String methodName ->
+            basePipelineTest.helper.registerAllowedMethod(methodName, [String, String, String], null)
+        }
+    }
+
     void mockNoArgs(String... methodNames) {
         methodNames.each { String methodName ->
             basePipelineTest.helper.registerAllowedMethod(methodName, [], null)
@@ -165,6 +171,14 @@ trait Mocks implements BasePipelineAccessor {
     void mockList(String... methodNames) {
         methodNames.each { String methodName ->
             basePipelineTest.helper.registerAllowedMethod(methodName, [List], null)
+        }
+    }
+
+    void mockListClosure(String... methodNames) {
+        methodNames.each { String methodName ->
+            basePipelineTest.helper.registerAllowedMethod(methodName, [List, Closure], { List m, Closure c ->
+                basePipelineTest.helper.callClosure(c, m)
+            })
         }
     }
 

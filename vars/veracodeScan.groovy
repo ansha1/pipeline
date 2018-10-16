@@ -10,8 +10,12 @@ def call(body) {
     buildVersion = pipelineParams.buildVersion
     repoUrl = pipelineParams.repoUrl
     repoBranch = pipelineParams.repoBranch
+    projectLanguage = pipelineParams.projectLanguage
+    veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: 'NextOS Platform (CRM)'
+    upstreamNodeName = pipelineParams.upstreamNodeName
+    upstreamWorkspace = pipelineParams.upstreamWorkspace
 
-    node {
+    node(upstreamNodeName) {
         properties properties: [
                 disableConcurrentBuilds()
         ]
@@ -20,22 +24,47 @@ def call(body) {
 
         timestamps {
             timeout(time: 240, unit: 'MINUTES') {
-                stage("checkout") {
-                    git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
+                switch (projectLanguage) {
+                    case 'python':
+                    case 'js':
+                        fileNamePattern = "${appName}-${buildVersion}.zip"
+                        scanIncludesPattern = "${appName}-${buildVersion}.zip"
+                        uploadIncludesPattern = "${appName}-${buildVersion}.zip"
+
+                        stage("checkout") {
+                            scanIncludesPattern
+                            git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
+                        }
+                        stage("create archive") {
+                            sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.js' '*.html' '*.htm'"
+                        }
+                        break
+                    case 'java':
+                        stage("getting java artifacts from upstreamJob") {
+                            try {
+                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
+                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
+                            } catch (e) {
+                                log.warn("can`t cp files $e")
+                            }
+                            fileNamePattern = "*.*"
+                            scanIncludesPattern = "*.*"
+                            uploadIncludesPattern = "*.*"
+                        }
+                        break
                 }
-                stage("create archive") {
-                    sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.html' '*.htm'"
-                }
+
                 stage("Start Veracode Scan") {
+                    echo 'scan'
                     withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        veracode applicationName: 'NextOS Platform (CRM)',
+                        veracode applicationName: veracodeApplicationScope,
                                 criticality: 'VeryHigh',
                                 createSandbox: true,
                                 sandboxName: appName,
-                                fileNamePattern: "${appName}-${buildVersion}.zip",
-                                scanIncludesPattern: "${appName}-${buildVersion}.zip",
                                 scanName: "${appName}-${buildVersion}", timeout: 240,
-                                uploadIncludesPattern: "${appName}-${buildVersion}.zip",
+                                fileNamePattern: fileNamePattern,
+                                scanIncludesPattern: scanIncludesPattern,
+                                uploadIncludesPattern: uploadIncludesPattern,
                                 vuser: USERNAME, vpassword: PASSWORD
                     }
                 }

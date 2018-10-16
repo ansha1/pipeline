@@ -31,7 +31,8 @@ def commitersOnly() {
 def prOwnerPrivateMessage(String url) {
     def prOwner = bitbucket.prOwnerEmail(url)
     def uploadSpec = buildStatusMessageBody()
-    privateMessage(prOwner, uploadSpec)
+    def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
+    privateMessage(getUserFromSlackObject, uploadSpec)
 }
 
 def privateMessage(String slackUserId, String message) {
@@ -46,7 +47,7 @@ def buildStatusMessageBody() {
     def buildStatus = currentBuild.currentResult
     def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
     def commitInfo = commitInfoRaw.trim()
-    String jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8')
+    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
