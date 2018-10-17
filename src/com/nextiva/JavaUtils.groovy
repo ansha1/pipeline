@@ -142,4 +142,20 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
             error("buildPublish fail ${e}")
         }
     }
+
+}
+
+void buildRelease(String appName, String buildVersion, String environment, Map args) {
+    log.info("Build and Release Java application.")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("ENV: ${environment}")
+    def releaseCommand = args.get('releaseCommands', 'mvn --batch-mode release:prepare -DskipTests && mvn --batch-mode release:perform -DskipTests')
+    dir(pathToSrc) {
+        try {
+            sh "${releaseCommand}"
+        } catch (e) {
+            error("buildRelease fail ${e}")
+        }
+    }
 }
