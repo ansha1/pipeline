@@ -26,6 +26,8 @@ def sendSummary(String metricName, def metricValue, Map metricLabels = [:], Stri
 def sendMetric(String instance, String jobName, String metricName, def metricValue, String metricType,
                Map metricLabels = [:], String metricHelpMessage = '') {
 
+    metricValue = System.currentTimeMillis()
+
     String labels = mapToLabelsStr(metricLabels)
     String encodedJobName = urlEncode(jobName)
     String encodedInstance = urlEncode(instance)
