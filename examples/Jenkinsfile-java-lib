@@ -14,17 +14,12 @@ jobConfig {
 }
 def securityPermissions = jobConfig.branchProperties
 
-node('debian') {
-    properties([
-            parameters([
-                    string(name: 'deploy_version', defaultValue: '', description: 'Set a specific artifact version for release.')
-            ])
-    ])
-}
-
-
 //noinspection GroovyAssignabilityCheck
 pipeline {
+
+    parameters {
+        string(name: 'deploy_version', defaultValue: '', description: 'Set a specific artifact version for release.')
+    }
 
     agent { label DEFAULT_NODE_LABEL }
 
