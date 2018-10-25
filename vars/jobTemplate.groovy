@@ -234,7 +234,7 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws-dev  $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, 'aws-dev', jobConfig.BUILD_VERSION)
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.configSet, jobConfig.BUILD_VERSION)
                             }
                         }
                     }
