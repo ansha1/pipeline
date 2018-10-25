@@ -145,12 +145,14 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
 
 }
 
-void buildRelease(String appName, String buildVersion, String environment, Map args) {
+void buildRelease(String appName, String buildVersion, String environment, Map args, String deployVersion) {
     log.info("Build and Release Java application.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("DEPLOY_VERSION: ${deployVersion}")
     log.info("ENV: ${environment}")
-    def releaseCommand = args.get('releaseCommands', 'mvn --batch-mode release:prepare -DskipTests && mvn --batch-mode release:perform -DskipTests')
+    def deployVersionArg = deployVersion.isEmpty() ? "" : "-DreleaseVersion=${deployVersion}"
+    def releaseCommand = args.get("releaseCommands", "mvn --batch-mode release:prepare -DskipTests ${deployVersionArg} && mvn --batch-mode release:perform -DskipTests")
     dir(pathToSrc) {
         try {
             sh "${releaseCommand}"
