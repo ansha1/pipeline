@@ -51,14 +51,6 @@ void runTests(Map args) {
         }
     } catch (e) {
         error("Unit test fail ${e}")
-    } finally {
-        publishHTML([allowMissing         : true,
-                     alwaysLinkToLastBuild: false,
-                     keepAll              : false,
-                     reportDir            : pathToSrc,
-                     reportFiles          : 'test-report.html',
-                     reportName           : 'Test Report',
-                     reportTitles         : ''])
     }
 }
 
