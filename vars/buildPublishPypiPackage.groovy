@@ -11,7 +11,7 @@ def call(String extraPath='.', String deployEnvironment=null, String pythonName=
 
         log.deprecated('Publishing pypi-package to the old repo - pypi.nextiva.xyz')
         pythonUtils.venvSh("""
-            pip install -U devpi-client
+            pip install devpi-client
             devpi use http://pypi.nextiva.xyz
             devpi login root --password iampythonian
             devpi use root/dev
