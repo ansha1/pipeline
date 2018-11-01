@@ -3,18 +3,18 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def call(String repoDir, String inventoryPath, String playbookPath, Map extraVars) {
 
-    node(NODE_NAME) {
-        def playbookContext = getPlaybookContext(inventoryPath, playbookPath, extraVars)
-        execute(repoDir, playbookContext, playbookPath)
-    }
+    def playbookContext = getPlaybookContext(inventoryPath, playbookPath, extraVars)
+    execute(repoDir, playbookContext, playbookPath)
+
 }
 
 def releaseManagement(String inventoryPath, String playbookPath, Map extraVars) {
 
-    def repoDir = prepareRepoDir(RELEASE_MANAGEMENT_REPO_URL, RELEASE_MANAGEMENT_REPO_BRANCH)
-    def playbookContext = getPlaybookContext(inventoryPath, playbookPath, extraVars)
-    execute(repoDir, playbookContext, playbookPath)
-
+    node(ANSIBLE_NODE_LABEL) {
+        def repoDir = prepareRepoDir(RELEASE_MANAGEMENT_REPO_URL, RELEASE_MANAGEMENT_REPO_BRANCH)
+        def playbookContext = getPlaybookContext(inventoryPath, playbookPath, extraVars)
+        execute(repoDir, playbookContext, playbookPath)
+    }
 }
 
 def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars) {
