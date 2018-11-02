@@ -249,6 +249,8 @@ def call(body) {
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                    ssh 'ssh 192.168.50.161 uname -n'
+                                    ssh 'ssh -v 192.168.50.161 uname -n'
                                     def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                     runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
