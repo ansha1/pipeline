@@ -250,6 +250,8 @@ def call(body) {
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                     sh """
+                                          ssh 192.168.50.161 uname -n
+                                          ssh -v 192.168.50.161 uname -n
                                           sleep 3600
                                     """
 //                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
