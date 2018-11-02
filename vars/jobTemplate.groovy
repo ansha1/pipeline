@@ -110,7 +110,7 @@ def call(body) {
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
                         log.info('GLOBAL ENVIRONMENT VARIABLES:')
-                        log.info(sh(script: 'printenv', returnStdout: true))
+//                        log.info(sh(script: 'printenv', returnStdout: true))
                         log.info('=============================')
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
@@ -160,16 +160,16 @@ def call(body) {
                     }
                 }
             }
-//            stage('Sonar analyzing') {
-//                when {
-//                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
-//                }
-//                steps {
-//                    script {
-//                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
-//                    }
-//                }
-//            }
+            stage('Sonar analyzing') {
+                when {
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                }
+                steps {
+                    script {
+                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
+                    }
+                }
+            }
             stage('Build') {
                 when {
                     expression {
