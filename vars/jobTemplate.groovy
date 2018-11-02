@@ -184,7 +184,6 @@ def call(body) {
                         steps {
                             script {
                                 utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-                                sh 'sleep 3600'
                             }
                         }
                     }
