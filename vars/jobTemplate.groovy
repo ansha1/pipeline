@@ -160,20 +160,20 @@ def call(body) {
                     }
                 }
             }
-            stage('Sonar analyzing') {
-                when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
-                }
-                steps {
-                    script {
-                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
-                    }
-                }
-            }
+//            stage('Sonar analyzing') {
+//                when {
+//                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+//                }
+//                steps {
+//                    script {
+//                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
+//                    }
+//                }
+//            }
             stage('Build') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(hotfix\/.+|release\/.+)$/
                     }
                 }
                 stages {
@@ -249,10 +249,10 @@ def call(body) {
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                    ssh 'ssh 192.168.50.161 uname -n'
-                                    ssh 'ssh -v 192.168.50.161 uname -n'
-                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                    sh 'ssh 192.168.50.161 uname -n'
+                                    sh 'ssh -v 192.168.50.161 uname -n'
+//                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+//                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
                                 try {
