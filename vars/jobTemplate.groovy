@@ -160,16 +160,16 @@ def call(body) {
                     }
                 }
             }
-            stage('Sonar analyzing') {
-                when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
-                }
-                steps {
-                    script {
-                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
-                    }
-                }
-            }
+//            stage('Sonar analyzing') {
+//                when {
+//                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+//                }
+//                steps {
+//                    script {
+//                        utils.runSonarScanner(jobConfig.BUILD_VERSION)
+//                    }
+//                }
+//            }
             stage('Build') {
                 when {
                     expression {
@@ -184,6 +184,7 @@ def call(body) {
                         steps {
                             script {
                                 utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                                sh 'sleep 3600'
                             }
                         }
                     }
