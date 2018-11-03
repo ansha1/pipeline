@@ -250,7 +250,7 @@ def call(body) {
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                     def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+//                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
                                 try {
