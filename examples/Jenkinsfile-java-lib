@@ -17,6 +17,10 @@ def securityPermissions = jobConfig.branchProperties
 //noinspection GroovyAssignabilityCheck
 pipeline {
 
+    parameters {
+        string(name: 'deploy_version', defaultValue: '', description: 'Set a specific artifact version for release.')
+    }
+
     agent { label DEFAULT_NODE_LABEL }
 
     options {
@@ -60,12 +64,16 @@ pipeline {
         stage('Publish to nexus') {
             when {
                 expression {
-                    env.BRANCH_NAME ==~ /^master$/
+                    env.BRANCH_NAME ==~ /^(dev|develop|master)$/
                 }
             }
             steps {
                 script {
-                    utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                    if (env.BRANCH_NAME ==~ /^(master)$/) {
+                        utils.buildRelease(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow, params.deploy_version)
+                    } else {
+                        utils.buildPublish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                    }
                 }
             }
 
@@ -73,7 +81,9 @@ pipeline {
     }
     post {
         always {
-            slack.sendBuildStatus(jobConfig.CHANNEL_TO_NOTIFY)
+            script {
+                slack.sendBuildStatus(jobConfig.CHANNEL_TO_NOTIFY)
+            }
         }
     }
 }

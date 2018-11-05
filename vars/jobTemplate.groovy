@@ -234,7 +234,7 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws-dev  $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, 'aws-dev', jobConfig.BUILD_VERSION)
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.configSet, jobConfig.BUILD_VERSION)
                             }
                         }
                     }
@@ -304,7 +304,7 @@ def call(body) {
             always {
                 script {
                     prometheus.sendGauge('build_running', PROMETHEUS_BUILD_FINISHED_METRIC, prometheus.getBuildInfoMap(jobConfig))
-                    prometheus.sendGauge('build_info', PROMETHEUS_DEFAULT_METRIC, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', System.currentTimeMillis(), prometheus.getBuildInfoMap(jobConfig))
 
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->

@@ -58,6 +58,7 @@ List getModulesProperties() {
         def artifactsProperties = sh returnStdout: true, script: """mvn -q clean install -DskipTests=true
                                                                     mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
                                                                  """
+        log.debug("Received artifact properties: $artifactsProperties")
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
@@ -140,6 +141,24 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
             sh "${buildCommands}"
         } catch (e) {
             error("buildPublish fail ${e}")
+        }
+    }
+
+}
+
+void buildRelease(String appName, String buildVersion, String environment, Map args, String deployVersion) {
+    log.info("Build and Release Java application.")
+    log.info("APP_NAME: ${appName}")
+    log.info("BUILD_VERSION: ${buildVersion}")
+    log.info("DEPLOY_VERSION: ${deployVersion}")
+    log.info("ENV: ${environment}")
+    def deployVersionArg = deployVersion.isEmpty() ? "" : "-DreleaseVersion=${deployVersion}"
+    def releaseCommand = args.get("releaseCommands", "mvn --batch-mode release:prepare -DskipTests ${deployVersionArg} && mvn --batch-mode release:perform -DskipTests")
+    dir(pathToSrc) {
+        try {
+            sh "${releaseCommand}"
+        } catch (e) {
+            error("buildRelease fail ${e}")
         }
     }
 }
