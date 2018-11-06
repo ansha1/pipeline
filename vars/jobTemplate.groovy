@@ -2,6 +2,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
+def testExecutorNumber = System.nanoTime()
 
 def call(body) {
     def pipelineParams = [:]
@@ -109,9 +110,9 @@ def call(body) {
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
-//                        log.info(sh(script: 'printenv', returnStdout: true))
-                        log.info('=============================')
+                        log.debug('GLOBAL ENVIRONMENT VARIABLES:')
+                        log.debug(sh(script: 'printenv', returnStdout: true))
+                        log.debug('=============================')
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
