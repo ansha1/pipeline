@@ -58,14 +58,6 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
             break
-        case 'feature/k8s_tests':
-            configSet = "aws-dev"
-            kubernetesCluster = kubernetesClusterMap.get('dev')
-            ANSIBLE_ENV = ansibleEnvMap.get('dev')
-            healthCheckUrl = healthCheckMap.get('dev')
-            branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
-            DEPLOY_ENVIRONMENT = 'dev'
-            break
         case ~/^release\/.+$/:
             configSet = "aws-qa"
             kubernetesCluster = kubernetesClusterMap.get('qa')

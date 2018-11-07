@@ -2,7 +2,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
-def testExecutorNumber = System.nanoTime()
 
 def call(body) {
     def pipelineParams = [:]
