@@ -103,6 +103,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'
         mockListClosure 'withEnv'
+        mockMapClosure 'sshagent'
     }
 
     @Override
