@@ -73,3 +73,12 @@ def serviceRestart(String hostname, String service) {
 def serviceStatus(String hostname, String service) {
     remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
+
+def readPropertiesFile(String fileName, String representationOfTrue = 'true') {
+    // Read properties file and convert 'string boolean' values to boolean
+    Map p = readProperties file: fileName
+    p.each { key, value ->
+        p[key] = value.trim() == representationOfTrue
+    }
+    return p
+}
