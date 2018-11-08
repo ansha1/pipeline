@@ -252,7 +252,7 @@ def call(body) {
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                     def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-//                                    sh 'sleep 3600'
+                                    sh 'sleep 3600'
                                     runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
