@@ -142,7 +142,7 @@ def call(body) {
             }
             stage('Unit tests') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(dev|master)$/) }
                 }
                 steps {
                     script {
@@ -164,7 +164,7 @@ def call(body) {
             }
             stage('Sonar analyzing') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop)$/ }
                 }
                 steps {
                     script {
@@ -175,7 +175,7 @@ def call(body) {
             stage('Build') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|hotfix\/.+|release\/.+)$/
                     }
                 }
                 stages {
