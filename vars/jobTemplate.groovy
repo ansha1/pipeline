@@ -251,12 +251,8 @@ def call(body) {
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                    sh """
-                                          ssh 10.103.50.112 uname -n
-                                          ssh -v 10.103.50.112 uname -n
-                                    """
-//                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-//                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
                                 try {
