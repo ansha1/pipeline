@@ -251,9 +251,12 @@ def call(body) {
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                    sh 'sleep 3600'
-                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                    sh """
+                                          ssh 192.168.50.161 uname -n
+                                          ssh -v 192.168.50.161 uname -n
+                                    """
+//                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+//                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
                                 try {
