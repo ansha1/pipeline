@@ -138,7 +138,7 @@ def call(body) {
                             }
                         }
                     }
-                }   
+                }
             }
             stage('Unit tests') {
                 when {
