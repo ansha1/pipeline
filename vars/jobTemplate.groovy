@@ -137,9 +137,6 @@ def call(body) {
                                 }
                             }
                         }
-                        if(jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^(dev|develop)$/ && jobConfig.projectFlow.language.equals('java') && !utils.getVersion().contains("SNAPSHOT")) {
-                            error 'Java projects built from the develop/dev branch require a version number that contains SNAPSHOT'
-                        }
                     }
                 }   
             }

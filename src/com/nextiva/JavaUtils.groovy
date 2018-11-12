@@ -10,6 +10,9 @@ import groovy.transform.Field
 String getVersion() {
     dir(pathToSrc) {
         def rootPom = readMavenPom file: "pom.xml"
+        if (env.BRANCH_NAME ==~ /^(dev|develop)$/ && !version.contains("SNAPSHOT")){
+            error 'Java projects built from the develop/dev branch require a version number that contains SNAPSHOT'
+        }
         return rootPom.version
     }
 }
