@@ -59,6 +59,7 @@ class HotfixFinishTest extends BasePipelineTest implements Validator, Mocks {
             }
             return 'sh command output'
         }
+        helper.registerAllowedMethod 'readMavenPom', [Map], { [version: '1.0.1-SNAPSHOT'] }
         def script = loadScript "vars/hotfixFinish.groovy"
         script.call {
             developBranch = 'develop'

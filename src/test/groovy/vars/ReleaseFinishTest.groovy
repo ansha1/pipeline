@@ -63,6 +63,7 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
             }
             return 'sh command output'
         }
+        helper.registerAllowedMethod 'readMavenPom', [Map], { [version: '1.0.1-SNAPSHOT'] }
         def script = loadScript "vars/releaseFinish.groovy"
         script.call {
             developBranch = 'develop'
