@@ -14,7 +14,7 @@ def call(body) {
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: 'NextOS Platform (CRM)'
     upstreamNodeName = pipelineParams.upstreamNodeName
     upstreamWorkspace = pipelineParams.upstreamWorkspace
-    javaArtifactsProperties = pipelineParams.artifactsListProperties
+    javaArtifactsProperties = pipelineParams.javaArtifactsProperties
 
     node(upstreamNodeName) {
         properties properties: [
