@@ -142,7 +142,7 @@ def call(body) {
             }
             stage('Unit tests') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && (env.BRANCH_NAME ==~ /^(master)$/) }
                 }
                 steps {
                     script {
@@ -204,13 +204,14 @@ def call(body) {
             stage('Veracode analyzing') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.isVeracodeScanEnabled == true
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(switch_to_slave_in_aws)$/ && jobConfig.isVeracodeScanEnabled == true
                     }
                 }
                 steps {
                     script {
-                        build job: 'VeracodeScan',
+                        build job: 'testVeracodeInAWS',
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                             string(name: 'nodeLabel', value: jobConfig.nodeLabel),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
