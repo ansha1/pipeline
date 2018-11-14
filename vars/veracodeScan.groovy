@@ -43,14 +43,14 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
-                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+//                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
                                 javaArtifactsProperties.each { artifact ->
                                     log.info("${artifact.groupId} ${artifact.artifactId} ${artifact.artifactVersion} ${artifact.packaging}\n")
                                 }
 
-                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
-                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
+//                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
+//                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
                                 log.warn("can`t cp files $e")
                             }
