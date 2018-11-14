@@ -18,7 +18,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                         sh """export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                               .env/bin/kubelogin -s login.${clusterDomain}
                               kubectl get nodes
-                              ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"""
+                              ${repoDir}/kubeup ${extraParams} -n ${nameSpace} -c ${configSet} ${serviceName}"""
 
                     log.info("Deploy to the Kubernetes cluster has been completed.")
 
