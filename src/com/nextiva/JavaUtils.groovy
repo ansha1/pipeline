@@ -4,8 +4,9 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
 
 
-@Field String pathToSrc = '.'
 @Field List artifactsListProperties = []
+@Field String pathToSrc = '.'
+
 
 String getVersion() {
     dir(pathToSrc) {
