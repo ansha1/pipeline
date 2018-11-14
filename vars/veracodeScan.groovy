@@ -53,12 +53,11 @@ def call(body) {
                                     }
                                 }
 
-                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+                                log.info("${javaArtifactsProperties}[0]'groupId'")
 
 
-                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
+//                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
 
-                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 //                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
 //                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
