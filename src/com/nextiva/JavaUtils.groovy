@@ -4,7 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
 
 
-@Field List artifactsListProperties = []
+@Field getModulesPropertiesString
 @Field String pathToSrc = '.'
 
 
@@ -66,6 +66,7 @@ List getModulesProperties() {
         }
     }
 
+    getModulesPropertiesString = artifactsListProperties.toString()
     log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
     return artifactsListProperties
 }

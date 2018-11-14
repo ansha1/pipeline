@@ -203,7 +203,7 @@ def call(body) {
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
-                                             string(name: 'artifactsListProperties', value: utils.artifactsListProperties),
+                                             string(name: 'artifactsListProperties', value: utils.getModulesPropertiesString),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
                                              string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),
