@@ -43,9 +43,9 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
-//                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")[1] { artifact ->
+                                javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],").each { artifact ->
                                     log.info("${artifact.groupId} ${artifact.artifactId} ${artifact.artifactVersion} ${artifact.packaging}\n")
                                 }
 
