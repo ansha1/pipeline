@@ -6,6 +6,7 @@ import groovy.transform.Field
 
 @Field String pathToSrc = '.'
 
+List mvnBuildModulesProperties
 
 String getVersion() {
     dir(pathToSrc) {
