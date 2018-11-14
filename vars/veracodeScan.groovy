@@ -44,6 +44,11 @@ def call(body) {
                         stage("getting java artifacts from upstreamJob") {
                             try {
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+
+                                javaArtifactsProperties.each { artifact ->
+                                    echo "artifact.groupId artifact.artifactId, artifact.artifactVersion, artifact.packaging \n"
+                                }
+
                                 sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
                                 sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
