@@ -66,6 +66,7 @@ def call(body) {
                                 scanIncludesPattern: scanIncludesPattern,
                                 uploadIncludesPattern: uploadIncludesPattern,
                                 vuser: USERNAME, vpassword: PASSWORD
+
                     }
                 }
             }
