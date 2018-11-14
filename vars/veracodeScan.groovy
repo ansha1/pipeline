@@ -45,7 +45,7 @@ def call(body) {
                             try {
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")
+                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")[0]
 
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 //                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
