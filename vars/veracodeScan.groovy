@@ -43,9 +43,20 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
-                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+//                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")[0]
+                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],").each { artifact ->
+                                    log.info("artifact: ${artifact}")
+                                    artifact.split(', ').collectEntries { entry ->
+                                        def pair = entry.split(':')
+                                        [(pair.first()): pair.last()]
+                                    }
+                                }
+
+                                echo "javaArtifactsProperties: ${javaArtifactsProperties}
+
+
+                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
 
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 //                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
