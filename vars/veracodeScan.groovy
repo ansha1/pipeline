@@ -45,7 +45,7 @@ def call(body) {
                             try {
 //                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties.split().each { artifact ->
+                                javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")[1] { artifact ->
                                     log.info("${artifact.groupId} ${artifact.artifactId} ${artifact.artifactVersion} ${artifact.packaging}\n")
                                 }
 
