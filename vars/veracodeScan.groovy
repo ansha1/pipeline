@@ -46,7 +46,7 @@ def call(body) {
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
                                 javaArtifactsProperties.each { artifact ->
-                                    echo "artifact.groupId artifact.artifactId, artifact.artifactVersion, artifact.packaging \n"
+                                    log.info("${artifact.groupId} ${artifact.artifactId} ${artifact.artifactVersion} ${artifact.packaging}\n")
                                 }
 
                                 sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
