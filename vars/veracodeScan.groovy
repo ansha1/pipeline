@@ -14,6 +14,7 @@ def call(body) {
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: 'NextOS Platform (CRM)'
     upstreamNodeName = pipelineParams.upstreamNodeName
     upstreamWorkspace = pipelineParams.upstreamWorkspace
+    javaArtifactsProperties = pipelineParams.artifactsListProperties
 
     node(upstreamNodeName) {
         properties properties: [
@@ -42,6 +43,7 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
+                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
                                 sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
                                 sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
