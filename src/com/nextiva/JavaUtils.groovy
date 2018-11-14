@@ -6,7 +6,7 @@ import groovy.transform.Field
 
 @Field String pathToSrc = '.'
 
-@Field List artifactsListProperties = []
+List artifactsListProperties
 
 String getVersion() {
     dir(pathToSrc) {
@@ -62,7 +62,7 @@ List getModulesProperties() {
         log.debug("Received artifact properties: $artifactsProperties")
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
-            artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+            this.artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
 
