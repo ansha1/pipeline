@@ -45,10 +45,9 @@ def call(body) {
                             try {
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],").each { artifact ->
-                                    log.info("${artifact.groupId} ${artifact.artifactId} ${artifact.artifactVersion} ${artifact.packaging}\n")
-                                }
+                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],")
 
+                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 //                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
 //                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
