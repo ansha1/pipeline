@@ -61,7 +61,7 @@ def call(body) {
                                 criticality: 'VeryHigh',
                                 createSandbox: true,
                                 sandboxName: appName,
-                                scanName: "${appName}-${buildVersion}", //timeout: 240,
+                                scanName: "${appName}-${buildVersion}", timeout: 240,
                                 fileNamePattern: fileNamePattern,
                                 scanIncludesPattern: scanIncludesPattern,
                                 uploadIncludesPattern: uploadIncludesPattern,

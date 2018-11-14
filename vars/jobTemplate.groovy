@@ -113,7 +113,7 @@ def call(body) {
                         log.debug(sh(script: 'printenv', returnStdout: true))
                         log.debug('=============================')
 
-                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|switch_to_slaves_in_aws)$/) {
                             stage('Release build version verification') {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
@@ -203,6 +203,7 @@ def call(body) {
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
+                                             string(name: 'artifactsListProperties', value: utils.artifactsListProperties),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
                                              string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),

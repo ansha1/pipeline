@@ -6,7 +6,7 @@ import groovy.transform.Field
 
 @Field String pathToSrc = '.'
 
-List mvnBuildModulesProperties
+@Field List artifactsListProperties = []
 
 String getVersion() {
     dir(pathToSrc) {
@@ -54,7 +54,7 @@ List getModulesProperties() {
     */
 
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging")
-    List artifactsListProperties = []
+//    List artifactsListProperties = []
     dir(pathToSrc) {
         def artifactsProperties = sh returnStdout: true, script: """mvn -q clean install -DskipTests=true
                                                                     mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
