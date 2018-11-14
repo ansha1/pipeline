@@ -211,11 +211,10 @@ def call(body) {
                     script {
                         build job: 'testVeracodeInAWS',
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                             string(name: 'nodeLabel', value: jobConfig.nodeLabel),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
-                                             string(name: 'upstreamNodeName', value: NODE_NAME),
+                                             string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),
                                              string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
