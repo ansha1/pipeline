@@ -52,6 +52,12 @@ def call(body) {
                                 }
 
                                 echo "artifactsListProperties: ${artifactsListProperties}"
+                                artifactsListProperties.each { artifact ->
+                                    if (artifact.packaging == 'pom' ) return
+                                    if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
+                                        log.info("this artifact ${artifact.artifactId} ${artifact.artifactVersion} needs to be downloaded")
+                                    }
+                                }
 
 
 //                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
