@@ -128,6 +128,8 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
+                                            git config --global user.name "Nextiva Jenkins"
+                                            git config --global user.email "jenkins@nextiva.com"
                                             git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
@@ -148,16 +150,6 @@ def call(body) {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                             utils.runTests(jobConfig.projectFlow)
-
-                            // This needs for sending all python projects to the Veracode DEVOPS-1289
-                            if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')) {
-                                stage('Veracode analyzing') {
-                                    build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                                                            string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                                            string(name: 'repoUrl', value: GIT_URL),
-                                                                            string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
-                                }
-                            }
                         }
                     }
                 }
@@ -213,8 +205,9 @@ def call(body) {
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
+                                             string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
-                                             string(name: 'upstreamNodeName', value: NODE_NAME),
+                                             string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),
                                              string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
