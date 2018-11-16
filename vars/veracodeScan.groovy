@@ -51,7 +51,6 @@ def call(body) {
                                     artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
                                 }
 
-                                echo "artifactsListProperties: ${artifactsListProperties}"
                                 artifactsListProperties.each { artifact ->
                                     if (artifact.packaging == 'pom' ) return
                                     if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
