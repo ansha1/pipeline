@@ -45,13 +45,15 @@ def call(body) {
                             try {
 //                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
 
-                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2).replace("[","").split("],").each { artifact ->
-//                                    log.info("artifact: ${artifact}")
-                                    artifact.split(', ').collectEntries { entry ->
-                                        def pair = entry.split(':')
-                                        [(pair.first()): pair.last()]
-                                    }
-                                }
+                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2)
+                                                                                 .replace("[","")
+                                                                                 .split("],")
+                                                                                 .each { artifact ->
+                                                                                    artifact.split(', ').collectEntries { entry ->
+                                                                                        def pair = entry.split(':')
+                                                                                        [(pair.first()): pair.last()]
+                                                                                    }
+                                                                                 }
 
                                 log.info("${javaArtifactsProperties}[0]'groupId'")
 
