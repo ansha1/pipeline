@@ -8,7 +8,7 @@ import utils.Mocks
 import utils.Validator
 
 class BitbucketTest extends BasePipelineTest implements Validator, Mocks {
-    private static final String PR_URL = "http://git.nextiva.xyz/users/oleksandr.kramarenko/" +
+    private static final String PR_URL = "https://git.nextiva.xyz/users/oleksandr.kramarenko/" +
             "repos/qa_integration/pull-requests/1"
 
     @Override

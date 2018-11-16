@@ -49,7 +49,7 @@ class SharedJobsStaticVars {
     static final SLACK_STATUS_REPORT_CHANNEL_RC = 'rc-platform-support'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
-    static final BITBUCKET_URL = 'http://git.nextiva.xyz'
+    static final BITBUCKET_URL = 'https://git.nextiva.xyz'
     static final BLUE_GREEN_DEPLOY_DEFAULT = false
     static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
     static final PROMETHEUS_INSTANCE_NAME = 'jenkins'
