@@ -118,22 +118,23 @@ def call(body) {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
-                                            "already exists in Nexus. " +
-                                            "Do you want to increase a patch version and continue the process?",
-                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
-
-                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
-                                    utils.setVersion(patchedBuildVersion)
-
-                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                        sh """
-                                            git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
-                                            git push origin HEAD:${BRANCH_NAME}
-                                        """
-                                    }
-
-                                    jobConfig.setBuildVersion()
+//                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+//                                            "already exists in Nexus. " +
+//                                            "Do you want to increase a patch version and continue the process?",
+//                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+//
+//                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
+//                                    utils.setVersion(patchedBuildVersion)
+//
+//                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+//                                        sh """
+//                                            git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
+//                                            git push origin HEAD:${BRANCH_NAME}
+//                                        """
+//                                    }
+//
+//                                    jobConfig.setBuildVersion()
+                                    log.info("Just for debug")
                                 }
                             }
                         }
