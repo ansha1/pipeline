@@ -4,7 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
 
 
-@Field modulesPropertiesField
+@Field String modulesPropertiesField
 @Field String pathToSrc = '.'
 
 

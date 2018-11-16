@@ -282,7 +282,9 @@ def call(body) {
                 }
                 steps {
                     script {
-                        sh jobConfig.projectFlow.get('postDeployCommands')
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh jobConfig.projectFlow.get('postDeployCommands')
+                        }
                     }
                 }
             }

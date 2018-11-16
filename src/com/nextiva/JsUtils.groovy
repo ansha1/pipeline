@@ -5,6 +5,7 @@ import groovy.transform.Field
 
 
 @Field String pathToSrc = '.'
+@Field String modulesPropertiesField = ''
 
 
 String getVersion() {
