@@ -25,7 +25,7 @@ def call(String appName, String buildVersion, String deployEnvironment = 'docker
 
     docker.withRegistry(TENABLE_DOCKER_REGISTRY_URL, TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID) {
         customImage.tag("${TENABLE_DOCKER_REGISTRY}/${appName}:${buildVersion}")
-        customImage.push("${TENABLE_DOCKER_REGISTRY}/${appName}:${buildVersion}")
+        customImage.push()
     }
 
     log.debug("Removing Old Images")
