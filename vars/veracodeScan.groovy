@@ -44,18 +44,14 @@ def call(body) {
                         stage("getting java artifacts from upstreamJob") {
                             try {
                                 echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+                                List artifactsListProperties = []
 
-                                javaArtifactsProperties = javaArtifactsProperties.getAt(1..javaArtifactsProperties.length() - 2)
-                                                                                 .replace("[","")
-                                                                                 .split("],")
-                                                                                 .each { artifact ->
-                                                                                    artifact.split(', ').collectEntries { entry ->
-                                                                                        def pair = entry.split(':')
-                                                                                        [(pair.first()): pair.last()]
-                                                                                    }
-                                                                                 }
+                                javaArtifactsProperties.split('\n').each {
+                                    def propertiesList = it.split()
+                                    artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+                                }
 
-                                log.info("${javaArtifactsProperties}[0]'groupId'")
+                                echo "artifactsListProperties: ${artifactsListProperties}"
 
 
 //                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
