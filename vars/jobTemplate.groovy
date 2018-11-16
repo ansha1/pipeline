@@ -128,8 +128,8 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
-                                            git config --global user.email "Nextiva Jenkins"
                                             git config --global user.name "Nextiva Jenkins"
+                                            git config --global user.email "jenkins@nextiva.com"
                                             git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
