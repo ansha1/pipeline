@@ -14,6 +14,7 @@ class SharedJobsStaticVars {
     static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
     static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
+    static final TENABLE_DOCKER_REGISTRY_URL = 'https://cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
     static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
