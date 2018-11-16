@@ -118,23 +118,24 @@ def call(body) {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
-//                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
-//                                            "already exists in Nexus. " +
-//                                            "Do you want to increase a patch version and continue the process?",
-//                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
-//
-//                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
-//                                    utils.setVersion(patchedBuildVersion)
-//
-//                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-//                                        sh """
-//                                            git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
-//                                            git push origin HEAD:${BRANCH_NAME}
-//                                        """
-//                                    }
-//
-//                                    jobConfig.setBuildVersion()
-                                    log.info("Just for debug")
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                            "already exists in Nexus. " +
+                                            "Do you want to increase a patch version and continue the process?",
+                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
+                                    utils.setVersion(patchedBuildVersion)
+
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        sh """
+                                            git config --global user.email "Nextiva Jenkins"
+                                            git config --global user.name "Nextiva Jenkins"
+                                            git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
+                                            git push origin HEAD:${BRANCH_NAME}
+                                        """
+                                    }
+
+                                    jobConfig.setBuildVersion()
                                 }
                             }
                         }
@@ -143,7 +144,7 @@ def call(body) {
             }
             stage('Unit tests') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && (env.BRANCH_NAME ==~ /^(master)$/) }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
                 }
                 steps {
                     script {
@@ -195,12 +196,12 @@ def call(body) {
             stage('Veracode analyzing') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(fix_veracode_scan)$/ && jobConfig.isVeracodeScanEnabled == true
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.isVeracodeScanEnabled == true
                     }
                 }
                 steps {
                     script {
-                        build job: 'testVeracodeInAWS',
+                        build job: 'VeracodeScan',
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),

@@ -43,7 +43,7 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
-                                echo "javaArtifactsProperties: ${javaArtifactsProperties}"
+                                log.debug("javaArtifactsProperties: ${javaArtifactsProperties}")
                                 List artifactsListProperties = []
 
                                 javaArtifactsProperties.split('\n').each {
@@ -81,7 +81,6 @@ def call(body) {
                                 scanIncludesPattern: scanIncludesPattern,
                                 uploadIncludesPattern: uploadIncludesPattern,
                                 vuser: USERNAME, vpassword: PASSWORD
-
                     }
                 }
             }
