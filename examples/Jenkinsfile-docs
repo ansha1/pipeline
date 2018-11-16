@@ -8,9 +8,9 @@
 @Library('pipeline') _
 /*
 * jobTemplate is a groovy closure that is used to pass the Application parameters to the predefined template:
-* http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobTemplate.groovy
+* https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobTemplate.groovy
 * the configuration per project(branch, language, healthCheckUrl, branchPermissions) is loaded from another closure:
-* http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy
+* https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy
 */
 jobTemplate {
 
@@ -32,7 +32,7 @@ jobTemplate {
 
     /*
     * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
-    * If the parameter is ommited the default ansible repo that will be used is http://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
+    * If the parameter is ommited the default ansible repo that will be used is https://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
     */
     // ANSIBLE_REPO = 'ssh://git@git.nextiva.xyz:7999/rel/ansible.git' 
 
@@ -53,7 +53,7 @@ jobTemplate {
 
     /* 
     * ANSIBLE_EXTRA_VARS - defines a list of extra parameters to pass to ansible playbook.
-    * By default the parameters are defined in getAnsibleExtraVars() in http://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy#130-151
+    * By default the parameters are defined in getAnsibleExtraVars() in https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/vars/jobConfig.groovy#130-151
     */
     // ANSIBLE_EXTRA_VARS = ['version': '', 'artifact_env': artifact_env]
 
