@@ -194,7 +194,7 @@ def call(body) {
             stage('Veracode analyzing') {
                 when {
                     expression {
-                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(switch_to_slaves_in_aws)$/ && jobConfig.isVeracodeScanEnabled == true
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(fix_veracode_scan)$/ && jobConfig.isVeracodeScanEnabled == true
                     }
                 }
                 steps {
