@@ -73,3 +73,4 @@ def serviceRestart(String hostname, String service) {
 def serviceStatus(String hostname, String service) {
     remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
+

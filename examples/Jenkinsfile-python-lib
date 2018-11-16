@@ -68,7 +68,7 @@ pipeline {
             }
             steps {
                 script {
-                    buildPublishPypiPackage('.', null, jobConfig.projectFlow['languageVersion'])
+                    buildPublishPypiPackage(utils.pathToSrc, null, jobConfig.projectFlow['languageVersion'])
                 }
             }
 

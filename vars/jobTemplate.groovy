@@ -300,7 +300,7 @@ def call(body) {
             always {
                 script {
                     prometheus.sendGauge('build_running', PROMETHEUS_BUILD_FINISHED_METRIC, prometheus.getBuildInfoMap(jobConfig))
-                    prometheus.sendGauge('build_info', PROMETHEUS_DEFAULT_METRIC, prometheus.getBuildInfoMap(jobConfig))
+                    prometheus.sendGauge('build_info', System.currentTimeMillis(), prometheus.getBuildInfoMap(jobConfig))
 
                     if (jobConfig.slackNotifictionScope.size() > 0) {
                         jobConfig.slackNotifictionScope.each { channel, branches ->

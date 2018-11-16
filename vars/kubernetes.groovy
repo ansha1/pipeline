@@ -14,11 +14,11 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                 def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
                 try {
                         pythonUtils.createVirtualEnv("python3.6")
-                        pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/0.3.5/nextiva-kubelogin-0.3.5.tar.gz")
+                        pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz")
                         sh """export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                               .env/bin/kubelogin -s login.${clusterDomain}
                               kubectl get nodes
-                              ${repoDir}/kubeup ${extraParams} -f -n ${nameSpace} -c ${configSet} ${serviceName}"""
+                              ${repoDir}/kubeup ${extraParams} -n ${nameSpace} -c ${configSet} ${serviceName}"""
 
                     log.info("Deploy to the Kubernetes cluster has been completed.")
 
