@@ -113,7 +113,7 @@ def call(body) {
                         log.debug(sh(script: 'printenv', returnStdout: true))
                         log.debug('=============================')
 
-                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|switch_to_slaves_in_aws)$/) {
+                        if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+|switch_to_slaves_in_aws|fix_veracode_scan)$/) {
                             stage('Release build version verification') {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
