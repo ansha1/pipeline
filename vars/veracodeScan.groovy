@@ -60,6 +60,7 @@ def call(body) {
                                         sh "curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}"
                                     }
                                 }
+                                sh 'sleep 3600'
 
 
 //                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
