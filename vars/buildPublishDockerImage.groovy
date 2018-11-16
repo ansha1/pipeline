@@ -28,6 +28,5 @@ def call(String appName, String buildVersion, String deployEnvironment = 'docker
         customImage.push()
     }
 
-    log.debug("Removing Old Images")
     sh "docker rmi ${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${customImage.id} ${TENABLE_DOCKER_REGISTRY}/${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${appName}:latest"
 }
