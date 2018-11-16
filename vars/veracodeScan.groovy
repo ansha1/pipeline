@@ -7,8 +7,7 @@ def call(body) {
     body()
 
     appName = pipelineParams.appName
-//    buildVersion = pipelineParams.buildVersion
-    buildVersion = '1.13.100'
+    buildVersion = pipelineParams.buildVersion
     repoUrl = pipelineParams.repoUrl
     repoBranch = pipelineParams.repoBranch
     projectLanguage = pipelineParams.projectLanguage
@@ -56,20 +55,12 @@ def call(body) {
                                 artifactsListProperties.each { artifact ->
                                     if (artifact.packaging == 'pom' ) return
                                     if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
-                                        log.info("this artifact ${artifact.artifactId} ${artifact.artifactVersion} needs to be downloaded")
-                                        log.info("curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}")
+                                        log.debug("curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}")
                                         sh "curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}"
                                     }
                                 }
-//                                sh 'sleep 3600'
-
-
-//                                http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/calendar-service/1.13.0/calendar-service-1.13.0.war
-//                                  http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve
-//                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
-//                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
                             } catch (e) {
-                                log.warn("can`t cp files $e")
+                                log.warn("can`t download artifacts $e")
                             }
                             fileNamePattern = "*.*"
                             scanIncludesPattern = "*.*"
