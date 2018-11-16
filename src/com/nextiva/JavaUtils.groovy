@@ -60,13 +60,13 @@ List getModulesProperties() {
                                                                     mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
                                                                  """
         log.debug("Received artifact properties: $artifactsProperties")
+        modulesPropertiesField = artifactsProperties
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
         }
     }
 
-    modulesPropertiesField = artifactsListProperties.toString()
     log.debug("method getModulesProperties() returned: ${artifactsListProperties}")
     return artifactsListProperties
 }
