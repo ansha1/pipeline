@@ -46,7 +46,7 @@ def call(body) {
     def buildNumToKeepStr = jobConfig.buildNumToKeepStr
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
-    node('debian') {
+    node('master') {
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
             properties([
                     parameters([
@@ -109,9 +109,9 @@ def call(body) {
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
-                        log.info('GLOBAL ENVIRONMENT VARIABLES:')
-                        log.info(sh(script: 'printenv', returnStdout: true))
-                        log.info('=============================')
+                        log.debug('GLOBAL ENVIRONMENT VARIABLES:')
+                        log.debug(sh(script: 'printenv', returnStdout: true))
+                        log.debug('=============================')
 
                         if (jobConfig.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
                             stage('Release build version verification') {
@@ -128,6 +128,8 @@ def call(body) {
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
+                                            git config --global user.name "Nextiva Jenkins"
+                                            git config --global user.email "jenkins@nextiva.com"
                                             git commit -a -m "Auto increment of $jobConfig.BUILD_VERSION - bumped to $patchedBuildVersion"
                                             git push origin HEAD:${BRANCH_NAME}
                                         """
@@ -146,23 +148,15 @@ def call(body) {
                 }
                 steps {
                     script {
-                        utils.runTests(jobConfig.projectFlow)
-
-                        // This needs for sending all python projects to the Veracode DEVOPS-1289
-                        if (BRANCH_NAME ==~ /^(release\/.+)$/ & jobConfig.projectFlow.language.equals('python')) {
-                            stage('Veracode analyzing') {
-                                build job: 'VeracodeScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                                                        string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                                        string(name: 'repoUrl', value: GIT_URL),
-                                                                        string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
-                            }
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            utils.runTests(jobConfig.projectFlow)
                         }
                     }
                 }
             }
             stage('Sonar analyzing') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(dev|develop)$/ }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/ }
                 }
                 steps {
                     script {
@@ -211,8 +205,9 @@ def call(body) {
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
+                                             string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
                                              string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
-                                             string(name: 'upstreamNodeName', value: NODE_NAME),
+                                             string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),
                                              string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
@@ -248,8 +243,10 @@ def call(body) {
                                     slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                                 }
 
-                                def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                }
 
                                 try {
                                     if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
@@ -285,7 +282,9 @@ def call(body) {
                 }
                 steps {
                     script {
-                        sh jobConfig.projectFlow.get('postDeployCommands')
+                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                            sh jobConfig.projectFlow.get('postDeployCommands')
+                        }
                     }
                 }
             }

@@ -4,13 +4,18 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.transform.Field
 
 
+@Field String modulesPropertiesField
 @Field String pathToSrc = '.'
 
 
 String getVersion() {
     dir(pathToSrc) {
         def rootPom = readMavenPom file: "pom.xml"
-        return rootPom.version
+        def version = rootPom.version
+        if (env.BRANCH_NAME ==~ /^(dev|develop)$/ && version != null && !version.contains("SNAPSHOT")){
+            error 'Java projects built from the develop/dev branch require a version number that contains SNAPSHOT'
+        }
+        return version
     }
 }
 
@@ -59,6 +64,7 @@ List getModulesProperties() {
                                                                     mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging}\' exec:exec -U
                                                                  """
         log.debug("Received artifact properties: $artifactsProperties")
+        modulesPropertiesField = artifactsProperties
         artifactsProperties.split('\n').each {
             def propertiesList = it.split()
             artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]

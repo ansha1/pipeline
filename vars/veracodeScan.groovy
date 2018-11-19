@@ -14,6 +14,7 @@ def call(body) {
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: 'NextOS Platform (CRM)'
     upstreamNodeName = pipelineParams.upstreamNodeName
     upstreamWorkspace = pipelineParams.upstreamWorkspace
+    javaArtifactsProperties = pipelineParams.javaArtifactsProperties
 
     node(upstreamNodeName) {
         properties properties: [
@@ -42,10 +43,23 @@ def call(body) {
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             try {
-                                sh "cp $upstreamWorkspace/**/target/*.jar $WORKSPACE"
-                                sh "cp $upstreamWorkspace/**/target/*.war $WORKSPACE"
+                                log.debug("javaArtifactsProperties: ${javaArtifactsProperties}")
+                                List artifactsListProperties = []
+
+                                javaArtifactsProperties.split('\n').each {
+                                    def propertiesList = it.split()
+                                    artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+                                }
+
+                                artifactsListProperties.each { artifact ->
+                                    if (artifact.packaging == 'pom' ) return
+                                    if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
+                                        log.debug("curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}")
+                                        sh "curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}"
+                                    }
+                                }
                             } catch (e) {
-                                log.warn("can`t cp files $e")
+                                log.warn("can`t download artifacts $e")
                             }
                             fileNamePattern = "*.*"
                             scanIncludesPattern = "*.*"
