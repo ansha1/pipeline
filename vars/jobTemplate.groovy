@@ -144,7 +144,7 @@ def call(body) {
             }
             stage('Unit tests') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && (env.BRANCH_NAME ==~ /^(master)$/) }
+                    expression { jobConfig.DEPLOY_ONLY ==~ false && !(env.BRANCH_NAME ==~ /^(master)$/) }
                 }
                 steps {
                     script {
@@ -277,7 +277,7 @@ def call(body) {
             stage("Post deploy stage") {
                 when {
                     expression {
-                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|checkPostDeployStep|master|release\/.+)$/
+                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/
                     }
                 }
                 steps {
