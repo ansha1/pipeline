@@ -283,7 +283,9 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            sh jobConfig.projectFlow.get('postDeployCommands')
+                            docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS_ID) {
+                                sh jobConfig.projectFlow.get('postDeployCommands')
+                            }
                         }
                     }
                 }
