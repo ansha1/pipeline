@@ -283,7 +283,7 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            docker.withRegistry(NEXTIVA_DOCKER_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
+                            docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
                                 sh jobConfig.projectFlow.get('postDeployCommands')
                             }
                         }
