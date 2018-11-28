@@ -36,6 +36,10 @@ class MockObjects {
                         return 'push'
                     }
 
+                    def tag() {
+                        return 'tag'
+                    }
+
                     def push(String label) {
                         return 'push with label ' + label
                     }
