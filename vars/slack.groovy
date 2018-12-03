@@ -44,14 +44,18 @@ def privateMessage(String slackUserId, String message) {
 }
 
 def buildStatusMessageBody() {
+    def mention = ''
     def buildStatus = currentBuild.currentResult
     def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
     def commitInfo = commitInfoRaw.trim()
+    if(buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+        mention = "@here "
+    }
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
     def uploadSpec = """[
         {
-            "title": "${subject}",
+            "title": "${mention}${subject}",
             "text": "${commitInfo}",
             "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
             "attachment_type": "default",
