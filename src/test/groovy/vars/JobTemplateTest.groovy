@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 import utils.Mocks
 import utils.Validator
-import static com.nextiva.SharedJobsStaticVars.*
 
 class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
     static final def JENKINS_FILE_JAVA = {
