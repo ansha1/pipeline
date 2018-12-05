@@ -31,8 +31,10 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                         .env/bin/kubelogin -s login.${clusterDomain}
+                        printenv
                         kubectl get nodes
-                        ${repoDir}/kubeup ${extraParams} --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
+                        kubectl version
+                        ${repoDir}/kubeup ${extraParams} -d -v --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                         kubectl rollout status deployment/${serviceName} -n ${nameSpace}
                     """
                 log.info("Deploy to the Kubernetes cluster has been completed.")
