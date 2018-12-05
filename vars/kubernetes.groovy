@@ -8,6 +8,19 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
         extraParams = "-v"
     }
 
+    try{
+        log.info("Ensure that kubectl installed")
+        sh "kubectl version --client=true"
+    }catch(e){
+        log.debug("Going to install latest stable kubectl")
+        sh """
+            curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            export PATH=\$PATH:${WORKSPACE}
+            kubectl version --client=true
+           """
+    }
+
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         withEnv(["BUILD_VERSION=${buildVersion}"]) {
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
