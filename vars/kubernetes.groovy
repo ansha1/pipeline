@@ -34,7 +34,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                         printenv
                         kubectl get nodes
                         kubectl version
-                        sleep 36008
+                        sleep 360080
                         ${repoDir}/kubeup ${extraParams} -d -v --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                         kubectl rollout status deployment/${serviceName} -n ${nameSpace}
                     """
