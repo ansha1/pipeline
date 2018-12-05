@@ -30,11 +30,9 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                 sh """
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
+                        unset KUBERNETES_SERVICE_HOST
                         .env/bin/kubelogin -s login.${clusterDomain}
-                        printenv
                         kubectl get nodes
-                        kubectl version
-                        sleep 360080
                         ${repoDir}/kubeup ${extraParams} -d -v --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                         kubectl rollout status deployment/${serviceName} -n ${nameSpace}
                     """
