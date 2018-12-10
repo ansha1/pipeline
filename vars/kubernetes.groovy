@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, String pythonVenv, verify = false) {
+def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, verify = false) {
 
     String extraParams = ""
     if (verify) {
