@@ -27,10 +27,11 @@ def call(String appName, String buildVersion, String deployEnvironment = 'docker
         docker.withRegistry(TENABLE_DOCKER_REGISTRY_URL, TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID) {
             customImage.tag()
             customImage.push()
+            sh "docker rmi ${TENABLE_DOCKER_REGISTRY}/${customImage.id}"
         }
     } catch (e) {
         log.error("Error. Pushing of docker image to ${TENABLE_DOCKER_REGISTRY_URL} failed: ${e}")
     }
 
-    sh "docker rmi ${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${customImage.id} ${TENABLE_DOCKER_REGISTRY}/${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${appName}:latest"
+    sh "docker rmi ${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${appName}:latest"
 }
