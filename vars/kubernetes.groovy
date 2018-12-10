@@ -26,7 +26,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             try {
                 pythonUtils.createVirtualEnv(pythonVenv)
-                pythonUtils.venvSh("pip install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz")
+                pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz")
                 sh """
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
