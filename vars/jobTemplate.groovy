@@ -56,7 +56,17 @@ def call(body) {
                             booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
                     ])
             ])
-        } else {
+        } else if(env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
+            properties([
+                    parameters([
+                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build'),
+                            booleanParam(name: 'hotfix_deploy', description: 'Enable hotfix_deploy to deploy to QA/RC', defaultValue: false),
+                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
+                    ])
+            ])
+        } 
+        else {
             properties([
                     parameters([
                             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
@@ -92,6 +102,7 @@ def call(body) {
                     script {
                         utils = jobConfig.getUtils()
                         jobConfig.setBuildVersion(params.deploy_version)
+                        jobConfig.setHotfixDeploy(params.hotfix_deploy == null ? false : params.hotfix_deploy)
 
                         prometheus.sendGauge('build_running', PROMETHEUS_BUILD_RUNNING_METRIC, prometheus.getBuildInfoMap(jobConfig))
 
@@ -215,7 +226,7 @@ def call(body) {
             }
             stage('Deploy') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ ||  jobConfig.isHotfixDeploy }
                 }
                 parallel {
                     stage('Kubernetes deployment') {

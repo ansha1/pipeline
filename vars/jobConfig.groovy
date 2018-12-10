@@ -69,8 +69,8 @@ def call(body) {
         case ~/^hotfix\/.+$/:
             configSet = "aws-staging"
             kubernetesCluster = 'none'
-            ANSIBLE_ENV = 'none'
-            healthCheckUrl = []
+            ANSIBLE_ENV = ansibleEnvMap.get('qa')
+            healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             break
@@ -155,6 +155,17 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
     log.info('===============================')
 }
 
+void setHotfixDeploy(Boolean hotfixDeploy = false) {
+    if (hotfixDeploy) {
+        isHotfixDeploy = true
+    } else {
+        isHotfixDeploy = false
+    }
+
+    log.info('===============================')
+    log.info('isHotfixDeploy: ' + isHotfixDeploy)
+    log.info('===============================')
+}
 
 def autoIncrementVersion() {
     try {
