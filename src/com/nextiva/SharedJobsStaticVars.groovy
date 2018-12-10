@@ -10,7 +10,7 @@ class SharedJobsStaticVars {
     static final NEXUS_3_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
-    static final VENV_DIR = '.env'
+    static final VENV_DIR = '.venv'
     static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
     static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
