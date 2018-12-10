@@ -31,7 +31,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                         unset KUBERNETES_SERVICE_HOST
-                        .env/bin/kubelogin -s login.${clusterDomain}
+                        ${VENV_DIR}/bin/kubelogin -s login.${clusterDomain}
                         kubectl get nodes
                         ${repoDir}/kubeup ${extraParams} --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                         kubectl rollout status deployment/${serviceName} -n ${nameSpace}
