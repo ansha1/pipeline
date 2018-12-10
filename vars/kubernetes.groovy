@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, verify = false) {
+def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, String pythonVenv, verify = false) {
 
     String extraParams = ""
     if (verify) {
@@ -25,8 +25,9 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
         withEnv(["BUILD_VERSION=${buildVersion}"]) {
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             try {
+                pythonUtils.createVirtualEnv(pythonVenv)
+                pythonUtils.venvSh("pip install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz")
                 sh """
-                		pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                         unset KUBERNETES_SERVICE_HOST
