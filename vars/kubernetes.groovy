@@ -4,6 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, verify = false) {
 
     String extraParams = ""
+    String k8sEnv = '.k8env'
     if (verify) {
         extraParams = "-v"
     }
@@ -25,13 +26,13 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String co
         withEnv(["BUILD_VERSION=${buildVersion}"]) {
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             try {
-                pythonUtils.createVirtualEnv("python3")
-                pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz")
+                pythonUtils.createVirtualEnv("python3", k8sEnv)
+                pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz", false, k8sEnv)
                 sh """
                         export PATH=\$PATH:${WORKSPACE}
                         export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                         unset KUBERNETES_SERVICE_HOST
-                        ${VENV_DIR}/bin/kubelogin -s login.${clusterDomain}
+                        ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
                         kubectl get nodes
                         ${repoDir}/kubeup ${extraParams} --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                         kubectl rollout status deployment/${serviceName} -n ${nameSpace}
