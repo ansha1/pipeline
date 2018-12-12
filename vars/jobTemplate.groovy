@@ -160,7 +160,9 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            utils.runTests(jobConfig.projectFlow)
+                            docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
+                                utils.runTests(jobConfig.projectFlow)
+                            }
                         }
                     }
                 }
