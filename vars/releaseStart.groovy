@@ -15,6 +15,8 @@ def call(body) {
     versionPath = pipelineParams.versionPath ?: '.'
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
+    jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
+    mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -29,8 +31,8 @@ def call(body) {
             buildDiscarder(logRotator(numToKeepStr: BUILD_NUM_TO_KEEP_STR, artifactNumToKeepStr: ARTIFACT_NUM_TO_KEEP_STR))
         }
         tools {
-            jdk 'Java 8 Install automatically'
-            maven 'Maven 3.3.3 Install automatically'
+            jdk jdkVersion
+            maven mavenVersion
         }
 
         stages {
