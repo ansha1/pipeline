@@ -14,6 +14,7 @@ def call(body) {
     userDefinedReleaseVersion = pipelineParams.userDefinedReleaseVersion
     versionPath = pipelineParams.versionPath ?: '.'
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
+    unmanagedVersioning = pipelineParams.unmanagedVersioning ?: false
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
@@ -111,6 +112,11 @@ def call(body) {
             }
 
             stage('Next development version bump') {
+                when {
+                    expression {
+                        { unmanagedVersioning ==~ false }
+                    }
+                }
                 steps {
                     script {
                         def developmentVersionPrefix = major + "." + (minor.toInteger() + 1) + "." + "0"
