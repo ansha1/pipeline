@@ -1,9 +1,19 @@
 package com.nextiva
 
+/**
+ * Enumeration of patch levels
+ */
 enum PatchLevel {
   MAJOR, MINOR, PATCH
 }
 
+/**
+ * Version implements core versioning functionality
+ *
+ * TODO: Make this a base for SemanticVersion
+ * @class Version
+ * @implements Serializable
+ */
 class Version implements Serializable {
 
   private int major, minor, patch
@@ -57,6 +67,14 @@ class Version implements Serializable {
 
 }
 
+/**
+ * Manages attaching pre-release and metadata to version
+ *
+ * TODO: use Version as a base class
+ *
+ * @class SemanticVersion
+ * @implements Serializable
+ */
 class SemanticVersion implements Serializable {
 
   private Version semVersion
