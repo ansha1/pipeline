@@ -47,10 +47,10 @@ class SemanticVersionTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void check_constructor_string_parsing_prerelease_version() {
-        def version = new SemanticVersion('1.1.1-prerelease.1')
+        def version = new SemanticVersion('1.2091.1-prerelease.1')
         assertEquals("prerelease.1", version.getPreRelease())
-        assertEquals("1.1.1", version.getVersion().toString())
-        assertEquals("1.1.1-prerelease.1", version.toString())
+        assertEquals("1.2091.1", version.getVersion().toString())
+        assertEquals("1.2091.1-prerelease.1", version.toString())
     }
 
     @Test

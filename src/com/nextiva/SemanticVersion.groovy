@@ -20,7 +20,7 @@ class Version implements Serializable {
 
   Version(String version) {
     def versionParts = version.tokenize('.')
-    if (versionParts.size > 3) {
+    if (versionParts.size() > 3) {
       throw new IllegalArgumentException("Wrong version format - expected MAJOR.MINOR.PATCH - got ${version}")
     }
     this.major = versionParts[0].toInteger()
