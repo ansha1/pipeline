@@ -46,6 +46,10 @@ def getPropertyValue(String propertyName, def defaultValue = null) {
     }
 }
 
+def getRundomInt() {
+    return System.nanoTime()
+}
+
 def getPropertyBooleanValue(String propertyName, boolean defaultValue) {
     return new Boolean(getPropertyValue(propertyName, defaultValue))
 }

@@ -10,7 +10,7 @@ class SharedJobsStaticVars {
     static final NEXUS_3_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
-    static final VENV_DIR = '.env'
+    static final VENV_DIR = '.venv'
     static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
     static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
@@ -35,7 +35,7 @@ class SharedJobsStaticVars {
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
     static final KUBERNETES_REPO_BRANCH = 'develop'
-    static final KUBERNETES_KUBELOGIN_VERSION = '1.0.1'
+    static final KUBERNETES_KUBELOGIN_VERSION = '1.2.0'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
     static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
