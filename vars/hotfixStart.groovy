@@ -63,13 +63,23 @@ def call(body) {
                 steps {
                     script {
                         log.info("UserDefinedHotfixVersion: ${hotfixVersion}")
-                        hotfixVersion = hotfixVersion ?: getNextVersion(utils)
+                        try {
+                            semver = new SemanticVersion(hotfixVersion ?: utils.getVersion())
+                        } catch (e) {
+                            error("""\n\nWrong hotfix version : ${hotfixVersion}
+                                    please use git-flow naming convention\n\n""")
+                            return
+                        }
+
+                        if (!hotfixVersion) {
+                            semver = semver.bump(PatchLevel.PATCH)
+                        }
+
+                        hotfixVersion = semver.getVersion().toString()
 
                         if (hotfixVersion ==~ /^(\d+.\d+.\d+)$/) {
                             log.info("Selected hotfix version: ${hotfixVersion}")
-                        } else {
-                            error("""\n\nWrong hotfix version : ${hotfixVersion}
-                                    please use git-flow naming convention\n\n""")
+                            utils.setVersion(semver.toString())
                         }
                     }
                 }
@@ -77,7 +87,6 @@ def call(body) {
             stage('Create hotfix branch') {
                 steps {
                     script {
-                        utils.setVersion(hotfixVersion)
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                             sh """
                               git checkout -b hotfix/${hotfixVersion}
@@ -123,17 +132,4 @@ def call(body) {
             }
         }
     }
-}
-
-
-String getNextVersion(utils) {
-    def version = utils.getVersion()
-    if (!(version ==~ /^(\d+.\d+.\d+)$/)) {
-        error("Wrong hotfix version: '${version}'")
-    }
-    def tokens = version.tokenize('.')
-    def major = tokens.get(0)
-    def minor = tokens.get(1)
-    def patch = tokens.get(2)
-    return major + "." + minor + "." + (patch.toInteger() + 1)
 }

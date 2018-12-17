@@ -82,7 +82,9 @@ def call(body) {
                                     git checkout ${hotfixBranch}
                                 """
                             }
-                            hotfixVersion = utils.getVersion()
+                            // Just get MAJOR.MINOR.PATCH portion of the version string
+                            SemanticVersion semver = new SemanticVersion(utils.getVersion())
+                            hotfixVersion = semver.getVersion().toString()
                             log.info("Found hotfix version: ${hotfixVersion}")
                         } else {
                             error("""\n\nWrong hotfix branch name: ${hotfixBranch}
