@@ -71,6 +71,7 @@ def call(body) {
                             semanticVersion = new SemanticVersion(userDefinedReleaseVersion ?: utils.getVersion())
                             releaseVersion = semanticVersion.getVersion().toString()
                         } catch (e) {
+                            releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
                             error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')
                             return
