@@ -66,6 +66,7 @@ def call(body) {
                         try {
                             semver = new SemanticVersion(hotfixVersion ?: utils.getVersion())
                         } catch (e) {
+                            hotfixVersion = hotfixVersion ?: utils.getVersion()
                             error("""\n\nWrong hotfix version : ${hotfixVersion}
                                     please use git-flow naming convention\n\n""")
                             return
