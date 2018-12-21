@@ -1,7 +1,11 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String nameSpace, String clusterDomain, String configSet, String buildVersion, verify = false) {
+def deploy(String serviceName, String nameSpace, String clusterDomain, String buildVersion, verify = false) {
+
+    def configSet = "aws-${clusterDomain.tokenize('.').get(0)}"
+
+    log.info("Choosen configSet is ${configSet} for clusterDomain ${clusterDomain}")
 
     String extraParams = ""
     String k8sEnv = '.k8env'

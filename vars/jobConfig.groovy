@@ -51,7 +51,6 @@ def call(body) {
     switch (env.BRANCH_NAME) {
         case 'dev':
         case 'develop':
-            configSet = "aws-dev"
             kubernetesCluster = kubernetesClusterMap.get('dev')
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
@@ -59,7 +58,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'dev'
             break
         case ~/^release\/.+$/:
-            configSet = "aws-qa"
             kubernetesCluster = kubernetesClusterMap.get('qa')
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
@@ -67,7 +65,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case ~/^hotfix\/.+$/:
-            configSet = "aws-staging"
             kubernetesCluster = 'none'
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
@@ -75,7 +72,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case 'master':
-            configSet = "aws-prod"
             kubernetesCluster = kubernetesClusterMap.get('production')
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
@@ -83,7 +79,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            configSet = "aws-sandbox"
             kubernetesCluster = 'none'
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
@@ -108,7 +103,6 @@ def call(body) {
     log("APP_NAME: ${APP_NAME}")
     log("ansibleRepo: ${ansibleRepo}")
     log("ansibleRepoBranch: ${ansibleRepoBranch}")
-    log("configSet: ${configSet}")
     log("INVENTORY_PATH: ${INVENTORY_PATH}")
     log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
