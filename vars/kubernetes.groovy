@@ -27,7 +27,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
     }
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-        withEnv(["BUILD_VERSION=${buildVersion}"]) {
+        withEnv(["BUILD_VERSION=${buildVersion}", "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin"]) {
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             try {
                 pythonUtils.createVirtualEnv("python3", k8sEnv)
