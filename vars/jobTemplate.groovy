@@ -159,7 +159,7 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            //TODO: remove this is condition after all jobs will be migrated from master node
+                            //TODO: remove this condition after all jobs will be migrated from master node
                             if (env.NODE_NAME == "master") {
                                 utils.runTests(jobConfig.projectFlow)
                             } else {
