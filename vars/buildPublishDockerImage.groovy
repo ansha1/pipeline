@@ -18,7 +18,7 @@ def call(String appName, String buildVersion, String deployEnvironment = 'docker
     }
 
     docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
-        customImage = docker.build("${appName}:${buildVersion}", "-f ${buildLocation}/${dockerFileName} --build-arg build_version=${buildVersion} ${buildLocation}")
+        customImage = docker.build("${appName}:${buildVersion.replace('+', '-')}", "-f ${buildLocation}/${dockerFileName} --build-arg build_version=${buildVersion} ${buildLocation}")
         customImage.push()
         customImage.push("latest")
     }
