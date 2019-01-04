@@ -129,17 +129,21 @@ def getUtils() {
 
 void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
-        version = userDefinedBuildVersion.trim()
+        version = new SemanticVersion(userDefinedBuildVersion.trim())
         DEPLOY_ONLY = true
-        BUILD_VERSION = version
+        BUILD_VERSION = version.toString()
     } else {
-        version = utils.getVersion()
+        version = new SemanticVersion(utils.getVersion())
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
+            SemanticVersion buildVersion = version.setMeta("${env.BUILD_ID}")
+            if (version.getPreRelease() ==~ /SNAPSHOT/) {
+                buildVersion = buildVersion.setPreRelease("")
+            }
+            BUILD_VERSION = buildVersion.toString()
         } else {
-            BUILD_VERSION = version
+            BUILD_VERSION = version.toString()
         }
     }
 
@@ -162,20 +166,11 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
 }
 
 def autoIncrementVersion() {
-    try {
-        tokens = BUILD_VERSION.tokenize('.')
-        major = tokens.get(0)
-        minor = tokens.get(1)
-        patch = tokens.get(2)
-    } catch (e) {
-        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
-    }
-
-    Integer patch = patch.toInteger() + 1
-    patchedBuildVersion = major + "." + minor + "." + patch
+    patchedBuildVersion = buildVersion.toString()
     while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        patch += 1
-        patchedBuildVersion = major + "." + minor + "." + patch
+        buildVersion = buildVersion.bump(PatchLevel.PATCH)
+        version = version.bump(PatchLevel.PATCH)
+        patchedBuildVersion = buildVersion.toString()
     }
 
     return patchedBuildVersion
@@ -185,8 +180,8 @@ Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
         case 'java':
-            ANSIBLE_EXTRA_VARS = ['application_version': version,
-                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            ANSIBLE_EXTRA_VARS = ['application_version': version.toString(),
+                                  'maven_repo'         : version.toString().contains('SNAPSHOT') ? 'snapshots' : 'releases']
             break
         case 'python':
             ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]

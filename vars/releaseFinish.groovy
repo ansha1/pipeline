@@ -81,7 +81,7 @@ def call(body) {
                                     git checkout ${releaseBranch}
                                 """
                             }
-                            releaseVersion = utils.getVersion()
+                            releaseVersion = new SemanticVersion(utils.getVersion()).toString()
                             log.info("Find release version: ${releaseVersion}")
                         } else {
                             error('\n\nWrong release branch name: ' + releaseBranch +

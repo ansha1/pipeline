@@ -116,7 +116,7 @@ def call(body) {
                         env.ANSIBLE_DEPLOYMENT = jobConfig.ANSIBLE_DEPLOYMENT
                         env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
-                        env.VERSION = jobConfig.version
+                        env.VERSION = jobConfig.version.toString()
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
@@ -135,7 +135,7 @@ def call(body) {
                                             common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
                                     def patchedBuildVersion = jobConfig.autoIncrementVersion()
-                                    utils.setVersion(patchedBuildVersion)
+                                    utils.setVersion(jobConfig.version.toString())
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
