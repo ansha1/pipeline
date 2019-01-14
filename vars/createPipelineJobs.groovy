@@ -75,7 +75,7 @@ def call(body) {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                             sh """
                                 git add projects/${applicationSlug}.yml
-                                git commit --allow-empty -m "ci(${applicationSlug}): provide ${applicationName} job config"
+                                git commit --allow-empty -m "ci(${applicationSlug}): provide ${applicationSlug} job config"
                             """
                         }
                     }
