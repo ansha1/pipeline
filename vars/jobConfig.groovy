@@ -137,7 +137,7 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            buildVersion = version.setMeta("${env.BUILD_ID}")
+            SemanticVersion buildVersion = version.setMeta("${env.BUILD_ID}")
             if (version.getPreRelease() ==~ /SNAPSHOT/) {
                 buildVersion = buildVersion.setPreRelease("")
             }
