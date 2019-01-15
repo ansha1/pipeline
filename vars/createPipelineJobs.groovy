@@ -52,20 +52,18 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            sh [
-                            "cat <<CONFIG > projects/${applicationSlug}.yml",
-                            "name: ${applicationName}",
-                            "slug: ${applicationSlug}",
-                            "language: ${projectLanguage}",
-                            "branch: ${developBranch}",
-                            "repository: ${repositoryUrl}",
-                            "path: ${versionPath}",
-                            "channel: ${slackChannel}",
-                            "unmanaged: false",
-                            "jdk: ${jdkVersion}",
-                            "maven: ${mavenVersion}",
-                            "CONFIG"
-                            ].join('\n')
+                            sh """cat <<CONFIG > projects/${applicationSlug}.yml
+name: ${applicationName}
+slug: ${applicationSlug}
+language: ${projectLanguage}
+branch: ${developBranch}
+repository: ${repositoryUrl}
+path: ${versionPath}
+channel: ${slackChannel}
+unmanaged: false
+jdk: ${jdkVersion}
+maven: ${mavenVersion}
+CONFIG"""
                         }
                     }
                 }
