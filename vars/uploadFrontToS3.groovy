@@ -11,7 +11,8 @@ def uploadStaticAssetstoS3(String appName, String buildVersion, String environme
         def S3DevBucketName = "static-assests-test"
         def S3ProdBucketName = "static-assets-production.nextiva.io"
         def S3BucketName = ""
-        
+        def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${assetDir} && npm install && npm run dist")
+
         if (${env.BRANCH_NAME} == "master") {
             S3BucketName = S3DevBucketName
         } else {
