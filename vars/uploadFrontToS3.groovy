@@ -11,9 +11,9 @@ def call(String appName, String buildVersion, String environment, Map args, Stri
         def S3BucketName = ""
 
         if (env.BRANCH_NAME == "master") {
-            S3BucketName = S3DevBucketName
-        } else {
             S3BucketName = S3ProdBucketName
+        } else {
+            S3BucketName = S3DevBucketName
         }
         
         if (environment in LIST_OF_ENVS) {
