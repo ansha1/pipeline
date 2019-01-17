@@ -1,9 +1,17 @@
 metadata:
+  namespace: jenkins
   labels:
-    name: slave_node88
+    name: slave_python3.7
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
+  imagePullSecrets:
+  - name: regsecret
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -13,25 +21,25 @@ spec:
             operator: In
             values:
             - jenkins-slave
-  tolerations:
-  - key: tooling.nextiva.io
-    operator: Equal
-    value: jenkins
-    effect: NoSchedule
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-node8:0.0.3
+    image: repository.nextiva.xyz/jenkins-slave-python3.7:0.0.11
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
+    env:
+    - name: POSTGRES_SERVICE_HOST
+      value: postgres
+    - name: REDIS_SERVICE_HOST
+      value: redis-rw
     imagePullPolicy: IfNotPresent
     resources:
       requests:
-        cpu: 512m
-        memory: 3000Mi
-      # limits:
-      #   memory: 4096Mi
-      #   cpu: 2000m
+        cpu: 1000m
+        memory: 1024Mi
+    #       limits:
+    #         memory: 2048Mi
+    #         cpu: 1000m
   volumes:
   - name: docker-sock-volume
     hostPath:
