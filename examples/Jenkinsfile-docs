@@ -29,7 +29,6 @@ jobTemplate {
     * default: true  
     */
     ANSIBLE_DEPLOYMENT = true
-    /*
 
     /* DEPLOY_ON_K8S - This flag used to enable kubernetes build and deployment way. 
     * default: false  
