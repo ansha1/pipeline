@@ -27,7 +27,7 @@ def call(body) {
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
     publishBuildArtifact = pipelineParams.publishBuildArtifact == null ? true : pipelineParams.publishBuildArtifact
-    publishFrontToS3 = pipelineParams.publishFrontToS3 == null ? false : pipelineParams.publishFrontToS3
+    PUBLISH_STATIC_ASSETS_TO_S3 = pipelineParams.PUBLISH_STATIC_ASSETS_TO_S3 == null ? false : pipelineParams.PUBLISH_STATIC_ASSETS_TO_S3
     publishDockerImage = pipelineParams.publishDockerImage == null ? false : pipelineParams.publishDockerImage
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
@@ -110,7 +110,7 @@ def call(body) {
     log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("publishBuildArtifact: ${publishBuildArtifact}")
-    log("publishFrontToS3: ${publishFrontToS3}")
+    log("PUBLISH_STATIC_ASSETS_TO_S3: ${PUBLISH_STATIC_ASSETS_TO_S3}")
     log("publishDockerImage: ${publishDockerImage}")
     log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
     log("ANSIBLE_DEPLOYMENT: ${ANSIBLE_DEPLOYMENT}")
