@@ -1,14 +1,13 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
-def call(String deployEnvironment, String assetDir, String version, String packageName) {
-    
+def call(String deployEnvironment, String assetDir, String version, String packageName) { 
 }
 
-
 def uploadStaticAssetstoS3(String deployEnvironment, String buildVersion, String assetDir, String version, String packageName, String pathToSrc = '.') {
-    def jobName = "${env.JOB_NAME}"
-    def S3DevBucketName = "static-assets-dev"
-    def S3ProdBucketName = "static-assets-production"
-    def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
-    def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}" 
+    withAWS(credentials:'nextiva.io', region:'us-west-2') {
+        def jobName = "${env.JOB_NAME}"
+        def S3DevBucketName = "static-assets-test"
+        def S3ProdBucketName = "static-assets-production"
+        s3Upload(file:"${assetDir}", bucket:"${S3DevBucketName}", path:"${packageName}/${buildVersion}/")
+    }
 }
