@@ -3,7 +3,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 def call(String deployEnvironment, String assetDir, String version, String packageName) { 
 }
 
-def uploadStaticAssetstoS3(String deployEnvironment, String buildVersion, String assetDir, String version, String appName) {
+def uploadStaticAssetstoS3(String environment, String buildVersion, String assetDir, String version, String appName) {
     withAWS(credentials:'nextiva.io', region:'us-west-2') {
         def jobName = "${env.JOB_NAME}"
         def S3DevBucketName = "static-assets-test"
