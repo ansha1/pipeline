@@ -6,14 +6,12 @@ def call(String appName, String buildVersion, String environment, Map args, Stri
         def assetDir = args.get('distPath', 'dist/static')
         def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${assetDir} && npm install && npm run dist")
         def pathToBuildPropertiesFile = "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
-        def S3DevBucketName = "static-assests-test"
-        def S3ProdBucketName = "static-assets-production.nextiva.io"
         def S3BucketName = ""
 
         if (env.BRANCH_NAME == "master") {
-            S3BucketName = S3ProdBucketName
+            S3BucketName = "${S3_PRODUCTION_BUCKET_NAME}"
         } else {
-            S3BucketName = S3DevBucketName
+            S3BucketName = "${S3_DEV_BUCKET_NAME}"
         }
         
         if (environment in LIST_OF_ENVS) {
