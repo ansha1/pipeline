@@ -67,7 +67,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     dir(pathToSrc) {
         sh "${buildCommands}"
         nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
-        uploadFrontToS3.uploadStaticAssetstoS3(String deployEnvironment, String buildVersion, String assetDir, String version, String packageName, String pathToSrc = '.')
+        uploadFrontToS3.uploadStaticAssetstoS3(deployEnvironment, buildVersion, assetDir, version, packageName)
 
     }
     
