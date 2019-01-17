@@ -1,0 +1,38 @@
+metadata:
+  labels:
+    name: slave_node88
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: false
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins-slave
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  containers:
+  - name: jnlp
+    image: repository.nextiva.xyz/jenkins-slave-node8:0.0.3
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock-volume
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 512m
+        memory: 3000Mi
+      # limits:
+      #   memory: 4096Mi
+      #   cpu: 2000m
+  volumes:
+  - name: docker-sock-volume
+    hostPath:
+      path: /var/run/docker.sock
