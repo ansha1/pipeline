@@ -17,17 +17,23 @@ jobTemplate {
     /* APP_NAME - defines application name. This parameter is MANDATORY */
     APP_NAME = 'analytics' 
 
-    /* DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted the default value is 'false' */
+    /* DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted 
+    * default: false 
+    */
     // DEPLOY_ON_K8S = 'false'
 
     /*  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted label 'debian' will be used */
     // NODE_LABEL = 'slave5'
 
-    /* ANSIBLE_DEPLOYMENT - This flag used to enable ansible build and deployment way. Default = true  */
+    /* ANSIBLE_DEPLOYMENT - This flag used to enable ansible build and deployment way. 
+    * default: true  
+    */
     ANSIBLE_DEPLOYMENT = true
     /*
 
-    /* DEPLOY_ON_K8S - This flag used to enable kubernetes build and deployment way. Default = false  */
+    /* DEPLOY_ON_K8S - This flag used to enable kubernetes build and deployment way. 
+    * default: false  
+    */
     DEPLOY_ON_K8S = false
 
     /*
@@ -71,8 +77,8 @@ jobTemplate {
     * ansibleEnvMap - defines a map of branches and corresponding ansible inventory env
     * If ommited the default value will be used:
     */
-    // ansibleEnvMap = [dev : "dev",
-    //                  qa : "rc",
+    // ansibleEnvMap = [dev       : "dev",
+    //                  qa        : "rc",
     //                  production: "production"]
 
     /*
@@ -84,15 +90,22 @@ jobTemplate {
     //                        production: "production.io"]
 
     /*
-    * publishDockerImage - if true that pipeline will publish docker image to the registry default: false
+    * publishDockerImage - if true that pipeline will publish docker image to the registry 
+    * default: false
     */
     //publishDockerImage = true
 
     /*
-    * publishBuildArtifact - if true that pipeline will publish build artifact to the Nexus default: true
+    * publishBuildArtifact - if true that pipeline will publish build artifact to the Nexus 
+    * default: true
     */
     //publishBuildArtifact = true
 
+    /*
+    * publishFrontToS3 - if true that pipeline will publish static assets to AWS S3 bucket
+    * default: false
+    */
+    //publishFrontToS3 = true
 
     /* 
     * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
@@ -150,9 +163,13 @@ jobTemplate {
     /* BLUE_GREEN_DEPLOY - is use to allow the user to decided which blue green stack to deploy - a or b */
     // BLUE_GREEN_DEPLOY = true
 
-    /* isVeracodeScanEnabled - if this flag is activated, then veracode analyzing step been executed , default: true  */
+    /* isVeracodeScanEnabled - if this flag is activated, then veracode analyzing step been executed
+    * default: true  
+    */
     // isVeracodeScanEnabled = true
 
-    /* veracodeApplicationScope - name of application scope in Veracode  , default: NextOS Platform (CRM)  */
+    /* veracodeApplicationScope - name of application scope in Veracode
+    * default: NextOS Platform (CRM)  
+    */
     // veracodeApplicationScope = 'NextOS Platform (CRM)'
 }

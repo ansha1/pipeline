@@ -22,6 +22,7 @@ def call(body) {
         ansibleRepo = pipelineParams.ANSIBLE_REPO
         ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         publishBuildArtifact = pipelineParams.publishBuildArtifact
+        publishFrontToS3 = pipelineParams.publishFrontToS3
         publishDockerImage = pipelineParams.publishDockerImage
         FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
@@ -205,6 +206,16 @@ def call(body) {
                         steps {
                             script {
                                 buildPublishDockerImage(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)
+                            }
+                        }
+                    }
+                    stage('Publish Front to AWS-S3') {
+                        when {
+                            expression { jobConfig.publishFrontToS3 == true }
+                        }
+                        steps {
+                            script {
+                                uploadFrontToS3.uploadStaticAssetstoS3(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
                             }
                         }
                     }
