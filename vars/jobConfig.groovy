@@ -165,12 +165,12 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
     log.info('===============================')
 }
 
-def autoIncrementVersion() {
-    patchedBuildVersion = buildVersion.toString()
-    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        buildVersion = buildVersion.bump(PatchLevel.PATCH)
-        version = version.bump(PatchLevel.PATCH)
-        patchedBuildVersion = buildVersion.toString()
+def autoIncrementVersion(SemanticVersion currentVersion) {
+    version = currentVersion
+    patchedBuildVersion = currentVersion.toString()
+
+    if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patchedBuildVersion = autoIncrementVersion(version.bump(PatchLevel.PATCH))
     }
 
     return patchedBuildVersion
