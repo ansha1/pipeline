@@ -2,7 +2,7 @@ import com.nextiva.JavaUtils
 import com.nextiva.JsUtils
 import com.nextiva.PythonUtils
 
-def call(String language, String pathToSrc='.') {
+def call(String language, String pathToSrc='.', String PUBLISH_STATIC_ASSETS_TO_S3) {
 
     switch (language) {
         case 'java':
