@@ -32,16 +32,3 @@ spec:
             operator: In
             values:
             - jenkins-slave
-  volumes:
-  - name: m2cache
-    hostPath:
-      path: /opt/m2
-  - name: npmcache
-    hostPath:
-      path: /opt/npmcache
-  - name: yarncache
-    hostPath:
-      path: /opt/yarncache
-  - name: docker-sock-volume
-    hostPath:
-      path: /var/run/docker.sock
