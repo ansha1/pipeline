@@ -2,7 +2,7 @@ def call(body) {
     def label = "slave-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
-    podTemplate(label: 'parent', yaml: podfromyaml) {}
+    podTemplate(label: 'parent', yaml: parentPodtemplate) {}
 
 
     podTemplate(label: label, inheritFrom: 'parent', namespace: 'jenkins', workingDir: '/home/jenkins',
