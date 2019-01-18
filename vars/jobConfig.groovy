@@ -129,21 +129,23 @@ def getUtils() {
 
 void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
-        version = new SemanticVersion(userDefinedBuildVersion.trim())
+        semanticVersion = new SemanticVersion(userDefinedBuildVersion.trim())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = true
         BUILD_VERSION = version.toString()
     } else {
-        version = new SemanticVersion(utils.getVersion())
+        semanticVersion = new SemanticVersion(utils.getVersion())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            SemanticVersion buildVersion = version.setMeta("${env.BUILD_ID}")
+            SemanticVersion buildVersion = semanticVersion.setMeta("${env.BUILD_ID}")
             if (version.getPreRelease() ==~ /SNAPSHOT/) {
                 buildVersion = buildVersion.setPreRelease("")
             }
             BUILD_VERSION = buildVersion.toString()
         } else {
-            BUILD_VERSION = version.toString()
+            BUILD_VERSION = semanticVersion.toString()
         }
     }
 
@@ -166,7 +168,8 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
 }
 
 def autoIncrementVersion(SemanticVersion currentVersion) {
-    version = currentVersion
+    semanticVersion = currentVersion
+    version = semanticVersion.toString()
     patchedBuildVersion = currentVersion.toString()
 
     if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
