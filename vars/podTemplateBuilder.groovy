@@ -1,3 +1,4 @@
+
 def call(body) {
     def label = "slave-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
@@ -6,7 +7,7 @@ def call(body) {
 
 
     podTemplate(label: label, inheritFrom: 'parent', namespace: 'jenkins', workingDir: '/home/jenkins',
-            containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true)],
+            containers: [containerTemplate(name: 'build', image: this.image, command: 'cat', ttyEnabled: true)],
             volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
                       hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/opt/m2cache'),
                       hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
@@ -17,6 +18,6 @@ def call(body) {
 
 
 def build(String image){
-    image = this.image
+    this.image = image
     return this
 }
