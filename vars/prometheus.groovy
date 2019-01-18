@@ -68,7 +68,7 @@ def getBuildInfoMap(def jobConfig) {
     return getBasicInfoMap() + [app_name: jobConfig.APP_NAME, ansible_env: jobConfig.ANSIBLE_ENV, deploy_environment: jobConfig.DEPLOY_ENVIRONMENT,
                                 language: jobConfig.projectFlow['language'], language_version: jobConfig.projectFlow['languageVersion'],
                                 path_to_src: jobConfig.projectFlow['pathToSrc'], job_timeout_minutes: jobConfig.jobTimeoutMinutes,
-                                node_label: jobConfig.nodeLabel, version: jobConfig.version, build_version: jobConfig.BUILD_VERSION,
+                                node_label: jobConfig.nodeLabel, version: jobConfig.version.toString(), build_version: jobConfig.BUILD_VERSION,
                                 channel_to_notify: jobConfig.CHANNEL_TO_NOTIFY, application: jobConfig.APP_NAME,
                                 blue_green_deploy: jobConfig.BLUE_GREEN_DEPLOY]
 
