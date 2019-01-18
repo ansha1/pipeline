@@ -1,11 +1,11 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
-def uploadFrontToS3(String appName, String buildVersion, String environment, Map args, String pathToSrc) {
+def uploadFrontToS3(String appName, String buildVersion, String environment, Map args, String pathToSrc, String PUBLISH_STATIC_ASSETS_TO_S3) {
     withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
         def assetDir = args.get('distPath', 'dist/static')
         def S3BucketName = ""
 
-        if (jobConfig.PUBLISH_STATIC_ASSETS_TO_S3 == true) {      
+        if (PUBLISH_STATIC_ASSETS_TO_S3 == true) {      
             if (env.BRANCH_NAME == "master") {
                     S3BucketName = "${S3_PRODUCTION_BUCKET_NAME}"
             } else {

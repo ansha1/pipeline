@@ -24,5 +24,6 @@ def call(String language, String pathToSrc='.') {
             break
     }
     utils.pathToSrc = pathToSrc
+    utils.PUBLISH_STATIC_ASSETS_TO_S3 = PUBLISH_STATIC_ASSETS_TO_S3
     return utils
 }
