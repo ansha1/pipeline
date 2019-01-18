@@ -13,14 +13,16 @@ def call(String appName, String buildVersion, String environment, Map args, Stri
         } else {
             S3BucketName = "${S3_DEV_BUCKET_NAME}"
         }
-        
-        if (environment in LIST_OF_ENVS) {
-            generateBuildProperties(environment, buildVersion, jobName)
-        } else {
-            throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
-        }
 
-        s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/${buildVersion}/")
-        s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path:"${appName}/${buildVersion}/build.properties")
+        dir(pathToSrc) {
+            sh "${buildCommands}"
+            if (environment in LIST_OF_ENVS) {
+                generateBuildProperties(environment, buildVersion, jobName)
+            } else {
+                throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
+            }
+            s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/${buildVersion}/")
+            s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path:"${appName}/${buildVersion}/build.properties")
+        }    
     }
 }

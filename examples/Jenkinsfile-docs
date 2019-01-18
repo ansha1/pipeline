@@ -17,11 +17,6 @@ jobTemplate {
     /* APP_NAME - defines application name. This parameter is MANDATORY */
     APP_NAME = 'analytics' 
 
-    /* DEPLOY_ON_K8S - defines whether to deploy to kubernetes or not. If this option is omitted 
-    * default: false 
-    */
-    // DEPLOY_ON_K8S = 'false'
-
     /*  NODE_LABEL - Jenkins slave to perform a job on. If this option is omitted label 'debian' will be used */
     // NODE_LABEL = 'slave5'
 
