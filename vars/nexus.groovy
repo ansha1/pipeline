@@ -90,8 +90,6 @@ def uploadStaticAssets(String deployEnvironment, String assetDir, String version
     def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
 
     if (deployEnvironment in LIST_OF_ENVS) {
-        generateBuildProperties(deployEnvironment, version, jobName)
-
         def verbose = log.isDebug() ? "--verbose --include" : ""
 
         sh "cd ${assetDir} && cp ${pathToBuildPropertiesFile} ./ && tar -czvf ${assetPath} ./"

@@ -209,16 +209,6 @@ def call(body) {
                             }
                         }
                     }
-                    stage('Publish Front to AWS-S3') {
-                        when {
-                            expression { jobConfig.PUBLISH_STATIC_ASSETS_TO_S3 == true }
-                        }
-                        steps {
-                            script {
-                                uploadFrontToS3(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-                            }
-                        }
-                    }
                 }
             }
             stage('Veracode analyzing') {

@@ -64,4 +64,6 @@ class SharedJobsStaticVars {
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
     static final S3_PRODUCTION_BUCKET_NAME = 'static-assets-prod.nextiva.io'
     static final S3_DEV_BUCKET_NAME = 'static-assets-dev.nextiva.io'
+    static final AWS_REGION = 'us-west-2'
+    static final AWS_CREDENTIALS = 'nextiva.io'
 }
