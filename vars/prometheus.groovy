@@ -51,7 +51,9 @@ def sendMetric(String instance, String jobName, String metricName, def metricVal
 }
 
 def mapToLabelsStr(Map labelsMap) {
+    log.warning('>>>>>>>')
     log.warning(labelsMap.toMapString())
+    log.warning('<<<<<<<')
     String labels = ''
     labelsMap.each { k, v -> labels += "${k}=\"${v}\","}
     return labels
