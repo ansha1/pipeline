@@ -132,7 +132,7 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
         semanticVersion = new SemanticVersion(userDefinedBuildVersion.trim())
         version = semanticVersion.toString()
         DEPLOY_ONLY = true
-        BUILD_VERSION = version.toString()
+        BUILD_VERSION = version
     } else {
         semanticVersion = new SemanticVersion(utils.getVersion())
         version = semanticVersion.toString()
@@ -140,7 +140,7 @@ void setBuildVersion(String userDefinedBuildVersion = null) {
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
             SemanticVersion buildVersion = semanticVersion.setMeta("${env.BUILD_ID}")
-            if (version.getPreRelease() ==~ /SNAPSHOT/) {
+            if (semanticVersion.getPreRelease() ==~ /SNAPSHOT/) {
                 buildVersion = buildVersion.setPreRelease("")
             }
             BUILD_VERSION = buildVersion.toString()
