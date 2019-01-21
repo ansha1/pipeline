@@ -78,7 +78,7 @@ def publishAssets(String appName, String buildVersion, String environment, Map a
     def S3BucketName = ""
     dir(pathToSrc) {
         nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
-        aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc, args)
+        aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
     }
 }
 
