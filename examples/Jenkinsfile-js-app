@@ -16,7 +16,7 @@ jobTemplate {
                      production: "production"]
 
     projectFlow = ['language'    : 'js',
-                   'publishStaticAssetsToS3' : 'true',
+                   'publishStaticAssetsToS3' : 'enabled',
                    'testCommands': '''
                                    npm install
                                    npm run lint
