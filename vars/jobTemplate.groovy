@@ -22,7 +22,6 @@ def call(body) {
         ansibleRepo = pipelineParams.ANSIBLE_REPO
         ansibleRepoBranch = pipelineParams.ANSIBLE_REPO_BRANCH
         publishBuildArtifact = pipelineParams.publishBuildArtifact
-        PUBLISH_STATIC_ASSETS_TO_S3 = pipelineParams.PUBLISH_STATIC_ASSETS_TO_S3
         publishDockerImage = pipelineParams.publishDockerImage
         FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
         BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
