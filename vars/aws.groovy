@@ -6,7 +6,7 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
         def S3BucketName = ""
         def publishToS3 = args.get('publishStaticAssetsToS3')
         log.info("publishStaticAssetsToS3: ${publishToS3}")
-        if (publishToS3 == "true") {      
+        if (publishToS3.equals(true)) {      
             if (env.BRANCH_NAME == "master") {
                     S3BucketName = "${S3_PRODUCTION_BUCKET_NAME}"
             } else {
