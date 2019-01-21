@@ -95,11 +95,6 @@ jobTemplate {
     */
     //publishBuildArtifact = true
 
-    /*
-    * PUBLISH_STATIC_ASSETS_TO_S3 - if true that pipeline will publish static assets to AWS S3 bucket
-    * default: false
-    */
-    //PUBLISH_STATIC_ASSETS_TO_S3 = true
 
     /* 
     * extraEnvs - defines a map of parameters to pass implicitly into job ENV variables
@@ -121,6 +116,7 @@ jobTemplate {
     *                   the default predefined tests from the appropriate class(pipelines/src/com/(JavaUtils|JsUtils|PythonUtils).groovy) will be used
     *    testPostCommands - a list of the commands that should be performed as post step after test execution
     *    postDeployCommands - a list of the commands that should be executed after a successful deployment on an environment(e.g end to end tests)
+    *    publishStaticAssetsToS3 - if true that pipeline will publish static assets to AWS S3 bucket
     */
     projectFlow = ['language'         : 'python',
                    'languageVersion'  : 'python3.6',
