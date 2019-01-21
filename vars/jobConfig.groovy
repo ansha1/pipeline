@@ -87,7 +87,7 @@ def call(body) {
             DEPLOY_ENVIRONMENT = ''
             break
     }
-    utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'), PUBLISH_STATIC_ASSETS_TO_S3)
+    utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
 
     INVENTORY_PATH = FULL_INVENTORY_PATH ?: "${BASIC_INVENTORY_PATH}${ANSIBLE_ENV}"
 
