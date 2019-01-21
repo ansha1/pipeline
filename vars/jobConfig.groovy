@@ -173,7 +173,7 @@ def autoIncrementVersion(SemanticVersion currentVersion) {
     patchedBuildVersion = currentVersion.toString()
 
     if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        patchedBuildVersion = autoIncrementVersion(version.bump(PatchLevel.PATCH))
+        patchedBuildVersion = autoIncrementVersion(semanticVersion.bump(PatchLevel.PATCH))
     }
 
     return patchedBuildVersion
@@ -183,8 +183,8 @@ Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
         case 'java':
-            ANSIBLE_EXTRA_VARS = ['application_version': version.toString(),
-                                  'maven_repo'         : version.toString().contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            ANSIBLE_EXTRA_VARS = ['application_version': version,
+                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
             break
         case 'python':
             ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
