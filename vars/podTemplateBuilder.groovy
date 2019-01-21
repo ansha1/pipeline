@@ -1,4 +1,3 @@
-
 def call(body) {
     def label = "slave-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
@@ -6,8 +5,14 @@ def call(body) {
     podTemplate(label: 'parent', yaml: parentPodtemplate) {}
 
 
-    podTemplate(label: label, inheritFrom: 'parent', namespace: 'jenkins', workingDir: '/home/jenkins',
-            containers: [containerTemplate(name: 'build', image: this.image, command: 'cat', ttyEnabled: true)],
+    podTemplate(label: label, inheritFrom: 'parent', workingDir: '/home/jenkins',
+            containers: [containerTemplate(name: 'build', image: this.image, command: 'cat', ttyEnabled: true,
+                    resourceRequestCpu: resourceRequestCpu,
+                    resourceRequestMemory: resourceRequestMemory,
+                    envVars: [
+                            envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'true'),
+                            envVar(key: 'BLABLA', value: 'true')
+                    ],)],
             volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
                       hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/opt/m2cache'),
                       hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
@@ -16,8 +21,11 @@ def call(body) {
     }
 }
 
-
-def build(String image){
+def build(String image, String resourceRequestCpu, String resourceRequestMemory){
     this.image = image
+    this.resourceRequestCpu = resourceRequestCpu
+    this.resourceRequestMemory = resourceRequestMemory
     return this
 }
+
+
