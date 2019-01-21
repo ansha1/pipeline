@@ -51,7 +51,6 @@ def call(body) {
     switch (env.BRANCH_NAME) {
         case 'dev':
         case 'develop':
-            configSet = "aws-dev"
             kubernetesCluster = kubernetesClusterMap.get('dev')
             ANSIBLE_ENV = ansibleEnvMap.get('dev')
             healthCheckUrl = healthCheckMap.get('dev')
@@ -59,7 +58,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'dev'
             break
         case ~/^release\/.+$/:
-            configSet = "aws-qa"
             kubernetesCluster = kubernetesClusterMap.get('qa')
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
@@ -67,7 +65,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case ~/^hotfix\/.+$/:
-            configSet = "aws-staging"
             kubernetesCluster = 'none'
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
@@ -75,7 +72,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         case 'master':
-            configSet = "aws-prod"
             kubernetesCluster = kubernetesClusterMap.get('production')
             ANSIBLE_ENV = ansibleEnvMap.get('production')
             healthCheckUrl = healthCheckMap.get('production')
@@ -83,7 +79,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             break
         default:
-            configSet = "aws-sandbox"
             kubernetesCluster = 'none'
             ANSIBLE_ENV = 'none'
             healthCheckUrl = []
@@ -108,7 +103,6 @@ def call(body) {
     log("APP_NAME: ${APP_NAME}")
     log("ansibleRepo: ${ansibleRepo}")
     log("ansibleRepoBranch: ${ansibleRepoBranch}")
-    log("configSet: ${configSet}")
     log("INVENTORY_PATH: ${INVENTORY_PATH}")
     log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
     log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
@@ -135,17 +129,23 @@ def getUtils() {
 
 void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
-        version = userDefinedBuildVersion.trim()
+        semanticVersion = new SemanticVersion(userDefinedBuildVersion.trim())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = true
         BUILD_VERSION = version
     } else {
-        version = utils.getVersion()
+        semanticVersion = new SemanticVersion(utils.getVersion())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            BUILD_VERSION = version - "-SNAPSHOT" + "-" + env.BUILD_ID
+            SemanticVersion buildVersion = semanticVersion.setMeta("${env.BUILD_ID}")
+            if (semanticVersion.getPreRelease() ==~ /SNAPSHOT/) {
+                buildVersion = buildVersion.setPreRelease("")
+            }
+            BUILD_VERSION = buildVersion.toString()
         } else {
-            BUILD_VERSION = version
+            BUILD_VERSION = semanticVersion.toString()
         }
     }
 
@@ -167,21 +167,13 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
     log.info('===============================')
 }
 
-def autoIncrementVersion() {
-    try {
-        tokens = BUILD_VERSION.tokenize('.')
-        major = tokens.get(0)
-        minor = tokens.get(1)
-        patch = tokens.get(2)
-    } catch (e) {
-        error('\n\nWrong BUILD_VERSION: ' + version + '\nplease use semantic versioning specification (x.y.z - x: major, y: minor, z: patch)\n\n')
-    }
+def autoIncrementVersion(SemanticVersion currentVersion) {
+    semanticVersion = currentVersion
+    version = semanticVersion.toString()
+    patchedBuildVersion = currentVersion.toString()
 
-    Integer patch = patch.toInteger() + 1
-    patchedBuildVersion = major + "." + minor + "." + patch
-    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        patch += 1
-        patchedBuildVersion = major + "." + minor + "." + patch
+    if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patchedBuildVersion = autoIncrementVersion(version.bump(PatchLevel.PATCH))
     }
 
     return patchedBuildVersion
@@ -191,8 +183,8 @@ Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
         case 'java':
-            ANSIBLE_EXTRA_VARS = ['application_version': version,
-                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            ANSIBLE_EXTRA_VARS = ['application_version': version.toString(),
+                                  'maven_repo'         : version.toString().contains('SNAPSHOT') ? 'snapshots' : 'releases']
             break
         case 'python':
             ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]

@@ -56,7 +56,7 @@ def call(body) {
                             booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
                     ])
             ])
-        } else if(env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
+        } else if (env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
             properties([
                     parameters([
                             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
@@ -65,8 +65,7 @@ def call(body) {
                             booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
                     ])
             ])
-        } 
-        else {
+        } else {
             properties([
                     parameters([
                             string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
@@ -134,8 +133,8 @@ def call(body) {
                                             "Do you want to increase a patch version and continue the process?",
                                             common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
-                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
-                                    utils.setVersion(patchedBuildVersion)
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion(jobConfig.semanticVersion)
+                                    utils.setVersion(jobConfig.version)
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
@@ -160,8 +159,13 @@ def call(body) {
                 steps {
                     script {
                         sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
+                            //TODO: remove this condition after all jobs will be migrated from master node
+                            if (env.NODE_NAME == "master") {
                                 utils.runTests(jobConfig.projectFlow)
+                            } else {
+                                docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
+                                    utils.runTests(jobConfig.projectFlow)
+                                }
                             }
                         }
                     }
@@ -228,7 +232,7 @@ def call(body) {
             }
             stage('Deploy') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ ||  jobConfig.isHotfixDeploy }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ || jobConfig.isHotfixDeploy }
                 }
                 parallel {
                     stage('Kubernetes deployment') {
@@ -241,8 +245,8 @@ def call(body) {
                                     slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
-                                log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws-dev  $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.configSet, jobConfig.BUILD_VERSION)
+                                log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.BUILD_VERSION)
                             }
                         }
                     }
