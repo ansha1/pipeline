@@ -133,8 +133,8 @@ def call(body) {
                                             "Do you want to increase a patch version and continue the process?",
                                             common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
-                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
-                                    utils.setVersion(patchedBuildVersion)
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion(jobConfig.semanticVersion)
+                                    utils.setVersion(jobConfig.version)
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
@@ -245,8 +245,8 @@ def call(body) {
                                     slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
-                                log.info("$jobConfig.APP_NAME default  $jobConfig.kubernetesCluster aws-dev  $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.configSet, jobConfig.BUILD_VERSION)
+                                log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
+                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.BUILD_VERSION)
                             }
                         }
                     }

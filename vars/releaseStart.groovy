@@ -17,6 +17,7 @@ def call(body) {
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
+    unmanagedVersion = pipelineParams.unmanagedVersion ?: false
 
 //noinspection GroovyAssignabilityCheck
     pipeline {
@@ -66,31 +67,24 @@ def call(body) {
             stage('Collecting release version') {
                 steps {
                     script {
-
-                        releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
-                        releaseVersion = releaseVersion.replace("-SNAPSHOT", "")
-
-                        if (releaseVersion ==~ /^(\d+.\d+(.\d+)?)$/) {
-                            log.info("Selected release version: ${releaseVersion}")
-
-                            tokens = releaseVersion.tokenize('.')
-                            major = tokens.get(0)
-                            minor = tokens.get(1)
-
-                            if (tokens.size() == 2) {
-                                releaseBranch = releaseVersion
-                                releaseVersion = major + "." + minor + "." + "0"
-                                log.warning("The version we are going to use for deployment is: ${releaseVersion}")
-                            } else if (userDefinedReleaseVersion) {
-                                log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
-                                releaseBranch = releaseVersion
-                            } else {
-                                log.info("Getting releaseVersion from build properties file")
-                                releaseBranch = major + '.' + minor
-                            }
-                        } else {
+                        try {
+                            semanticVersion = new SemanticVersion(userDefinedReleaseVersion ?: utils.getVersion())
+                            releaseVersion = semanticVersion.getVersion().toString()
+                        } catch (e) {
+                            releaseVersion = userDefinedReleaseVersion ?: utils.getVersion()
                             error('\n\nWrong release version : ' + releaseVersion +
                                     '\nplease use git-flow naming convention\n\n')
+                            return
+                        }
+                        
+                        log.info("Selected release version: ${releaseVersion}")
+
+                        if (userDefinedReleaseVersion) {
+                            log.info("UserDefinedReleaseVersion: ${userDefinedReleaseVersion}")
+                            releaseBranch = releaseVersion
+                        } else {
+                            log.info("Getting releaseVersion from build properties file")
+                            releaseBranch = semanticVersion.getMajor() + '.' + semanticVersion.getMinor()
                         }
                     }
                 }
@@ -113,23 +107,25 @@ def call(body) {
             stage('Next development version bump') {
                 steps {
                     script {
-                        def developmentVersionPrefix = major + "." + (minor.toInteger() + 1) + "." + "0"
+                        developmentVersion = semanticVersion.toString()
 
-                        switch (projectLanguage) {
-                            case 'java':
-                                developmentVersion = developmentVersionPrefix + "-SNAPSHOT"
-                                break
-                            default:
-                                developmentVersion = developmentVersionPrefix
-                        }
+                        if (!unmanagedVersion) {
+                            nextDevVersion = semanticVersion.bump(PatchLevel.MINOR)
 
-                        log.info('developmentVersion: ' + developmentVersion)
-                        utils.setVersion(developmentVersion)
+                            if (projectLanguage == "java") {
+                                nextDevVersion = nextDevVersion.setPreRelease("SNAPSHOT")
+                            }
+    
+                            developmentVersion = nextDevVersion.toString()
 
-                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            sh """
-                              git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
-                            """
+                            log.info('developmentVersion: ' + developmentVersion)
+                            utils.setVersion(developmentVersion)
+
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                sh """
+                                git commit -a -m "Release engineering - bumped to ${developmentVersion} next development version"
+                                """
+                            }
                         }
                     }
                 }
