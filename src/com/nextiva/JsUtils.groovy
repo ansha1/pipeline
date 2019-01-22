@@ -55,7 +55,7 @@ void runTests(Map args) {
     }
 }
 
-def buildAssets(String appName, String buildVersion, String environment, Map args) {
+def buildAssets(String buildVersion, String environment, Map args) {
     def jobName = env.JOB_NAME
     def distPath = args.get('distPath', 'dist/static')
     def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
@@ -83,7 +83,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    buildAssets(appName, buildVersion, environment, args)
+    buildAssets(buildVersion, environment, args)
     publishAssets(appName, buildVersion, environment, args)
 
 }
