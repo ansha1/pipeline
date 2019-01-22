@@ -6,7 +6,6 @@ import groovy.transform.Field
 
 @Field String pathToSrc = '.'
 @Field String modulesPropertiesField = ''
-@Field String PUBLISH_STATIC_ASSETS_TO_S3 = ''
 
 
 String getVersion() {
@@ -57,7 +56,6 @@ void runTests(Map args) {
 }
 
 def buildAssets(String appName, String buildVersion, String environment, Map args) {
-    def pathToSrc = '.'
     def jobName = env.JOB_NAME
     def distPath = args.get('distPath', 'dist/static')
     def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
@@ -74,8 +72,6 @@ def buildAssets(String appName, String buildVersion, String environment, Map arg
 
 def publishAssets(String appName, String buildVersion, String environment, Map args) {
     def distPath = args.get('distPath', 'dist/static')
-    def pathToSrc = '.'
-    def S3BucketName = ""
     dir(pathToSrc) {
         nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
         aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
