@@ -49,7 +49,12 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
             }
             sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
             try {
-                sh "kubectl rollout status deployment/${serviceName} -n ${nameSpace}"
+                sh """
+                        export PATH=\$PATH:${WORKSPACE}
+                        export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
+                        unset KUBERNETES_SERVICE_HOST
+                        kubectl rollout status deployment/${serviceName} -n ${nameSpace}
+                    """
             } catch (e) {
                 log.warning("kubectl rollout status is failed!")
                 log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
