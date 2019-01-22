@@ -27,14 +27,15 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
     }
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}", "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin"]) {
+        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
+                 "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin"],
+                 "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
+                 "PATH=${env.PATH}:${WORKSPACE}") {
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             try {
                 pythonUtils.createVirtualEnv("python3", k8sEnv)
                 pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz", false, k8sEnv)
                 sh """
-                        export PATH=\$PATH:${WORKSPACE}
-                        export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
                         unset KUBERNETES_SERVICE_HOST
                         ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
                         kubectl get nodes
