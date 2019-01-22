@@ -29,9 +29,9 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
-                 "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin"],
+                 "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
                  "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
-                 "PATH=${env.PATH}:${WORKSPACE}") {
+                 "PATH=${env.PATH}:${WORKSPACE}"]) {
 
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, envName)
             def kubelogin_version = KUBERNETES_KUBELOGIN_DEFAULT_VERSION
