@@ -3,7 +3,8 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def deploy(String serviceName, String nameSpace, String clusterDomain, String buildVersion, verify = false) {
 
-    def configSet = "aws-${clusterDomain.tokenize('.').get(0)}"
+    def envName = "${clusterDomain.tokenize('.').get(0)}"
+    def configSet = "aws-${envName}"
 
     log.info("Choosen configSet is ${configSet} for clusterDomain ${clusterDomain}")
 
@@ -27,18 +28,30 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
     }
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}", "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin"]) {
-            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
+        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
+                 "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
+                 "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
+                 "PATH=${env.PATH}:${WORKSPACE}"]) {
+
+            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, envName)
+            def kubelogin_version = KUBERNETES_KUBELOGIN_DEFAULT_VERSION
+
             try {
+                def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
+                        url: "https://login.${clusterDomain}/info"
+                def responseJson = readJSON text: response.content
+
+                if (responseJson.data.build_version) {
+                    kubelogin_version = responseJson.data.build_version.replace('-', '+')
+                }
+
                 pythonUtils.createVirtualEnv("python3", k8sEnv)
-                pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${KUBERNETES_KUBELOGIN_VERSION}/nextiva-kubelogin-${KUBERNETES_KUBELOGIN_VERSION}.tar.gz", false, k8sEnv)
+                pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
                 sh """
-                        export PATH=\$PATH:${WORKSPACE}
-                        export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
-                        unset KUBERNETES_SERVICE_HOST
-                        ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
-                        kubectl get nodes
-                        ${repoDir}/kubeup ${extraParams} --yes --namespace ${nameSpace} --configset ${configSet} ${serviceName}
+                    unset KUBERNETES_SERVICE_HOST
+                    ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
+                    kubectl get nodes
+                    ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                     """
                 log.info("Deploy to the Kubernetes cluster has been completed.")
             } catch (e) {
@@ -49,10 +62,8 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
             sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
             try {
                 sh """
-                        export PATH=\$PATH:${WORKSPACE}
-                        export KUBECONFIG="${env.WORKSPACE}/kubeconfig"
-                        unset KUBERNETES_SERVICE_HOST
-                        kubectl rollout status deployment/${serviceName} -n ${nameSpace}
+                    unset KUBERNETES_SERVICE_HOST
+                    kubectl rollout status deployment/${serviceName} --namespace ${nameSpace}
                     """
             } catch (e) {
                 log.warning("kubectl rollout status is failed!")
