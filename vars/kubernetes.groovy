@@ -1,12 +1,12 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String nameSpace, String clusterDomain, String buildVersion, verify = false) {
+def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default', Boolean verify = false) {
 
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
 
-    log.info("Choosen configSet is ${configSet} for clusterDomain ${clusterDomain}")
+    log.info("Choosen configSet is ${configSet} for ${clusterDomain}")
 
     String extraParams = ""
     String k8sEnv = '.k8env'
@@ -22,8 +22,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
         sh """
             curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
-            export PATH=\$PATH:${WORKSPACE}
-            kubectl version --client=true
+            ./kubectl version --client=true
            """
     }
 
@@ -45,6 +44,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
                     kubelogin_version = responseJson.data.build_version.replace('-', '+')
                 }
 
+                log.info("Going to install kubelogin (${kubelogin_version})")
                 pythonUtils.createVirtualEnv("python3", k8sEnv)
                 pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
                 sh """
@@ -59,12 +59,16 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
                 log.warning(e)
                 error("Deploy to the Kubernetes failed! $e")
             }
+
             sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+
             try {
-                sh """
-                    unset KUBERNETES_SERVICE_HOST
-                    kubectl rollout status deployment/${serviceName} --namespace ${nameSpace}
-                    """
+                 kubernetesDeploymentsList.each {
+                    sh """
+                        unset KUBERNETES_SERVICE_HOST
+                        kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                        """
+                }
             } catch (e) {
                 log.warning("kubectl rollout status is failed!")
                 log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
