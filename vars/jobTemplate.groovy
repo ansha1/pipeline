@@ -247,7 +247,8 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig)
+                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
+                                        jobConfig.kubernetesDeploymentsList)
                             }
                         }
                     }

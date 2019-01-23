@@ -47,7 +47,7 @@ def call(body) {
     BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
     isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled == null ? true : pipelineParams.isVeracodeScanEnabled
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
-    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ? pipelineParams.kubernetesDeploymentsList : [APP_NAME]
+    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
 
     switch (env.BRANCH_NAME) {
         case 'dev':
