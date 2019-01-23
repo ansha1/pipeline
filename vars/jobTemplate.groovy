@@ -39,6 +39,7 @@ def call(body) {
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
         isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
+        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -246,7 +247,7 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.BUILD_VERSION)
+                                kubernetes.deploy(jobConfig)
                             }
                         }
                     }

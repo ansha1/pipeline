@@ -1,12 +1,12 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String nameSpace, String clusterDomain, String buildVersion, verify = false) {
+def deploy(def jobConfig, String nameSpace = 'default', Boolean verify = false) {
 
-    def envName = "${clusterDomain.tokenize('.').get(0)}"
+    def envName = "${jobConfig.kubernetesCluster.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
 
-    log.info("Choosen configSet is ${configSet} for clusterDomain ${clusterDomain}")
+    log.info("Choosen configSet is ${configSet} for ${jobConfig.kubernetesCluster}")
 
     String extraParams = ""
     String k8sEnv = '.k8env'
@@ -28,7 +28,7 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
     }
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
+        withEnv(["BUILD_VERSION=${jobConfig.BUILD_VERSION.replace('+', '-')}",
                  "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
                  "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
                  "PATH=${env.PATH}:${WORKSPACE}"]) {
@@ -38,20 +38,21 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
 
             try {
                 def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
-                        url: "https://login.${clusterDomain}/info"
+                        url: "https://login.${jobConfig.kubernetesCluster}/info"
                 def responseJson = readJSON text: response.content
 
                 if (responseJson.data.build_version) {
                     kubelogin_version = responseJson.data.build_version.replace('-', '+')
                 }
 
+                log.info("Going to install kubelogin (${kubelogin_version})")
                 pythonUtils.createVirtualEnv("python3", k8sEnv)
                 pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
                 sh """
                     unset KUBERNETES_SERVICE_HOST
-                    ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
+                    ${k8sEnv}/bin/kubelogin -s login.${jobConfig.kubernetesCluster}
                     kubectl get nodes
-                    ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName}
+                    ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${jobConfig.APP_NAME}
                     """
                 log.info("Deploy to the Kubernetes cluster has been completed.")
             } catch (e) {
@@ -59,12 +60,16 @@ def deploy(String serviceName, String nameSpace, String clusterDomain, String bu
                 log.warning(e)
                 error("Deploy to the Kubernetes failed! $e")
             }
+
             sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+
             try {
-                sh """
-                    unset KUBERNETES_SERVICE_HOST
-                    kubectl rollout status deployment/${serviceName} --namespace ${nameSpace}
-                    """
+                jobConfig.kubernetesDeploymentsList.each {
+                    sh """
+                        unset KUBERNETES_SERVICE_HOST
+                        kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                        """
+                }
             } catch (e) {
                 log.warning("kubectl rollout status is failed!")
                 log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
