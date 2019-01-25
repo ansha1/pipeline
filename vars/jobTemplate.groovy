@@ -134,7 +134,7 @@ def call(body) {
                                             "Do you want to increase a patch version and continue the process?",
                                             common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
-                                    def patchedBuildVersion = jobConfig.autoIncrementVersion(jobConfig.semanticVersion)
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion(jobConfig.semanticVersion.bumpPatch())
                                     utils.setVersion(jobConfig.version)
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
