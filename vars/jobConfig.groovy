@@ -47,6 +47,7 @@ def call(body) {
     BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
     isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled ?: true
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
+    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -129,21 +130,23 @@ def getUtils() {
 
 void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
-        version = new SemanticVersion(userDefinedBuildVersion.trim())
+        semanticVersion = new SemanticVersion(userDefinedBuildVersion.trim())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = true
-        BUILD_VERSION = version.toString()
+        BUILD_VERSION = version
     } else {
-        version = new SemanticVersion(utils.getVersion())
+        semanticVersion = new SemanticVersion(utils.getVersion())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            SemanticVersion buildVersion = version.setMeta("${env.BUILD_ID}")
-            if (version.getPreRelease() ==~ /SNAPSHOT/) {
+            SemanticVersion buildVersion = semanticVersion.setMeta("${env.BUILD_ID}")
+            if (semanticVersion.getPreRelease() ==~ /SNAPSHOT/) {
                 buildVersion = buildVersion.setPreRelease("")
             }
             BUILD_VERSION = buildVersion.toString()
         } else {
-            BUILD_VERSION = version.toString()
+            BUILD_VERSION = semanticVersion.toString()
         }
     }
 
@@ -165,12 +168,13 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
     log.info('===============================')
 }
 
-def autoIncrementVersion() {
-    patchedBuildVersion = buildVersion.toString()
-    while (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        buildVersion = buildVersion.bump(PatchLevel.PATCH)
-        version = version.bump(PatchLevel.PATCH)
-        patchedBuildVersion = buildVersion.toString()
+def autoIncrementVersion(SemanticVersion currentVersion) {
+    semanticVersion = currentVersion
+    version = semanticVersion.toString()
+    patchedBuildVersion = currentVersion.toString()
+
+    if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+        patchedBuildVersion = autoIncrementVersion(semanticVersion.bump(PatchLevel.PATCH))
     }
 
     return patchedBuildVersion
@@ -180,8 +184,8 @@ Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
         case 'java':
-            ANSIBLE_EXTRA_VARS = ['application_version': version.toString(),
-                                  'maven_repo'         : version.toString().contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            ANSIBLE_EXTRA_VARS = ['application_version': version,
+                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
             break
         case 'python':
             ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]

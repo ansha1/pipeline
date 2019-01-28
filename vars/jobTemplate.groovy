@@ -39,6 +39,7 @@ def call(body) {
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
         isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
+        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -115,7 +116,7 @@ def call(body) {
                         env.ANSIBLE_DEPLOYMENT = jobConfig.ANSIBLE_DEPLOYMENT
                         env.CHANNEL_TO_NOTIFY = jobConfig.slackNotifictionScope
                         env.DEPLOY_ENVIRONMENT = jobConfig.DEPLOY_ENVIRONMENT
-                        env.VERSION = jobConfig.version.toString()
+                        env.VERSION = jobConfig.version
                         env.BUILD_VERSION = jobConfig.BUILD_VERSION
 
                         jobConfig.extraEnvs.each { k, v -> env[k] = v }
@@ -133,8 +134,8 @@ def call(body) {
                                             "Do you want to increase a patch version and continue the process?",
                                             common.getCurrentUserSlackId(), jobConfig.branchPermissions)
 
-                                    def patchedBuildVersion = jobConfig.autoIncrementVersion()
-                                    utils.setVersion(jobConfig.version.toString())
+                                    def patchedBuildVersion = jobConfig.autoIncrementVersion(jobConfig.semanticVersion.bumpPatch())
+                                    utils.setVersion(jobConfig.version)
 
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         sh """
@@ -246,7 +247,8 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, 'default', jobConfig.kubernetesCluster, jobConfig.BUILD_VERSION)
+                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
+                                        jobConfig.kubernetesDeploymentsList)
                             }
                         }
                     }
