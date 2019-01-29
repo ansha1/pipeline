@@ -1,0 +1,41 @@
+metadata:
+  namespace: jenkins
+  labels:
+    name: ansible2.7
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: false
+spec:
+  imagePullSecrets:
+  - name: regsecret
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins-slave
+  containers:
+  - name: jnlp
+    image: repository.nextiva.xyz/slave:ansible2.7-alpine-0.0.6
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock-volume
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 512m
+        memory: 512Mi
+      # limits:
+      #   memory: 512Mi
+      #   cpu: 512m
+  volumes:
+  - name: docker-sock-volume
+    hostPath:
+      path: /var/run/docker.sock

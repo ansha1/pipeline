@@ -1,0 +1,50 @@
+metadata:
+  namespace: jenkins
+  labels:
+    name: slave_java8
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: false
+spec:
+  imagePullSecrets:
+  - name: regsecret
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins-slave
+  containers:
+  - name: jnlp
+    image: repository.nextiva.xyz/jenkins-slave-java:0.0.6
+    lifecycle:
+      postStart:
+        exec:
+          command: ["ln", "-s", "/opt/.m2", "/home/jenkins/.m2"]
+            volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-sock-volume
+            env:
+            - name: POSTGRES_SERVICE_HOST
+              value: postgres
+            - name: REDIS_SERVICE_HOST
+              value: redis-rw
+            imagePullPolicy: IfNotPresent
+            resources:
+              requests:
+                cpu: 512m
+                memory: 3000Mi
+            #       limits:
+            #         memory: 4096Mi
+            #         cpu: 1500m
+            volumes:
+            - name: docker-sock-volume
+              hostPath:
+                path: /var/run/docker.sock
