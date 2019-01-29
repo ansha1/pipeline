@@ -1,0 +1,52 @@
+metadata:
+  namespace: jenkins
+  labels:
+    name: slave_python3.6
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: false
+spec:
+  imagePullSecrets:
+  - name: regsecret
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins-slave
+  containers:
+  - name: jnlp
+    image: repository.nextiva.xyz/jenkins-slave-python3.6.2:0.0.4
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock-volume
+    env:
+    - name: POSTGRES_SERVICE_HOST
+      value: postgres
+    - name: REDIS_SERVICE_HOST
+      value: redis-rw
+    - name: RABBITMQ_SERVICE_HOST
+      value: rabbitmq
+    - name: SENTINEL_HOST_PORT
+      value: redis-sentinel:26379
+    - name: SENTINEL_MASTER_NAME
+      value: redis-sentinel
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 512m
+        memory: 1024Mi
+    #       limits:
+    #         memory: 2048Mi
+    #         cpu: 1000m
+  volumes:
+  - name: docker-sock-volume
+    hostPath:
+      path: /var/run/docker.sock
