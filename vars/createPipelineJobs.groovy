@@ -17,6 +17,7 @@ def call(body) {
                                                               .replace('_', ' ')
                                                               .split(' ')
                                                               .collect({ it.capitalize() })
+                                                              .join(' ')
     applicationSlug = pipelineParams.applicationSlug ?: applicationName.toLowerCase()
                                                               .replace(' ', '-')
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
