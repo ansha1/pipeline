@@ -1,12 +1,12 @@
 def call(body) {
-    def label = "slave-${UUID.randomUUID().toString()}"
+    def label = "slave-$appName-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins',
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
-                    resourceRequestCpu: resourceRequestCpu,
-                    resourceRequestMemory: resourceRequestMemory,
+                        resourceRequestCpu: resourceRequestCpu,
+                        resourceRequestMemory: resourceRequestMemory,
                         envVars: [
                                 envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'true'),
                                 envVar(key: 'BLABLA', value: 'true')
@@ -20,10 +20,11 @@ def call(body) {
     }
 }
 
-def build(String image, String resourceRequestCpu, String resourceRequestMemory){
-    this.image = image
-    this.resourceRequestCpu = resourceRequestCpu
-    this.resourceRequestMemory = resourceRequestMemory
+def build(Map podTemplateConfiguration) {
+    this.appName = podTemplateConfiguration.get("appName", "")
+    this.image = podTemplateConfiguration.get("image")
+    this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
+    this.resourceRequestMemory = podTemplateConfiguration.get("resourceRequestMemory", "1Gi")
     return this
 }
 
