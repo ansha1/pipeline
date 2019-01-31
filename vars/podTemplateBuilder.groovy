@@ -6,9 +6,9 @@ def call(body) {
 
 
     podTemplate(label: label, inheritFrom: 'default', workingDir: '/home/jenkins',
-            containers: [containerTemplate(name: 'build', image: this.image, command: 'cat', ttyEnabled: true,
-                    resourceRequestCpu: resourceRequestCpu,
-                    resourceRequestMemory: resourceRequestMemory,
+            containers: [containerTemplate(name: 'build', image: "nginx", command: 'cat', ttyEnabled: true,
+//                    resourceRequestCpu: resourceRequestCpu,
+//                    resourceRequestMemory: resourceRequestMemory,
                     envVars: [
                             envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'true'),
                             envVar(key: 'BLABLA', value: 'true')
