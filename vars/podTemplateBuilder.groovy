@@ -1,11 +1,11 @@
 def call(body) {
     def label = "slave-${UUID.randomUUID().toString()}"
-    parentPodtemplate = libraryResource 'podtemplate/default.yaml'
+//    parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
-    podTemplate(label: 'parent', yaml: parentPodtemplate) {}
+//    podTemplate(label: 'parent', yaml: parentPodtemplate) {}
 
 
-    podTemplate(label: label, inheritFrom: 'parent', workingDir: '/home/jenkins',
+    podTemplate(label: label, inheritFrom: 'default', workingDir: '/home/jenkins',
             containers: [containerTemplate(name: 'build', image: this.image, command: 'cat', ttyEnabled: true,
                     resourceRequestCpu: resourceRequestCpu,
                     resourceRequestMemory: resourceRequestMemory,
