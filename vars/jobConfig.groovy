@@ -15,7 +15,7 @@ def call(body) {
 
     kubernetesClusterMapDefault = [dev       : "dev.nextiva.io",
                                    qa        : "qa.nextiva.io",
-                                   production: "production.nextiva.io"]
+                                   production: "prod.nextiva.io"]
 
     projectFlow = pipelineParams.projectFlow
     extraEnvs = pipelineParams.extraEnvs ?: [:]
