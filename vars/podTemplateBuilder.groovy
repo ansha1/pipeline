@@ -3,7 +3,7 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
-        podTemplate(label: label, inheritFrom: 'parent', workingDir: '/home/jenkins',
+        podTemplate(label: label, workingDir: '/home/jenkins',
                 containers: [containerTemplate(name: 'build', image: "nginx", command: 'cat', ttyEnabled: true,
 //                    resourceRequestCpu: resourceRequestCpu,
 //                    resourceRequestMemory: resourceRequestMemory,
