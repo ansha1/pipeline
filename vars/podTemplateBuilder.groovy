@@ -31,8 +31,8 @@ def call(body) {
                             node(label) {
                                 properties([
                                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                                        disableConcurrentBuilds()
-                                        parameters(paramlist)
+                                        disableConcurrentBuilds(),
+                                        parameters(paramlist),
 //                        parameters([
 ////                                string(name: 'submodule', defaultValue: ''),
 ////                                string(name: 'submodule_branch', defaultValue: ''),
