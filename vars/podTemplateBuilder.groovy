@@ -31,13 +31,8 @@ def call(body) {
                             node(label) {
                                 properties([
                                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                                        disableConcurrentBuilds(),
-                                        parameters(append(paramlist, [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),])),
-//                        parameters([
-////                                string(name: 'submodule', defaultValue: ''),
-////                                string(name: 'submodule_branch', defaultValue: ''),
-////                                string(name: 'commit_sha', defaultValue: ''),
-//                        ])
+                                        disableConcurrentBuilds(false),
+                                        parameters(paramlist),
                                 ])
 
                             body.call()
@@ -51,8 +46,6 @@ def call(body) {
 
 def build(Map podTemplateConfiguration) {
 
-
-
     this.slaveName = podTemplateConfiguration.get("slaveName", "slave")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
@@ -60,10 +53,8 @@ def build(Map podTemplateConfiguration) {
     this.buildDaysToKeepStr = podTemplateConfiguration.get("buildDaysToKeepStr", "3")
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
-    this.paramlist = podTemplateConfiguration.get("paramlist", [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),])
+    this.paramlist = [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),] +
+            podTemplateConfiguration.get("paramlist", [])
     return this
 }
 
-
-//disableConcurrentBuilds()
-//authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
