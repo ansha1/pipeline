@@ -47,12 +47,11 @@ def build(Map podTemplateConfiguration) {
     this.buildDaysToKeepStr = podTemplateConfiguration.get("buildDaysToKeepStr", "3")
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
-    this.paramlist = [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),] +
-            podTemplateConfiguration.get("paramlist", [])
-    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),]
+    this.paramlist = podTemplateConfiguration.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
+    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr))]
     this.disableConcurrentBuilds = podTemplateConfiguration.get("disableConcurrentBuilds", true)
     if (disableConcurrentBuilds) {
-        this.propertiesList += [disableConcurrentBuilds()]
+        this.propertiesList << [disableConcurrentBuilds()]
     }
     return this
 }
