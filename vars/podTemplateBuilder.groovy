@@ -1,5 +1,5 @@
 def call(body) {
-    def label = "slave-$appName-${UUID.randomUUID().toString()}"
+    def label = "${appName}-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
@@ -15,13 +15,17 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/opt/m2cache'),
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
-            body.call(label)
+
+                node(label) {
+                    body.call()
+                }
+
         }
     }
 }
 
 def build(Map podTemplateConfiguration) {
-    this.appName = podTemplateConfiguration.get("appName", "")
+    this.appName = podTemplateConfiguration.get("appName", "slave")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
     this.resourceRequestMemory = podTemplateConfiguration.get("resourceRequestMemory", "1Gi")
