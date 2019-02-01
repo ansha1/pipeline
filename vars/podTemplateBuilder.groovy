@@ -16,10 +16,18 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
 
-                node(label) {
-                    body.call()
+            node(label) {
+                properties([
+                        buildDiscarder(logRotator(daysToKeepStr: '3', numToKeepStr: '10')),
+                ])
+                timestamps {
+                    ansiColor('xterm') {
+                        timeout(time: 50, unit: 'MINUTES') {
+                            body.call()
+                        }
+                    }
                 }
-
+            }
         }
     }
 }
