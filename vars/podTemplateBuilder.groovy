@@ -2,12 +2,6 @@ def call(body) {
     def label = "${slaveName}-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
-//    List paramlist = [
-//            string(name: 'submodule', defaultValue: ''),
-//            string(name: 'submodule_branch', defaultValue: ''),
-//            string(name: 'commit_sha', defaultValue: ''),
-//    ]
-
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins',
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
@@ -21,7 +15,6 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/opt/m2cache'),
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
-
 
             timestamps {
                 ansiColor('xterm') {
@@ -55,7 +48,6 @@ def build(Map podTemplateConfiguration) {
     this.authMap = podTemplateConfiguration.get("auth", [:])
     this.allowedUsers = this.authMap.get(env.BRANCH_NAME, [])
     this.securityPermissions = generateSecurityPermissions(this.allowedUsers)
-
     this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: this.buildDaysToKeepStr, numToKeepStr: this.buildNumToKeepStr)), authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: this.securityPermissions)]
 
     return this
