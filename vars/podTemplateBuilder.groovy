@@ -2,7 +2,6 @@ def call(body) {
     def label = "${slaveName}-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
-
 //    List paramlist = [
 //            string(name: 'submodule', defaultValue: ''),
 //            string(name: 'submodule_branch', defaultValue: ''),
@@ -24,18 +23,12 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
 
 
-                timestamps {
-                    ansiColor('xterm') {
-                        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
+            timestamps {
+                ansiColor('xterm') {
+                    timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
 
-                            node(label) {
-                                properties(propertiesList)
-
-                                        buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                                        disableConcurrentBuilds(),
-                                        parameters(paramlist),
-                                ])
-
+                        node(label) {
+                            properties(propertiesList)
                             body.call()
                         }
                     }
@@ -56,7 +49,7 @@ def build(Map podTemplateConfiguration) {
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
     this.paramlist = [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),] +
             podTemplateConfiguration.get("paramlist", [])
-    this.propertiesList = [parameters(paramlist),buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),]
+    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),]
     this.disableConcurrentBuilds = podTemplateConfiguration.get("disableConcurrentBuilds", true)
     if (disableConcurrentBuilds) {
         this.propertiesList += [disableConcurrentBuilds()]
