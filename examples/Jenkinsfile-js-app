@@ -15,13 +15,13 @@ jobTemplate {
                      qa        : "rc",
                      production: "production"]
 
-    projectFlow = ['language'    : 'js',
-                   'publishStaticAssetsToS3' : 'enabled',
-                   'testCommands': '''
+    projectFlow = ['language'     : 'js',
+                   'testCommands' : '''
                                    npm install
                                    npm run lint
                                    npm run test:coverage
-                                   ''']
+                                   ''',
+                    'publishStaticAssetsToS3' : 'true']
 
     healthCheckMap = [dev       : ["http://dev.dev.nextiva.xyz/apps/js-app/build.properties"],
                       qa        : ["http://rc.rc.nextiva.xyz/apps/js-app/build.properties"],
