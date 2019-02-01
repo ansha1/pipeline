@@ -48,7 +48,7 @@ def build(Map podTemplateConfiguration) {
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
     this.paramlist = podTemplateConfiguration.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
-    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)]
+    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)), authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)]
     this.isDisableConcurrentBuildsEnabled = podTemplateConfiguration.get("disableConcurrentBuilds", true)
     if (this.isDisableConcurrentBuildsEnabled) {
         this.propertiesList += [disableConcurrentBuilds()]
@@ -64,11 +64,10 @@ def build(Map podTemplateConfiguration) {
 
 List<String> generateSecurityPermissions(List<String> allowedUsers) {
     List<String> basicList = ['hudson.model.Item.Read:authenticated']
-    allowedUsers.each{
+    allowedUsers.each {
         basicList.add("hudson.model.Item.Build:${it}")
         basicList.add("hudson.model.Item.Cancel:${it}")
         basicList.add("hudson.model.Item.Workspace:${it}")
-    }
     }
     return basicList
 }
