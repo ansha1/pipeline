@@ -32,7 +32,7 @@ def call(body) {
                                 properties([
                                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
                                         disableConcurrentBuilds(),
-                                        parameters(paramlist),
+                                        parameters(append(paramlist, [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),])),
 //                        parameters([
 ////                                string(name: 'submodule', defaultValue: ''),
 ////                                string(name: 'submodule_branch', defaultValue: ''),
@@ -50,6 +50,9 @@ def call(body) {
 }
 
 def build(Map podTemplateConfiguration) {
+
+
+
     this.slaveName = podTemplateConfiguration.get("slaveName", "slave")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
