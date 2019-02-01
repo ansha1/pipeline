@@ -21,7 +21,7 @@ jobTemplate {
                                    npm run lint
                                    npm run test:coverage
                                    ''',
-                    'publishStaticAssetsToS3' : 'true']
+                    'publishStaticAssetsToS3' : true]
 
     healthCheckMap = [dev       : ["http://dev.dev.nextiva.xyz/apps/js-app/build.properties"],
                       qa        : ["http://rc.rc.nextiva.xyz/apps/js-app/build.properties"],
