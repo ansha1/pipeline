@@ -3,8 +3,11 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
 
-
-    List props = [buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)), parameters([string(name: 'submodule', defaultValue: ''),])]
+    paramlist = [
+            string(name: 'submodule', defaultValue: ''),
+            string(name: 'submodule_branch', defaultValue: ''),
+            string(name: 'commit_sha', defaultValue: ''),
+    ]
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins',
@@ -23,19 +26,12 @@ def call(body) {
             node(label) {
                 properties([
                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                        parameters([props])
+                        parameters([
+//                                string(name: 'submodule', defaultValue: ''),
+//                                string(name: 'submodule_branch', defaultValue: ''),
+//                                string(name: 'commit_sha', defaultValue: ''),
+                        ])
                 ])
-
-
-//                node(label) {
-//                    properties([
-//                            buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-//                            parameters([
-////                                string(name: 'submodule', defaultValue: ''),
-////                                string(name: 'submodule_branch', defaultValue: ''),
-////                                string(name: 'commit_sha', defaultValue: ''),
-//                            ])
-//                    ])
                 timestamps {
                     ansiColor('xterm') {
                         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
