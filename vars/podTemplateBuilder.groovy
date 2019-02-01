@@ -3,11 +3,11 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
 
-    List paramlist = [
-            string(name: 'submodule', defaultValue: ''),
-            string(name: 'submodule_branch', defaultValue: ''),
-            string(name: 'commit_sha', defaultValue: ''),
-    ]
+//    List paramlist = [
+//            string(name: 'submodule', defaultValue: ''),
+//            string(name: 'submodule_branch', defaultValue: ''),
+//            string(name: 'commit_sha', defaultValue: ''),
+//    ]
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins',
@@ -53,6 +53,7 @@ def build(Map podTemplateConfiguration) {
     this.buildDaysToKeepStr = podTemplateConfiguration.get("buildDaysToKeepStr", "3")
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
+    this.paramlist = podTemplateConfiguration.get("paramlist", "[]")
     return this
 }
 
