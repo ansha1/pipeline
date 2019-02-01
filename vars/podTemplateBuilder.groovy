@@ -23,19 +23,23 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
 
-            node(label) {
-                properties([
-                        buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                        parameters(paramlist)
+
+                timestamps {
+                    ansiColor('xterm') {
+                        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
+
+                            node(label) {
+                                properties([
+                                        buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
+                                        disableConcurrentBuilds()
+                                        parameters(paramlist)
 //                        parameters([
 ////                                string(name: 'submodule', defaultValue: ''),
 ////                                string(name: 'submodule_branch', defaultValue: ''),
 ////                                string(name: 'commit_sha', defaultValue: ''),
 //                        ])
-                ])
-                timestamps {
-                    ansiColor('xterm') {
-                        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
+                                ])
+
                             body.call()
                         }
                     }
@@ -58,5 +62,5 @@ def build(Map podTemplateConfiguration) {
 }
 
 
-disableConcurrentBuilds()
-authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
+//disableConcurrentBuilds()
+//authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
