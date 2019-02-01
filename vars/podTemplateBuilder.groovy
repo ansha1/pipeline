@@ -1,5 +1,5 @@
 def call(body) {
-    def label = "${appName}-${UUID.randomUUID().toString()}"
+    def label = "${slaveName}-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
@@ -38,7 +38,7 @@ def call(body) {
 }
 
 def build(Map podTemplateConfiguration) {
-    this.appName = podTemplateConfiguration.get("appName", "slave")
+    this.slaveName = podTemplateConfiguration.get("slaveName", "slave")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
     this.resourceRequestMemory = podTemplateConfiguration.get("resourceRequestMemory", "1Gi")
