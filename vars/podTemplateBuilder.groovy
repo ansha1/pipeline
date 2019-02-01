@@ -48,15 +48,15 @@ def build(Map podTemplateConfiguration) {
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
     this.paramlist = podTemplateConfiguration.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
-    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: this.buildDaysToKeepStr, numToKeepStr: this.buildNumToKeepStr)), authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: this.securityPermissions)]
     this.isDisableConcurrentBuildsEnabled = podTemplateConfiguration.get("disableConcurrentBuilds", true)
     if (this.isDisableConcurrentBuildsEnabled) {
         this.propertiesList += [disableConcurrentBuilds()]
     }
-
     this.authMap = podTemplateConfiguration.get("auth", [:])
     this.allowedUsers = this.authMap.get(env.BRANCH_NAME, [])
     this.securityPermissions = generateSecurityPermissions(this.allowedUsers)
+
+    this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: this.buildDaysToKeepStr, numToKeepStr: this.buildNumToKeepStr)), authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: this.securityPermissions)]
 
     return this
 }
