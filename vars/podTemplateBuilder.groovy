@@ -3,7 +3,7 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
 
-    paramlist = [
+    List paramlist = [
             string(name: 'submodule', defaultValue: ''),
             string(name: 'submodule_branch', defaultValue: ''),
             string(name: 'commit_sha', defaultValue: ''),
@@ -26,11 +26,12 @@ def call(body) {
             node(label) {
                 properties([
                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                        parameters([
-//                                string(name: 'submodule', defaultValue: ''),
-//                                string(name: 'submodule_branch', defaultValue: ''),
-//                                string(name: 'commit_sha', defaultValue: ''),
-                        ])
+                        parameters(paramlist)
+//                        parameters([
+////                                string(name: 'submodule', defaultValue: ''),
+////                                string(name: 'submodule_branch', defaultValue: ''),
+////                                string(name: 'commit_sha', defaultValue: ''),
+//                        ])
                 ])
                 timestamps {
                     ansiColor('xterm') {
