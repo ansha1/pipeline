@@ -29,9 +29,10 @@ def call(body) {
                         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
 
                             node(label) {
-                                properties([
+                                properties(propertiesList)
+
                                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                                        disableConcurrentBuilds(false),
+                                        disableConcurrentBuilds(),
                                         parameters(paramlist),
                                 ])
 
@@ -55,6 +56,11 @@ def build(Map podTemplateConfiguration) {
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
     this.paramlist = [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),] +
             podTemplateConfiguration.get("paramlist", [])
+    this.propertiesList = [parameters(paramlist),buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),]
+    this.disableConcurrentBuilds = podTemplateConfiguration.get("disableConcurrentBuilds", true)
+    if (disableConcurrentBuilds) {
+        this.propertiesList += [disableConcurrentBuilds()]
+    }
     return this
 }
 
