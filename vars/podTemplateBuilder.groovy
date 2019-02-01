@@ -51,7 +51,7 @@ def build(Map podTemplateConfiguration) {
     this.propertiesList = [parameters(paramlist), buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr))]
     this.disableConcurrentBuilds = podTemplateConfiguration.get("disableConcurrentBuilds", true)
     if (disableConcurrentBuilds) {
-        this.propertiesList << [disableConcurrentBuilds()]
+        this.propertiesList += [disableConcurrentBuilds()]
     }
     return this
 }
