@@ -2,6 +2,10 @@ def call(body) {
     def label = "${slaveName}-${UUID.randomUUID().toString()}"
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
+
+
+    List props = [buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)), parameters([string(name: 'submodule', defaultValue: ''),])]
+
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins',
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
@@ -19,12 +23,19 @@ def call(body) {
             node(label) {
                 properties([
                         buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                        parameters([
-//                                string(name: 'submodule', defaultValue: ''),
-//                                string(name: 'submodule_branch', defaultValue: ''),
-//                                string(name: 'commit_sha', defaultValue: ''),
-                        ])
+                        parameters([props])
                 ])
+
+
+//                node(label) {
+//                    properties([
+//                            buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
+//                            parameters([
+////                                string(name: 'submodule', defaultValue: ''),
+////                                string(name: 'submodule_branch', defaultValue: ''),
+////                                string(name: 'commit_sha', defaultValue: ''),
+//                            ])
+//                    ])
                 timestamps {
                     ansiColor('xterm') {
                         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
@@ -49,3 +60,5 @@ def build(Map podTemplateConfiguration) {
 }
 
 
+disableConcurrentBuilds()
+authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions)
