@@ -53,7 +53,7 @@ def build(Map podTemplateConfiguration) {
     this.buildDaysToKeepStr = podTemplateConfiguration.get("buildDaysToKeepStr", "3")
     this.buildNumToKeepStr = podTemplateConfiguration.get("buildNumToKeepStr", "5")
     this.jobTimeoutMinutes = podTemplateConfiguration.get("jobTimeoutMinutes", "60")
-    this.paramlist = podTemplateConfiguration.get("paramlist", "[]")
+    this.paramlist = podTemplateConfiguration.get("paramlist", [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false),])
     return this
 }
 
