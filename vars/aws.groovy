@@ -4,7 +4,6 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
     withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
         def assetDir = args.get('distPath', 'dist/static')
         def S3BucketName = ""
-        // Boolean publishToS3 = args.get('publishStaticAssetsToS3').toBoolean()
         Boolean publishToS3 = args.get('publishStaticAssetsToS3')
         log.info("publishStaticAssetsToS3: ${publishToS3}")
         if (publishToS3 == true) {      
