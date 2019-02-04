@@ -55,17 +55,39 @@ void runTests(Map args) {
     }
 }
 
+def buildAssets(String buildVersion, String environment, Map args) {
+    def jobName = env.JOB_NAME
+    def distPath = args.get('distPath', 'dist/static')
+    def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
+    def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
+    if (environment in LIST_OF_ENVS) {
+            dir(pathToSrc) {
+                generateBuildProperties(environment, buildVersion, jobName)
+                sh "${buildCommands}"
+            }    
+        } else {
+                throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
+    }
+}
+
+def publishAssets(String appName, String buildVersion, String environment, Map args) {
+    def distPath = args.get('distPath', 'dist/static')
+    Boolean publishToS3 = args.get('publishStaticAssetsToS3')
+    log.info("publishStaticAssetsToS3: ${publishToS3}")
+    dir(pathToSrc) {
+        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
+        if (publishToS3) {
+            aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
+        }    
+    }
+}
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     log.info("Build and publish JavaScript application.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    def distPath = args.get('distPath', 'dist/static')
-    def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
+    buildAssets(buildVersion, environment, args)
+    publishAssets(appName, buildVersion, environment, args)
 
-    dir(pathToSrc) {
-        sh "${buildCommands}"
-        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
-    }
 }

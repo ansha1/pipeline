@@ -26,8 +26,8 @@ def call(body) {
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
-    publishBuildArtifact = pipelineParams.publishBuildArtifact == null ? true : pipelineParams.publishBuildArtifact
-    publishDockerImage = pipelineParams.publishDockerImage == null ? false : pipelineParams.publishDockerImage
+    publishBuildArtifact = pipelineParams.publishBuildArtifact ?: true
+    publishDockerImage = pipelineParams.publishDockerImage ?: false
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
@@ -36,8 +36,8 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S == null ? false : pipelineParams.DEPLOY_ON_K8S
-    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT == null ? true : pipelineParams.ANSIBLE_DEPLOYMENT
+    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S ?: false
+    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT ?: true
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
@@ -45,7 +45,7 @@ def call(body) {
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
-    isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled == null ? true : pipelineParams.isVeracodeScanEnabled
+    isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled ?: true
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
 

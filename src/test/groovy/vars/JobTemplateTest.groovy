@@ -82,11 +82,13 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
                 stack: 'a'
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
-                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common'
+                'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common',
+                'aws', 'generateBuildProperties'
 
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
         helper.registerAllowedMethod 'sh', [Map], { c -> 'some output' }
+        helper.registerAllowedMethod 'readProperties', [Map], { [:] }
         helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
 
         mockEnv()
@@ -98,12 +100,12 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockStringStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
-                'httpRequest', 'booleanParam', 'usernamePassword'
+                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile', 's3Upload'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'
         mockListClosure 'withEnv'
-        mockMapClosure 'sshagent'
+        mockMapClosure 'sshagent', 'withAWS'
     }
 
     @Override
