@@ -1,0 +1,38 @@
+@Library('pipeline') _
+channelToNotify = "testchannel"  //Put your Slack channel here
+
+Map buildMap = ["image"                : "node:8.15",       //Specify the build image for your builds
+                "resourceRequestCpu"   : "1000m",           //Specify the CPU requests
+                "resourceRequestMemory": "1500Mi",          //Specify the RAM requests
+                "slaveName"            : "analytics-spa",   //Specify slave name
+]
+
+slave = podTemplateBuilder.build(buildMap)
+slave() {
+    try {
+        //put your code here
+        stage("Checkout") {
+            checkout scm
+
+        }
+        stage('Deploy info') {
+            container('build') {
+                sh """
+                        node -v
+                        yarn -v
+                        env
+                    """
+            }
+        }
+
+    } catch (e) {
+        log.error("there is error in the build $e")
+        currentBuild.result = "FAILED"
+    } finally {
+        try {
+            slackNotify(channelToNotify)
+        } catch (e) {
+            log.error("Error on sending slack message: $e")
+        }
+    }
+}
