@@ -82,7 +82,7 @@ Boolean isJavaArtifactExists(String groupId, String artifactId, String artifactV
     checkNexus2Package(repo, packaging, artifactId, artifactVersion, groupId)
 }
 
-def uploadStaticAssets(String deployEnvironment, String assetDir, String version, String packageName, String pathToSrc) {
+def uploadStaticAssets(String deployEnvironment, String assetDir, String version, String packageName, String pathToSrc = '.') {
     def jobName = "${env.JOB_NAME}"
     def nexusRepoUrl = NEXUS_STATIC_ASSETS_REPO_URL + deployEnvironment
     def assetPath = "${env.WORKSPACE}/${packageName}-${env.EXECUTOR_NUMBER}.${ASSETS_PACKAGE_EXTENSION}"
