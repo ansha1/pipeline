@@ -55,19 +55,12 @@ void runTests(Map args) {
     }
 }
 
-def buildAssets(String buildVersion, String environment, Map args) {
-    def jobName = env.JOB_NAME
+def buildAssets(Map args) {
     def distPath = args.get('distPath', 'dist/static')
-    def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
     def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
-    if (environment in LIST_OF_ENVS) {
             dir(pathToSrc) {
-                generateBuildProperties(environment, buildVersion, jobName)
                 sh "${buildCommands}"
-            }    
-        } else {
-                throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
-    }
+            }
 }
 
 def publishAssets(String appName, String buildVersion, String environment, Map args) {
@@ -87,7 +80,7 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    buildAssets(buildVersion, environment, args)
+    buildAssets(args)
     publishAssets(appName, buildVersion, environment, args)
 
 }
