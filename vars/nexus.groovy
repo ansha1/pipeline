@@ -90,15 +90,13 @@ def uploadStaticAssets(String deployEnvironment, String assetDir, String version
     def pathToBuildPropertiesFile = "${env.WORKSPACE}/${pathToSrc}/${BUILD_PROPERTIES_FILENAME}"
 
     if (deployEnvironment in LIST_OF_ENVS) {
-        def verbose = log.isDebug() ? "--verbose --include" : ""
-
+        generateBuildProperties(deployEnvironment, version, jobName)
         sh "cd ${assetDir} && cp ${pathToBuildPropertiesFile} ./ && tar -czvf ${assetPath} ./"
         dir(assetDir){
             uploadFile(assetPath, "${nexusRepoUrl}/${packageName}")
             uploadFile(assetPath, "${nexusRepoUrl}/${packageName}-${version}")
         }
-    }
-    else {
+    } else {
         throw new IllegalArgumentException("Provided env ${deployEnvironment} is not in the list ${LIST_OF_ENVS}")
     }
 }
