@@ -11,13 +11,15 @@ def call(body) {
                                 envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                                 envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
                                 envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
-                                envVar(key: 'npm_config_cache', value: '/opt/npmcache')
+                                envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
+                                envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo')
                         ],)],
                 volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-                          hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2'),
+                          hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
-                          hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache')]) {
+                          hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
+                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {
 
             timestamps {
                 ansiColor('xterm') {
