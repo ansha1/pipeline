@@ -55,17 +55,32 @@ void runTests(Map args) {
     }
 }
 
+def buildAssets(Map args) {
+    def distPath = args.get('distPath', 'dist/static')
+    def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
+            dir(pathToSrc) {
+                sh "${buildCommands}"
+            }
+}
+
+def publishAssets(String appName, String buildVersion, String environment, Map args) {
+    def distPath = args.get('distPath', 'dist/static')
+    Boolean publishToS3 = args.get('publishStaticAssetsToS3')
+    log.info("publishStaticAssetsToS3: ${publishToS3}")
+    dir(pathToSrc) {
+        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
+        if (publishToS3) {
+            aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
+        }    
+    }
+}
 
 void buildPublish(String appName, String buildVersion, String environment, Map args) {
     log.info("Build and publish JavaScript application.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    def distPath = args.get('distPath', 'dist/static')
-    def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
+    buildAssets(args)
+    publishAssets(appName, buildVersion, environment, args)
 
-    dir(pathToSrc) {
-        sh "${buildCommands}"
-        nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
-    }
 }
