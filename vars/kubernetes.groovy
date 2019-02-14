@@ -32,7 +32,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
                  "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
                  "PATH=${env.PATH}:${WORKSPACE}"]) {
 
-            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, envName)
+            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
             def kubelogin_version = KUBERNETES_KUBELOGIN_DEFAULT_VERSION
 
             try {
