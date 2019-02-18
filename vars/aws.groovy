@@ -16,3 +16,11 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
         }
     }
 }
+
+def uploadTestResults(String appName, String jobName, String buildNumber, String objectToUpload) {
+    withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
+        s3Upload(bucket: S3_TEST_REPORTS_BUCKET,
+                file: objectToUpload,
+                path: "${appName}/${jobName}/${buildNumber}/")
+    }
+}
