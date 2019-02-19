@@ -51,6 +51,9 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
                     unset KUBERNETES_SERVICE_HOST
                     ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
                     kubectl get nodes
+                    echo 'Checking of application manifests ...'
+                    ${repoDir}/kubeup ${extraParams} --dry-run --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName}
+                    echo 'Deploying application into Kubernetes ...'
                     ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName}
                     """
                 log.info("Deploy to the Kubernetes cluster has been completed.")
