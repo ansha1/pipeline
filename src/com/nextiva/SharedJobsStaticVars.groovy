@@ -32,10 +32,10 @@ class SharedJobsStaticVars {
     static final JS_NODE_LABEL = 'js'
     static final ANSIBLE_NODE_LABEL = 'ansible'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
+    static final KUBERNETES_REPO_BRANCH = 'develop'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
-    static final KUBERNETES_REPO_BRANCH = 'develop'
-    static final KUBERNETES_KUBELOGIN_VERSION = '1.2.0'
+    static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.3.0'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
     static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
@@ -54,7 +54,6 @@ class SharedJobsStaticVars {
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
     static final BITBUCKET_URL = 'https://git.nextiva.xyz'
-    static final BLUE_GREEN_DEPLOY_DEFAULT = false
     static final PROMETHEUS_PUSHGATEWAY_URL = 'http://10.103.50.110:9091/metrics'
     static final PROMETHEUS_INSTANCE_NAME = 'jenkins'
     static final PROMETHEUS_DEFAULT_METRIC = 1
@@ -62,4 +61,10 @@ class SharedJobsStaticVars {
     static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
     static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'NextOS Platform (CRM)'
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
+    static final S3_PRODUCTION_BUCKET_NAME = 'static-assets-prod.nextiva.io'
+    static final S3_DEV_BUCKET_NAME = 'static-assets-dev.nextiva.io'
+    static final AWS_REGION = 'us-west-2'
+    static final AWS_CREDENTIALS = 'nextiva.io'
+    static final AWS_S3_UPLOAD_CREDENTIALS = 'test-reports-s3-upload'
+    static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
 }

@@ -15,7 +15,7 @@ def call(body) {
 
     kubernetesClusterMapDefault = [dev       : "dev.nextiva.io",
                                    qa        : "qa.nextiva.io",
-                                   production: "production.nextiva.io"]
+                                   production: "prod.nextiva.io"]
 
     projectFlow = pipelineParams.projectFlow
     extraEnvs = pipelineParams.extraEnvs ?: [:]
@@ -26,8 +26,8 @@ def call(body) {
     jobTimeoutMinutes = pipelineParams.jobTimeoutMinutes ?: JOB_TIMEOUT_MINUTES_DEFAULT
     buildNumToKeepStr = pipelineParams.buildNumToKeepStr ?: BUILD_NUM_TO_KEEP_STR
     artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr ?: ARTIFACT_NUM_TO_KEEP_STR
-    publishBuildArtifact = pipelineParams.publishBuildArtifact == null ? true : pipelineParams.publishBuildArtifact
-    publishDockerImage = pipelineParams.publishDockerImage == null ? false : pipelineParams.publishDockerImage
+    publishBuildArtifact = getBooleanDefault(pipelineParams.publishBuildArtifact, true)
+    publishDockerImage = getBooleanDefault(pipelineParams.publishDockerImage, false)
     APP_NAME = pipelineParams.APP_NAME
     nodeLabel = pipelineParams.nodeLabel ?: DEFAULT_NODE_LABEL
     ansibleRepo = pipelineParams.ansibleRepo ?: RELEASE_MANAGEMENT_REPO_URL
@@ -36,17 +36,18 @@ def call(body) {
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
     DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
-    DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S == null ? false : pipelineParams.DEPLOY_ON_K8S
-    ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT == null ? true : pipelineParams.ANSIBLE_DEPLOYMENT
+    DEPLOY_ON_K8S = getBooleanDefault(pipelineParams.DEPLOY_ON_K8S, false)
+    ANSIBLE_DEPLOYMENT = getBooleanDefault(pipelineParams.ANSIBLE_DEPLOYMENT, true)
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
     NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
-    BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY == null ? BLUE_GREEN_DEPLOY_DEFAULT : pipelineParams.BLUE_GREEN_DEPLOY
-    isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled == null ? true : pipelineParams.isVeracodeScanEnabled
+    BLUE_GREEN_DEPLOY = getBooleanDefault(pipelineParams.BLUE_GREEN_DEPLOY, false)
+    isVeracodeScanEnabled = getBooleanDefault(pipelineParams.isVeracodeScanEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
+    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -129,21 +130,23 @@ def getUtils() {
 
 void setBuildVersion(String userDefinedBuildVersion = null) {
     if (userDefinedBuildVersion) {
-        version = new SemanticVersion(userDefinedBuildVersion.trim())
+        semanticVersion = new SemanticVersion(userDefinedBuildVersion.trim())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = true
-        BUILD_VERSION = version.toString()
+        BUILD_VERSION = version
     } else {
-        version = new SemanticVersion(utils.getVersion())
+        semanticVersion = new SemanticVersion(utils.getVersion())
+        version = semanticVersion.toString()
         DEPLOY_ONLY = false
 
         if (env.BRANCH_NAME ==~ /^(dev|develop)$/) {
-            SemanticVersion buildVersion = version.setMeta("${env.BUILD_ID}")
-            if (version.getPreRelease() ==~ /SNAPSHOT/) {
+            SemanticVersion buildVersion = semanticVersion.setMeta("${env.BUILD_ID}")
+            if (semanticVersion.getPreRelease() ==~ /SNAPSHOT/) {
                 buildVersion = buildVersion.setPreRelease("")
             }
             BUILD_VERSION = buildVersion.toString()
         } else {
-            BUILD_VERSION = version.toString()
+            BUILD_VERSION = semanticVersion.toString()
         }
     }
 
@@ -166,11 +169,12 @@ void setHotfixDeploy(Boolean hotfixDeploy = false) {
 }
 
 def autoIncrementVersion(SemanticVersion currentVersion) {
-    version = currentVersion
+    semanticVersion = currentVersion
+    version = semanticVersion.toString()
     patchedBuildVersion = currentVersion.toString()
 
     if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
-        patchedBuildVersion = autoIncrementVersion(version.bump(PatchLevel.PATCH))
+        patchedBuildVersion = autoIncrementVersion(semanticVersion.bump(PatchLevel.PATCH))
     }
 
     return patchedBuildVersion
@@ -180,8 +184,8 @@ Map getAnsibleExtraVars() {
 
     switch (projectFlow.get('language')) {
         case 'java':
-            ANSIBLE_EXTRA_VARS = ['application_version': version.toString(),
-                                  'maven_repo'         : version.toString().contains('SNAPSHOT') ? 'snapshots' : 'releases']
+            ANSIBLE_EXTRA_VARS = ['application_version': version,
+                                  'maven_repo'         : version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
             break
         case 'python':
             ANSIBLE_EXTRA_VARS = ['version': BUILD_VERSION]
@@ -197,4 +201,8 @@ Map getAnsibleExtraVars() {
     }
 
     return ANSIBLE_EXTRA_VARS
+}
+
+Boolean getBooleanDefault(def value, Boolean defaultValue) {
+    return value == null ? defaultValue : value
 }

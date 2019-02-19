@@ -1,5 +1,5 @@
-def call(String healthCheckUrl, Integer timeLimit=2) {
-    timeout(timeLimit) {   //default 2 minutes for starting
+def call(String healthCheckUrl, Integer timeLimit=5) {
+    timeout(timeLimit) {   //default 5 minutes for starting
         waitUntil {
             try {
                 httpRequest url: healthCheckUrl, consoleLogResponseBody: true
@@ -12,7 +12,7 @@ def call(String healthCheckUrl, Integer timeLimit=2) {
 }
 
 
-def list(List healthCheckUrls, Integer timeLimit=2){
+def list(List healthCheckUrls, Integer timeLimit=5){
     try {
         healthCheckUrls.each{healthCheck(it, timeLimit)}
     }
