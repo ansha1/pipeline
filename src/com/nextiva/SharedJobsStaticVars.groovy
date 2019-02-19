@@ -65,4 +65,6 @@ class SharedJobsStaticVars {
     static final S3_DEV_BUCKET_NAME = 'static-assets-dev.nextiva.io'
     static final AWS_REGION = 'us-west-2'
     static final AWS_CREDENTIALS = 'nextiva.io'
+    static final AWS_S3_UPLOAD_CREDENTIALS = 'test-reports-s3-upload'
+    static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
 }
