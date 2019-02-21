@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def uploadFrontToS3(String appName, String buildVersion, String environment, Map args, String pathToSrc) {
     if (environment.notIn(LIST_OF_ENVS)) {
         throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
@@ -18,15 +19,26 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
 }
 
 def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload) {
+    def reportPath = ''
+
     withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
         objectsToUpload.each {
             try {
                 s3Upload(bucket: S3_TEST_REPORTS_BUCKET,
                          file: it,
                          path: "${appName}/${jobName}/${buildNumber}/")
+                reportPath = it
             } catch (e) {
                 log.warning("Error with uploading test results to S3 bucket! ${e}")
             }
         }
     }
+
+    publishHTML([allowMissing         : true,
+                 alwaysLinkToLastBuild: false,
+                 keepAll              : true,
+                 reportDir            : reportPath,
+                 reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/",
+                 reportName           : 'Test Report',
+                 reportTitles         : ''])
 }
