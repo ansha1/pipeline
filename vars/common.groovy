@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def getCurrentUserLogin() {
     def build = currentBuild.rawBuild
     def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
@@ -78,3 +79,9 @@ def serviceStatus(String hostname, String service) {
     remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
 
+def tempDir(path, closure) {
+    dir(path) {
+        closure()
+        deleteDir()
+    }
+}
