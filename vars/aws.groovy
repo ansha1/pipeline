@@ -17,10 +17,16 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
     }
 }
 
-def uploadTestResults(String appName, String jobName, String buildNumber, String objectToUpload) {
+def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload) {
     withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
-        s3Upload(bucket: S3_TEST_REPORTS_BUCKET,
-                file: objectToUpload,
-                path: "${appName}/${jobName}/${buildNumber}/")
+        objectsToUpload.each {
+            try {
+                s3Upload(bucket: S3_TEST_REPORTS_BUCKET,
+                         file: it,
+                         path: "${appName}/${jobName}/${buildNumber}/")
+            } catch (e) {
+                log.warning("Error with uploading test results to S3 bucket! ${e}")
+            }
+        }
     }
 }
