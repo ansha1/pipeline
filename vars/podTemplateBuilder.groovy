@@ -3,7 +3,7 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
-        podTemplate(label: label, workingDir: '/home/jenkins',
+        podTemplate(label: label, workingDir: '/home/jenkins', namespace: buildNamespace,
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
                         resourceRequestCpu: resourceRequestCpu,
                         resourceRequestMemory: resourceRequestMemory,
@@ -39,6 +39,7 @@ def call(body) {
 def build(Map podTemplateConfiguration) {
 
     this.slaveName = podTemplateConfiguration.get("slaveName", "slave")
+    this.buildNamespace = podTemplateConfiguration.get("buildNamespace", "jenkins")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
     this.resourceRequestMemory = podTemplateConfiguration.get("resourceRequestMemory", "1Gi")
