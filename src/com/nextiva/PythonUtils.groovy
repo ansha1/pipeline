@@ -60,8 +60,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 
 
 void runTests(Map args) {
-    //TODO: add publish test report step
-
     log.info('============================')
     log.info('Start Python unit tests')
     log.info('============================')

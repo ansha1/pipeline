@@ -40,6 +40,7 @@ def call(body) {
         isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
         kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
+        reportDirsList = pipelineParams.reportDirsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -323,6 +324,10 @@ def call(body) {
         post {
             always {
                 script {
+                    if (jobConfig.reportDirsList.size() > 0) {
+                        aws.uploadTestResults(jobConfig.APP_NAME, JOB_NAME, BUILD_ID, jobConfig.reportDirsList)
+                    }
+
                     prometheus.sendGauge('build_running', PROMETHEUS_BUILD_FINISHED_METRIC, prometheus.getBuildInfoMap(jobConfig))
                     prometheus.sendGauge('build_info', System.currentTimeMillis(), prometheus.getBuildInfoMap(jobConfig))
 
