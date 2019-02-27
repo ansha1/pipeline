@@ -13,7 +13,7 @@ import static com.nextiva.SharedJobsStaticVars.*
  * @param jenkinsInputUrl - URL to Jenkins input form (example: https://jenkins.nextiva.xyz/jenkins/job/<job_name>/<build_id>/input/)
  */
 def getJenkinsApprove(String slackReceiver, String yesText, String noText, String title, String titleLink, String text,
-                      String jenkinsInputUrl) {
+                      String jenkinsInputUrl, List authorizedApprovers = []) {
 
     log.debug("Slack receiver: " + slackReceiver)
     log.debug("Jenkins input URL: " + jenkinsInputUrl)
@@ -27,5 +27,5 @@ def getJenkinsApprove(String slackReceiver, String yesText, String noText, Strin
             consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
             url: JENKINS_BOT_URL + '/ask-question/', requestBody: groovy.json.JsonOutput.toJson(postBody)
 
-    return input(id: inputId, message: text, ok: yesText)
+    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","))
 }
