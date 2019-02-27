@@ -214,20 +214,35 @@ def call(body) {
             }
             stage('Veracode analyzing') {
                 when {
-                    expression {
+                    expression { 
                         jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.isVeracodeScanEnabled == true
                     }
                 }
                 steps {
                     script {
+
+
+                        def language = jobConfig.projectFlow.get('language')
+                        log.info("Project language: $language")
+                        if (language == 'java') {
+
+                            /*
+                             buildForVeracode was created to address veracode's lack of support for spring-boot applications.
+                             pom files are edited to remove executable from them and then the project is built again before submission.
+                             */
+
+                            utils.buildForVeracode(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+                        }
+
                         build job: 'VeracodeScan',
                                 parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
                                              string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
                                              string(name: 'repoUrl', value: GIT_URL),
                                              string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
-                                             string(name: 'projectLanguage', value: jobConfig.projectFlow.get('language')),
+                                             string(name: 'projectLanguage', value: language),
                                              string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
                                              string(name: 'upstreamWorkspace', value: WORKSPACE),
+                                             string(name: 'veracodeApplicationScope', value:pipelineParams.veracodeApplicationScope),
                                              string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
                 }
