@@ -1,7 +1,7 @@
 metadata:
   namespace: jenkins
   labels:
-    name: slave_node8
+    name: slave_node10
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
@@ -23,7 +23,7 @@ spec:
     effect: NoSchedule
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-node8:0.0.4
+    image: repository.nextiva.xyz/jenkins-slave-node10:0.0.1
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
