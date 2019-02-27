@@ -11,6 +11,7 @@ import static com.nextiva.SharedJobsStaticVars.*
  * @param titleLink - Link for title text
  * @param text - Main text
  * @param jenkinsInputUrl - URL to Jenkins input form (example: https://jenkins.nextiva.xyz/jenkins/job/<job_name>/<build_id>/input/)
+ * @param authorizedApprovers - List of usernames
  */
 def getJenkinsApprove(String slackReceiver, String yesText, String noText, String title, String titleLink, String text,
                       String jenkinsInputUrl, List authorizedApprovers = []) {
