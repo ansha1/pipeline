@@ -28,20 +28,32 @@ def call(body) {
         timestamps {
             timeout(time: 240, unit: 'MINUTES') {
                 switch (projectLanguage) {
+
+                    /*
+
+                      Python is unsupported in veracode and javascript has minimal useful support, they've claimed they are
+                      planning on supporting javascript and python in the future, leaving this code in for that potential occurrence.
+
+                     */
+
                     case 'python':
                     case 'js':
+
                         fileNamePattern = "${appName}-${buildVersion}.zip"
                         scanIncludesPattern = "${appName}-${buildVersion}.zip"
                         uploadIncludesPattern = "${appName}-${buildVersion}.zip"
-
                         stage("checkout") {
                             scanIncludesPattern
                             git branch: repoBranch, credentialsId: GIT_CHECKOUT_CREDENTIALS, url: repoUrl
                         }
+
                         stage("create archive") {
                             sh "zip -rv9 ${appName}-${buildVersion}.zip . -i '*.py' '*.js' '*.html' '*.htm'"
                         }
+
                         break
+
+                    //this is the only workflow that comes through this class for the time being.
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
                             fileNamePattern = "" //this creates a pattern to rename with, don't use it.
@@ -67,11 +79,6 @@ def call(body) {
                                      *
                                      */
 
-                                    // define the file we are going to be copying to
-
-                                    def outputFile = "$WORKSPACE/$artifact.artifactId.$artifact.packaging"
-                                    log.info("outputFile: $outputFile")
-
                                     //copy the target artifact to the root directory ie: cp /opt/jenkins/workspace/sales-quotation-v2_jenkinstest/salesquotationv2-common/target/SalesQuotePortalV2.jar .
                                     sh "cp $upstreamWorkspace/$artifact.artifactId/target/$artifact.finalName.$artifact.packaging ."
 
@@ -81,6 +88,7 @@ def call(body) {
                             }
 
                         }
+
                         break
                 }
 
@@ -99,6 +107,8 @@ def call(body) {
                                 vuser: USERNAME, vpassword: PASSWORD
                     }
                 }
+
+
             }
         }
     }

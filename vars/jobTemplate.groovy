@@ -250,18 +250,41 @@ def call(body) {
                              */
 
                             utils.buildForVeracode(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+
+                            def veracodeApplicationScope = pipelineParams.veracodeApplicationScope
+                            if (veracodeApplicationScope == null){
+                                veracodeApplicationScope = 'Nextiva Services'
+                            }
+                            build job: 'VeracodeScan',
+                                    parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                                 string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
+                                                 string(name: 'repoUrl', value: GIT_URL),
+                                                 string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
+                                                 string(name: 'projectLanguage', value: language),
+                                                 string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
+                                                 string(name: 'upstreamWorkspace', value: WORKSPACE),
+                                                 string(name: 'veracodeApplicationScope', value: veracodeApplicationScope),
+                                                 string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
+
+                        } else { //submit everything other than java to source clear for scanning.
+
+                            // source clear uses different credentials to direct code to the proper app container
+
+                            def creds = jobConfig.credentialFromRepo(GIT_URL)
+
+                            stage("submitting to sourceclear"){
+
+                                withCredentials([string(credentialsId: creds, variable: 'SRCCLR_API_TOKEN')]) {
+
+                                    utils.runSourceClearScanner(jobConfig.projectFlow.languageVersion)
+                                    //sh "DEBUG=1 curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh"
+
+                                }
+                            }
+
+
                         }
 
-                        build job: 'VeracodeScan',
-                                parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                             string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                             string(name: 'repoUrl', value: GIT_URL),
-                                             string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
-                                             string(name: 'projectLanguage', value: language),
-                                             string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
-                                             string(name: 'upstreamWorkspace', value: WORKSPACE),
-                                             string(name: 'veracodeApplicationScope', value:pipelineParams.veracodeApplicationScope),
-                                             string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
                     }
                 }
             }

@@ -50,6 +50,28 @@ def runSonarScanner(String projectVersion) {
     }
 }
 
+//this are never used from java but are needed to keep the build tests from failing.
+
+
+void runSourceClearScanner(String languageVersion) {
+    log.info('============================')
+    log.info('Start source clear scan')
+    log.info('============================')
+    dir(pathToSrc) {
+
+        def sourceClearCi = libraryResource 'sourceclear/sc.sh'
+
+        try {
+            withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
+                sh """${sourceClearCi}"""
+            }
+        } catch (e) {
+            error("Sourceclear scan fail ${e}")
+        }
+
+    }
+}
+
 
 
 void buildForVeracode(String appName, String buildVersion, String environment, Map args) {
@@ -80,7 +102,6 @@ void buildForVeracode(String appName, String buildVersion, String environment, M
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-
     def veracodeBuildCommands = args.get('veracodeBuildCommands', 'mvn clean install -U --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
