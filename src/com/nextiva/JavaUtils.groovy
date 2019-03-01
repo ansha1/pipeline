@@ -81,10 +81,10 @@ void buildForVeracode(String appName, String buildVersion, String environment, M
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
 
-    def verracodeBuildCommands = args.get('verracodeBuildCommands', 'mvn clean install -U --batch-mode -DskipTests')
+    def veracodeBuildCommands = args.get('veracodeBuildCommands', 'mvn clean install -U --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
-            sh "${verracodeBuildCommands}"
+            sh "${veracodeBuildCommands}"
         } catch (e) {
             error("buildForVeracode fail ${e}")
         }
