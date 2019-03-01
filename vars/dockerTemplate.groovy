@@ -1,20 +1,32 @@
+
+
+
 def call(Map Config) {
+
+
+
+
+
     stage("Checkout") {
         container(jnlp) {
-
+            checkout scm
         }
     }
-    stage("Build version verification") {
+    stage("Build version verification") {   //if on DEV,develop,master......
+        container(build) {
+checkversion(config)
+
+            config.check
+            if ()
+        }
+    }
+    stage("Unit testing") {  //Dev release PR    master if trunk base
         container(build) {
 
         }
     }
-    stage("Unit testing") {
-        container(build) {
 
-        }
-    }
-    stage("Sonar analysing") {
+    stage("Sonar analysing") {   //Dev brannh only
         container(build) {
 
         }
@@ -49,28 +61,17 @@ def call(Map Config) {
 
         }
     }
-    stage("Create integration test environment") {
+    stage("Integration tests") {  //only on the PR branch
         container(kubernetes) {
 
         }
     }
-    stage("Run integration tests") {
-        container(build) {
-
-        }
-    }
-    stage("Deploy to the environment") {
+    stage("Deploy to the environment") {  //Only on dev/develop/release/master/hotfix
         container(kubernetes) {
 
         }
     }
-    stage("Post deploy step") {
-        container(build) {
 
-        }
-        //Newrelic info
-        //Prometheus build info
-    }
     stage("Service healthcheck and version validation") {
         container(jnlp) {
 
@@ -97,5 +98,5 @@ def call(Map Config) {
 
         }
     }
-
+    return this
 }
