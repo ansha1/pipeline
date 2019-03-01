@@ -130,6 +130,15 @@ def call(body) {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
 
+                                    // Old implementation with non-interactive notification
+                                    // It's here to quickly switch to it if jenkins bot doesn't work.
+                                    /*
+                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                            "already exists in Nexus. " +
+                                            "Do you want to increase a patch version and continue the process?",
+                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
+                                     */
+
                                     try {
                                         timeout(time: 15, unit: 'MINUTES') {
                                             bot.getJenkinsApprove("@${common.getCurrentUserSlackId()}", "Approve", "Decline",
