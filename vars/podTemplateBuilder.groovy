@@ -19,7 +19,8 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
-                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {
+//                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {
+                          ]) {
 
             timestamps {
                 ansiColor('xterm') {
