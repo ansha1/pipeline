@@ -42,7 +42,7 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
                      alwaysLinkToLastBuild: false,
                      keepAll              : true,
                      reportDir            : '',
-                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSufix}",
+                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}",
                      reportName           : reportName,
                      reportTitles         : ''])
     }
