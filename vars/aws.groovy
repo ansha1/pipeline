@@ -33,7 +33,7 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
         }
     }
 
-    common.tempDir("/tmp/${common.getRundomInt()}") {
+    common.tempDir("tmp_${common.getRundomInt()}") {
         """ publishHTML requires at least one exists file for publish """
         sh "echo tmp > tmp.txt"
 
