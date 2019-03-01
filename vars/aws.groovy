@@ -21,7 +21,7 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
 }
 
 def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload,
-                      String reportName = 'Test Report', String reportLinkSuffix) {
+                      String reportName = 'Test Report', String reportLinkSuffix = '') {
     withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
         objectsToUpload.each {
             try {
