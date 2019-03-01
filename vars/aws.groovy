@@ -20,7 +20,8 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
     }
 }
 
-def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload) {
+def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload,
+                      String reportName = 'Test Report', String reportLinkSuffix) {
     withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
         objectsToUpload.each {
             try {
@@ -41,8 +42,8 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
                      alwaysLinkToLastBuild: false,
                      keepAll              : true,
                      reportDir            : '',
-                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/",
-                     reportName           : 'Test Report',
+                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSufix}",
+                     reportName           : reportName,
                      reportTitles         : ''])
     }
 }
