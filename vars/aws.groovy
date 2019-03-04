@@ -12,13 +12,16 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
     withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
         dir(pathToSrc) {
             log.info("publishStaticAssetsToS3: ${publishToS3}")
+                s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/")            
                 s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/${buildVersion}/")
+                s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${BUILD_PROPERTIES_FILENAME}")
                 s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${buildVersion}/${BUILD_PROPERTIES_FILENAME}")
         }
     }
 }
 
-def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload) {
+def uploadTestResults(String appName, String jobName, String buildNumber, List objectsToUpload,
+                      String reportName = 'Test Report', String reportLinkSuffix = '') {
     withAWS(credentials: AWS_S3_UPLOAD_CREDENTIALS, region: AWS_REGION) {
         objectsToUpload.each {
             try {
@@ -31,7 +34,7 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
         }
     }
 
-    common.tempDir("/tmp/${common.getRundomInt()}") {
+    common.tempDir("tmp_${common.getRundomInt()}") {
         """ publishHTML requires at least one exists file for publish """
         sh "echo tmp > tmp.txt"
 
@@ -39,8 +42,8 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
                      alwaysLinkToLastBuild: false,
                      keepAll              : true,
                      reportDir            : '',
-                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/",
-                     reportName           : 'Test Report',
+                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}",
+                     reportName           : reportName,
                      reportTitles         : ''])
     }
 }

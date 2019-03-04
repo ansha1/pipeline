@@ -34,7 +34,7 @@ This method assert that all conflicts only in versions
 
 Boolean isMergeable() {
     def isMergeable = true
-    def allowedConflictFilesPattern = /((.*\/)?pom.xml|package(-lock)?.json|build.properties)/
+    def allowedConflictFilesPattern = /((.*\/)?pom.xml|(.*\/)?package(-lock)?.json|(.*\/)?build.properties)/
     def allowedConflictLinesPattern = /(<version>.*<\/version>|"version": ".*",|version=.*)/
 
     log.info("Ensure that merge conflicts only in version files")

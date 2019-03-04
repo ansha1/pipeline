@@ -1,5 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
+
 def call(body) {
     def pipelineParams = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -15,6 +16,7 @@ def call(body) {
     upstreamNodeName = pipelineParams.upstreamNodeName
     upstreamWorkspace = pipelineParams.upstreamWorkspace
     javaArtifactsProperties = pipelineParams.javaArtifactsProperties
+
 
     node(upstreamNodeName) {
         properties properties: [
@@ -42,28 +44,42 @@ def call(body) {
                         break
                     case 'java':
                         stage("getting java artifacts from upstreamJob") {
+                            fileNamePattern = "" //this creates a pattern to rename with, don't use it.
+                            scanIncludesPattern = "" //not necessary either
+                            //we copy all the files we want uploaded into the upstream workspace folder, so *.war, *.jar is all that is necessary.
+                            uploadIncludesPattern = "*.war, *.jar"
                             try {
                                 log.debug("javaArtifactsProperties: ${javaArtifactsProperties}")
                                 List artifactsListProperties = []
 
                                 javaArtifactsProperties.split('\n').each {
                                     def propertiesList = it.split()
-                                    artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
+                                    artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3], 'finalName': propertiesList[4]]
                                 }
 
                                 artifactsListProperties.each { artifact ->
                                     if (artifact.packaging == 'pom' ) return
-                                    if (nexus.isJavaArtifactExists(artifact.groupId, artifact.artifactId, artifact.artifactVersion, artifact.packaging)) {
-                                        log.debug("curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}")
-                                        sh "curl --insecure http://repository.nextiva.xyz:8081/nexus/service/local/repositories/releases/content/com/nextiva/${artifact.artifactId}/${artifact.artifactVersion}/${artifact.artifactId}-${artifact.artifactVersion}.${artifact.packaging} > $WORKSPACE/${artifact.artifactId}.${artifact.packaging}"
-                                    }
+
+                                    /**
+                                     *  Veracode does not support spring-boot applications, after buildForVeracode is called in JavaUtils the resulting jar/war files need to be moved
+                                     *  into the root workspace so veracode can find them. wildcard patterns don't appear to work properly to traverse directories with the veracode plugin
+                                     *  so we copy them over manually instead
+                                     *
+                                     */
+
+                                    // define the file we are going to be copying to
+
+                                    def outputFile = "$WORKSPACE/$artifact.artifactId.$artifact.packaging"
+                                    log.info("outputFile: $outputFile")
+
+                                    //copy the target artifact to the root directory ie: cp /opt/jenkins/workspace/sales-quotation-v2_jenkinstest/salesquotationv2-common/target/SalesQuotePortalV2.jar .
+                                    sh "cp $upstreamWorkspace/$artifact.artifactId/target/$artifact.finalName.$artifact.packaging ."
+
                                 }
                             } catch (e) {
                                 log.warn("can`t download artifacts $e")
                             }
-                            fileNamePattern = "*.*"
-                            scanIncludesPattern = "*.*"
-                            uploadIncludesPattern = "*.*"
+
                         }
                         break
                 }
@@ -75,6 +91,7 @@ def call(body) {
                                 criticality: 'VeryHigh',
                                 createSandbox: true,
                                 sandboxName: appName,
+                                debug: true,
                                 scanName: "${appName}-${buildVersion}", timeout: 240,
                                 fileNamePattern: fileNamePattern,
                                 scanIncludesPattern: scanIncludesPattern,
