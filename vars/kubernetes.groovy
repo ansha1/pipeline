@@ -1,4 +1,6 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import io.fabric8.kubernetes.client.KubernetesClient
+import org.csanchez.jenkins.plugins.kubernetes.*
 
 
 def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default', Boolean verify = false) {
