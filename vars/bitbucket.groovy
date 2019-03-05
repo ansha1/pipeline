@@ -85,14 +85,14 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
     return pullRequestLink
 }
 
-def getChangesFromPr(String repositoryUrl, String prID) {
+List<String> getChangesFromPr(String repositoryUrl, String prID, String startPage = 0, String limit = 1000) {
 
     def tokens = repositoryUrl.tokenize('/')
     def projectKey = tokens[2]
     def repositorySlug = tokens[3].replace(".git", "")
 
     String getChangesUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}" +
-            "/pull-requests/${prID}/changes?start=0&limit=1000"
+            "/pull-requests/${prID}/changes?start=${startPage}&limit=${limit}"
 
     def changesResponse = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: getChangesUrl,
             consoleLogResponseBody: log.isDebug()
