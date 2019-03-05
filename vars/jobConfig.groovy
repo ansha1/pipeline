@@ -48,6 +48,7 @@ def call(body) {
     isVeracodeScanEnabled = getBooleanDefault(pipelineParams.isVeracodeScanEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
+    reportDirsList = pipelineParams.reportDirsList ?: []
 
     switch (env.BRANCH_NAME) {
         case 'dev':

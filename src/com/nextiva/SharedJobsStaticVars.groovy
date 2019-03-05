@@ -67,4 +67,5 @@ class SharedJobsStaticVars {
     static final AWS_CREDENTIALS = 'nextiva.io'
     static final AWS_S3_UPLOAD_CREDENTIALS = 'test-reports-s3-upload'
     static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
+    static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
 }
