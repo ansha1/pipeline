@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default', Boolean verify = false) {
+def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default', Boolean dryRun = false) {
 
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
@@ -10,9 +10,6 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
     String extraParams = ""
     String k8sEnv = '.k8env'
-    if (verify) {
-        extraParams = "-v"
-    }
 
     try {
         log.info("Ensure that kubectl installed")
@@ -51,32 +48,44 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
                     unset KUBERNETES_SERVICE_HOST
                     ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
                     kubectl get nodes
+                    """
+                sh """
+                    unset KUBERNETES_SERVICE_HOST
                     echo 'Checking of application manifests ...'
                     ${repoDir}/kubeup ${extraParams} --dry-run --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
-                    echo 'Deploying application into Kubernetes ...'
-                    ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
                     """
-                log.info("Deploy to the Kubernetes cluster has been completed.")
+                if(!dryRun){
+                    sh """
+                        unset KUBERNETES_SERVICE_HOST
+                        echo 'Deploying application into Kubernetes ...'
+                        ${repoDir}/kubeup ${extraParams} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
+                        """
+
+                    log.info("Deploy to the Kubernetes cluster has been completed.")
+                }
+
             } catch (e) {
                 log.warning("Deploy to the Kubernetes failed!")
                 log.warning(e)
                 error("Deploy to the Kubernetes failed! $e")
             }
 
-            sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+            if (!dryRun) {
+                sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
 
-            try {
-                 kubernetesDeploymentsList.each {
-                    sh """
+                try {
+                    kubernetesDeploymentsList.each {
+                        sh """
                         unset KUBERNETES_SERVICE_HOST
                         kubectl rollout status deployment/${it} --namespace ${nameSpace}
                         """
+                    }
+                } catch (e) {
+                    log.warning("kubectl rollout status is failed!")
+                    log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
+                    log.warning(e)
+                    currentBuild.rawBuild.result = Result.UNSTABLE
                 }
-            } catch (e) {
-                log.warning("kubectl rollout status is failed!")
-                log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
-                log.warning(e)
-                currentBuild.rawBuild.result = Result.UNSTABLE
             }
         }
     }
