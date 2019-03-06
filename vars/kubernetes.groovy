@@ -14,21 +14,19 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
              "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
              "PATH=${env.PATH}:${WORKSPACE}"]) {
 
-        def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
-
         try {
             login(clusterDomain)
 
-            sh """
-                unset KUBERNETES_SERVICE_HOST
-                echo 'Checking of application manifests ...'
-                ${repoDir}/kubeup --dry-run --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
+            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
-                echo 'Deploying application into Kubernetes ...'
-                ${repoDir}/kubeup --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
-                """
+            dir(repoDir) {
+                log.info('Checking of application manifests ...')
+                kubeup(serviceName, configSet, nameSpace, true)
 
-                log.info("Deploy to the Kubernetes cluster has been completed.")
+                log.info('Deploying application into Kubernetes ...')
+                kubeup(serviceName, configSet, nameSpace, false)
+            }
+            log.info("Deploy to the Kubernetes cluster has been completed.")
 
         } catch (e) {
             log.warning("Deploy to the Kubernetes failed!")
@@ -76,7 +74,7 @@ def login(String clusterDomain) {
         pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
         sh """
             unset KUBERNETES_SERVICE_HOST
-            ${k8sEnv}/bin/kubelogin -s login.${clusterDomain}
+            ${k8sEnv}/bin/kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
     }
@@ -94,4 +92,13 @@ def kubectlInstall() {
             ./kubectl version --client=true
            """
     }
+}
+
+def kubeup(String serviceName, String configSet, String nameSpace, Boolean dryRun = false) {
+    String dryRunParam = dryRun
+
+    sh """
+       unset KUBERNETES_SERVICE_HOST
+       ./kubeup ${dryRunParam} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
+    """
 }
