@@ -84,3 +84,26 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
     log.info("PULL REQUEST WAS CREATED ${pullRequestLink}")
     return pullRequestLink
 }
+
+List<String> getChangesFromPr(String repositoryUrl, String prID, String startPage = 0, String limit = 1000) {
+
+    def tokens = repositoryUrl.tokenize('/')
+    def projectKey = tokens[2]
+    def repositorySlug = tokens[3].replace(".git", "")
+
+    String getChangesUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}" +
+            "/pull-requests/${prID}/changes?start=${startPage}&limit=${limit}"
+
+    def changesResponse = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: getChangesUrl,
+            consoleLogResponseBody: log.isDebug()
+    def changesResponseJson = readJSON text: changesResponse.content
+
+    def changedFiles = []
+
+    changesResponseJson.values.each {
+        changedFiles << it.path.toString
+        it?.srcPath?.toString && changedFiles << it.srcPath.toString
+    }
+
+    return changedFiles
+}
