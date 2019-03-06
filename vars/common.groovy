@@ -85,3 +85,13 @@ def tempDir(path, closure) {
         deleteDir()
     }
 }
+
+String getRepositoryUrl() {
+    def repositoryUrl =  sh returnStdout: true, script: "git config --get remote.origin.url"
+    return repositoryUrl.trim()
+}
+
+String getCurrentCommit() {
+    def currentCommit = sh returnStdout: true, script: 'git rev-parse HEAD'
+    return currentCommit.trim()
+}
