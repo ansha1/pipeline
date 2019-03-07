@@ -85,7 +85,10 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 }
 
 
-def withNamespace(String namespaceName, body) {
+def withNamespace(String rawNamespaceName, body) {
+
+    String namespaceName = getNamespaceNameFromString(rawNamespaceName)
+
     def client = null
     try {
         client = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
@@ -105,4 +108,10 @@ def withNamespace(String namespaceName, body) {
         client.close()  //always close connection to the Kubernetes cluster to prevent connection leaks
         client = null   //if we don't null client, jenkins will try to serialise k8s objects and that will fail, so we won't see actual error
     }
+}
+
+String getNamespaceNameFromString(String rawNamespaceName) {
+    //By convention, the names of Kubernetes resources should be up to maximum length of 253 characters and consist of lower case alphanumeric characters, -
+    return rawNamespaceName.trim().replaceAll('[^a-zA-Z\\d]', '-')
+            .toLowerCase().take(253)
 }
