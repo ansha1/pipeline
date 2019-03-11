@@ -37,7 +37,7 @@ def call(body) {
         jdkVersion = pipelineParams.JDK_VERSION
         mavenVersion = pipelineParams.MAVEN_VERSION
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
-        isVeracodeScanEnabled = pipelineParams.isVeracodeScanEnabled
+        isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
         kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
@@ -233,7 +233,7 @@ def call(body) {
             stage('Security scan') {
                 when {
                     expression { 
-                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release|hotfix)\/.+$/ && jobConfig.isVeracodeScanEnabled == true
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release|hotfix)\/.+$/ && jobConfig.isSecurityScanEnabled == true
                     }
                 }
                 steps {
