@@ -4,6 +4,8 @@
 #  Copyright (c) 2016 SourceClear Inc
 #
 
+# Original link https://download.sourceclear.com/ci.sh
+
 # For more verbose output, run with 'DEBUG=1 path/to/ci.sh'
 # To force download of latest version, run with 'NOCACHE=1 path/to/ci.sh'
 # To change where archives are cached and extracted, run with 'CACHE_DIR=/where/you/want/them path/to/ci.sh'

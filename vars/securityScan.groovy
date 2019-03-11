@@ -1,6 +1,5 @@
 def call(def jobConfig) {
     String language = jobConfig.projectFlow.get('language')
-    String languageVersion = jobConfig.projectFlow.get('languageVersion', 'python3.6')
     String pathToSrc = jobConfig.projectFlow.get('pathToSrc', '.')
 
     switch (language) {
@@ -8,10 +7,19 @@ def call(def jobConfig) {
             runVeracodeScanJava(jobConfig)
             break
         case 'js':
-            runSourceClearJs(pathToSrc)
+            runSourceClearScanner(pathToSrc) {
+                def sourceClearCi = libraryResource 'sourceclear/ci.sh'
+                sh "${sourceClearCi}"
+            }
             break
         case 'python':
-            runSourceClearScannerPython(pathToSrc, languageVersion)
+            String languageVersion = jobConfig.projectFlow.get('languageVersion', 'python3.6')
+            runSourceClearScanner(pathToSrc) {
+                def sourceClearCi = libraryResource 'sourceclear/ci.sh'
+                pythonUtils.createVirtualEnv(languageVersion)
+                pythonUtils.venvSh "${sourceClearCi}"
+            }
+
             break
         default:
             log.warn("Security scan is unavailable for your language ${language}")
@@ -29,7 +37,7 @@ def runVeracodeScanJava(def jobConfig) {
                     createSandbox: true,
                     sandboxName: jobConfig.APP_NAME,
                     debug: true,
-                    scanName: "${jobConfig.APP_NAME}-${jobConfig.BUILD_VERSIO}", timeout: 20,
+                    scanName: "${jobConfig.APP_NAME}-${jobConfig.BUILD_VERSION}", timeout: 20,
                     fileNamePattern: "",
                     scanIncludesPattern: "",
                     uploadIncludesPattern: "**/target/*.war, **/target/*.jar",
@@ -38,46 +46,18 @@ def runVeracodeScanJava(def jobConfig) {
     } catch (e) {
         log.warn("Veracode scan fail ${e}")
     }
-
 }
 
-def runSourceClearJs(String pathToSrc) {
+def runSourceClearScanner(String pathToSrc, body) {
     log.info('============================')
-    log.info('Start source clear scan for Js applications')
+    log.info('Start source clear scan')
     log.info('============================')
     dir(pathToSrc) {
         try {
-            def sourceClearCi = libraryResource 'sourceclear/sc.sh'
             def creds = tokenFromRepo(env.GIT_URL)
             withCredentials([string(credentialsId: creds, variable: 'SRCCLR_API_TOKEN')]) {
                 withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
-                    sh "${sourceClearCi}"
-                }
-            }
-        } catch (e) {
-            log.warn("Sourceclear scan fail ${e}")
-        }
-    }
-}
-
-
-/ *
- source clear scans from python are different, if you do not set up the virtual environment the scan will fail, 
- not sure how to make that work in a vars class.
-*/
-
-def runSourceClearScannerPython(String pathToSrc, String languageVersion) {
-    log.info('============================')
-    log.info('Start source clear scan for python applications')
-    log.info('============================')
-    dir(pathToSrc) {
-        try {
-            def sourceClearCi = libraryResource 'sourceclear/sc.sh'
-            def creds = tokenFromRepo(env.GIT_URL)
-            pythonUtils.createVirtualEnv(languageVersion)
-            withCredentials([string(credentialsId: creds, variable: 'SRCCLR_API_TOKEN')]) {
-                withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
-                    pythonUtils.venvSh """${sourceClearCi}"""
+                    body()
                 }
             }
         } catch (e) {
@@ -115,6 +95,7 @@ String tokenFromRepo(String repo) {
             credName = 'PLATFORM_SRCCLR'
             break
         default:
+            log.info("SourceClearScanner is not available for your repo")
             credName = null
     }
     return credName
