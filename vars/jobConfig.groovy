@@ -123,41 +123,6 @@ def call(body) {
     log('')
 }
 
-String credentialFromRepo(String repo) {
-
-    def credName = null
-
-    switch (repo) {
-
-        case ~/(?i).*crm.*/:
-            credName = 'CRM_SRCCLR'
-            break
-        case ~/(?i).*analytics.*/:
-            credName = 'ANALYTICS_SRCCLR'
-            break;
-        case ~/(?i).*dash.*/:
-            credName = 'DASHBOARD_SRCCLR'
-            break;
-        case ~/(?i).*rengine.*/:
-            credName = 'RULES_SRCCLR'
-            break;
-        case ~/(?i).*surveys.*/:
-            credName = 'SURVEYS_SRCCLR'
-            break;
-        case ~/(?i).*migration.*/:
-            credName = 'DM_SRCCLR'
-            break;
-        case ~/(?i).*realtalk.*/:
-            credName = 'RT_SRCCLR'
-            break;
-        case ~/(?i).*platform.*/:
-            credName = 'PLATFORM_SRCCLR'
-            break;
-    }
-    return credName
-}
-
-
 def getUtils() {
     return utils
 }
