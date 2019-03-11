@@ -7,27 +7,6 @@ import groovy.transform.Field
 @Field String pathToSrc = '.'
 @Field String modulesPropertiesField = ''
 
-//nothing special doing this for javascript
-void runSourceClearScanner(String languageVersion) {
-    log.info('============================')
-    log.info('Start source clear scan')
-    log.info('============================')
-    dir(pathToSrc) {
-
-        def sourceClearCi = libraryResource 'sourceclear/sc.sh'
-
-        try {
-            withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
-                sh """${sourceClearCi}"""
-            }
-        } catch (e) {
-            error("Sourceclear scan fail ${e}")
-        }
-
-    }
-}
-
-
 String getVersion() {
     dir(pathToSrc) {
         def packageJson = readJSON file: "package.json"

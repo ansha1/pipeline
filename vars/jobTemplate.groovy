@@ -230,61 +230,15 @@ def call(body) {
                     }
                 }
             }
-            stage('Veracode analyzing') {
+            stage('Security scan') {
                 when {
                     expression { 
-                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release\/.+)$/ && jobConfig.isVeracodeScanEnabled == true
+                        jobConfig.DEPLOY_ONLY ==~ false && BRANCH_NAME ==~ /^(release|hotfix)\/.+$/ && jobConfig.isVeracodeScanEnabled == true
                     }
                 }
                 steps {
                     script {
-
-
-                        def language = jobConfig.projectFlow.get('language')
-                        log.info("Project language: $language")
-                        if (language == 'java') {
-
-                            /*
-                             buildForVeracode was created to address veracode's lack of support for spring-boot applications.
-                             pom files are edited to remove executable from them and then the project is built again before submission.
-                             */
-
-                            utils.buildForVeracode(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
-
-                            def veracodeApplicationScope = pipelineParams.veracodeApplicationScope
-                            if (veracodeApplicationScope == null){
-                                veracodeApplicationScope = 'Nextiva Services'
-                            }
-                            build job: 'VeracodeScan',
-                                    parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
-                                                 string(name: 'buildVersion', value: jobConfig.BUILD_VERSION),
-                                                 string(name: 'repoUrl', value: GIT_URL),
-                                                 string(name: 'javaArtifactsProperties', value: utils.modulesPropertiesField),
-                                                 string(name: 'projectLanguage', value: language),
-                                                 string(name: 'upstreamNodeName', value: jobConfig.nodeLabel),
-                                                 string(name: 'upstreamWorkspace', value: WORKSPACE),
-                                                 string(name: 'veracodeApplicationScope', value: veracodeApplicationScope),
-                                                 string(name: 'repoBranch', value: BRANCH_NAME)], wait: false
-
-                        } else { //submit everything other than java to source clear for scanning.
-
-                            // source clear uses different credentials to direct code to the proper app container
-
-                            def creds = jobConfig.credentialFromRepo(GIT_URL)
-
-                            stage("submitting to sourceclear"){
-
-                                withCredentials([string(credentialsId: creds, variable: 'SRCCLR_API_TOKEN')]) {
-
-                                    utils.runSourceClearScanner(jobConfig.projectFlow.languageVersion)
-                                    //sh "DEBUG=1 curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh"
-
-                                }
-                            }
-
-
-                        }
-
+                        securityScan(jobConfig)
                     }
                 }
             }

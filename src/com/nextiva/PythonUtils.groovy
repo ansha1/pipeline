@@ -58,33 +58,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     nexus.isDebPackageExists(packageName, packageVersion, deployEnvironment)
 }
 
-/ *
- 
- source clear scans from python are different, if you do not set up the virtual environment the scan will fail, 
- not sure how to make that work in a vars class.
-
-*/
-
-void runSourceClearScanner(String languageVersion) {
-    log.info('============================')
-    log.info('Start source clear scan')
-    log.info('============================')
-    dir(pathToSrc) {
-        def sourceClearCi = libraryResource 'sourceclear/sc.sh'
-        log.info("sourceClearCi: ${sourceClearCi}")
-        pythonUtils.createVirtualEnv(languageVersion)
-        try {
-
-            withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
-                pythonUtils.venvSh """${sourceClearCi}"""
-            }
-        } catch (e) {
-            error("Sourceclear scan fail ${e}")
-        }
-
-    }
-}
-
 
 void runTests(Map args) {
     log.info('============================')
