@@ -85,3 +85,15 @@ def tempDir(path, closure) {
         deleteDir()
     }
 }
+
+// Load groovy script on runtime
+// example: sharedComponents = loadScript("aws/sharedComponents.groovy")
+def loadScript(String scriptPath, String nodeLabel = 'master') {
+    def script
+    node(nodeLabel) {
+        cleanWs()
+        checkout scm
+        script = load scriptPath
+    }
+    return script
+}
