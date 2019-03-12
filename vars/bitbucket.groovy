@@ -130,9 +130,13 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 
     originalPr.description = updatedDescription
 
-    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
-            url: prUrl, requestBody: JsonOutput.toJson(originalPr)
+    httpRequest authentication: BITBUCKET_JENKINS_AUTH,
+            contentType: 'APPLICATION_JSON',
+            quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(),
+            httpMode: 'PUT',
+            url: prUrl,
+            requestBody: JsonOutput.toJson(originalPr)
 
 }
 
