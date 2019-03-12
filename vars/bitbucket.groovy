@@ -107,3 +107,39 @@ List<String> getChangesFromPr(String repositoryUrl, String prID, String startPag
 
     return changedFiles
 }
+
+def updatePrDescriptionSection(String repositoryUrl, String prID, String sectionBody, String sectionTag) {
+
+    def tokens = repositoryUrl.tokenize('/')
+    def projectKey = tokens[2]
+    def repositorySlug = tokens[3].replace(".git", "")
+
+    String prUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}/pull-requests/${prID}"
+
+    def response = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
+            consoleLogResponseBody: log.isDebug()
+    def originalPr = readJSON text: response.content
+
+    String originalDescription = originalPr.description
+
+    def description = parseDescription(originalDescription)
+
+    description.put(sectionTag, sectionBody)
+
+    def updatedDescription = descriptionToString(description)
+
+    originalPr.description = updatedDescription
+
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
+            url: prUrl, requestBody: JsonOutput.toJson(originalPr)
+
+}
+
+Map<String, String> parseDescription(String description) {
+    return new HashMap<String, String>()
+}
+
+String descriptionToString(Map<String, String> description) {
+    return "Kappa123"
+}
