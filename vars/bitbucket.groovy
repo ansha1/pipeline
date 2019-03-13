@@ -108,7 +108,7 @@ List<String> getChangesFromPr(String repositoryUrl, String prID, String startPag
     return changedFiles
 }
 
-def updatePrDescriptionSection(String repositoryUrl, String prID, String sectionBody, String sectionTag) {
+def updatePrDescriptionSection(String repositoryUrl, String prID, String sectionTag, String sectionBody) {
 
     def tokens = repositoryUrl.tokenize('/')
     def projectKey = tokens[2]
@@ -136,7 +136,7 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
     httpRequest authentication: BITBUCKET_JENKINS_AUTH,
             contentType: 'APPLICATION_JSON',
             quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug,
+            consoleLogResponseBody: log.isDebug(),
             httpMode: 'PUT',
             url: prUrl,
             requestBody: JsonOutput.toJson(updatedPr)
