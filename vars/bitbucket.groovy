@@ -128,7 +128,7 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 
     def updatedPr = [:]
     updatedPr.description = updatedDescription
-//    updatedPr.title = originalPr.title
+    updatedPr.version = originalPr.version
 
     log.info(updatedPr)
 
@@ -147,5 +147,5 @@ static Map<String, String> parseDescription(String description) {
 }
 
 static String descriptionToString(Map<String, String> description) {
-    return "Kappa123"
+    return "Kappa321"
 }
