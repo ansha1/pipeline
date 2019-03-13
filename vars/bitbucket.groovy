@@ -30,7 +30,7 @@ def getPrFromUrl(String url) {
     log.info("Transform Url for access via rest api: ${prUrl}")
 
     def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
-         consoleLogResponseBody: log.isDebug()
+            consoleLogResponseBody: log.isDebug()
     def returnBody = readJSON text: prResponce.content
     return returnBody
 }
@@ -48,7 +48,7 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
 
     //Getting default reviewers list from target repo
     def reviewersResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: reviewersUrl,
-         consoleLogResponseBody: log.isDebug()
+            consoleLogResponseBody: log.isDebug()
     def props = readJSON text: reviewersResponce.content
     def revs = props[0].reviewers
     log.info("Get reviewers")
@@ -78,7 +78,7 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
                     }
                 }"""
     def pullRequestResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: requestBody, url: createPrUrl,
-         consoleLogResponseBody: log.isDebug()
+            consoleLogResponseBody: log.isDebug()
     def responceJson = readJSON text: pullRequestResponce.content
     String pullRequestLink = responceJson.links.self[0].get('href')
     log.info("PULL REQUEST WAS CREATED ${pullRequestLink}")
@@ -144,6 +144,10 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 static Map<String, String> parseDescription(String description) {
 
     HashMap<String, String> descriptionSections = new LinkedHashMap<>()
+
+    if (description == null) {
+        return descriptionSections
+    }
 
     List<String> lines = description.split('\n')
 
