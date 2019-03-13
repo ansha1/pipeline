@@ -151,13 +151,11 @@ static Map<String, String> parseDescription(String description) {
 
     List<String> lines = description.split('\n')
 
-    def sectionMarker = '###### '
-
     def currentSection = ''
 
     lines.each { String line ->
-        if (line.startsWith(sectionMarker)) {
-            currentSection = line.replace(sectionMarker, '').replace('\n', '')
+        if (line.startsWith(BITBUCKET_SECTION_MARKER)) {
+            currentSection = line.replace(BITBUCKET_SECTION_MARKER, '').replace('\n', '')
         } else {
             if (descriptionSections.containsKey(currentSection)) {
                 descriptionSections.put(currentSection, descriptionSections.get(currentSection) + '\n' + line)
@@ -181,7 +179,7 @@ static String descriptionToString(Map<String, String> description) {
                 convertedDescription += '\n'
             }
         } else {
-            convertedDescription += '###### ' + entry.getKey() + '\n' + entry.getValue() + '\n'
+            convertedDescription += BITBUCKET_SECTION_MARKER + entry.getKey() + '\n' + entry.getValue() + '\n'
         }
     }
 
