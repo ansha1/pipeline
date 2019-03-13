@@ -130,6 +130,8 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 
     originalPr.description = updatedDescription
 
+    log.info(originalPr)
+
     httpRequest authentication: BITBUCKET_JENKINS_AUTH,
             contentType: 'APPLICATION_JSON',
             quiet: !log.isDebug(),
