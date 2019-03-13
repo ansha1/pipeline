@@ -120,17 +120,17 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
             consoleLogResponseBody: log.isDebug()
     def originalPr = readJSON text: response.content
 
-    String originalDescription = originalPr.description
+    def originalDescription = parseDescription(originalPr.description as String)
 
-    def description = parseDescription(originalDescription)
+    originalDescription.put(sectionTag, sectionBody)
 
-    description.put(sectionTag, sectionBody)
+    def updatedDescription = descriptionToString(originalDescription)
 
-    def updatedDescription = descriptionToString(description)
+    def updatedPr = []
+    updatedPr.description = updatedDescription
+//    updatedPr.title = originalPr.title
 
-    originalPr.description = updatedDescription
-
-    log.info(originalPr)
+    log.info(updatedPr)
 
     httpRequest authentication: BITBUCKET_JENKINS_AUTH,
             contentType: 'APPLICATION_JSON',
@@ -138,14 +138,14 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
             consoleLogResponseBody: true,
             httpMode: 'PUT',
             url: prUrl,
-            requestBody: JsonOutput.toJson(originalPr)
+            requestBody: JsonOutput.toJson(updatedPr)
 
 }
 
-Map<String, String> parseDescription(String description) {
+static Map<String, String> parseDescription(String description) {
     return new HashMap<String, String>()
 }
 
-String descriptionToString(Map<String, String> description) {
+static String descriptionToString(Map<String, String> description) {
     return "Kappa123"
 }
