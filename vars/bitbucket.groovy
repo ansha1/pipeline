@@ -136,7 +136,7 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
     httpRequest authentication: BITBUCKET_JENKINS_AUTH,
             contentType: 'APPLICATION_JSON',
             quiet: !log.isDebug(),
-            consoleLogResponseBody: true,
+            consoleLogResponseBody: log.isDebug,
             httpMode: 'PUT',
             url: prUrl,
             requestBody: JsonOutput.toJson(updatedPr)
@@ -144,9 +144,44 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 }
 
 static Map<String, String> parseDescription(String description) {
-    return new HashMap<String, String>()
+
+    HashMap<String, String> descriptionSections = new LinkedHashMap<>()
+
+    List<String> lines = description.split('\n')
+
+    def sectionMarker = '###### '
+
+    def currentSection = ''
+
+    lines.each { String line ->
+        if (line.startsWith(sectionMarker)) {
+            currentSection = line.replace(sectionMarker, '').replace('\n', '')
+        } else {
+            if (descriptionSections.containsKey(currentSection)) {
+                descriptionSections.put(currentSection, descriptionSections.get(currentSection) + '\n' + line)
+            } else {
+                descriptionSections.put(currentSection, line)
+            }
+        }
+    }
+
+    return descriptionSections
 }
 
 static String descriptionToString(Map<String, String> description) {
-    return "Kappa123"
+
+    def convertedDescription = ''
+
+    description.entrySet().each { Map.Entry<String, String> entry ->
+        if (entry.getKey() == '') {
+            convertedDescription += entry.getValue()
+            if (description.size() > 1) {
+                convertedDescription += '\n'
+            }
+        } else {
+            convertedDescription += '###### ' + entry.getKey() + '\n' + entry.getValue() + '\n'
+        }
+    }
+
+    return convertedDescription
 }
