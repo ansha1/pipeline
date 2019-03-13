@@ -129,6 +129,7 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
     def updatedPr = [:]
     updatedPr.description = updatedDescription
     updatedPr.version = originalPr.version
+    updatedPr.reviewers = originalPr.reviewers
 
     log.info(updatedPr)
 
