@@ -126,7 +126,7 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
 
     def updatedDescription = descriptionToString(originalDescription)
 
-    def updatedPr = []
+    def updatedPr = [:]
     updatedPr.description = updatedDescription
 //    updatedPr.title = originalPr.title
 
