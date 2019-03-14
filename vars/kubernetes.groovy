@@ -16,10 +16,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
              "PATH=${env.PATH}:${WORKSPACE}"]) {
 
         try {
-            pythonUtils.createVirtualEnv("python3", k8sEnv)
-            pythonUtils.withVenv(k8sEnv) {
-                login(clusterDomain)
-            }
+            login(clusterDomain)
 
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
@@ -71,15 +68,14 @@ def login(String clusterDomain) {
         }
 
         log.info("Going to install kubelogin (${kubelogin_version})")
-        sh "pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz"
-        sh """
+        pythonUtils.createVirtualEnv("python3", k8sEnv)
+        pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
+
+        pythonUtils.venvSh("""
             unset KUBERNETES_SERVICE_HOST
-            pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
-            ls -l /usr/local/bin/
-            printenv
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
-            """
+            """, false, k8sEnv)
     }
 }
 

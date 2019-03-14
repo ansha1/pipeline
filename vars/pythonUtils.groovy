@@ -23,7 +23,6 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
             "VIRTUAL_ENV=${absoluteVenvDir}",
             "PYTHONDONTWRITEBYTECODE=1",
             "PATH=${absoluteVenvDir}/bin:${env.PATH}",
-            "PATH1=${absoluteVenvDir}/bin:${env.PATH}",
             "PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}",
             "PIP_INDEX_URL=${PIP_EXTRA_INDEX_URL}${pipRepo}${PIP_EXTRA_INDEX_URL_SUFFIX}",
     ]
@@ -31,6 +30,15 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
 
 def venvSh(String cmd, Boolean returnStdout = false, String venvDir = VENV_DIR) {
     log.info("Activate virtualenv and run command (${venvDir})")
+
+
+    // get the absolute path of a env dir
+    dir(venvDir) {
+        absoluteVenvDir = pwd()
+    }
+    cmd = "PATH=${absoluteVenvDir}/bin:${PATH}\n${cmd}"
+
+
     withEnv(getVirtualEnv(venvDir)) {
         output = sh(name: 'Run sh script', returnStdout: returnStdout, script: cmd)
     }
