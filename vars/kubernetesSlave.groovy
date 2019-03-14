@@ -89,7 +89,7 @@ The namespace will be deleted after execution
 def withNamespace(String namespaceName, body) {
     try {
         def k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
-        String ns = client.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+        String ns = k8sClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
         log.info("Created namespace ${ns}")
         k8sClient.close()
         k8sClient = null
@@ -99,7 +99,7 @@ def withNamespace(String namespaceName, body) {
         log.error("There is error in withNamespace method ${e}")
     } finally {
         k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
-        String isNamespaceDeleted = client.namespaces().withName(namespaceName).delete()
+        String isNamespaceDeleted = k8sClient.namespaces().withName(namespaceName).delete()
         log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
         k8sClient.close()  //always close connection to the Kubernetes cluster to prevent connection leaks
         //if we don't null client, jenkins will try to serialise k8s objects and that will fail, so we won't see actual error
