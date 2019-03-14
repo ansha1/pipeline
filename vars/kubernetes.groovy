@@ -79,6 +79,7 @@ def login(String clusterDomain) {
             ls -la
             ls -la ${k8sEnv}
             ls -la ${k8sEnv}/bin
+            pwd
             ${k8sEnv}/bin/kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
