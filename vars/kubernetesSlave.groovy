@@ -36,7 +36,6 @@ def call(Map slaveConfig, body) {
 
     //Executing every Jenkins slave in the dedicated namespace
     withNamespace(namespaceName) {
-
         podTemplate(label: label, yaml: parentPodtemplateYaml, workingDir: '/home/jenkins', namespace: namespaceName,
                 containers: [
                         containerTemplate(name: 'jnlp', image: "jenkinsci/jnlp-slave:3.27-1-alpine", args: '${computer.jnlpmac} ${computer.name}'),
@@ -88,26 +87,23 @@ This method allow us to run pods in the dedicated namespace.
 The namespace will be deleted after execution
  */
 def withNamespace(String namespaceName, body) {
-    def client = null
     try {
-        client = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
+        def k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
         String ns = client.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
         log.info("Created namespace ${ns}")
-        client.close()
-        client = null
+        k8sClient.close()
+        k8sClient = null
 
         body()  //execute closure body
-        client = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
-        String isNamespaceDeleted = client.namespaces().withName(namespaceName).delete()
-
-
     } catch (e) {
         log.error("There is error in withNamespace method ${e}")
     } finally {
+        k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
+        String isNamespaceDeleted = client.namespaces().withName(namespaceName).delete()
         log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
-        client.close()  //always close connection to the Kubernetes cluster to prevent connection leaks
+        k8sClient.close()  //always close connection to the Kubernetes cluster to prevent connection leaks
         //if we don't null client, jenkins will try to serialise k8s objects and that will fail, so we won't see actual error
-        client = null
+        k8sClient = null
     }
 }
 
