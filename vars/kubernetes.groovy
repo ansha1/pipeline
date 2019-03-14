@@ -55,7 +55,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 }
 
 def login(String clusterDomain) {
-    String k8sEnv = '.k8env'
+    String k8sEnv = "${WORKSPACE}/.k8env"
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
@@ -74,6 +74,8 @@ def login(String clusterDomain) {
         pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
         sh """
             unset KUBERNETES_SERVICE_HOST
+            ls -la
+            ls -la ${k8sEnv}
             ${k8sEnv}/bin/kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
