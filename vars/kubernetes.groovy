@@ -93,11 +93,12 @@ def kubectlInstall() {
     }
 }
 
-def kubeup(String serviceName, String configSet, String nameSpace, Boolean dryRun = false) {
+def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean dryRun = false) {
     String dryRunParam = dryRun ? '--dry-run' : ''
+    String nameSpaceParam = nameSpace ? '' : "--namespace ${nameSpace}"
 
     sh """
        unset KUBERNETES_SERVICE_HOST
-       ./kubeup ${dryRunParam} --yes --no-color --namespace ${nameSpace} --configset ${configSet} ${serviceName} 2>&1
+       ./kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
     """
 }
