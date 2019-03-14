@@ -53,13 +53,11 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
             log.warning(e)
             currentBuild.rawBuild.result = Result.UNSTABLE
         }
-
     }
-
 }
 
 def login(String clusterDomain) {
-    
+
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
                 url: "https://login.${clusterDomain}/info"
@@ -76,6 +74,7 @@ def login(String clusterDomain) {
         sh "pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz"
         sh """
             unset KUBERNETES_SERVICE_HOST
+            pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
