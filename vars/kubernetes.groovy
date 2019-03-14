@@ -55,7 +55,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 }
 
 def login(String clusterDomain) {
-    String k8sEnv = "${WORKSPACE}/.k8env"
+    String k8sEnv = '.k8env'
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
