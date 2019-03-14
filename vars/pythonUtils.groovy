@@ -32,7 +32,6 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
 def venvSh(String cmd, Boolean returnStdout = false, String venvDir = VENV_DIR) {
     log.info("Activate virtualenv and run command (${venvDir})")
     withEnv(getVirtualEnv(venvDir)) {
-        sh "printenv"
         output = sh(name: 'Run sh script', returnStdout: returnStdout, script: cmd)
     }
     return output
@@ -70,5 +69,12 @@ def getPipRepo() {
         return pipRepo
     } else {
         return PIP_EXTRA_INDEX_DEFAULT_REPO
+    }
+}
+
+def withVenv(String venvDir = VENV_DIR, Closure closure){
+    log.info("Activate virtualenv (${venvDir})")
+    withEnv(getVirtualEnv(venvDir)) {
+        closure()
     }
 }

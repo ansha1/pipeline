@@ -3,6 +3,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default') {
 
+    String k8sEnv = '.k8env'
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
     log.info("Choosen configSet is ${configSet} for ${clusterDomain}")
@@ -15,7 +16,10 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
              "PATH=${env.PATH}:${WORKSPACE}"]) {
 
         try {
-            login(clusterDomain)
+            pythonUtils.createVirtualEnv("python3", k8sEnv)
+            pythonUtils.withVenv(k8sEnv) {
+                login(clusterDomain)
+            }
 
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
@@ -55,8 +59,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 }
 
 def login(String clusterDomain) {
-    String k8sEnv = '.k8env'
-
+    
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
                 url: "https://login.${clusterDomain}/info"
@@ -70,19 +73,10 @@ def login(String clusterDomain) {
         }
 
         log.info("Going to install kubelogin (${kubelogin_version})")
-        pythonUtils.createVirtualEnv("python3", k8sEnv)
-        pythonUtils.venvSh("python --version", false, k8sEnv)
-        pythonUtils.venvSh("python3 --version", false, k8sEnv)
-        pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
+        sh "pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz"
         sh """
             unset KUBERNETES_SERVICE_HOST
-            python --version
-            python3 --version
-            ls -la
-            ls -la ${k8sEnv}
-            ls -la ${k8sEnv}/bin
-            pwd
-            ${k8sEnv}/bin/kubelogin -s login.${clusterDomain} 2>&1
+            kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
     }
