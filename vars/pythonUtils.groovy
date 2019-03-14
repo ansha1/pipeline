@@ -31,15 +31,13 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
 def venvSh(String cmd, Boolean returnStdout = false, String venvDir = VENV_DIR) {
     log.info("Activate virtualenv and run command (${venvDir})")
 
+    // Workaround to change PATH variable inside docker container
+    // https://issues.jenkins-ci.org/browse/JENKINS-49076
+    def envVars = getVirtualEnv(venvDir)
+    def pathVars = envVars.findAll{it ==~ /^PATH\=.*/}.join("\n")
+    cmd = "${pathVars}\n${cmd}"
 
-    // get the absolute path of a env dir
-    dir(venvDir) {
-        absoluteVenvDir = pwd()
-    }
-    cmd = "PATH=${absoluteVenvDir}/bin:${PATH}\n${cmd}"
-
-
-    withEnv(getVirtualEnv(venvDir)) {
+    withEnv(envVars) {
         output = sh(name: 'Run sh script', returnStdout: returnStdout, script: cmd)
     }
     return output
@@ -77,12 +75,5 @@ def getPipRepo() {
         return pipRepo
     } else {
         return PIP_EXTRA_INDEX_DEFAULT_REPO
-    }
-}
-
-def withVenv(String venvDir = VENV_DIR, Closure closure){
-    log.info("Activate virtualenv (${venvDir})")
-    withEnv(getVirtualEnv(venvDir)) {
-        closure()
     }
 }
