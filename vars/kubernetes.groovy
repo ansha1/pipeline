@@ -75,6 +75,8 @@ def login(String clusterDomain) {
         sh """
             unset KUBERNETES_SERVICE_HOST
             pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
+            ls -l /usr/local/bin/
+            printenv
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
