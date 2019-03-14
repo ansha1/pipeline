@@ -86,24 +86,17 @@ List<String> generateSecurityPermissions(List<String> allowedUsers) {
 This method allow us to run pods in the dedicated namespace.
 The namespace will be deleted after execution
  */
+
 def withNamespace(String namespaceName, body) {
     try {
-        def k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
-        String ns = k8sClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+        def ns = createNamespace(namespaceName)
         log.info("Created namespace ${ns}")
-        k8sClient.close()
-        k8sClient = null
-
         body()  //execute closure body
     } catch (e) {
         log.error("There is error in withNamespace method ${e}")
     } finally {
-        k8sClient = KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
-        String isNamespaceDeleted = k8sClient.namespaces().withName(namespaceName).delete()
+        String isNamespaceDeleted = deleteNamespace(namespaceName)
         log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
-        k8sClient.close()  //always close connection to the Kubernetes cluster to prevent connection leaks
-        //if we don't null client, jenkins will try to serialise k8s objects and that will fail, so we won't see actual error
-        k8sClient = null
     }
 }
 
@@ -111,4 +104,27 @@ String getNamespaceNameFromString(String rawNamespaceName) {
     //By convention, the names of Kubernetes resources should be up to maximum length of 253 characters and consist of lower case alphanumeric characters, -
     return rawNamespaceName.trim().replaceAll('[^a-zA-Z\\d]', '-')
             .toLowerCase().take(253)
+}
+
+
+@NoNCPS
+def getKubernetesClient() {
+    return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
+}
+
+@NoNCPS
+def createNamespace(String namespaceName) {
+    def kubernetesClient = getKubernetesClient()
+    def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+    kubernetesClient = null
+    return namespace
+}
+
+
+@NoNCPS
+def deleteNamespace(String namespaceName) {
+    def kubernetesClient = getKubernetesClient()
+    def result = kubernetesClient.namespaces().withName(namespaceName).delete()
+    kubernetesClient = null
+    return result
 }
