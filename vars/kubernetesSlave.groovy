@@ -36,33 +36,35 @@ def call(Map slaveConfig, body) {
 
     //Executing every Jenkins slave in the dedicated namespace
     withNamespace(namespaceName) {
-        podTemplate(label: label, yaml: parentPodtemplateYaml, workingDir: '/home/jenkins', namespace: namespaceName,
-                containers: [
-                        containerTemplate(name: 'jnlp', image: "jenkinsci/jnlp-slave:3.27-1-alpine", args: '${computer.jnlpmac} ${computer.name}'),
-                        containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
-                                resourceRequestCpu: resourceRequestCpu,
-                                resourceRequestMemory: resourceRequestMemory,
-                                envVars: [
-                                        envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
-                                        envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
-                                        envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
-                                        envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
-                                        envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo')
-                                ],)],
-                volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-                          hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
-                          hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
-                          hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
-                          hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
+        podTemplate(label: "parent-$label", yaml: parentPodtemplateYaml) {
+            podTemplate(label: label, workingDir: '/home/jenkins', namespace: namespaceName,
+                    containers: [
+                            containerTemplate(name: 'jnlp', image: "jenkinsci/jnlp-slave:3.27-1-alpine", args: '${computer.jnlpmac} ${computer.name}'),
+                            containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
+                                    resourceRequestCpu: resourceRequestCpu,
+                                    resourceRequestMemory: resourceRequestMemory,
+                                    envVars: [
+                                            envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
+                                            envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
+                                            envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
+                                            envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
+                                            envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo')
+                                    ],)],
+                    volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+                              hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
+                              hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
+                              hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
+                              hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
 //                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {  //TODO: add this secret as shared secret file in all k8s namespaces
-                ]) {
+                    ]) {
 
-            timestamps {
-                ansiColor('xterm') {
-                    timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
-                        node(label) {
-                            properties(propertiesList)
-                            body.call()
+                timestamps {
+                    ansiColor('xterm') {
+                        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
+                            node(label) {
+                                properties(propertiesList)
+                                body.call()
+                            }
                         }
                     }
                 }
