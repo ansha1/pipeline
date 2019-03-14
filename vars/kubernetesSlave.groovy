@@ -1,4 +1,5 @@
 import io.fabric8.kubernetes.client.KubernetesClient
+import static com.nextiva.SharedJobsStaticVars.*
 import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
@@ -116,6 +117,11 @@ def getKubernetesClient() {
 
 @NonCPS
 def createNamespace(String namespaceName) {
+    List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
+    if (listOfBookedNamespaces.contains(namespaceName)) {
+        error("Can't create ${namespaceName}, this namespace is already booked")
+    }
+
     def kubernetesClient = getKubernetesClient()
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
     kubernetesClient = null
@@ -124,9 +130,13 @@ def createNamespace(String namespaceName) {
 
 
 @NonCPS
-def deleteNamespace(String namespaceName) {
+Boolean deleteNamespace(String namespaceName) {
+    List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
+    if (listOfBookedNamespaces.contains(namespaceName)) {
+        error("Can't delete ${namespaceName}, this namespace is already booked")
+    }
     def kubernetesClient = getKubernetesClient()
-    def result = kubernetesClient.namespaces().withName(namespaceName).delete()
+    Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
 }
