@@ -76,6 +76,7 @@ def login(String clusterDomain) {
             unset KUBERNETES_SERVICE_HOST
             ls -la
             ls -la ${k8sEnv}
+            ls -la ${k8sEnv}/bin
             ${k8sEnv}/bin/kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """
