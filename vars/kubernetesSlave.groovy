@@ -107,12 +107,12 @@ String getNamespaceNameFromString(String rawNamespaceName) {
 }
 
 
-@NoNCPS
+@NonCPS
 def getKubernetesClient() {
     return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
 }
 
-@NoNCPS
+@NonCPS
 def createNamespace(String namespaceName) {
     def kubernetesClient = getKubernetesClient()
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
@@ -121,7 +121,7 @@ def createNamespace(String namespaceName) {
 }
 
 
-@NoNCPS
+@NonCPS
 def deleteNamespace(String namespaceName) {
     def kubernetesClient = getKubernetesClient()
     def result = kubernetesClient.namespaces().withName(namespaceName).delete()
