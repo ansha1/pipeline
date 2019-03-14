@@ -95,7 +95,7 @@ def kubectlInstall() {
 
 def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean dryRun = false) {
     String dryRunParam = dryRun ? '--dry-run' : ''
-    String nameSpaceParam = nameSpace ? '' : "--namespace ${nameSpace}"
+    String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
     sh """
        unset KUBERNETES_SERVICE_HOST
