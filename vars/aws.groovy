@@ -2,7 +2,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def uploadFrontToS3(String appName, String buildVersion, String environment, Map args, String pathToSrc) {
-    if (environment.notIn(LIST_OF_ENVS)) {
+    if (!LIST_OF_ENVS.contains(environment)) {
         throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
     }
 
