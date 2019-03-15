@@ -40,7 +40,7 @@ Boolean checkNexus2Package(String repo, String format, String packageName, Strin
     try {
         checkStatusNexus2(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
     } catch (FileNotFoundException e) {
-        log.warn("Package ${packageName} with version ${packageVersion} not found in Nexus.")
+        log.red("Package ${packageName} with version ${packageVersion} not found in Nexus.")
         return false
     }
 }
@@ -57,7 +57,7 @@ Boolean checkStatusNexus3(Map searchQueryResult, String packageName, String pack
 
 Boolean checkStatusNexus2(Map searchQueryResult, String packageName, String packageVersion) {
     if (searchQueryResult.data.size() > 0) {
-        log.info("Package ${packageName} with version ${packageVersion} exists in Nexus.")
+        log.green("Package ${packageName} with version ${packageVersion} exists in Nexus.")
         return true
     }
 }

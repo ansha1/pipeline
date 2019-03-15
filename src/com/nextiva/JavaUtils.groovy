@@ -195,15 +195,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
         // returning false only when none of the artifacts exists in Nexus
         return false
     } else {
-        log.info("Original artifacts list:\n")
-        mavenArtifactsProperties.each { artifact ->
-            log.info(artifact)
-        }
-        log.info("List artifacts and their versions in Nexus:\n")
-        artifactsInNexus.each { artifact ->
-            println(artifact.artifactId, artifact.artifactVersion)
-        }
-        log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
         currentBuild.rawBuild.result = Result.ABORTED
         throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used submodules pom.xml" +
                 "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
