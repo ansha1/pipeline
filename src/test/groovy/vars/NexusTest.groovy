@@ -33,6 +33,7 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
     @Test
     void push_static_assets_to_valid_environment() {
         def script = loadScript "vars/nexus.groovy"
+        attachScript 'common'
         script.uploadStaticAssets 'dev', 'assetDir', 'version', 'packageName', 'pathToSrc'
         checkThatMethodWasExecutedWithValue 'sh', '.*upload-file.*', 2, 2
         printCallStack()
