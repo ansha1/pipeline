@@ -40,7 +40,7 @@ Boolean checkNexus2Package(String repo, String format, String packageName, Strin
     try {
         checkStatusNexus2(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
     } catch (FileNotFoundException e) {
-        log.info("Package ${packageName} with version ${packageVersion} not found in Nexus.")
+        log.warn("Package ${packageName} with version ${packageVersion} not found in Nexus.")
         return false
     }
 }

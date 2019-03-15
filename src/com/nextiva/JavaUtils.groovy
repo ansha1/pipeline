@@ -197,7 +197,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
     } else {
         log.info("Original artifacts list:\n")
         mavenArtifactsProperties.each { artifact ->
-            println(artifact.artifactId, artifact.artifactVersion)
+            log.info(artifact)
         }
         log.info("List artifacts and their versions in Nexus:\n")
         artifactsInNexus.each { artifact ->
