@@ -45,7 +45,7 @@ def call(body) {
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = getBooleanDefault(pipelineParams.BLUE_GREEN_DEPLOY, false)
-    isVeracodeScanEnabled = getBooleanDefault(pipelineParams.isVeracodeScanEnabled, true)
+    isSecurityScanEnabled = getBooleanDefault(pipelineParams.isSecurityScanEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []
@@ -122,7 +122,6 @@ def call(body) {
     log('=====================================================')
     log('')
 }
-
 
 def getUtils() {
     return utils
