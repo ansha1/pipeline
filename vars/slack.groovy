@@ -3,6 +3,7 @@ import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
 import java.net.URLDecoder
 import java.util.Random
+import groovy.json.JsonOutput
 
 
 def call(String notifyChannel, def uploadSpec) {
