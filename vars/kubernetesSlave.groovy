@@ -13,14 +13,14 @@ def call(Map slaveConfig, body) {
     }
     def resourceRequestCpu = slaveConfig.get("resourceRequestCpu", "250m")
     def resourceRequestMemory = slaveConfig.get("resourceRequestMemory", "1Gi")
-    def buildDaysToKeepStr = slaveConfig.get("buildDaysToKeepStr", "3")
-    def buildNumToKeepStr = slaveConfig.get("buildNumToKeepStr", "5")
+    def buildDaysToKeepStr = slaveConfig.get("buildDaysToKeepStr", "10")
+    def buildNumToKeepStr = slaveConfig.get("buildNumToKeepStr", "10")
     def jobTimeoutMinutes = slaveConfig.get("jobTimeoutMinutes", "60")
     def paramlist = slaveConfig.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
 
     /*jobTriggers could be
-    cron('H/15 * * * *')
-    upstream(threshold: hudson.model.Result.SUCCESS, upstreamProjects: "surveys-server/dev")
+    [cron('H/15 * * * *'),
+    upstream(threshold: hudson.model.Result.SUCCESS, upstreamProjects: "surveys-server/dev")]
     */
     def jobTriggers = slaveConfig.get("jobTriggers", [])
     def authMap = slaveConfig.get("auth", [:])

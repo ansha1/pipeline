@@ -1,20 +1,37 @@
 package com.nextiva
 
+flow
 
 
 
 def call(Map config) {
 
+try
+checkout()
+checkout()
+checkout()
+checkout()
+checkout()
+checkout()
+
+flow = new FLowBOBOBBO(config)
+flow.checkout().buildverify().done()
+
+        stage("Checkout") {
+            flow.checkout()
 
 
 
 
-
-    stage("Checkout") {
-        container(jnlp) {
-            checkout scm
+            if() {
+                container(jnlp) {
+                    checkout scm
+                }
+            }
         }
-    }
+
+
+
     stage("Build version verification") {   //if on DEV,develop,master......
         container(build) {
             checkversion(config)
