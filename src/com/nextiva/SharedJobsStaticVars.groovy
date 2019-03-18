@@ -60,7 +60,7 @@ class SharedJobsStaticVars {
     static final PROMETHEUS_DEFAULT_METRIC = 1
     static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
     static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
-    static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'NextOS Platform (CRM)'
+    static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'Nextiva Services'
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
     static final S3_PUBLIC_BUCKET_NAME = 'public-static-assets.nextiva.io'
     static final S3_PRIVATE_BUCKET_NAME = 'private-static-assets.nextiva.io'
