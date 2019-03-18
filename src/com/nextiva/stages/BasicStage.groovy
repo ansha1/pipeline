@@ -9,7 +9,7 @@ abstract class BasicStage implements Serializable{
         this.script = script
     }
 
-    abstract excute()
+    abstract execute()
 
 
 }
