@@ -1,4 +1,4 @@
-package stages
+package com.nextiva.stages
 
 import com.nextiva.stages.BasicSage
 
