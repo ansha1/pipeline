@@ -37,7 +37,7 @@ def prOwnerPrivateMessage(String url) {
 
 def privateMessage(String slackUserId, String message) {
     log.debug("Message: " + message)
-    def attachments = java.net.URLEncoder.encode(message, "UTF-8")
+    def attachments = URLEncoder.encode(message, "UTF-8")
     httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
             consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
@@ -74,6 +74,60 @@ def buildStatusMessageBody() {
         }
     ]"""
     return uploadSpec
+}
+
+def buildAttachments() {
+    def mention = ''
+    def buildStatus = currentBuild.currentResult
+    if(buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+        mention = "@here "
+    }
+    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
+    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
+
+    return JsonOutput.toJson [
+            [
+                    title: "${mention}${subject}, build #${env.BUILD_NUMBER}",
+                    title_link: "${env.BUILD_URL}",
+                    color: "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
+                    author_name: getGitAuthor(),
+                    text: "${buildStatus}",
+                    fields: [
+                            [
+                                    title: "Branch",
+                                    value: "${env.GIT_BRANCH}",
+                                    short: true
+                            ],
+                            [
+                                    title: "Last Commit",
+                                    value: getLastCommitMessage(),
+                                    short: false
+                            ]
+                    ],
+                    "actions": [
+                            [
+                                "text": "Console output",
+                                "type": "button",
+                                "url": "${env.BUILD_URL}console"
+                            ],
+                            [
+                                "text": "Test results",
+                                "type": "button",
+                                "url": "${env.BUILD_URL}testReport"
+                            ]
+                    ]
+
+            ]
+    ]
+}
+
+def getGitAuthor = {
+    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+}
+
+def getLastCommitMessage = {
+    message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
 }
 
 def getSlackUserIdByEmail(String userMail) {
