@@ -30,7 +30,7 @@ def call(def jobConfig) {
 def runVeracodeScanJava(def jobConfig) {
     try {
         def utils = jobConfig.getUtils()
-        String applicationScope = jobConfig.get("veracodeApplicationScope","Nextiva Services")
+        String applicationScope = jobConfig.veracodeApplicationScope
         utils.buildForVeracode(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
         withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
             veracode applicationName: applicationScope,
