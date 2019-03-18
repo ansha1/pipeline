@@ -10,10 +10,10 @@ class Checkout extends BasicStage {
     def execute(){
         script.checkout([
                 $class: 'GitSCM',
-                branches: scm.branches,
-                doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-                extensions: scm.extensions,
-                userRemoteConfigs: scm.userRemoteConfigs
+                branches: script.scm.branches,
+                doGenerateSubmoduleConfigurations: script.scm.doGenerateSubmoduleConfigurations,
+                extensions: script.scm.extensions,
+                userRemoteConfigs: script.scm.userRemoteConfigs
         ])
     }
 }
