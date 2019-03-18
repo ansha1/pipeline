@@ -11,5 +11,4 @@ abstract class BasicStage implements Serializable{
 
     abstract execute()
 
-
 }
