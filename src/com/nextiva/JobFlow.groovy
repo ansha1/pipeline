@@ -6,14 +6,6 @@ flow
 
 def call(Map config) {
 
-try
-checkout()
-checkout()
-checkout()
-checkout()
-checkout()
-checkout()
-
 flow = new FLowBOBOBBO(config)
 flow.checkout().buildverify().done()
 
