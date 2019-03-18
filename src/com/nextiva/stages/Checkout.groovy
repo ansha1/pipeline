@@ -1,8 +1,8 @@
 package com.nextiva.stages
 
-import com.nextiva.stages.BasicSage
+import com.nextiva.stages.BasicStage
 
-class Checkout extends BasicSage {
+class Checkout extends BasicStage {
     protected Checkout(script, configuration) {
         super(script, configuration)
     }
