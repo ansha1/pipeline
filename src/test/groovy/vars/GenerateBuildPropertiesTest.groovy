@@ -23,6 +23,7 @@ class GenerateBuildPropertiesTest extends BasePipelineTest implements Validator,
     @Test
     void write_property_file() {
         def script = loadScript "vars/generateBuildProperties.groovy"
+        attachScript 'common'
         script.call 'deployEnvironment', 'version', 'jobName'
         checkThatMockedMethodWasExecuted 'writeFile', 1
         printCallStack()

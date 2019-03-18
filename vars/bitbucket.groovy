@@ -102,7 +102,7 @@ List<String> getChangesFromPr(String repositoryUrl, String prID, String startPag
 
     changesResponseJson.values.each {
         changedFiles << it.path.toString
-        it?.srcPath?.toString && changedFiles << it.srcPath.toString
+        it?.srcPath?.toString && changedFiles << it.srcPath.toString.trim()
     }
 
     return changedFiles

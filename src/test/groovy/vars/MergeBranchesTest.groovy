@@ -126,6 +126,7 @@ class MergeBranchesTest extends BasePipelineTest implements Validator, Mocks {
         mockUnmergedFiles()
         mockMergeResult false, true
         def script = loadScript "vars/mergeBranches.groovy"
+        attachScript 'common'
         script.call 'origin/feature/Kappa123', 'origin/develop', 'some_channel', true, false
         printCallStack()
         validateThatForceMergeWasNotExecuted()
@@ -140,6 +141,7 @@ class MergeBranchesTest extends BasePipelineTest implements Validator, Mocks {
                  '  <artifactId>Kappa123</artifactId>',
                 ])
         def script = loadScript "vars/mergeBranches.groovy"
+        attachScript 'common'
         script.call 'origin/feature/Kappa123', 'origin/develop', 'some_channel', true, false
         printCallStack()
         validateThatForceMergeWasNotExecuted()

@@ -36,8 +36,7 @@ def build(String packageName, String version, String deployEnvironment, String e
     }
 
     if ( fileExists(pathToDebianFolder) ) {
-        def gitCommit = sh returnStdout: true, script: '''echo "$(git rev-parse HEAD)"'''
-        def setPackageMessage = 'autoincremented from git revision ' + gitCommit
+        def setPackageMessage = 'autoincremented from git revision ' + common.getCurrentCommit()
 
         dir(buildLocation) {
             generateBuildProperties(deployEnvironment, version, "${env.JOB_NAME}")
