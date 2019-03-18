@@ -8,7 +8,7 @@ class Checkout extends BasicStage {
     }
 
     def execute(){
-        script.stage(this.getClass().getName()) {
+        script.stage(this.getClass().getSimpleName()) {
             script.checkout([
                     $class                           : 'GitSCM',
                     branches                         : script.scm.branches,
