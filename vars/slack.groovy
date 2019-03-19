@@ -114,7 +114,7 @@ def buildAttachments(errorMessage = '') {
                                               ],
                                               [
                                                       title: "Last Commit",
-                                                      value: "```${lastCommitMessage}```",
+                                                      value: "${lastCommitMessage}",
                                                       short: true
                                               ],
                                       ],
