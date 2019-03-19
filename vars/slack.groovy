@@ -122,13 +122,13 @@ def buildAttachments() {
     )
 }
 
-def getGitAuthor = {
+def getGitAuthor() {
     def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-    author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    return author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
 }
 
-def getLastCommitMessage = {
-    message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+def getLastCommitMessage() {
+    return message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
 }
 
 def getSlackUserIdByEmail(String userMail) {
