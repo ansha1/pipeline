@@ -12,7 +12,7 @@ def call(String notifyChannel, def uploadSpec) {
 }
 
 def sendBuildStatus(String notifyChannel) {
-    def uploadSpec = buildStatusMessageBody()
+    def uploadSpec = buildAttachments()
     call(notifyChannel, uploadSpec)
 }
 
@@ -77,7 +77,7 @@ def buildStatusMessageBody() {
     return uploadSpec
 }
 
-def buildAttachments() {
+def buildAttachments(errorMessage = '') {
     def mention = ''
     def buildStatus = currentBuild.currentResult
     if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
@@ -95,7 +95,7 @@ def buildAttachments() {
                                       title_link : "${env.BUILD_URL}",
                                       color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
                                       author_name: "${author}",
-                                      text       : "",
+                                      text       : "${errorMessage}",
                                       fields     : [
                                               [
                                                       title: "Status",
