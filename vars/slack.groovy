@@ -108,14 +108,9 @@ def buildAttachments(errorMessage = '') {
                                                       short: true
                                               ],
                                               [
-                                                      title: "Test results",
-                                                      value: "Passed: 10, Failed: 0",
-                                                      short: false
-                                              ],
-                                              [
                                                       title: "Last Commit",
-                                                      value: "${lastCommitMessage}",
-                                                      short: true
+                                                      value: "```${lastCommitMessage}```",
+                                                      short: false
                                               ],
                                       ],
                                       "actions"  : [
@@ -131,7 +126,13 @@ def buildAttachments(errorMessage = '') {
                                               ]
                                       ]
 
-                              ]])
+                              ],
+                              [
+                                      title: "Test results",
+                                      value: "Passed: 10, Failed: 0",
+                                      short: false
+                              ],
+    ])
 }
 
 def getGitAuthor() {
