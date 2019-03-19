@@ -84,7 +84,7 @@ def buildAttachments() {
         mention = "@here "
     }
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
-    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
+    def subject = "Job: ${jobName} #${env.BUILD_ID}"
     def author = getGitAuthor()
     log.info("author = ${author}")
     def lastCommitMessage = getLastCommitMessage()
@@ -126,11 +126,11 @@ def buildAttachments() {
 
 def getGitAuthor() {
     def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-    return author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
 }
 
 def getLastCommitMessage() {
-    return message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
 }
 
 def getSlackUserIdByEmail(String userMail) {
