@@ -12,7 +12,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kops.k8s.io/instancegroup
+          - key: dedicatedgroup
             operator: In
             values:
             - jenkins-slave
