@@ -13,7 +13,7 @@ class BuildPublishDockerImageTest extends BasePipelineTest implements Validator,
         super.setUp()
         binding.setVariable 'WORKSPACE', 'WORKSPACE'
         mockEnv()
-        attachScript 'generateBuildProperties'
+        attachScript 'generateBuildProperties', 'common'
         mockGenerateBuildProperties()
         mockDocker()
     }
