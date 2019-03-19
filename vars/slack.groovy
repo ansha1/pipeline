@@ -49,7 +49,7 @@ def buildStatusMessageBody() {
     def buildStatus = currentBuild.currentResult
     def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
     def commitInfo = commitInfoRaw.trim()
-    if(buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
         mention = "@here "
     }
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
@@ -80,20 +80,19 @@ def buildStatusMessageBody() {
 def buildAttachments() {
     def mention = ''
     def buildStatus = currentBuild.currentResult
-    if(buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
         mention = "@here "
     }
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
 
-    return JsonOutput.toJson (
-            [
-                    title: "${mention}${subject}, build #${env.BUILD_NUMBER}",
-                    title_link: "${env.BUILD_URL}",
-                    color: "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
+    return [[
+                    title      : "${mention}${subject}, build #${env.BUILD_NUMBER}",
+                    title_link : "${env.BUILD_URL}",
+                    color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
                     author_name: getGitAuthor(),
-                    text: "${buildStatus}",
-                    fields: [
+                    text       : "${buildStatus}",
+                    fields     : [
                             [
                                     title: "Branch",
                                     value: "${env.GIT_BRANCH}",
@@ -105,21 +104,20 @@ def buildAttachments() {
                                     short: false
                             ]
                     ],
-                    "actions": [
+                    "actions"  : [
                             [
-                                "text": "Console output",
-                                "type": "button",
-                                "url": "${env.BUILD_URL}console"
+                                    "text": "Console output",
+                                    "type": "button",
+                                    "url" : "${env.BUILD_URL}console"
                             ],
                             [
-                                "text": "Test results",
-                                "type": "button",
-                                "url": "${env.BUILD_URL}testReport"
+                                    "text": "Test results",
+                                    "type": "button",
+                                    "url" : "${env.BUILD_URL}testReport"
                             ]
                     ]
 
-            ]
-    )
+            ]]
 }
 
 def getGitAuthor() {
