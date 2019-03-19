@@ -4,6 +4,9 @@ import static com.nextiva.SharedJobsStaticVars.*
 import java.net.URLDecoder
 import java.util.Random
 import groovy.json.JsonOutput
+import hudson.tasks.test.AbstractTestResultAction
+import hudson.model.Actionable
+import hudson.tasks.junit.CaseResult
 
 
 def call(String notifyChannel, def uploadSpec) {
