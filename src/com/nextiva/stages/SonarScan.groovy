@@ -15,5 +15,3 @@ class SonarScan extends BasicStage {
         }
     }
 }
-
-sss
