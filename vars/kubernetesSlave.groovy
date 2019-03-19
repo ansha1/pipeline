@@ -145,6 +145,6 @@ Boolean deleteNamespace(String namespaceName) {
 @NonCPS
 def createSecret(String namespaceName, String secret) {
     def kubernetesClient = getKubernetesClient()
-    def secretToApply = kubernetesClient.load(mavenSecret).get()
+//    def secretToApply = kubernetesClient.load(mavenSecret).get()
     kubernetesClient = null
 }
