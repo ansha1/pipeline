@@ -84,14 +84,14 @@ def buildAttachments() {
         mention = "@here "
     }
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
-    def subject = "Job: ${jobName} #${env.BUILD_ID}"
+    def subject = "Job: ${jobName}, build #${env.BUILD_NUMBER}"
     def author = getGitAuthor()
     log.info("author = ${author}")
     def lastCommitMessage = getLastCommitMessage()
     log.info("lastCommitMessage = ${lastCommitMessage}")
 
     return JsonOutput.toJson([[
-                                      title      : "${mention}${subject}, build #${env.BUILD_NUMBER}",
+                                      title      : "${mention}${subject}",
                                       title_link : "${env.BUILD_URL}",
                                       color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
                                       author_name: "${author}",
