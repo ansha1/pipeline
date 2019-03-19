@@ -94,7 +94,7 @@ def buildAttachments(errorMessage = '') {
                                       title      : "${mention}${subject}",
                                       title_link : "${env.BUILD_URL}",
                                       color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-                                      author_name: "${author}",
+                                      author_name: "Commit autor: ${author}",
                                       text       : "${errorMessage}",
                                       fields     : [
                                               [
@@ -109,7 +109,7 @@ def buildAttachments(errorMessage = '') {
                                               ],
                                               [
                                                       title: "Last Commit",
-                                                      value: "${lastCommitMessage}",
+                                                      value: "`${lastCommitMessage}`",
                                                       short: false
                                               ]
                                       ],
