@@ -9,36 +9,36 @@ def call(Map config) {
 flow = new FLowBOBOBBO(config)
 flow.checkout().buildverify().done()
 
-        stage("Checkout") {
-            flow.checkout()
+//        stage("Checkout") {
+//            flow.checkout()
+//
+//
+//
+//
+//            if() {
+//                container(jnlp) {
+//                    checkout scm
+//                }
+//            }
+//        }
 
 
 
-
-            if() {
-                container(jnlp) {
-                    checkout scm
-                }
-            }
-        }
-
-
-
-    stage("Build version verification") {   //if on DEV,develop,master......
-        container(build) {
-            checkversion(config)
-
-            config.check
-            if ()
-        }
-    }
+//    stage("Build version verification") {   //if on DEV,develop,master......
+//        container(build) {
+//            checkversion(config)
+//
+//            config.check
+//            if ()
+//        }
+//    }
     stage("Unit testing") {  //Dev release PR    master if trunk base
         container(build) {
 
         }
     }
 
-    stage("Sonar analysing") {   //Dev brannh only
+    stage("SonarScan analysing") {   //Dev brannh only
         container(build) {
 
         }

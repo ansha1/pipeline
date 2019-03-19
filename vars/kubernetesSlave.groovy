@@ -33,11 +33,11 @@ def call(Map slaveConfig, body) {
                           pipelineTriggers(jobTriggers)]
 
     def label = "${slaveName}-${UUID.randomUUID().toString()}"
-    def parentPodtemplateYaml = libraryResource 'podtemplate/default.yaml'
+    def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
 
     //Executing every Jenkins slave in the dedicated namespace
     withNamespace(namespaceName) {
-        podTemplate(label: "parent-$label", yaml: parentPodtemplateYaml) {
+        podTemplate(label: "parent-$label", yaml: parentPodTemplateYaml) {
             podTemplate(label: label, workingDir: '/home/jenkins', namespace: namespaceName,
                     containers: [
                             containerTemplate(name: 'jnlp', image: "jenkinsci/jnlp-slave:3.27-1-alpine", args: '${computer.jnlpmac} ${computer.name}'),
@@ -56,7 +56,7 @@ def call(Map slaveConfig, body) {
                               hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                               hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
                               hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
-//                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {  //TODO: add this secret as shared secret file in all k8s namespaces
+                              secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret'),
                     ]) {
 
                 timestamps {
@@ -139,4 +139,12 @@ Boolean deleteNamespace(String namespaceName) {
     Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
+}
+
+
+@NonCPS
+def createSecret(String namespaceName, String secret) {
+    def kubernetesClient = getKubernetesClient()
+    def secret = kc.load(mavenSecret).get()
+    kubernetesClient = null
 }
