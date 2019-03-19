@@ -86,38 +86,38 @@ def buildAttachments() {
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
 
-    return JsonOutput.toJson [[
-                    title      : "${mention}${subject}, build #${env.BUILD_NUMBER}",
-                    title_link : "${env.BUILD_URL}",
-                    color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-                    author_name: getGitAuthor(),
-                    text       : "${buildStatus}",
-                    fields     : [
-                            [
-                                    title: "Branch",
-                                    value: "${env.GIT_BRANCH}",
-                                    short: true
-                            ],
-                            [
-                                    title: "Last Commit",
-                                    value: getLastCommitMessage(),
-                                    short: false
-                            ]
-                    ],
-                    "actions"  : [
-                            [
-                                    "text": "Console output",
-                                    "type": "button",
-                                    "url" : "${env.BUILD_URL}console"
-                            ],
-                            [
-                                    "text": "Test results",
-                                    "type": "button",
-                                    "url" : "${env.BUILD_URL}testReport"
-                            ]
-                    ]
+    return JsonOutput.toJson([[
+                                      title      : "${mention}${subject}, build #${env.BUILD_NUMBER}",
+                                      title_link : "${env.BUILD_URL}",
+                                      color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
+                                      author_name: getGitAuthor(),
+                                      text       : "${buildStatus}",
+                                      fields     : [
+                                              [
+                                                      title: "Branch",
+                                                      value: "${env.GIT_BRANCH}",
+                                                      short: true
+                                              ],
+                                              [
+                                                      title: "Last Commit",
+                                                      value: getLastCommitMessage(),
+                                                      short: false
+                                              ]
+                                      ],
+                                      "actions"  : [
+                                              [
+                                                      "text": "Console output",
+                                                      "type": "button",
+                                                      "url" : "${env.BUILD_URL}console"
+                                              ],
+                                              [
+                                                      "text": "Test results",
+                                                      "type": "button",
+                                                      "url" : "${env.BUILD_URL}testReport"
+                                              ]
+                                      ]
 
-            ] as String]
+                              ]])
 }
 
 def getGitAuthor() {
