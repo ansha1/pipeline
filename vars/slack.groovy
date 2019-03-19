@@ -86,7 +86,7 @@ def buildAttachments() {
     String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
     def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
 
-    return [[
+    return JsonOutput.toJson [[
                     title      : "${mention}${subject}, build #${env.BUILD_NUMBER}",
                     title_link : "${env.BUILD_URL}",
                     color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
@@ -117,7 +117,7 @@ def buildAttachments() {
                             ]
                     ]
 
-            ]]
+            ] as String]
 }
 
 def getGitAuthor() {
