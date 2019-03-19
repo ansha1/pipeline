@@ -95,8 +95,13 @@ def buildAttachments() {
                                       title_link : "${env.BUILD_URL}",
                                       color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
                                       author_name: "${author}",
-                                      text       : "`${buildStatus}`",
+                                      text       : "",
                                       fields     : [
+                                              [
+                                                      title: "Status",
+                                                      value: "${buildStatus}",
+                                                      short: true
+                                              ],
                                               [
                                                       title: "Branch",
                                                       value: "${env.BRANCH_NAME}",
