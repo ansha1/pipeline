@@ -108,6 +108,11 @@ def buildAttachments(errorMessage = '') {
                                                       short: true
                                               ],
                                               [
+                                                      title: "Test results",
+                                                      value: "Passed: 10, Failed: 0",
+                                                      short: true
+                                              ],
+                                              [
                                                       title: "Last Commit",
                                                       value: "```${lastCommitMessage}```",
                                                       short: false
@@ -126,11 +131,6 @@ def buildAttachments(errorMessage = '') {
                                               ]
                                       ]
 
-                              ],
-                              [
-                                      title: "Test results",
-                                      value: "Passed: 10, Failed: 0",
-                                      short: false
                               ],
     ])
 }
