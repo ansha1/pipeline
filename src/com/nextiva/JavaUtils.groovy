@@ -212,6 +212,7 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
+            step([$class: 'CucumberReportPublisher']) //PIPELINE-107
             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
         }
