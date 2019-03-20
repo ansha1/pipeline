@@ -45,7 +45,6 @@ def call(Map slaveConfig, body) {
                                     resourceRequestCpu: resourceRequestCpu,
                                     resourceRequestMemory: resourceRequestMemory,
                                     envVars: [
-                                            envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                                             envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
                                             envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                                             envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
