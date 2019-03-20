@@ -41,6 +41,10 @@ def call(body) {
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
         kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
+        // Adding Sales Demo Env Configuration
+        deployToSalesDemo = pipelineParams.deployToSalesDemo
+        kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo
+        inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -259,7 +263,27 @@ def call(body) {
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
-                                        jobConfig.kubernetesDeploymentsList)
+                                        jobConfig.kubernetesDeploymentsList, ,'.k8sEnv')
+                            }
+                        }
+                    }
+                    stage('Sales Demo Kubernetes deployment') {
+                       when {
+                            expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                        }
+                        steps {
+                            script {
+
+                                try {
+                                    log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
+                                    log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
+                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
+                                        jobConfig.kubernetesDeploymentsList,'.k8sEnvSD')
+                                }
+                                catch (e) {
+                                    log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = 'UNSTABLE'
+                                }
                             }
                         }
                     }
@@ -289,6 +313,27 @@ def call(body) {
                                 }
                             }
                         }
+                    }
+                    stage('Sales Demo Ansible deployment') {
+                       when {
+                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                        }
+                        steps {
+                            script {
+
+                                try {
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                        runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                    }
+                                }
+                                catch (e) {
+                                    log.warning("Ansible deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = Result.UNSTABLE
+                                }
+                            }
+                        }
+
                     }
                 }
             }

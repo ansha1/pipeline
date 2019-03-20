@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default') {
+def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList,String k8sEnv, String nameSpace = 'default') {
 
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
@@ -15,7 +15,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
              "PATH=${env.PATH}:${WORKSPACE}"]) {
 
         try {
-            login(clusterDomain)
+            login(clusterDomain, k8sEnv)
 
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
@@ -52,8 +52,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
     }
 }
 
-def login(String clusterDomain) {
-    String k8sEnv = '.k8env'
+def login(String clusterDomain, String k8sEnv) {
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
