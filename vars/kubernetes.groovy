@@ -1,4 +1,5 @@
 import static com.nextiva.SharedJobsStaticVars.*
+import com.nextiva.*
 
 
 def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default') {
