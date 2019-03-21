@@ -1,7 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList String nameSpace = 'default') {
+def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default') {
 
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
