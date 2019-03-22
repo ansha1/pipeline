@@ -33,6 +33,8 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
         }
     }
 
+    String reportUrl = "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}"
+
     common.tempDir("tmp_${common.getRundomInt()}") {
         """ publishHTML requires at least one exists file for publish """
         sh "echo tmp > tmp.txt"
@@ -41,8 +43,10 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
                      alwaysLinkToLastBuild: false,
                      keepAll              : true,
                      reportDir            : '',
-                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}",
+                     reportFiles          : reportUrl,
                      reportName           : reportName,
                      reportTitles         : ''])
     }
+
+    return reportUrl
 }

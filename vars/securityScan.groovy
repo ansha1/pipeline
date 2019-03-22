@@ -1,20 +1,17 @@
-def call(def jobConfig) {
-    String language = jobConfig.projectFlow.get('language')
-    String pathToSrc = jobConfig.projectFlow.get('pathToSrc', '.')
+def call(String appName, String language, String languageVersion, String repoUrl, String pathToSrc) {
 
     switch (language) {
         case 'java':
-            runVeracodeScanJava(jobConfig)
+            runVeracodeScanJava(appName, pathToSrc)
             break
         case 'js':
-            runSourceClearScanner(pathToSrc) {
+            runSourceClearScanner(pathToSrc, repoUrl) {
                 def sourceClearCi = libraryResource 'sourceclear/ci.sh'
                 sh "${sourceClearCi}"
             }
             break
         case 'python':
-            String languageVersion = jobConfig.projectFlow.get('languageVersion', 'python3.6')
-            runSourceClearScanner(pathToSrc) {
+            runSourceClearScanner(pathToSrc, repoUrl) {
                 def sourceClearCi = libraryResource 'sourceclear/ci.sh'
                 pythonUtils.createVirtualEnv(languageVersion)
                 pythonUtils.venvSh "${sourceClearCi}"
@@ -27,18 +24,20 @@ def call(def jobConfig) {
 }
 
 
-def runVeracodeScanJava(def jobConfig) {
+def runVeracodeScanJava(String appName, String pathToSrc) {
     try {
-        def utils = jobConfig.getUtils()
-        String applicationScope = jobConfig.veracodeApplicationScope
-        utils.buildForVeracode(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT, jobConfig.projectFlow)
+        def utils = getUtils("java", pathToSrc)
+
+        String buildVersion = utils.getVersion()
+
+        utils.buildForVeracode(appName, buildVersion, "production", ["veracodeBuildCommands": "mvn clean install -U --batch-mode -DskipTests"])
         withCredentials([usernamePassword(credentialsId: 'veracode', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-            veracode applicationName: applicationScope,
+            veracode applicationName: DEFAULT_VERACODE_APPLICATION_SCOPE,
                     criticality: 'VeryHigh',
                     createSandbox: true,
-                    sandboxName: jobConfig.APP_NAME,
+                    sandboxName: appName,
                     debug: true,
-                    scanName: "${jobConfig.APP_NAME}-${jobConfig.BUILD_VERSION}", timeout: 20,
+                    scanName: "${appName}-${buildVersion}", timeout: 20,
                     fileNamePattern: "",
                     scanIncludesPattern: "",
                     uploadIncludesPattern: "**/target/*.war, **/target/*.jar",
@@ -49,13 +48,13 @@ def runVeracodeScanJava(def jobConfig) {
     }
 }
 
-def runSourceClearScanner(String pathToSrc, body) {
+def runSourceClearScanner(String pathToSrc, String repoUrl, body) {
     log.info('============================')
     log.info('Start source clear scan')
     log.info('============================')
     dir(pathToSrc) {
         try {
-            def creds = tokenFromRepo(env.GIT_URL)
+            def creds = tokenFromRepo(repoUrl)
             withCredentials([string(credentialsId: creds, variable: 'SRCCLR_API_TOKEN')]) {
                 withEnv(["SRCCLR_CI_JSON=1", "DEBUG=1", "NOCACHE=1"]) {
                     body()

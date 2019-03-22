@@ -6,8 +6,6 @@ metadata:
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
-  imagePullSecrets:
-  - name: regsecret
   hostAliases:
   - ip: "192.168.103.218"
     hostnames:
@@ -27,7 +25,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kops.k8s.io/instancegroup
+          - key: dedicatedgroup
             operator: In
             values:
             - jenkins-slave
