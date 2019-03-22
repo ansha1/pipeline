@@ -1,0 +1,52 @@
+@Library('pipeline@develop') _
+
+
+def image = getImageByLanguage(params.language, params.languageVersion)
+
+
+slaveConfig = ["slaveName"            : "securityScan",
+               "image"                : image,
+               "resourceRequestCpu"   : "250m",
+               "resourceRequestMemory": "1Gi",
+               "buildDaysToKeepStr"   : "20",
+               "buildNumToKeepStr"    : "40",
+               "jobTimeoutMinutes"    : "1200",
+               "paramlist"            : [string(name: 'appName', description: 'application name'),
+                                         choice(name: 'language', description: 'application language', choices: ['python', 'js', 'java']),
+                                         string(name: 'languageVersion', description: 'languageVersion', default: "python3.6"),
+                                         string(name: 'pathToSrc', description: 'pathToSrc', default: "."),
+                                         string(name: 'repositoryUrl', description: 'repository branch'),
+                                         string(name: 'commitId', description: 'commitId'),],
+]
+
+
+kubernetesSlave(slaveConfig) {
+
+    stage("checkout") {
+        checkout([$class: 'GitSCM', branches: [[name: params.commitId]], userRemoteConfigs: [[credentialsId: 'jenkins-in-bitbucket', url: params.repositoryUrl]]])
+    }
+
+    stage("SecurityScan") {
+        container("build") {
+            securityScan(params.appName, params.language, params.languageVersion, params.repositoryUrl, params.pathToSrc)
+        }
+    }
+}
+
+def getImageByLanguage(String language, String languageVersion) {
+
+    switch (language) {
+        case "python":
+            image = languageVersion.replaceAll("python", "python:")
+            break
+        case "java":
+            image = "maven:3.6.0-jdk-8-alpine"
+            break
+        case "js":
+            image = "node:8"
+            break
+        default:
+            error("no build image for your language=$language languangeVersion=$languageVersion")
+    }
+    return image
+}

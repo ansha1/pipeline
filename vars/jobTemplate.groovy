@@ -238,7 +238,12 @@ def call(body) {
                 }
                 steps {
                     script {
-                        securityScan(jobConfig)
+                        build job: 'securityScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
+                                                                string(name: 'language', value: jobConfig.projectFlow.get('language')),
+                                                                string(name: 'languageVersion', value: jobConfig.projectFlow.get('languageVersion')),
+                                                                string(name: 'pathToSrc', value: jobConfig.projectFlow.get('pathToSrc', '.')),
+                                                                string(name: 'repositoryUrl', value: env.GIT_URL),
+                                                                string(name: 'commitId', value: env.GIT_COMMIT)], wait: false
                     }
                 }
             }
