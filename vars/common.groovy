@@ -79,7 +79,7 @@ def serviceStatus(String hostname, String service) {
     remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
 
-def tempDir(path, closure) {
+def tempDir(path = "tmp_${getRundomInt()}", closure) {
     dir(path) {
         closure()
         deleteDir()
