@@ -35,7 +35,7 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
 
     String reportUrl = "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}"
 
-    common.tempDir("tmp_${common.getRundomInt()}") {
+    common.tempDir() {
         """ publishHTML requires at least one exists file for publish """
         sh "echo tmp > tmp.txt"
 
