@@ -55,6 +55,7 @@ def call(body) {
     kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo ?: DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO
     inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo ?: DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO
     inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
+    salesDemoDeployOnly = false
 
     switch (env.BRANCH_NAME) {
         case 'dev':
