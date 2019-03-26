@@ -2,7 +2,7 @@ package com.nextiva
 
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'
-    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
+    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa', 'tooling', 'sales-demo']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final LIST_OF_BOOKED_NAMESPACES = ['bot', 'default', 'jenkins', 'kube-public', 'kube-system', 'monitoring', 'selenoid-moon', 'utils']
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
