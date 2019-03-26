@@ -16,25 +16,26 @@ List generateProperties(Map configuration) {
     */
     def jobTriggers = configuration.get("jobTriggers", [])
 
-    /*
-    buildDiscarder options
-     */
+    /**
+     * buildDiscarder options
+     *
+     **/
     def buildDaysToKeepStr = configuration.get("buildDaysToKeepStr", "10")
     def buildNumToKeepStr = configuration.get("buildNumToKeepStr", "10")
     def buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
     def buildArtifactNumToKeepStr = configuration.get("buildArtifactNumToKeepStr", "10")
 
-    /* The parameters can be of these types:
-    https://jenkins.io/doc/book/pipeline/syntax/#parameters
+    /** The parameters can be of these types:
+     * https://jenkins.io/doc/book/pipeline/syntax/#parameters
 
-    string(name: 'DEPLOY_ENV', defaultValue: 'TESTING', description: 'The target environment')
-    text(name: 'DEPLOY_TEXT', defaultValue: 'One\nTwo\nThree\n', description: '')
-    booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
-    choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
-
-    https://wiki.jenkins.io/display/JENKINS/Git+Parameter+Plugin
-    gitParameter(branch: '', branchFilter: 'origin/(.*)',  defaultValue: 'master', description: '', name: 'BRANCH', quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH')
-     */
+     * string(name: 'DEPLOY_ENV', defaultValue: 'TESTING', description: 'The target environment')
+     * text(name: 'DEPLOY_TEXT', defaultValue: 'One\nTwo\nThree\n', description: '')
+     * booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
+     * choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack')
+     *
+     * https://wiki.jenkins.io/display/JENKINS/Git+Parameter+Plugin
+     * gitParameter(branch: '', branchFilter: 'origin/(.*)',  defaultValue: 'master', description: '', name: 'BRANCH', quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH')
+     **/
     List parametersList = configuration.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
 
     /* Enable Matrix-based security for the job based on branch name e.g. :
