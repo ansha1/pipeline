@@ -168,4 +168,16 @@ jobTemplate {
 
     /* reportDirsList - defines the list of dirs and files for uploading to S3 test reports bucket */
     // reportDirsList = ['test/reports/', 'logs/']
+
+    /* deployToSalesDemo - if this flag is activated, then builds from the master branch will attempt to deploy the same artifact to the sales-demo env. */
+    // deployToSalesDemo = true
+
+    /* kubernetesClusterSalesDemo - Cluster Domain for sales-demo env. If this value isn't set the default is sales-demo.nextiva.io.
+    This value should not be used unless we grow to have multiple sales-demo env's */
+    // kubernetesClusterSalesDemo = "another-sales-demo.nextiva.io"
+
+    /* inventoryDirectorySalesDemo - Directory for where the sales demo env Ansible inventory lives. Default is sales-demo.
+    The final value that is used for the full path is inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
+    This value should not be used unless we grow to have multiple sales-demo env's */
+    // inventoryDirectorySalesDemo = "another-sales-demo"
 }

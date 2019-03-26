@@ -70,4 +70,6 @@ class SharedJobsStaticVars {
     static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
     static final BITBUCKET_SECTION_MARKER = '###### '
+    static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
+    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
 }

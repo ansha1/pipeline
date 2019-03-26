@@ -50,6 +50,13 @@ def call(body) {
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []
 
+    // Adding Sales Demo Env Configuration
+    deployToSalesDemo = getBooleanDefault(pipelineParams.deployToSalesDemo, false)
+    kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo ?: DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO
+    inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo ?: DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO
+    inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
+    salesDemoDeployOnly = false
+
     switch (env.BRANCH_NAME) {
         case 'dev':
         case 'develop':
@@ -119,6 +126,7 @@ def call(body) {
     healthCheckUrl.each { log("  - ${it}") }
     log("jdkVersion: ${jdkVersion}")
     log("mavenVersion: ${mavenVersion}")
+    log("deployToSalesDemo: ${deployToSalesDemo}")
     log('=====================================================')
     log('')
 }
