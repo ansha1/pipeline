@@ -8,6 +8,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
     log.info("Choosen configSet is ${configSet} for ${clusterDomain}")
 
     kubectlInstall()
+    vaultInstall()
 
     withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
              "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
@@ -89,6 +90,21 @@ def kubectlInstall() {
             curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
             ./kubectl version --client=true
+           """
+    }
+}
+
+
+def vaultInstall() {
+    try {
+        log.info("Ensure that vault is installed")
+        sh "command vault -v"
+    } catch (e) {
+        log.info("Going to install vault client 1.1.0 version")
+        sh """
+            wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
+            unzip vault.zip
+            ./vault -v
            """
     }
 }
