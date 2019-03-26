@@ -1,10 +1,10 @@
-package com.nextiva.slack
+package com.nextiva
 
-import groovy.json.JsonGenerator
-import com.nextiva.slack.dto.*
+//import groovy.json.JsonGenerator
+import groovy.json.JsonOutput
 
 class MessagesFactory {
-    static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()
+//    static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()
 
     static def buildStatusMessage(context) {
         List<Block> blocks = new ArrayList<>()
@@ -16,7 +16,7 @@ class MessagesFactory {
         section.setText(text)
         blocks.add(section)
 
-        return JSON_OUTPUT.toJson(new SlackMessageBuilder().blocks(blocks).color("good").build())
+        return JsonOutput.toJson(new SlackMessageBuilder().blocks(blocks).color("good").build())
     }
 }
 

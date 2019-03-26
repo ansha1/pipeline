@@ -1,6 +1,4 @@
-package com.nextiva.slack.dto
-
-import com.nextiva.slack.dto.Text
+package com.nextiva
 
 abstract class Block {
     def type
