@@ -46,7 +46,7 @@ List generateProperties(Map configuration) {
     List securityPermissions = generateSecurityPermissions(allowedUsers)
 
     def propertiesList = [pipelineTriggers(jobTriggers),
-                          buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr), artifactDaysToKeepStr: buildArtifactDaysToKeepStr, artifactNumToKeepStr: buildArtifactNumToKeepStr),
+                          buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr, artifactDaysToKeepStr: buildArtifactDaysToKeepStr, artifactNumToKeepStr: buildArtifactNumToKeepStr)),
                           authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions),
                           parameters(parametersList),
                           disableConcurrentBuilds(),]
