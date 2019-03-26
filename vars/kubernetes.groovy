@@ -48,9 +48,9 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
             try {
                 kubernetesDeploymentsList.each {
                     sh """
-                unset KUBERNETES_SERVICE_HOST
-                kubectl rollout status deployment/${it} --namespace ${nameSpace}
-                """
+                       unset KUBERNETES_SERVICE_HOST
+                       kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                    """
                 }
             } catch (e) {
                 log.warning("kubectl rollout status is failed!")
