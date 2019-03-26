@@ -3,6 +3,7 @@ package vars
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
+import com.nextiva.slack.MessagesFactory
 import utils.Mocks
 import utils.Validator
 
@@ -30,6 +31,11 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         script.sendBuildStatus 'some_channel'
         checkThatMockedMethodWasExecuted 'slackSend', 1
         printCallStack()
+    }
+
+    @Test
+    void factory_test() {
+        println MessagesFactory.buildStatusMessage(this)
     }
 
 }

@@ -112,7 +112,7 @@ def buildAttachments(errorMessage = '') {
                                               ],
                                               [
                                                       title: "Test results",
-                                                      value: "${getTestSummary()}",
+                                                      value: "getTestSummary()//",
                                                       short: true
                                               ],
                                               [

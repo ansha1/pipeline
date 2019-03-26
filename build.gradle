@@ -80,13 +80,13 @@ dependencies {
 sourceSets {
     main {
         groovy {
-            srcDirs = ['src/groovy']
+            srcDirs = ['src/groovy', 'src/']
         }
     }
 
     test {
         groovy {
-            srcDirs = ['src/test/groovy', 'src/com/nextiva']
+            srcDirs = ['src/test/groovy']
         }
     }
 }
