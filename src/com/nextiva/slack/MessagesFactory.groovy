@@ -1,11 +1,11 @@
-package slack
+package com.nextiva.slack
 
 import groovy.json.JsonGenerator
-import slack.dto.Block
-import slack.dto.Divider
-import slack.dto.Section
-import slack.dto.SlackMessageBuilder
-import slack.dto.Text
+import com.nextiva.slack.dto.Block
+import com.nextiva.slack.dto.Divider
+import com.nextiva.slack.dto.Section
+import com.nextiva.slack.dto.SlackMessageBuilder
+import com.nextiva.slack.dto.Text
 
 class MessagesFactory {
     static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()

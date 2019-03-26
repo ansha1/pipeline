@@ -1,4 +1,4 @@
-package slack.dto
+package com.nextiva.slack.dto
 
 class Text {
     String type
