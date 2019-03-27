@@ -10,7 +10,7 @@ import hudson.tasks.junit.CaseResult
 
 
 def call(String notifyChannel, def uploadSpec) {
-    log.debug(uploadSpec)
+    log.info(uploadSpec)
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
