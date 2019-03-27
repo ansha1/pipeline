@@ -16,7 +16,7 @@ def call(String notifyChannel, def uploadSpec) {
 
 def sendUsingBlocks(String notifyChannel, def uploadSpec) {
     log.debug(uploadSpec)
-    slackSend(channel: notifyChannel, message: uploadSpec, tokenCredentialId: "slackToken")
+    slackSend(channel: notifyChannel, blocks: uploadSpec, tokenCredentialId: "slackToken")
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
