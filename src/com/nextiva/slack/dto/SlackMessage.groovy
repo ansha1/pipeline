@@ -1,5 +1,6 @@
-package com.nextiva
+package com.nextiva.slack.dto
 
+import com.nextiva.slack.dto.blocks.Block
 import groovy.transform.builder.Builder
 import groovy.transform.builder.ExternalStrategy
 

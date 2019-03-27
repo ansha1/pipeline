@@ -1,6 +1,10 @@
-package com.nextiva
+package com.nextiva.slack
 
-import com.nextiva.slack.dto.Divider
+import com.nextiva.slack.dto.SlackMessageBuilder
+import com.nextiva.slack.dto.blocks.Block
+import com.nextiva.slack.dto.blocks.Section
+import com.nextiva.slack.dto.composition.Text
+import com.nextiva.slack.dto.blocks.Divider
 
 //import groovy.json.JsonGenerator
 import groovy.json.JsonOutput

@@ -1,6 +1,4 @@
-package com.nextiva.slack.dto
-
-import com.nextiva.Block
+package com.nextiva.slack.dto.blocks
 
 class Divider extends Block implements Serializable {
     Divider() {

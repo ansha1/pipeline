@@ -3,7 +3,7 @@ package vars
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
-import com.nextiva.MessagesFactory
+import com.nextiva.slack.MessagesFactory
 import utils.Mocks
 import utils.Validator
 
