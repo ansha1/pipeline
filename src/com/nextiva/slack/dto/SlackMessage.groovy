@@ -3,7 +3,7 @@ package com.nextiva.slack.dto
 import com.nextiva.slack.dto.blocks.Block
 
 class SlackMessage implements Serializable {
-    String token
+//    String token
     String channel
     String text
     Boolean as_user = true

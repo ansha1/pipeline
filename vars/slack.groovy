@@ -20,7 +20,8 @@ def sendUsingBlocks(String notifyChannel, def message) {
             quiet: false,
             consoleLogResponseBody: true,
             httpMode: 'POST',
-            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${notifyChannel}",
+            url: "https://nextivalab.slack.com/api/chat.postMessage",
+            customHeaders:[[name:'Authorization', value:"${SLACK_BOT_TOKEN}"]],
             requestBody: message
 }
 
