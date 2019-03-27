@@ -1,5 +1,6 @@
 package com.nextiva.slack
 
+import com.google.common.collect.ImmutableList
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Section
@@ -26,7 +27,7 @@ class MessagesFactory implements Serializable {
         message.setBlocks(blocks)
         message.setColor("good")
 
-        return JsonOutput.toJson(message)
+        return JsonOutput.toJson(ImmutableList.of(message))
     }
 }
 
