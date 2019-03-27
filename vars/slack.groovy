@@ -14,7 +14,7 @@ def call(String notifyChannel, def uploadSpec) {
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
-def sendUsingBlocks(String notifyChannel, def uploadSpec) {
+def sendUsingBlocks(String notifyChannel, def message) {
     log.debug(uploadSpec)
     def blocks = URLEncoder.encode(message, "UTF-8")
     httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
