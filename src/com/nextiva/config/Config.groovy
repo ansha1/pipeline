@@ -41,7 +41,7 @@ class Config implements Serializable {
             configurationErrorList.add("BuildTool is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
-        this.pathToSrc = config.get("pathToSrc", "$script.env.WORKSPACE")  //if omitted, we always use the $WORKSPACE
+        this.pathToSrc = config.get("pathToSrc", script.env.WORKSPACE)  //if omitted, we always use the $WORKSPACE
 
         this.branchingModel = config.get("branchingModel")
         if (branchingModel == null) {
@@ -94,9 +94,4 @@ def getMapParamValue(Map source, String param, defaultValue, ){
             error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
     }
-}
-
-enum BranchingModel {
-    GITFLOW,
-    TRUNCKBASED
 }

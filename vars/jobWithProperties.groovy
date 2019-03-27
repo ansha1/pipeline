@@ -6,6 +6,7 @@ def call(Map configuration) {
     node("master") {
         properties(generateProperties(configuration))
     }
+    return params
 }
 
 List generateProperties(Map configuration) {
@@ -38,10 +39,11 @@ List generateProperties(Map configuration) {
      **/
     List parametersList = configuration.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
 
-    /* Enable Matrix-based security for the job based on branch name e.g. :
-    auth : ["dev": ["user1", "user2", "user3"],
-            "master": ["user2"]]
-    */
+    /**
+     * Enable Matrix-based security for the job based on branch name e.g. :
+     * auth : ["dev": ["user1", "user2", "user3"],
+     * "master": ["user2"]]
+     **/
     Map auth = configuration.get("auth", [:])
     List allowedUsers = auth.get(env.BRANCH_NAME, ["authenticated"])
     List securityPermissions = generateSecurityPermissions(allowedUsers)

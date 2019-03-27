@@ -8,7 +8,7 @@ def call(Map slaveConfig, body) {
 
     Map jobProperties = slaveConfig.get("jobProperties")
     if (jobProperties != null) {
-        withNodeProperties(jobProperties)
+        jobWithProperties(jobProperties)
     }
 
     String namespaceName = slaveConfig.get("namespace", iD)
