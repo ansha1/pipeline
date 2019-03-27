@@ -4,7 +4,7 @@ package com.nextiva
 import groovy.json.JsonOutput
 import com.nextiva.*
 
-//class MessagesFactory implements Serializable {
+class MessagesFactory implements Serializable {
 //    static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()
 
     static def buildStatusMessage(context) {
@@ -19,6 +19,6 @@ import com.nextiva.*
 
         return JsonOutput.toJson(new SlackMessageBuilder().blocks(blocks).color("good").build())
     }
-//}
+}
 
 
