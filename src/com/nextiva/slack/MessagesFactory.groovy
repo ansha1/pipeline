@@ -27,7 +27,7 @@ class MessagesFactory implements Serializable {
         message.setBlocks(blocks)
         message.setColor("good")
 
-        return JsonOutput.toJson(ImmutableList.of(message))
+        return JsonOutput.toJson(blocks)
     }
 }
 
