@@ -14,6 +14,11 @@ def call(String notifyChannel, def uploadSpec) {
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
+def sendUsingBlocks(String notifyChannel, def uploadSpec) {
+    log.debug(uploadSpec)
+    slackSend(channel: notifyChannel, message: uploadSpec, tokenCredentialId: "slackToken")
+}
+
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
     def uploadSpec = buildAttachments(errorMessage)
     call(notifyChannel, uploadSpec)
