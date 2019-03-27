@@ -1,7 +1,14 @@
-/*
-This method is used for configuration job parameters from the code
- */
-
+/**
+ * This method is used for configuration job parameters from the code
+ * Acceptable Map cloud contain following parameters
+ * List jobTriggers
+ * String buildDaysToKeepStr
+ * String buildNumToKeepStr
+ * String buildArtifactDaysToKeepStr
+ * String buildArtifactNumToKeepStr
+ * List paramlist
+ * Map auth
+ **/
 def call(Map configuration) {
     node("master") {
         properties(generateProperties(configuration))
