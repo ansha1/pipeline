@@ -1,8 +1,9 @@
 package com.nextiva
 
+import com.nextiva.slack.dto.Divider
+
 //import groovy.json.JsonGenerator
 import groovy.json.JsonOutput
-import com.nextiva.*
 
 class MessagesFactory implements Serializable {
 //    static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()
