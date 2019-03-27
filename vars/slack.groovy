@@ -10,12 +10,12 @@ import hudson.tasks.junit.CaseResult
 
 
 def call(String notifyChannel, def uploadSpec) {
-    log.info(uploadSpec)
+    log.debug(uploadSpec)
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
 def sendUsingBlocks(String notifyChannel, def message) {
-    log.debug(message)
+    log.info(message)
     httpRequest contentType: 'APPLICATION_JSON',
             quiet: false,
             consoleLogResponseBody: true,
