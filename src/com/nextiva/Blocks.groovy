@@ -5,7 +5,7 @@ abstract class Block implements Serializable {
     def block_id
 }
 
-class Divider extends Block {
+class Divider extends Block implements Serializable {
     Divider() {
         type = "divider"
     }
