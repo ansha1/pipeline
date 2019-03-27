@@ -3,7 +3,20 @@ package com.nextiva.slack.dto
 import com.nextiva.slack.dto.blocks.Block
 
 class SlackMessage implements Serializable {
-    def text = "some text"
-    List<Block> blocks = new ArrayList<>()
-    String color //good (green), warning (yellow), danger (red)
+    String token
+    String channel
+    String text
+    Boolean as_user = true
+    @Deprecated
+    List attachments
+    List<Block> blocks
+    String icon_emoji
+    String icon_url
+    Boolean mrkdwn = true
+    String parse = "none"
+    Boolean reply_broadcast = false
+    def thread_ts
+    Boolean unfurl_links = false
+    Boolean unfurl_media = true
+    String username
 }

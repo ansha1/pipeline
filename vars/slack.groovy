@@ -16,10 +16,12 @@ def call(String notifyChannel, def uploadSpec) {
 
 def sendUsingBlocks(String notifyChannel, def message) {
     log.debug(message)
-    def blocks = URLEncoder.encode(message, "UTF-8")
-    httpRequest contentType: 'APPLICATION_JSON', quiet: false,
-            consoleLogResponseBody: true, httpMode: 'POST',
-            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${notifyChannel}&as_user=true&blocks=${blocks}"
+    httpRequest contentType: 'APPLICATION_JSON',
+            quiet: false,
+            consoleLogResponseBody: true,
+            httpMode: 'POST',
+            url: "https://nextivalab.slack.com/api/chat.postMessage",
+            requestBody: message
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
