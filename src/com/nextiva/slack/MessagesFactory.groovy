@@ -33,7 +33,7 @@ class MessagesFactory implements Serializable {
     private static buildBaseMessage(String channel) {
         def message = new SlackMessage()
         message.setChannel(channel)
-        message.setToken(SLACK_BOT_TOKEN)
+//        message.setToken(SLACK_BOT_TOKEN)
         return message
     }
 }
