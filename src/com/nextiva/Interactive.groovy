@@ -1,6 +1,6 @@
 package com.nextiva
 
-abstract class Button {
+abstract class Button implements Serializable {
     def type = "type"
 }
 

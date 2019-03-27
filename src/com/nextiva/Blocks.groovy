@@ -1,6 +1,6 @@
 package com.nextiva
 
-abstract class Block {
+abstract class Block implements Serializable {
     def type
     def block_id
 }

@@ -1,6 +1,6 @@
 package com.nextiva
 
-class Text {
+class Text implements Serializable {
     String type
     String text
 //    boolean emoji = true
@@ -13,19 +13,19 @@ class Text {
 
 }
 
-class ConfirmationDialog {
+class ConfirmationDialog implements Serializable {
     Text title
     Text text
     Text confirm
     Text deny
 }
 
-class Option {
+class Option implements Serializable {
     Text text
     String value
 }
 
-class Options {
+class Options implements Serializable {
     Text label
     List<Option> options
 }
