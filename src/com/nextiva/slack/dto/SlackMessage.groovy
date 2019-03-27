@@ -6,7 +6,7 @@ class SlackMessage implements Serializable {
 //    String token
     String channel
     String text = "1"
-    Boolean as_user = true
+    Boolean as_user = false
     @Deprecated
     List attachments
     List<Block> blocks
