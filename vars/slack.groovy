@@ -16,7 +16,7 @@ def call(String notifyChannel, def uploadSpec) {
 
 def sendUsingBlocks(String notifyChannel, def message) {
     log.info(message)
-    httpRequest contentType: 'APPLICATION_JSON',
+    httpRequest contentType: 'application/json',
             quiet: false,
             consoleLogResponseBody: true,
             httpMode: 'POST',
