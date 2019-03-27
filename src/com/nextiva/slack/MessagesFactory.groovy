@@ -1,6 +1,6 @@
 package com.nextiva.slack
 
-import com.nextiva.slack.dto.SlackMessageBuilder
+import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
@@ -22,7 +22,11 @@ class MessagesFactory implements Serializable {
         section.setText(text)
         blocks.add(section)
 
-        return JsonOutput.toJson(new SlackMessageBuilder().blocks(blocks).color("good").build())
+        def message = new SlackMessage()
+        message.setBlocks(blocks)
+        message.setColor("good")
+
+        return JsonOutput.toJson(message)
     }
 }
 
