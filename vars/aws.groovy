@@ -7,6 +7,7 @@ def uploadFrontToS3(String appName, String buildVersion, String environment, Map
     }
 
     def assetDir = args.get('distPath', 'dist/static')
+    buildVersion = buildVersion.replace('+', '-')
     String S3BucketName = env.BRANCH_NAME.matches(/^(release|hotfix)\/.+$/) ? S3_PUBLIC_BUCKET_NAME : S3_PRIVATE_BUCKET_NAME
 
     withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
