@@ -14,7 +14,7 @@ class MessagesFactory implements Serializable {
         blocks.add(new Divider())
 
         Section section = new Section()
-        section.setText(new Text(getBuildStatusTitle()))
+        section.setText(new Text(getBuildStatusTitle(context)))
         blocks.add(section)
 
         def message = new SlackMessage()
