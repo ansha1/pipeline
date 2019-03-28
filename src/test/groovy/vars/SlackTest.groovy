@@ -35,7 +35,7 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
 
     @Test
     void factory_test() {
-        println MessagesFactory.buildStatusMessage("#this")
+        println new MessagesFactory(this).buildStatusMessage()
     }
 
 }

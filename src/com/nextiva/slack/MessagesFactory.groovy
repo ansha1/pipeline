@@ -5,25 +5,27 @@ import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
-import com.nextiva.slack.dto.blocks.Divider
 import hudson.tasks.test.AbstractTestResultAction
 
 class MessagesFactory implements Serializable {
+    private final def context
 
-    static def buildStatusMessage(context) {
+    MessagesFactory(context) {
+        this.context = context
+    }
+
+    def buildStatusMessage() {
         List<Block> blocks = new ArrayList<>()
 
-        blocks.add(new Divider())
-
         Section title = new Section()
-        title.setText(new Text(getBuildInfoTitle(context)))
+        title.setText(new Text(getBuildInfoTitle()))
         blocks.add(title)
 
         Section infoBlocks = new Section()
         infoBlocks.setFields(ImmutableList.of(
-                new Text(getBuildBranch(context)),
-                new Text(getStatus(context)),
-                new Text(getTestResults(context)))
+                new Text(getBuildBranch()),
+                new Text(getStatus()),
+                new Text(getTestResults()))
         )
         blocks.add(infoBlocks)
 
@@ -33,7 +35,7 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    private static getBuildInfoTitle(context) {
+    private getBuildInfoTitle() {
         def mention = ''
         def buildStatus = context.currentBuild.currentResult
         if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
@@ -44,15 +46,15 @@ class MessagesFactory implements Serializable {
         return "${mention}*${subject}*"
     }
 
-    private static getBuildBranch(context) {
+    private getBuildBranch() {
         return "*Branch:* ${context.env.BRANCH_NAME}"
     }
 
-    private static getStatus(context) {
+    private getStatus() {
         return "*Status:* ${context.currentBuild.currentResult}"
     }
 
-    private static getTestResults(context) {
+    private getTestResults() {
         def testResultAction = context.currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
         def summary
 
@@ -70,12 +72,12 @@ class MessagesFactory implements Serializable {
         return "*Test results:* ${summary}"
     }
 
-    private static getCommitAuthor() {
+    private getCommitAuthor() {
         def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
         return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
     }
 
-    private static getLastCommitMessage() {
+    private getLastCommitMessage() {
         return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
     }
 
