@@ -21,9 +21,9 @@ class MessagesFactory implements Serializable {
 
         Section infoBlocks = new Section()
         infoBlocks.setFields(ImmutableList.of(
-                new Text(getBuildBranch()),
-                new Text(getStatus()),
-                new Text(getTestResults()))
+                new Text(getBuildBranch(context)),
+                new Text(getStatus(context)),
+                new Text(getTestResults(context)))
         )
         blocks.add(infoBlocks)
 
