@@ -3,6 +3,7 @@ package com.nextiva.slack
 import com.google.common.collect.ImmutableList
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.dto.blocks.Block
+import com.nextiva.slack.dto.blocks.Context
 import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
 import hudson.tasks.test.AbstractTestResultAction
@@ -28,6 +29,13 @@ class MessagesFactory implements Serializable {
                 new Text(getTestResults()))
         )
         blocks.add(infoBlocks)
+
+        Context commitAuthor = new Context()
+        commitAuthor.setElements(ImmutableList.of(new Text(getCommitAuthor())))
+        blocks.add(commitAuthor)
+
+        Section lastCommitMessage = new Section()
+        lastCommitMessage.setText(new Text(getLastCommitMessage()))
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
@@ -74,11 +82,13 @@ class MessagesFactory implements Serializable {
 
     private getCommitAuthor() {
         def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-        return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+        def commitAuthor = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+        return "Commit author: ${commitAuthor}"
     }
 
     private getLastCommitMessage() {
-        return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+        def lastCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+        return "'''${lastCommitMessage}'''"
     }
 
 }
