@@ -56,7 +56,7 @@ class MessagesFactory implements Serializable {
         attachments.add(attachment)
 
         def message = new SlackMessage()
-        message.setBlocks(blocks)
+        attachment.setBlocks(blocks)
         message.setAttachments(attachments)
 
         return message
