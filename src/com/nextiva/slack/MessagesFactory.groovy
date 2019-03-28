@@ -51,6 +51,7 @@ class MessagesFactory implements Serializable {
 
         List<Attachment> attachments = new ArrayList<>()
         Attachment attachment = new Attachment()
+        attachment.setText("1")
         attachment.setColor("good")
         attachments.add(attachment)
 
