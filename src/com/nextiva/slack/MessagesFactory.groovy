@@ -36,6 +36,7 @@ class MessagesFactory implements Serializable {
 
         Section lastCommitMessage = new Section()
         lastCommitMessage.setText(new Text(getLastCommitMessage()))
+        blocks.add(lastCommitMessage)
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
