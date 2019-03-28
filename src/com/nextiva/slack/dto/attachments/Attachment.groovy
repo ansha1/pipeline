@@ -7,5 +7,4 @@ class Attachment {
     def author_name
     def text
     def fields
-    def blocks
 }
