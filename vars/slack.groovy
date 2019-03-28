@@ -1,7 +1,7 @@
 #!groovy
 import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
-import static com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.dto.SlackMessage
 import java.net.URLDecoder
 import java.util.Random
 import groovy.json.JsonOutput
