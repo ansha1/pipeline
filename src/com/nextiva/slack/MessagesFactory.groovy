@@ -2,10 +2,12 @@ package com.nextiva.slack
 
 import com.google.common.collect.ImmutableList
 import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.dto.blocks.Actions
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Context
 import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
+import com.nextiva.slack.dto.interactive.LinkButton
 import hudson.tasks.test.AbstractTestResultAction
 
 class MessagesFactory implements Serializable {
@@ -37,6 +39,10 @@ class MessagesFactory implements Serializable {
         Context commitAuthor = new Context()
         commitAuthor.setElements(ImmutableList.of(new Text(getCommitAuthor())))
         blocks.add(commitAuthor)
+
+        Actions buttons = new Actions()
+        buttons.setElements(ImmutableList.of(getJobLinkButton(), getJobConsoleButton(), getTestResultsButton()))
+        blocks.add(buttons)
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
@@ -90,6 +96,28 @@ class MessagesFactory implements Serializable {
     private getLastCommitMessage() {
         def lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
         return "*Last commit:* ```${lastCommitMessage}```"
+    }
+
+    private getJobLinkButton() {
+        def button = new LinkButton()
+        button.setText(new Text("Job"))
+        button.setUrl("${context.env.BUILD_URL}")
+        return button
+    }
+
+    private getJobConsoleButton() {
+        def button = new LinkButton()
+        button.setText(new Text("Job"))
+        button.setUrl("${context.env.BUILD_URL}console")
+        return button
+    }
+
+    private getTestResultsButton() {
+        def button = new LinkButton()
+        button.setText(new Text("Job"))
+        button.setUrl("${context.env.BUILD_URL}testReport")
+        return button
+
     }
 
 }
