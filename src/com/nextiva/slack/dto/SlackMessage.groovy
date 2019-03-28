@@ -1,5 +1,6 @@
 package com.nextiva.slack.dto
 
+import com.nextiva.slack.dto.attachments.Attachment
 import com.nextiva.slack.dto.blocks.Block
 
 class SlackMessage implements Serializable {
@@ -8,7 +9,7 @@ class SlackMessage implements Serializable {
     String text = "1"
     Boolean as_user = false
     @Deprecated
-    List attachments
+    List<Attachment> attachments
     List<Block> blocks
     String icon_emoji
     String icon_url

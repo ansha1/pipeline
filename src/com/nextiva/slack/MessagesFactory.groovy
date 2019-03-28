@@ -3,6 +3,7 @@ package com.nextiva.slack
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
 import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.dto.attachments.Attachment
 import com.nextiva.slack.dto.blocks.Actions
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Context
@@ -48,8 +49,14 @@ class MessagesFactory implements Serializable {
         }
         blocks.add(buttons)
 
+        List<Attachment> attachments = new ArrayList<>()
+        Attachment attachment = new Attachment()
+        attachment.setColor("good")
+        attachments.add(attachment)
+
         def message = new SlackMessage()
         message.setBlocks(blocks)
+        message.setAttachments(attachments)
 
         return message
     }
