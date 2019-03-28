@@ -38,6 +38,7 @@ def call(body) {
         mavenVersion = pipelineParams.MAVEN_VERSION
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
         isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
+        isSonarAnalysisEnabled = pipelineParams.isSonarAnalysisEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
         kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
@@ -189,7 +190,9 @@ def call(body) {
             }
             stage('Sonar analyzing') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/ }
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/ && jobConfig.isSonarAnalysisEnabled == true
+                    }
                 }
                 steps {
                     script {

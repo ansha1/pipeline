@@ -46,6 +46,7 @@ def call(body) {
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = getBooleanDefault(pipelineParams.BLUE_GREEN_DEPLOY, false)
     isSecurityScanEnabled = getBooleanDefault(pipelineParams.isSecurityScanEnabled, true)
+    isSonarAnalysisEnabled = getBooleanDefault(pipelineParams.isSonarAnalysisEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []

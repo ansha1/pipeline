@@ -158,6 +158,11 @@ jobTemplate {
     */
     // isSecurityScanEnabled = true
 
+    /* isSonarAnalysisEnabled - if this flag is activated, then Sonar analyzing step will be executed
+    * default: true
+    */
+    // isSonarAnalysisEnabled = true
+
     /* veracodeApplicationScope - name of application scope in Veracode
     * default: NextOS Platform (CRM)  
     */
