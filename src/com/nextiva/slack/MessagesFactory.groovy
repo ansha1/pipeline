@@ -89,7 +89,7 @@ class MessagesFactory implements Serializable {
 
     private getLastCommitMessage() {
         def lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-        return "'''${lastCommitMessage}'''"
+        return "```${lastCommitMessage}```"
     }
 
 }
