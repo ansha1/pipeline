@@ -1,6 +1,7 @@
 package com.nextiva.slack
 
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.Lists
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.dto.blocks.Actions
 import com.nextiva.slack.dto.blocks.Block
@@ -41,7 +42,10 @@ class MessagesFactory implements Serializable {
         blocks.add(commitAuthor)
 
         Actions buttons = new Actions()
-        buttons.setElements(ImmutableList.of(getJobLinkButton(), getJobConsoleButton(), getTestResultsButton()))
+        buttons.setElements(Lists.newArrayList(getJobLinkButton(), getJobConsoleButton()))
+        if (hasTestResults()) {
+            buttons.getElements().add(getTestResultsButton())
+        }
         blocks.add(buttons)
 
         def message = new SlackMessage()
@@ -85,6 +89,10 @@ class MessagesFactory implements Serializable {
             summary = "No tests found"
         }
         return "*Test results:* ${summary}"
+    }
+
+    private hasTestResults() {
+        return context.currentBuild.rawBuild.getAction(AbstractTestResultAction.class) != null
     }
 
     private getCommitAuthor() {
