@@ -6,15 +6,9 @@ import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
 import com.nextiva.slack.dto.blocks.Divider
 
-//import groovy.json.JsonGenerator
-import groovy.json.JsonOutput
-
-import static com.nextiva.SharedJobsStaticVars.*
-
 class MessagesFactory implements Serializable {
-//    static final def JSON_OUTPUT = new JsonGenerator.Options().excludeNulls().build()
 
-    static def buildStatusMessage(String channel, context) {
+    static def buildStatusMessage(context) {
         List<Block> blocks = new ArrayList<>()
 
         blocks.add(new Divider())
@@ -24,18 +18,12 @@ class MessagesFactory implements Serializable {
         section.setText(text)
         blocks.add(section)
 
-        def message = buildBaseMessage(channel)
+        def message = new SlackMessage()
         message.setBlocks(blocks)
 
-        return JsonOutput.toJson(message)
-    }
-
-    private static buildBaseMessage(String channel) {
-        def message = new SlackMessage()
-        message.setChannel(channel)
-//        message.setToken(SLACK_BOT_TOKEN)
         return message
     }
+
 }
 
 

@@ -1,6 +1,7 @@
 #!groovy
 import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
+import static com.nextiva.slack.SlackMessage
 import java.net.URLDecoder
 import java.util.Random
 import groovy.json.JsonOutput
@@ -14,7 +15,9 @@ def call(String notifyChannel, def uploadSpec) {
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
-def sendUsingBlocks(String notifyChannel, def message) {
+@SuppressWarnings("GroovyAssignabilityCheck")
+def sendUsingBlocks(String notifyChannel, SlackMessage message) {
+    message.setChannel(notifyChannel)
     log.info(message)
     httpRequest contentType: 'APPLICATION_JSON',
             quiet: false,
@@ -22,7 +25,14 @@ def sendUsingBlocks(String notifyChannel, def message) {
             httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage",
             customHeaders:[[name:'Authorization', value:"Bearer ${SLACK_BOT_TOKEN}"]],
-            requestBody: message
+            requestBody: toJson(message)
+}
+
+@SuppressWarnings("GroovyAssignabilityCheck")
+private static toJson(SlackMessage message) {
+    def json = JsonOutput.toJson(message)
+    //JsonOutput can be configured for this in groovy 2.5
+    return json.replaceAll("(,)?\"(\\w*?)\":null", '')
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
