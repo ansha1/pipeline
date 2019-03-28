@@ -81,13 +81,13 @@ class MessagesFactory implements Serializable {
     }
 
     private getCommitAuthor() {
-        def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-        def commitAuthor = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+        def commit = context.sh(returnStdout: true, script: 'git rev-parse HEAD')
+        def commitAuthor = context.sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
         return "Commit author: ${commitAuthor}"
     }
 
     private getLastCommitMessage() {
-        def lastCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+        def lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
         return "'''${lastCommitMessage}'''"
     }
 
