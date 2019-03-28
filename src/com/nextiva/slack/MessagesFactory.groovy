@@ -14,14 +14,24 @@ class MessagesFactory implements Serializable {
         blocks.add(new Divider())
 
         Section section = new Section()
-        Text text = new Text("Job: qa-be-integration/develop, build #1859")
-        section.setText(text)
+        section.setText(new Text(getBuildStatusTitle()))
         blocks.add(section)
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
 
         return message
+    }
+
+    private static getBuildStatusTitle(context) {
+        def mention = ''
+        def buildStatus = context.currentBuild.currentResult
+        if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+            mention = "@here "
+        }
+        String jobName = URLDecoder.decode(context.env.JOB_NAME.toString(), 'UTF-8')
+        def subject = "Job: ${jobName}, build #${context.env.BUILD_NUMBER}"
+        return "${mention}${subject}"
     }
 
 }

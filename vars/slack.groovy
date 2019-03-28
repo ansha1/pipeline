@@ -10,13 +10,14 @@ import hudson.model.Actionable
 import hudson.tasks.junit.CaseResult
 
 
+@Deprecated
 def call(String notifyChannel, def uploadSpec) {
     log.debug(uploadSpec)
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
-def sendUsingBlocks(String notifyChannel, SlackMessage message) {
+def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.info(message)
     httpRequest contentType: 'APPLICATION_JSON',
