@@ -70,4 +70,22 @@ class SharedJobsStaticVars {
     static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
     static final BITBUCKET_SECTION_MARKER = '###### '
+
+    static final Map JNLP_CONTAINER = ["name"                 : "jnlp",
+                                       "image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
+                                       "args"                 : "${computer.jnlpmac} ${computer.name}",
+                                       "resourceRequestMemory": "256Mi",
+                                       "resourceLimitMemory"  : "256Mi"]
+    static final Map KUBERNETES_CONTAINER = ["name"                 : "kubernetes",
+                                             "image"                : "repository.nextiva.xyz/kubernetes:0.1.0",
+                                             "resourceRequestMemory": "64Mi",
+                                             "resourceLimitMemory"  : "256Mi"]
+    static final Map DOCKER_CONTAINER = ["name"                 : "docker",
+                                         "image"                : "docker:stable-git",
+                                         "resourceRequestMemory": "128Mi",
+                                         "resourceLimitMemory"  : "256Mi"]
+    static final Map ANSIBLE_CONTAINER = ["name"                 : "ansible",
+                                          "image"                : "repository.nextiva.xyz/ansible:2.4.0",
+                                          "resourceRequestMemory": "128Mi",
+                                          "resourceLimitMemory"  : "512Mi"]
 }

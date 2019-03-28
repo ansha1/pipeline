@@ -5,35 +5,25 @@ import org.csanchez.jenkins.plugins.kubernetes.*
 def call(Map slaveConfig, body) {
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
+    String namespaceName = slaveConfig.get("namespace", iD)
 
     Map jobProperties = slaveConfig.get("jobProperties")
-    if (jobProperties != null) {
+    if (!jobProperties) {
         jobWithProperties(jobProperties)
     }
 
-    String namespaceName = slaveConfig.get("namespace", iD)
-    String image = slaveConfig.get("image")
-    if (image == null) {
-        error "Slave image is not defined, please define it in the your slaveConfig"
+    List<Map> containerResources = slaveConfig.get("containerResource")
+    if (!containerResources) {
+        error "ContainerResources is not defined, please define it in your slaveConfig: $slaveConfig"
     }
 
-    def resourceRequestCpu = slaveConfig.get("resourceRequestCpu", "250m")
-    def resourceRequestMemory = slaveConfig.get("resourceRequestMemory", "1Gi")
     def jobTimeoutMinutes = slaveConfig.get("jobTimeoutMinutes", "60")
-    def extraEnv = slaveConfig.get("extraEnv", [:])
-
 
     withNamespace(namespaceName) {
         def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
         podTemplate(label: "parent-$iD", yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, workingDir: '/home/jenkins', namespace: namespaceName,
-                containers: [
-                        jnlpTemplate(),
-                        slaveTemplate("build", image, resourceRequestCpu, resourceRequestMemory, extraEnv),
-                ],
-                volumes: volumes()
-        ) {
+        podTemplate(label: iD, namespace: namespaceName, containers: containers(containerResources), volumes: volumes()) {
             timestamps {
                 ansiColor('xterm') {
                     timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
@@ -48,6 +38,39 @@ def call(Map slaveConfig, body) {
 }
 
 
+List containers(List<Map> containerResources) {
+    List result
+    containerResources.each { c -> result << containerInstance(c) }
+    return result
+}
+
+def containerInstance(Map containerConfig) {
+    def name = containerConfig.get("name")
+    if (!name) {
+        error("Cannot create container instance from config: \n $containerConfig \nThe name of container is undefined")
+    }
+    def image = containerConfig.get("image")
+    if (!image) {
+        error("Cannot create container instance from config: \n $containerConfig \nThe image of container is undefined")
+    }
+    def command = containerConfig.get("command", "cat")
+    def ttyEnabled = containerConfig.get("ttyEnabled", true)
+    def privileged = containerConfig.get("privileged", true)
+    def alwaysPullImage = containerConfig.get("alwaysPullImage", true)
+    def workingDir = containerConfig.get("workingDir", "/home/jenkins")
+    def resourceRequestCpu = containerConfig.get("resourceRequestCpu", "50m")
+    def resourceLimitCpu = containerConfig.get("resourceLimitCpu", "3000m")
+    def resourceRequestMemory = containerConfig.get("resourceRequestMemory", "128Mi")
+    def resourceLimitMemory = containerConfig.get("resourceLimitMemory", "6144Mi")
+    def envVars = containerConfig.get("envVars", [:])
+
+    return containerTemplate(name: name, image: image, command: command, ttyEnabled: ttyEnabled, privileged: privileged,
+            alwaysPullImage: alwaysPullImage, workingDir: workingDir,
+            resourceRequestCpu: resourceRequestCpu, resourceLimitCpu: resourceLimitCpu,
+            resourceRequestMemory: resourceRequestMemory, resourceLimitMemory: resourceLimitMemory,
+            envVars: processEnvVars(envVars))
+}
+
 def volumes() {
     [
             hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
@@ -59,26 +82,7 @@ def volumes() {
     ]
 }
 
-
-def slaveTemplate(String name, String image, String resourceRequestCpu, String resourceRequestMemory, Map extraEnv) {
-    return containerTemplate(name: name, image: image, command: 'cat', ttyEnabled: true,
-            resourceRequestCpu: resourceRequestCpu,
-            resourceRequestMemory: resourceRequestMemory,
-            envVars: processEnvVars(extraEnv))
-}
-
-def jnlpTemplate() {
-    def jnlpImage = 'jenkinsci/jnlp-slave:3.27-1-alpine'
-
-    return containerTemplate(
-            name: 'jnlp',
-            image: "${jnlpImage}",
-            args: '${computer.jnlpmac} ${computer.name}',
-            resourceLimitMemory: '256Mi'
-    )
-}
-
-def processEnvVars(Map extraEnv) {
+List processEnvVars(Map extraEnv) {
     envVars = [envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
                envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
@@ -118,7 +122,7 @@ def createNamespace(String namespaceName) {
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
         log.info("Running build in the already created namespace")
-        return namespace
+        return true
     }
 
     def kubernetesClient = getKubernetesClient()
@@ -126,7 +130,6 @@ def createNamespace(String namespaceName) {
     kubernetesClient = null
     return namespace
 }
-
 
 @NonCPS
 Boolean deleteNamespace(String namespaceName) {
@@ -139,14 +142,4 @@ Boolean deleteNamespace(String namespaceName) {
     Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
-}
-
-/**
- * Returns the id of the build, which consists of the job name and build number.
- * By convention, the names of Kubernetes resources should be up to maximum length of 253 characters and consist of lower case alphanumeric characters, -
- * @param jobName usually env.JOB_NAME
- * @param buildNum usually env.BUILD_NUMBER
- */
-static String buildID(String jobName, String buildNum) {
-    return "${jobName}-${buildNum}".replaceAll('[^a-zA-Z\\d]', '-').take(253)
 }

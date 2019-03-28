@@ -22,13 +22,13 @@ class Config implements Serializable {
         this.branchName = script.env.BRANCH_NAME
 
         this.appName = config.get("appName")
-        if (appName == null) {
+        if (!appName) {
             configurationErrorList.add("Application Name is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
-        this.newRelicId = config.get("newRelicIdMap").get(branchName, "sdfdf")
-        if (newRelicId == null) {
-            configurationErrorList.add("NewRelicId is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        this.newRelicId = config.get("newRelicIdMap").get(branchName)
+        if (!newRelicId) {
+            configurationErrorList.add("NewRelicId is undefined for this branch. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
         this.channelToNotify = config.get("channelToNotify")
