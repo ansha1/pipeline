@@ -30,13 +30,13 @@ class MessagesFactory implements Serializable {
         )
         blocks.add(infoBlocks)
 
-        Context commitAuthor = new Context()
-        commitAuthor.setElements(ImmutableList.of(new Text(getCommitAuthor())))
-        blocks.add(commitAuthor)
-
         Section lastCommitMessage = new Section()
         lastCommitMessage.setText(new Text(getLastCommitMessage()))
         blocks.add(lastCommitMessage)
+
+        Context commitAuthor = new Context()
+        commitAuthor.setElements(ImmutableList.of(new Text(getCommitAuthor())))
+        blocks.add(commitAuthor)
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
@@ -89,7 +89,7 @@ class MessagesFactory implements Serializable {
 
     private getLastCommitMessage() {
         def lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-        return "Last commit message ```${lastCommitMessage}```"
+        return "*Last commit:* ```${lastCommitMessage}```"
     }
 
 }
