@@ -22,8 +22,6 @@ class MessagesFactory implements Serializable {
     def buildStatusMessage() {
         List<Block> blocks = new ArrayList<>()
 
-        blocks.add(new Divider())
-
         Section title = new Section()
         title.setText(new Text(getBuildInfoTitle()))
         blocks.add(title)
