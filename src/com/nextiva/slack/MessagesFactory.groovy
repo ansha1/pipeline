@@ -100,21 +100,21 @@ class MessagesFactory implements Serializable {
 
     private getJobLinkButton() {
         def button = new LinkButton()
-        button.setText(new Text("Job"))
+        button.setText(new Text("Job", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}")
         return button
     }
 
     private getJobConsoleButton() {
         def button = new LinkButton()
-        button.setText(new Text("Job"))
+        button.setText(new Text("Console", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}console")
         return button
     }
 
     private getTestResultsButton() {
         def button = new LinkButton()
-        button.setText(new Text("Job"))
+        button.setText(new Text("Test results", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}testReport")
         return button
 
