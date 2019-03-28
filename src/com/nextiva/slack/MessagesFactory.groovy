@@ -22,6 +22,8 @@ class MessagesFactory implements Serializable {
     def buildStatusMessage() {
         List<Block> blocks = new ArrayList<>()
 
+        blocks.add(new Divider())
+
         Section title = new Section()
         title.setText(new Text(getBuildInfoTitle()))
         blocks.add(title)
@@ -52,8 +54,6 @@ class MessagesFactory implements Serializable {
             buttons.getElements().add(getTestResultsButton())
         }
         blocks.add(buttons)
-
-        blocks.add(new Divider())
 
         def message = new SlackMessage()
         message.setBlocks(blocks)
