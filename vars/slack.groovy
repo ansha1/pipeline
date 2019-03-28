@@ -33,7 +33,7 @@ def sendMessage(String notifyChannel, SlackMessage message) {
 private static toJson(SlackMessage message) {
     def json = JsonOutput.toJson(message)
     //JsonOutput can be configured for this in groovy 2.5
-    return json.replaceAll("(,)?\"(\\w*?)\":null", '')
+    return json.replaceAll("(,)?\"(\\w*?)\":null", '').replaceAll("\\{,", '{')
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
