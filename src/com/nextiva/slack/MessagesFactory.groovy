@@ -31,7 +31,7 @@ class MessagesFactory implements Serializable {
         }
         String jobName = URLDecoder.decode(context.env.JOB_NAME.toString(), 'UTF-8')
         def subject = "Job: ${jobName}, build #${context.env.BUILD_NUMBER}"
-        return "${mention}${subject}"
+        return "${mention}*${subject}*"
     }
 
 }
