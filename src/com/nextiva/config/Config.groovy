@@ -1,7 +1,9 @@
-package config
+package com.nextiva.config
+
+import static com.nextiva.SharedJobsStaticVars.*
 
 class Config implements Serializable {
-    final protected Map config
+    final protected Map pipelineParams
     final protected Map slaveConfig
     final protected script
     private List<String> configurationErrors
@@ -12,53 +14,60 @@ class Config implements Serializable {
     final private enum branchingModel
 
 
-    protected Config(script, configuration) {
+    protected Config(script, pipelineParams) {
         this.script = script
-        this.config = configuration.get("config")
-        if (config == null) {
-            configurationErrorList.add("Pipeline configuration is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        this.pipelineParams = pipelineParams
+
+
+        this.appName = pipelineParams.get("appName")
+        if (!appName) {
+            configurationErrors.add("Application Name is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        }
+        this.channelToNotify = config.get("channelToNotify")
+        if (!channelToNotify) {
+            configurationErrors.add("Slack notification channel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
         this.branchName = script.env.BRANCH_NAME
 
-        this.appName = config.get("appName")
-        if (!appName) {
-            configurationErrorList.add("Application Name is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
-        }
+
+
+
+
+
+
+
 
         this.newRelicId = config.get("newRelicIdMap").get(branchName)
         if (!newRelicId) {
-            configurationErrorList.add("NewRelicId is undefined for this branch. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+            configurationErrors.add("NewRelicId is undefined for branch $branchName. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
-        this.channelToNotify = config.get("channelToNotify")
-        if (channelToNotify == null) {
-            configurationErrorList.add("Slack notification channel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
-        }
 
         this.buildTool = config.get("buildTool")
-        if (buildTool == null) {
-            configurationErrorList.add("BuildTool is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        if (!buildTool) {
+            configurationErrors.add("BuildTool is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
         this.pathToSrc = config.get("pathToSrc", script.env.WORKSPACE)  //if omitted, we always use the $WORKSPACE
 
         this.branchingModel = config.get("branchingModel")
-        if (branchingModel == null) {
-            configurationErrorList.add("BranchingModel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        if (!branchingModel) {
+            configurationErrors.add("BranchingModel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        }
+
+        this.buildContainer = pipelineParams.get("buildContainer")
+        if(!buildContainer){
+            configurationErrors.add("BuildContainer is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        }
+
+        this.healthCheck = config.get("healthCheckMap").get(branchName)
+        if (!healthCheck) {
+            configurationErrors.add("healthCheck is undefined for this branch. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
 
-def getParamValue(Map source, String paramName, defaultValue){
 
-}
-
-def getMapParamValue(Map source, String param, defaultValue, ){
-
-}
-
-
-        healthCheckMap
         kubernetesClusterMap
 //        ansibleRepo
 //        ansibleRepoBranch
@@ -75,11 +84,11 @@ def getMapParamValue(Map source, String param, defaultValue, ){
         isSecurityScanEnabled
 
         flow:
-            buildcommants
-            unittestcommands
-            integrationtestcommands
-            testpostcommands
-            postdeploycommands
+        buildcommants
+        unittestcommands
+        integrationtestcommands
+        testpostcommands
+        postdeploycommands
 
 
 
@@ -94,4 +103,28 @@ def getMapParamValue(Map source, String param, defaultValue, ){
             error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
     }
+
+
+    private Map<String, Map> containerResources() {
+        Map<String, Map> containerResources = ["jnlp", JNLP_CONTAINER]
+
+
+        if (!deployOnly) {
+            containerResources.put("buildContainer",buildContainer)
+        }
+        if (kubernetesDeployment) {
+            containerResources.put("kubernetes",KUBERNETES_CONTAINER)
+        }
+        if (ansibleDeployment) {
+            containerResources.put("ansible",ANSIBLE_CONTAINER)
+        }
+        DOCKER_CONTAINER
+        return containerResources
+    }
+
+
 }
+
+
+
+

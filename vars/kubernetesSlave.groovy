@@ -12,7 +12,7 @@ def call(Map slaveConfig, body) {
         jobWithProperties(jobProperties)
     }
 
-    List<Map> containerResources = slaveConfig.get("containerResource")
+    Map<String, Map> containerResources = slaveConfig.get("containerResources")
     if (!containerResources) {
         error "ContainerResources is not defined, please define it in your slaveConfig: $slaveConfig"
     }
@@ -38,9 +38,12 @@ def call(Map slaveConfig, body) {
 }
 
 
-List containers(List<Map> containerResources) {
+List containers(Map<String, Map> containerResources) {
     List result
-    containerResources.each { c -> result << containerInstance(c) }
+    containerResources.each { k, v ->
+        v.put("name", k)
+        result << containerInstance(v)
+    }
     return result
 }
 
