@@ -8,52 +8,63 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
     log.info("Choosen configSet is ${configSet} for ${clusterDomain}")
 
     kubectlInstall()
+    vaultInstall()
+    withCredentials([usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
+        withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
+                 "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
+                 "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
+                 "VAULT_ADDR=https://vault.tooling.nextiva.io",
+                 "VAULT_SKIP_VERIFY=true",
+                 "PATH=${env.PATH}:${WORKSPACE}"]) {
 
-    withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
-             "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
-             "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
-             "PATH=${env.PATH}:${WORKSPACE}"]) {
+            try {
+                login(clusterDomain)
 
-        try {
-            login(clusterDomain)
+                def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
-            def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
+                dir(repoDir) {
+                    try {
+                        sh "vault login -method=ldap -no-print username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
+                    } catch (e) {
+                        log.error("Error! Got an error trying to initiate the connect with Vault")
+                        error("Error! Got an error trying to initiate the connect with Vault ${VAULT_ADDR}")
+                    }
+                    log.info('Checking of application manifests ...')
+                    kubeup(serviceName, configSet, nameSpace, true)
 
-            dir(repoDir) {
-                log.info('Checking of application manifests ...')
-                kubeup(serviceName, configSet, nameSpace, true)
+                    log.info('Deploying application into Kubernetes ...')
+                    kubeup(serviceName, configSet, nameSpace, false)
+                }
+                log.info("Deploy to the Kubernetes cluster has been completed.")
 
-                log.info('Deploying application into Kubernetes ...')
-                kubeup(serviceName, configSet, nameSpace, false)
+            } catch (e) {
+                log.warning("Deploy to the Kubernetes failed!")
+                log.warning(e)
+                error("Deploy to the Kubernetes failed! $e")
             }
-            log.info("Deploy to the Kubernetes cluster has been completed.")
 
-        } catch (e) {
-            log.warning("Deploy to the Kubernetes failed!")
-            log.warning(e)
-            error("Deploy to the Kubernetes failed! $e")
-        }
+            sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
 
-        sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
-
-        try {
-            kubernetesDeploymentsList.each {
-                sh """
-                unset KUBERNETES_SERVICE_HOST
-                kubectl rollout status deployment/${it} --namespace ${nameSpace}
-                """
+            try {
+                kubernetesDeploymentsList.each {
+                    sh """
+                       unset KUBERNETES_SERVICE_HOST
+                       kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                    """
+                }
+            } catch (e) {
+                log.warning("kubectl rollout status is failed!")
+                log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
+                log.warning(e)
+                currentBuild.rawBuild.result = Result.UNSTABLE
             }
-        } catch (e) {
-            log.warning("kubectl rollout status is failed!")
-            log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
-            log.warning(e)
-            currentBuild.rawBuild.result = Result.UNSTABLE
         }
     }
 }
 
 def login(String clusterDomain) {
-    String k8sEnv = '.k8env'
+
+    String k8sEnv = ".venv_${common.getRandomInt()}"
 
     withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
@@ -89,6 +100,21 @@ def kubectlInstall() {
             curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
             ./kubectl version --client=true
+           """
+    }
+}
+
+
+def vaultInstall() {
+    try {
+        log.info("Ensure that vault is installed")
+        sh "command vault -v"
+    } catch (e) {
+        log.info("Going to install vault client 1.1.0 version")
+        sh """
+            wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
+            unzip vault.zip
+            ./vault -v
            """
     }
 }

@@ -1,12 +1,9 @@
 metadata:
-  namespace: jenkins
   labels:
-    name: slave_python3.6
+    name: slave_python3.4
   annotations:
-    cluster-autoscaler.kubernetes.io/safe-to-evict: false
+        cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
-  imagePullSecrets:
-  - name: regsecret
   tolerations:
   - key: tooling.nextiva.io
     operator: Equal
@@ -23,7 +20,7 @@ spec:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-python3.6.2:0.0.4
+    image: repository.nextiva.xyz/jenkins-slave-python3.4:1.0.2
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
@@ -33,16 +30,16 @@ spec:
     - name: REDIS_SERVICE_HOST
       value: redis-rw
     - name: RABBITMQ_SERVICE_HOST
-      value: rabbitmq
+      value: rabbitmq-ha
     - name: SENTINEL_HOST_PORT
       value: redis-sentinel:26379
     - name: SENTINEL_MASTER_NAME
       value: redis-sentinel
     imagePullPolicy: IfNotPresent
     resources:
-      requests:
-        cpu: 512m
-        memory: 1024Mi
+          requests:
+            cpu: 512m
+            memory: 1024Mi
     #       limits:
     #         memory: 2048Mi
     #         cpu: 1000m

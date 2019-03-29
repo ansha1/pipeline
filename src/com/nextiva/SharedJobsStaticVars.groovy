@@ -2,7 +2,7 @@ package com.nextiva
 
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'
-    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
+    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa', 'tooling', 'sales-demo']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final LIST_OF_BOOKED_NAMESPACES = ['bot', 'default', 'jenkins', 'kube-public', 'kube-system', 'monitoring', 'selenoid-moon', 'utils']
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
@@ -70,6 +70,8 @@ class SharedJobsStaticVars {
     static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
     static final BITBUCKET_SECTION_MARKER = '###### '
+    static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
+    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
 
     static final Map JNLP_CONTAINER = ["image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
                                        "args"                 : "${computer.jnlpmac} ${computer.name}",

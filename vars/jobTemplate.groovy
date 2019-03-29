@@ -38,9 +38,14 @@ def call(body) {
         mavenVersion = pipelineParams.MAVEN_VERSION
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
         isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
+        isSonarAnalysisEnabled = pipelineParams.isSonarAnalysisEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
         kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
+        // Adding Sales Demo Env Configuration
+        deployToSalesDemo = pipelineParams.deployToSalesDemo
+        kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo
+        inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -49,33 +54,21 @@ def call(body) {
     def artifactNumToKeepStr = jobConfig.artifactNumToKeepStr
 
     node('master') {
+
+        def appParams = [string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build')]
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
-            properties([
-                    parameters([
-                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build'),
-                            choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack'),
-                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
-                    ])
-            ])
+            appParams.add(choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack'))
         } else if (env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
-            properties([
-                    parameters([
-                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build'),
-                            booleanParam(name: 'hotfix_deploy', description: 'Enable hotfix_deploy to deploy to QA/RC', defaultValue: false),
-                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
-                    ])
-            ])
-        } else {
-            properties([
-                    parameters([
-                            string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build'),
-                            booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)
-                    ])
-            ])
+            appParams.add(string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                                    'or leave empty for start full build'))
+        } else if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
+            appParams.add(booleanParam(name: 'salesDemoDeployOnly', description: 'Only Deploy to sales demo', defaultValue: false))
         }
+        appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
+        properties([
+            parameters(appParams)
+        ])
     }
 
 //noinspection GroovyAssignabilityCheck
@@ -109,6 +102,10 @@ def call(body) {
 
                         if (params.stack) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"
+                        }
+
+                        if (params.salesDemoDeployOnly) {
+                            jobConfig.salesDemoDeployOnly = true
                         }
                         env.APP_NAME = jobConfig.APP_NAME
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
@@ -193,7 +190,9 @@ def call(body) {
             }
             stage('Sonar analyzing') {
                 when {
-                    expression { jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/ }
+                    expression {
+                        jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/ && jobConfig.isSonarAnalysisEnabled == true
+                    }
                 }
                 steps {
                     script {
@@ -254,7 +253,7 @@ def call(body) {
                 parallel {
                     stage('Kubernetes deployment') {
                         when {
-                            expression { jobConfig.DEPLOY_ON_K8S == true }
+                            expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.salesDemoDeployOnly == false }
                         }
                         steps {
                             script {
@@ -268,9 +267,29 @@ def call(body) {
                             }
                         }
                     }
+                    stage('Sales Demo Kubernetes deployment') {
+                       when {
+                            expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                        }
+                        steps {
+                            script {
+
+                                try {
+                                    log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
+                                    log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
+                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
+                                        jobConfig.kubernetesDeploymentsList)
+                                }
+                                catch (e) {
+                                    log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = 'UNSTABLE'
+                                }
+                            }
+                        }
+                    }
                     stage('Ansible deployment') {
                         when {
-                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true }
+                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true && jobConfig.salesDemoDeployOnly == false }
                         }
                         steps {
                             script {
@@ -295,11 +314,32 @@ def call(body) {
                             }
                         }
                     }
+                    stage('Sales Demo Ansible deployment') {
+                       when {
+                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                        }
+                        steps {
+                            script {
+
+                                try {
+                                    sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                        def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                        runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                    }
+                                }
+                                catch (e) {
+                                    log.warning("Ansible deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = Result.UNSTABLE
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
             stage('Healthcheck') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false }
                 }
                 steps {
                     script {
@@ -312,8 +352,8 @@ def call(body) {
             stage("Post deploy stage") {
                 when {
                     expression {
-                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/
-                    }
+                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false
+                        }
                 }
                 steps {
                     script {
@@ -327,7 +367,7 @@ def call(body) {
             }
             stage('QA integration tests') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false }
                 }
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
