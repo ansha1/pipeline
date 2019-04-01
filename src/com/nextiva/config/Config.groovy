@@ -31,13 +31,6 @@ class Config implements Serializable {
         this.branchName = script.env.BRANCH_NAME
 
 
-
-
-
-
-
-
-
         this.newRelicId = config.get("newRelicIdMap").get(branchName)
         if (!newRelicId) {
             configurationErrors.add("NewRelicId is undefined for branch $branchName. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
