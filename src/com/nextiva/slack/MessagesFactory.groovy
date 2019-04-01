@@ -107,8 +107,7 @@ class MessagesFactory implements Serializable {
         try {
             def commit = context.sh(returnStdout: true, script: 'git rev-parse HEAD')
             commitAuthor = context.sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
-        } catch (e) {
-            log.error(e)
+        } catch (ignored) {
             commitAuthor = "Unknown"
         }
         return "Commit author: ${commitAuthor}"
@@ -118,8 +117,7 @@ class MessagesFactory implements Serializable {
         def lastCommitMessage
         try {
             lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-        } catch (e) {
-            log.error(e)
+        } catch (ignored) {
             lastCommitMessage = "Unknown"
         }
         return "*Last commit:* ```${lastCommitMessage}```"
