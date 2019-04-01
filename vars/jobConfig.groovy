@@ -45,10 +45,18 @@ def call(body) {
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = getBooleanDefault(pipelineParams.BLUE_GREEN_DEPLOY, false)
-    isVeracodeScanEnabled = getBooleanDefault(pipelineParams.isVeracodeScanEnabled, true)
+    isSecurityScanEnabled = getBooleanDefault(pipelineParams.isSecurityScanEnabled, true)
+    isSonarAnalysisEnabled = getBooleanDefault(pipelineParams.isSonarAnalysisEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []
+
+    // Adding Sales Demo Env Configuration
+    deployToSalesDemo = getBooleanDefault(pipelineParams.deployToSalesDemo, false)
+    kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo ?: DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO
+    inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo ?: DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO
+    inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
+    salesDemoDeployOnly = false
 
     switch (env.BRANCH_NAME) {
         case 'dev':
@@ -119,10 +127,10 @@ def call(body) {
     healthCheckUrl.each { log("  - ${it}") }
     log("jdkVersion: ${jdkVersion}")
     log("mavenVersion: ${mavenVersion}")
+    log("deployToSalesDemo: ${deployToSalesDemo}")
     log('=====================================================')
     log('')
 }
-
 
 def getUtils() {
     return utils

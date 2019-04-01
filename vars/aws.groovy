@@ -2,20 +2,20 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 
 def uploadFrontToS3(String appName, String buildVersion, String environment, Map args, String pathToSrc) {
-    if (environment.notIn(LIST_OF_ENVS)) {
+    if (!LIST_OF_ENVS.contains(environment)) {
         throw new IllegalArgumentException("Provided env ${environment} is not in the list ${LIST_OF_ENVS}")
     }
 
     def assetDir = args.get('distPath', 'dist/static')
-    String S3BucketName = env.BRANCH_NAME.equals("master") ? S3_PRODUCTION_BUCKET_NAME : S3_DEV_BUCKET_NAME
+    buildVersion = buildVersion.replace('+', '-')
+    String S3BucketName = env.BRANCH_NAME.matches(/^(release|hotfix)\/.+$/) ? S3_PUBLIC_BUCKET_NAME : S3_PRIVATE_BUCKET_NAME
 
     withAWS(credentials: AWS_CREDENTIALS, region: AWS_REGION) {
         dir(pathToSrc) {
-            log.info("publishStaticAssetsToS3: ${publishToS3}")
-                s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/")            
-                s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/${buildVersion}/")
-                s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${BUILD_PROPERTIES_FILENAME}")
-                s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${buildVersion}/${BUILD_PROPERTIES_FILENAME}")
+            s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/")            
+            s3Upload(file: assetDir, bucket: S3BucketName, path: "${appName}/${buildVersion}/")
+            s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${BUILD_PROPERTIES_FILENAME}")
+            s3Upload(file: "${pathToSrc}/${BUILD_PROPERTIES_FILENAME}", bucket: S3BucketName, path: "${appName}/${buildVersion}/${BUILD_PROPERTIES_FILENAME}")
         }
     }
 }
@@ -34,7 +34,9 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
         }
     }
 
-    common.tempDir("tmp_${common.getRundomInt()}") {
+    String reportUrl = "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}"
+
+    common.tempDir() {
         """ publishHTML requires at least one exists file for publish """
         sh "echo tmp > tmp.txt"
 
@@ -42,8 +44,10 @@ def uploadTestResults(String appName, String jobName, String buildNumber, List o
                      alwaysLinkToLastBuild: false,
                      keepAll              : true,
                      reportDir            : '',
-                     reportFiles          : "${TEST_REPORTS_URL}/${appName}/${jobName}/${buildNumber}/${reportLinkSuffix}",
+                     reportFiles          : reportUrl,
                      reportName           : reportName,
                      reportTitles         : ''])
     }
+
+    return reportUrl
 }

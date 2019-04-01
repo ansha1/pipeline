@@ -2,8 +2,9 @@ package com.nextiva
 
 class SharedJobsStaticVars {
     static final BUILD_PROPERTIES_FILENAME = 'build.properties'
-    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa']
+    static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa', 'tooling', 'sales-demo']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
+    static final LIST_OF_BOOKED_NAMESPACES = ['bot', 'default', 'jenkins', 'kube-public', 'kube-system', 'monitoring', 'selenoid-moon', 'utils']
     static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
     static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
     static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
@@ -59,13 +60,16 @@ class SharedJobsStaticVars {
     static final PROMETHEUS_DEFAULT_METRIC = 1
     static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
     static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
-    static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'NextOS Platform (CRM)'
+    static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'Nextiva Services'
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
-    static final S3_PRODUCTION_BUCKET_NAME = 'static-assets-prod.nextiva.io'
-    static final S3_DEV_BUCKET_NAME = 'static-assets-dev.nextiva.io'
+    static final S3_PUBLIC_BUCKET_NAME = 'public-static-assets.nextiva.io'
+    static final S3_PRIVATE_BUCKET_NAME = 'private-static-assets.nextiva.io'
     static final AWS_REGION = 'us-west-2'
     static final AWS_CREDENTIALS = 'nextiva.io'
     static final AWS_S3_UPLOAD_CREDENTIALS = 'test-reports-s3-upload'
     static final S3_TEST_REPORTS_BUCKET = 'test-reports.nextiva.io'
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
+    static final BITBUCKET_SECTION_MARKER = '###### '
+    static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
+    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
 }

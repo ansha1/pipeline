@@ -17,13 +17,13 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kops.k8s.io/instancegroup
+          - key: dedicatedgroup
             operator: In
             values:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-python3.5:0.0.5
+    image: repository.nextiva.xyz/jenkins-slave-python3.5:1.0.2
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume

@@ -96,7 +96,7 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
     @Test
     void check_verify_package_in_nexus_returns_true() {
         def dummyJavaObject = getJavaClassObject()
-        dummyJavaObject.log = ['error': {}]
+        dummyJavaObject.log = ['blueBold': {}, 'error': {}]
         dummyJavaObject.metaClass.getModulesProperties = { -> MODULES_PROPERTIES_TRUE }
         dummyJavaObject.metaClass.getVersion = { -> '1.5.1' }
         dummyJavaObject.nexus = ['isJavaArtifactExists': { groupId, artifactId, artifactVersion, packaging -> true }]
@@ -145,7 +145,7 @@ class JavaUtilsTest extends BasePipelineTest implements Validator, Mocks {
         def dummyJavaObject = getJavaClassObject()
         dummyJavaObject.Result = ['ABORTED': 'Build should be aborted']
         dummyJavaObject.currentBuild = ['rawBuild': ['result': 'undefined']]
-        dummyJavaObject.log = ['error': {}]
+        dummyJavaObject.log = ['blueBold': {}, 'error': {}]
         dummyJavaObject.metaClass.getModulesProperties = { -> MODULES_PROPERTIES_FALSE }
         dummyJavaObject.metaClass.getVersion = { -> '1.5.1' }
         dummyJavaObject.nexus = ['isJavaArtifactExists': { groupId, artifactId, artifactVersion, packaging -> true }]

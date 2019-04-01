@@ -3,7 +3,8 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 def createVirtualEnv(String pythonName = 'python', String venvDir = VENV_DIR) {
     log.info("Create virtualenv (${venvDir})")
-    sh "virtualenv --python=${pythonName} ${venvDir}"
+    sh "${pythonName} -m venv ${venvDir}"
+//    sh "virtualenv --python=${pythonName} ${venvDir}"
 }
 
 def getVirtualEnv(String venvDir = VENV_DIR) {
@@ -30,7 +31,14 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
 
 def venvSh(String cmd, Boolean returnStdout = false, String venvDir = VENV_DIR) {
     log.info("Activate virtualenv and run command (${venvDir})")
-    withEnv(getVirtualEnv(venvDir)) {
+
+    // Workaround to change PATH variable inside docker container
+    // https://issues.jenkins-ci.org/browse/JENKINS-49076
+    def envVars = getVirtualEnv(venvDir)
+    def pathVars = envVars.findAll { it ==~ /^PATH\=.*/ }.join("\n")
+    cmd = "${pathVars}\n${cmd}"
+
+    withEnv(envVars) {
         output = sh(name: 'Run sh script', returnStdout: returnStdout, script: cmd)
     }
     return output

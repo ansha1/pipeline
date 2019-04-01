@@ -51,7 +51,6 @@ def runSonarScanner(String projectVersion) {
 }
 
 
-
 void buildForVeracode(String appName, String buildVersion, String environment, Map args) {
 
     /*
@@ -80,7 +79,6 @@ void buildForVeracode(String appName, String buildVersion, String environment, M
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-
     def veracodeBuildCommands = args.get('veracodeBuildCommands', 'mvn clean install -U --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
@@ -171,6 +169,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 
     try {
         mavenArtifactsProperties = getModulesProperties()
+        log.blueBold("\n####################################")
         mavenArtifactsProperties.each { artifact ->
             // if packageVersion is the same that is currently set in pom.xml we are calculating sub modules
             // properties with getModulesProperties() and do Nexus verification for all found artifacts with their local versions.
@@ -183,6 +182,7 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
                 artifactsInNexus << artifact
             }
         }
+        log.blueBold("####################################\n")
     } catch (e) {
         log.error("There was a problem with mvn artifacts version validation " + e)
         return false
@@ -195,7 +195,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
         // returning false only when none of the artifacts exists in Nexus
         return false
     } else {
-        log.error("The following artifact already exists in Nexus and we can't auto increment a version for them: ${artifactsInNexus}")
         currentBuild.rawBuild.result = Result.ABORTED
         throw new hudson.AbortException("\nCan't apply autoincrement method. Please review versions in used submodules pom.xml" +
                 "\nThe used versions should be identical for all submodules or you need manually set the versions that don't exist in Nexus")
@@ -213,6 +212,7 @@ void runTests(Map args) {
         } catch (e) {
             error("Unit test fail ${e}")
         } finally {
+            step([$class: 'CucumberReportPublisher']) //PIPELINE-107
             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/target/checkstyle-result.xml', unHealthy: ''
         }

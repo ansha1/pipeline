@@ -48,6 +48,11 @@ def getPropertyValue(String propertyName, def defaultValue = null) {
 }
 
 def getRundomInt() {
+    log.deprecated('Use getRandomInt() method.')
+    return getRandomInt()
+}
+
+def getRandomInt() {
     return System.nanoTime()
 }
 
@@ -79,9 +84,34 @@ def serviceStatus(String hostname, String service) {
     remoteSh(hostname, "sudo systemctl status -l ${service} || true")
 }
 
-def tempDir(path, closure) {
+def tempDir(path = '', closure) {
+    path = path ?: "tmp_${getRandomInt()}"
+    log.debug("Using temporary dir: ${path}")
+
     dir(path) {
         closure()
         deleteDir()
     }
+}
+
+String getRepositoryUrl() {
+    def repositoryUrl =  sh returnStdout: true, script: "git config --get remote.origin.url"
+    return repositoryUrl.trim()
+}
+
+String getCurrentCommit() {
+    def currentCommit = sh returnStdout: true, script: 'git rev-parse HEAD'
+    return currentCommit.trim()
+}
+
+// Load groovy script on runtime
+// example: sharedComponents = loadScript("aws/sharedComponents.groovy")
+def loadScript(String scriptPath, String nodeLabel = 'master') {
+    def script
+    node(nodeLabel) {
+        cleanWs()
+        checkout scm
+        script = load scriptPath
+    }
+    return script
 }

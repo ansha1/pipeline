@@ -12,7 +12,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kops.k8s.io/instancegroup
+          - key: dedicatedgroup
             operator: In
             values:
             - jenkins-slave
@@ -23,7 +23,7 @@ spec:
     effect: NoSchedule
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-node8:0.0.4
+    image: repository.nextiva.xyz/jenkins-slave-node8:1.0.2
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume

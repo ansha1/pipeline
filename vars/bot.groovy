@@ -20,7 +20,7 @@ def getJenkinsApprove(String slackReceiver, String yesText, String noText, Strin
     log.debug("Jenkins input URL: " + jenkinsInputUrl)
     log.debug("Message: " + text)
 
-    def inputId = "${common.getRundomInt()}"
+    def inputId = "${common.getRandomInt()}"
     def postBody = [slack_receiver: slackReceiver, yes_text: yesText, no_text: noText, title: title,
                     title_link: titleLink, text: text, jenkins_input_url: jenkinsInputUrl + "${inputId}/submit"]
 
