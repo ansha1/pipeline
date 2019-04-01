@@ -1,7 +1,7 @@
 metadata:
   namespace: jenkins
   labels:
-    name: slave_python3.5_crm
+    name: slave_python3.7_re
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
@@ -23,7 +23,7 @@ spec:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-python3.5-crm:1.0.1
+    image: repository.nextiva.xyz/jenkins-slave-python3.7-re:1.0.1
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
@@ -35,13 +35,11 @@ spec:
     imagePullPolicy: IfNotPresent
     resources:
       requests:
-        cpu: 1024m
+        cpu: 512m
         memory: 1024Mi
-        # cpu: 512m
-        # memory: 1024Mi
-          # limits:
-          #   memory: 2048Mi
-          #   cpu: 1000m
+    #       limits:
+    #         memory: 2048Mi
+    #         cpu: 1000m
   volumes:
   - name: docker-sock-volume
     hostPath:
