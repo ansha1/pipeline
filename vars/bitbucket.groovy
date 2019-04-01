@@ -87,7 +87,7 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
 
 List<String> getChangesFromPr(String repositoryUrl, String prID, String startPage = 0, String limit = 1000) {
 
-    log.debug("Repository Url: ${repositoryUrl}")
+    log.warn("Repository Url: ${repositoryUrl}")
     def tokens = repositoryUrl.tokenize('/')
     def projectKey = tokens[2]
     def repositorySlug = tokens[3].replace(".git", "")
