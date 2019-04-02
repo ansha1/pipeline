@@ -23,33 +23,33 @@ class MessagesFactory implements Serializable {
         List<Block> blocks = new ArrayList<>()
 
         Section title = new Section()
-        title.setText(new Text(getBuildInfoTitle()))
+        title.setText(new Text(createBuildInfoTitle()))
         blocks.add(title)
 
         blocks.add(new Divider())
 
         Section infoBlocks = new Section()
         infoBlocks.setFields(ImmutableList.of(
-                new Text(getStatus()),
-                new Text(getBuildBranch()),
-                new Text(getTestResults()))
+                new Text(createStatus()),
+                new Text(createBuildBranch()),
+                new Text(createTestResults()))
         )
         blocks.add(infoBlocks)
 
         blocks.add(new Divider())
 
         Section lastCommitMessage = new Section()
-        lastCommitMessage.setText(new Text(getLastCommitMessage()))
+        lastCommitMessage.setText(new Text(createLastCommitMessage()))
         blocks.add(lastCommitMessage)
 
         Context commitAuthor = new Context()
-        commitAuthor.setElements(ImmutableList.of(new Text(getCommitAuthor())))
+        commitAuthor.setElements(ImmutableList.of(new Text(createCommitAuthor())))
         blocks.add(commitAuthor)
 
         Actions buttons = new Actions()
-        buttons.setElements(Lists.newArrayList(getJobLinkButton(), getJobConsoleButton()))
+        buttons.setElements(Lists.newArrayList(createJobLinkButton(), createJobConsoleButton()))
         if (hasTestResults()) {
-            buttons.getElements().add(getTestResultsButton())
+            buttons.getElements().add(createTestResultsButton())
         }
         blocks.add(buttons)
 
@@ -59,7 +59,7 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    private getBuildInfoTitle() {
+    private createBuildInfoTitle() {
         def mention = ''
         def buildStatus = context.currentBuild.currentResult
         if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
@@ -70,15 +70,15 @@ class MessagesFactory implements Serializable {
         return "${mention}*${subject}*"
     }
 
-    private getBuildBranch() {
+    private createBuildBranch() {
         return "*Branch:* ${context.env.BRANCH_NAME}"
     }
 
-    private getStatus() {
+    private createStatus() {
         return "*Status:* `${context.currentBuild.currentResult}`"
     }
 
-    private getTestResults() {
+    private createTestResults() {
         def testResultAction = context.currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
         def summary
 
@@ -100,7 +100,7 @@ class MessagesFactory implements Serializable {
         return context.currentBuild.rawBuild.getAction(AbstractTestResultAction.class) != null
     }
 
-    private getCommitAuthor() {
+    private createCommitAuthor() {
         def commitAuthor
         try {
             def commit = context.sh(returnStdout: true, script: 'git rev-parse HEAD')
@@ -111,7 +111,7 @@ class MessagesFactory implements Serializable {
         return "Commit author: ${commitAuthor}"
     }
 
-    private getLastCommitMessage() {
+    private createLastCommitMessage() {
         def lastCommitMessage
         try {
             lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
@@ -121,21 +121,21 @@ class MessagesFactory implements Serializable {
         return "*Last commit:* ```${lastCommitMessage}```"
     }
 
-    private getJobLinkButton() {
+    private createJobLinkButton() {
         def button = new LinkButton()
         button.setText(new Text("Job", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}")
         return button
     }
 
-    private getJobConsoleButton() {
+    private createJobConsoleButton() {
         def button = new LinkButton()
         button.setText(new Text("Console", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}console")
         return button
     }
 
-    private getTestResultsButton() {
+    private createTestResultsButton() {
         def button = new LinkButton()
         button.setText(new Text("Test results", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}testReport")
