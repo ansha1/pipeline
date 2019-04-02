@@ -17,6 +17,7 @@ class BitbucketTest extends BasePipelineTest implements Validator, Mocks {
     @Before
     void setUp() throws Exception {
         super.setUp()
+        attachScript 'common'
         mockCreatePr(PR_URL)
     }
 
