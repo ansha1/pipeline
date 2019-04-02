@@ -99,3 +99,4 @@ def redBold(String message) {
 def magnetaBold(String message) {
     print("\033[1;35m${message}${END_CHAR}")
 }
+
