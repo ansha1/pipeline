@@ -14,6 +14,7 @@ import hudson.tasks.test.AbstractTestResultAction
 
 class MessagesFactory implements Serializable {
     private final def context
+    private def errorMessage = ''
 
     MessagesFactory(context) {
         this.context = context
@@ -25,6 +26,14 @@ class MessagesFactory implements Serializable {
         Section title = new Section()
         title.setText(new Text(createBuildInfoTitle()))
         blocks.add(title)
+
+        if (!errorMessage.isEmpty()) {
+            blocks.add(new Divider())
+
+            Section error = new Section()
+            error.setText(new Text(createErrorMessage()))
+            blocks.add(error)
+        }
 
         blocks.add(new Divider())
 
@@ -57,6 +66,15 @@ class MessagesFactory implements Serializable {
         message.setBlocks(blocks)
 
         return message
+    }
+
+    MessagesFactory withError(String errorMessage) {
+        this.errorMessage = errorMessage
+        return this
+    }
+
+    private createErrorMessage() {
+        return "*Error:* ${errorMessage}"
     }
 
     private createBuildInfoTitle() {

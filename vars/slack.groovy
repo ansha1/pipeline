@@ -2,6 +2,7 @@
 import java.net.URLEncoder
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.MessagesFactory
 import java.net.URLDecoder
 import java.util.Random
 import groovy.json.JsonOutput
@@ -37,17 +38,17 @@ private static toJson(SlackMessage message) {
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
-    def uploadSpec = buildAttachments(errorMessage)
-    call(notifyChannel, uploadSpec)
+    SlackMessage message = new MessagesFactory(this).withError(errorMessage).buildStatusMessage()
+    sendMessage(notifyChannel, message)
 }
 
 def commitersOnly() {
     try {
-        def uploadSpec = buildStatusMessageBody()
+        SlackMessage message = new MessagesFactory(this).buildStatusMessage()
         def commitAuthors = getCommitAuthors()
         commitAuthors.each {
             def slackUserId = getSlackUserIdByEmail(it)
-            privateMessage(slackUserId, uploadSpec)
+            sendMessage(slackUserId, message)
         }
     } catch (e) {
         log.warn("Failed send Slack notification to the commit authors: " + e.toString())
@@ -55,119 +56,119 @@ def commitersOnly() {
 }
 
 def prOwnerPrivateMessage(String url) {
-    def prOwner = bitbucket.prOwnerEmail(url)
-    def uploadSpec = buildStatusMessageBody()
+    String prOwner = bitbucket.prOwnerEmail(url)
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
-    privateMessage(getUserFromSlackObject, uploadSpec)
+    sendMessage(getUserFromSlackObject, message)
 }
 
-def privateMessage(String slackUserId, String message) {
-    log.debug("Message: " + message)
-    def attachments = URLEncoder.encode(message, "UTF-8")
-    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
-            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
-}
-
-def buildStatusMessageBody() {
-    def mention = ''
-    def buildStatus = currentBuild.currentResult
-    def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
-    def commitInfo = commitInfoRaw.trim()
-    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
-        mention = "@here "
-    }
-    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
-    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
-    def uploadSpec = """[
-        {
-            "title": "${mention}${subject}",
-            "text": "${commitInfo}",
-            "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "text": "Console output",
-                    "type": "button",
-                    "url": "${env.BUILD_URL}console"
-                },
-                {
-                    "text": "Test results",
-                    "type": "button",
-                    "url": "${env.BUILD_URL}testReport"
-                }
-            ]
-        }
-    ]"""
-    return uploadSpec
-}
-
-def buildAttachments(errorMessage = '') {
-    def mention = ''
-    def buildStatus = currentBuild.currentResult
-    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
-        mention = "@here "
-    }
-    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
-    def subject = "Job: ${jobName}, build #${env.BUILD_NUMBER}"
-    def author = getGitAuthor()
-    log.info("author = ${author}")
-    def lastCommitMessage = getLastCommitMessage()
-    log.info("lastCommitMessage = ${lastCommitMessage}")
-
-    return JsonOutput.toJson([[
-                                      title      : "${mention}${subject}",
-                                      title_link : "${env.BUILD_URL}",
-                                      color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-                                      author_name: "Commit autor: ${author}",
-                                      text       : "${errorMessage}",
-                                      fields     : [
-                                              [
-                                                      title: "Status",
-                                                      value: "${buildStatus}",
-                                                      short: true
-                                              ],
-                                              [
-                                                      title: "Branch",
-                                                      value: "${env.BRANCH_NAME}",
-                                                      short: true
-                                              ],
-                                              [
-                                                      title: "Test results",
-                                                      value: "getTestSummary()//",
-                                                      short: true
-                                              ],
-                                              [
-                                                      title: "Last Commit",
-                                                      value: "```${lastCommitMessage}```",
-                                                      short: false
-                                              ],
-                                      ],
-                                      "actions"  : [
-                                              [
-                                                      "text": "Console output",
-                                                      "type": "button",
-                                                      "url" : "${env.BUILD_URL}console"
-                                              ],
-                                              [
-                                                      "text": "Test results",
-                                                      "type": "button",
-                                                      "url" : "${env.BUILD_URL}testReport"
-                                              ]
-                                      ]
-
-                              ],
-    ])
-}
-
-def getGitAuthor() {
-    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
-    return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
-}
-
-def getLastCommitMessage() {
-    return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-}
+//def privateMessage(String slackUserId, String message) {
+//    log.debug("Message: " + message)
+//    def attachments = URLEncoder.encode(message, "UTF-8")
+//    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+//            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
+//            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
+//}
+//
+//def buildStatusMessageBody() {
+//    def mention = ''
+//    def buildStatus = currentBuild.currentResult
+//    def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
+//    def commitInfo = commitInfoRaw.trim()
+//    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+//        mention = "@here "
+//    }
+//    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
+//    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
+//    def uploadSpec = """[
+//        {
+//            "title": "${mention}${subject}",
+//            "text": "${commitInfo}",
+//            "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
+//            "attachment_type": "default",
+//            "actions": [
+//                {
+//                    "text": "Console output",
+//                    "type": "button",
+//                    "url": "${env.BUILD_URL}console"
+//                },
+//                {
+//                    "text": "Test results",
+//                    "type": "button",
+//                    "url": "${env.BUILD_URL}testReport"
+//                }
+//            ]
+//        }
+//    ]"""
+//    return uploadSpec
+//}
+//
+//def buildAttachments(errorMessage = '') {
+//    def mention = ''
+//    def buildStatus = currentBuild.currentResult
+//    if (buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
+//        mention = "@here "
+//    }
+//    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
+//    def subject = "Job: ${jobName}, build #${env.BUILD_NUMBER}"
+//    def author = getGitAuthor()
+//    log.info("author = ${author}")
+//    def lastCommitMessage = getLastCommitMessage()
+//    log.info("lastCommitMessage = ${lastCommitMessage}")
+//
+//    return JsonOutput.toJson([[
+//                                      title      : "${mention}${subject}",
+//                                      title_link : "${env.BUILD_URL}",
+//                                      color      : "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
+//                                      author_name: "Commit autor: ${author}",
+//                                      text       : "${errorMessage}",
+//                                      fields     : [
+//                                              [
+//                                                      title: "Status",
+//                                                      value: "${buildStatus}",
+//                                                      short: true
+//                                              ],
+//                                              [
+//                                                      title: "Branch",
+//                                                      value: "${env.BRANCH_NAME}",
+//                                                      short: true
+//                                              ],
+//                                              [
+//                                                      title: "Test results",
+//                                                      value: "getTestSummary()//",
+//                                                      short: true
+//                                              ],
+//                                              [
+//                                                      title: "Last Commit",
+//                                                      value: "```${lastCommitMessage}```",
+//                                                      short: false
+//                                              ],
+//                                      ],
+//                                      "actions"  : [
+//                                              [
+//                                                      "text": "Console output",
+//                                                      "type": "button",
+//                                                      "url" : "${env.BUILD_URL}console"
+//                                              ],
+//                                              [
+//                                                      "text": "Test results",
+//                                                      "type": "button",
+//                                                      "url" : "${env.BUILD_URL}testReport"
+//                                              ]
+//                                      ]
+//
+//                              ],
+//    ])
+//}
+//
+//def getGitAuthor() {
+//    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+//    return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+//}
+//
+//def getLastCommitMessage() {
+//    return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+//}
 
 def getSlackUserIdByEmail(String userMail) {
     def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
@@ -182,28 +183,28 @@ def getSlackUserIdByEmail(String userMail) {
     }
 }
 
-def getTestSummary() {
-    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
-    def summary
-
-    if (testResultAction != null) {
-        total = testResultAction.getTotalCount()
-        failed = testResultAction.getFailCount()
-        skipped = testResultAction.getSkipCount()
-
-        summary = "Passed: " + (total - failed - skipped)
-        summary = summary + (", Failed: " + failed)
-        summary = summary + (", Skipped: " + skipped)
-    } else {
-        summary = "No tests found"
-    }
-    return summary
-}
+//def getTestSummary() {
+//    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+//    def summary
+//
+//    if (testResultAction != null) {
+//        total = testResultAction.getTotalCount()
+//        failed = testResultAction.getFailCount()
+//        skipped = testResultAction.getSkipCount()
+//
+//        summary = "Passed: " + (total - failed - skipped)
+//        summary = summary + (", Failed: " + failed)
+//        summary = summary + (", Skipped: " + skipped)
+//    } else {
+//        summary = "No tests found"
+//    }
+//    return summary
+//}
 
 def sendBuildStatusPrivateMessage(String slackUserId) {
-    def uploadSpec = buildStatusMessageBody()
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     try {
-        privateMessage(slackUserId, uploadSpec)
+        sendMessage(slackUserId, message)
     } catch (e) {
         log.warn("Failed send Slack notification to the authors: " + e.toString())
     }
@@ -212,7 +213,7 @@ def sendBuildStatusPrivateMessage(String slackUserId) {
 def deployStart(String appName, String version, String environment, String notifyChannel) {
     def triggeredBy = getSlackUserIdByEmail(common.getCurrentUserEmail())
     def message = "`${appName}:${version}` ${environment.toUpperCase()} deploy started by <@${triggeredBy}>"
-
+    //TODO: this
     slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
 }
 
@@ -223,7 +224,7 @@ def deployFinish(String appName, String version, String environment, String noti
     def buildStatus = currentBuild.currentResult == "SUCCESS" ? "deployed :tada: ${randomWish}" : "deploy failed! :disappointed:"
 
     def message = "`${appName}:${version}` ${environment.toUpperCase()} ${buildStatus}"
-
+    //TODO: this
     slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
 }
 

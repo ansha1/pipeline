@@ -13,7 +13,7 @@ def call(String title = 'Should we proceed?', String slackChannel, String author
 def sendToPrivate(String message = 'Should we proceed?' , String UserSlackId, List authorizedApprovers, Integer minutes = 5) {
     timeout(minutes) {
         def buildMessage = buildApproveMessageBody(message)
-        slack.privateMessage(UserSlackId, buildMessage)
+        slack.sendMessage(UserSlackId, buildMessage)//TODO: message
         return input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers.join(","),
                 submitterParameter: 'approver')
     }
