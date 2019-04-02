@@ -1,10 +1,11 @@
 package com.nextiva.slack.dto.attachments
 
 class Attachment {
-    def title
+    def title = "title"
     def title_link
-    def color
+    def color = "good"
     def author_name
-    def text
+    def blocks
+    def text = "text"
     def fields
 }
