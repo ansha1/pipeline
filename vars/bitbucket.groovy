@@ -37,9 +37,8 @@ def getPrFromUrl(String url) {
 
 def createPr(String repositoryUrl, String sourceBranch, String destinationBranch, String title, String description) {
 
-    def tokens = repositoryUrl.tokenize('/')
-    def projectKey = tokens[2]
-    def repositorySlug = tokens[3].replace(".git", "")
+    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
+    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
     log.info('projectKey: ' + projectKey)
     log.info('repositorySlug: ' + repositorySlug)
 
@@ -87,10 +86,8 @@ def createPr(String repositoryUrl, String sourceBranch, String destinationBranch
 
 List<String> getChangesFromPr(String repositoryUrl, String prID, String startPage = 0, String limit = 1000) {
 
-    log.warn("Repository Url: ${repositoryUrl}")
-    def tokens = repositoryUrl.tokenize('/')
-    def projectKey = tokens[2]
-    def repositorySlug = tokens[3].replace(".git", "")
+    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
+    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
 
     String getChangesUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}" +
             "/pull-requests/${prID}/changes?start=${startPage}&limit=${limit}"
@@ -111,9 +108,8 @@ List<String> getChangesFromPr(String repositoryUrl, String prID, String startPag
 
 def updatePrDescriptionSection(String repositoryUrl, String prID, String sectionTag, String sectionBody) {
 
-    def tokens = repositoryUrl.tokenize('/')
-    def projectKey = tokens[2]
-    def repositorySlug = tokens[3].replace(".git", "")
+    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
+    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
 
     String prUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}/pull-requests/${prID}"
 

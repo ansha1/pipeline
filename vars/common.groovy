@@ -115,3 +115,31 @@ def loadScript(String scriptPath, String nodeLabel = 'master') {
     }
     return script
 }
+
+String getRepositoryProjectKeyFromUrl(String repositoryUrl) {
+    log.debug("Repository Url: ${repositoryUrl}")
+
+    String tokens = repositoryUrl.tokenize('/')
+    if (tokens[0] == 'https:') {
+        // example: https://git.nextiva.xyz/scm/REL/k8s-platform.git
+        return tokens[3]
+    }
+    else {
+        // example: ssh://git@git.nextiva.xyz:7999/REL/k8s-platform.git
+        return tokens[2]
+    }
+}
+
+String getRepositoryNameFromUrl(String repositoryUrl) {
+    log.debug("Repository Url: ${repositoryUrl}")
+
+    String tokens = repositoryUrl.tokenize('/')
+    if (tokens[0] == 'https:') {
+        // example: https://git.nextiva.xyz/scm/REL/k8s-platform.git
+        return tokens[4].replace('.git', '')
+    }
+    else {
+        // example: ssh://git@git.nextiva.xyz:7999/REL/k8s-platform.git
+        return tokens[3].replace('.git', '')
+    }
+}
