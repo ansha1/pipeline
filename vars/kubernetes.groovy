@@ -17,6 +17,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
         try {
             login(clusterDomain)
+            vaultLogin()
 
             def repoDir = prepareRepoDir(KUBERNETES_REPO_URL, KUBERNETES_REPO_BRANCH)
 
@@ -57,8 +58,7 @@ def login(String clusterDomain) {
 
     String k8sEnv = ".venv_${common.getRandomInt()}"
 
-    withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD'),
-                     usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
+    withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
         def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
                 url: "https://login.${clusterDomain}/info"
         def responseJson = readJSON text: response.content
@@ -79,7 +79,11 @@ def login(String clusterDomain) {
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
             """, false, k8sEnv)
+    }
+}
 
+def vaultLogin() {
+    withCredentials([usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
         // vault login
         withEnv(["VAULT_ADDR=${VAULT_URL}",
                  "VAULT_SKIP_VERIFY=true"]) {
