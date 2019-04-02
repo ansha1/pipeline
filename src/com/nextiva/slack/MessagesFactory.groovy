@@ -75,7 +75,7 @@ class MessagesFactory implements Serializable {
     }
 
     private getStatus() {
-        return "`*Status:* ${context.currentBuild.currentResult}`"
+        return "*Status:* `${context.currentBuild.currentResult}`"
     }
 
     private getTestResults() {
