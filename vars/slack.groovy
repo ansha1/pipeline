@@ -32,7 +32,7 @@ private static toJson(SlackMessage message) {
 }
 
 def sendBuildStatus(String notifyChannel, String errorMessage = '') {
-    SlackMessage message = new MessagesFactory(this).withError(errorMessage).buildStatusMessage()
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage(errorMessage)
     sendMessage(notifyChannel, message)
 }
 
