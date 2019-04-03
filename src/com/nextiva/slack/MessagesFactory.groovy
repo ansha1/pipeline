@@ -17,13 +17,12 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 class MessagesFactory implements Serializable {
     private final def context
-    private def errorMessage = ''
 
     MessagesFactory(context) {
         this.context = context
     }
 
-    def buildStatusMessage() {
+    def buildStatusMessage(errorMessage = '') {
         List<Block> blocks = new ArrayList<>()
 
         Section title = new Section()
@@ -34,7 +33,7 @@ class MessagesFactory implements Serializable {
             blocks.add(new Divider())
 
             Section error = new Section()
-            error.setText(new Text(createErrorMessage()))
+            error.setText(new Text(createErrorMessage(errorMessage)))
             blocks.add(error)
         }
 
@@ -75,12 +74,80 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    MessagesFactory withError(String errorMessage) {
-        this.errorMessage = errorMessage
-        return this
+    def buildApproveMessage(title) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section titleSection = new Section()
+        titleSection.setText(new Text(title))
+        blocks.add(titleSection)
+
+        Section mainText = new Section()
+        mainText.setText(new Text(createApproveText()))
+        blocks.add(mainText)
+
+        Actions buttons = new Actions()
+        buttons.setElements(ImmutableList.of(createApproveButton()))
+        blocks.add(buttons)
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("#022ef2")
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
+        return message
     }
 
-    private createErrorMessage() {
+    def buildDeployStartMessage(String appName, String version, String environment, String triggeredBy) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section mainText = new Section()
+        mainText.setText(new Text(createDeployStartText(appName, version, environment, triggeredBy)))
+        blocks.add(mainText)
+
+        def message = new SlackMessage()
+        message.setBlocks(blocks)
+
+        return message
+    }
+
+    def buildDeployFinishMessage(String appName, String version, String environment) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section mainText = new Section()
+        mainText.setText(new Text(createDeployFinishText(appName, version, environment)))
+        blocks.add(mainText)
+
+        def message = new SlackMessage()
+        message.setBlocks(blocks)
+
+        return message
+    }
+
+    private createDeployFinishText(String appName, String version, String environment) {
+        def text = "`${appName}:${version}` ${environment.toUpperCase()} "
+        if (context.currentBuild.currentResult == "SUCCESS") {
+            List wishList = context.libraryResource('wishes.txt').readLines()
+            def randomWish = wishList[new Random().nextInt(wishList.size())]
+            text += "deployed :tada: ${randomWish}"
+        } else {
+            text += "deploy failed! :disappointed:"
+        }
+        return text
+    }
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    private createDeployStartText(String appName, String version, String environment, String triggeredBy) {
+        return "`${appName}:${version}` ${environment.toUpperCase()} deploy started by <@${triggeredBy}>"
+    }
+
+    private createApproveText() {
+        return "Stage ${context.env.STAGE_NAME} in ${getJobName()} is waiting for your approval"
+    }
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    private createErrorMessage(errorMessage) {
         return "*Error:* ${errorMessage}"
     }
 
@@ -90,9 +157,12 @@ class MessagesFactory implements Serializable {
         if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
             mention = "@here "
         }
-        String jobName = URLDecoder.decode(context.env.JOB_NAME.toString(), 'UTF-8')
-        def subject = "Job: ${jobName}, build #${context.env.BUILD_NUMBER}"
+        def subject = "Job: ${getJobName()}, build #${context.env.BUILD_NUMBER}"
         return "${mention}*${subject}*"
+    }
+
+    private getJobName() {
+        return URLDecoder.decode(context.env.JOB_NAME.toString(), 'UTF-8')
     }
 
     private createBuildBranch() {
@@ -165,7 +235,13 @@ class MessagesFactory implements Serializable {
         button.setText(new Text("Test results", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}testReport")
         return button
+    }
 
+    private createApproveButton() {
+        def button = new LinkButton()
+        button.setText(new Text("Approve", "plain_text"))
+        button.setUrl("${context.env.BUILD_URL}input")
+        return button
     }
 
 }
