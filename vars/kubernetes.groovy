@@ -85,14 +85,11 @@ def login(String clusterDomain) {
 def vaultLogin() {
     withCredentials([usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
         // vault login
-        withEnv(["VAULT_ADDR=${VAULT_URL}",
-                 "VAULT_SKIP_VERIFY=true"]) {
-            try {
-                sh "vault login -method=ldap -no-print username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
-            } catch (e) {
-                log.error("Error! Got an error trying to initiate the connect with Vault")
-                error("Error! Got an error trying to initiate the connect with Vault ${VAULT_URL}")
-            }
+        try {
+            sh "vault login -method=ldap -no-print -address ${VAULT_URL} username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
+        } catch (e) {
+            log.error("Error! Got an error trying to initiate the connect with Vault")
+            error("Error! Got an error trying to initiate the connect with Vault ${VAULT_URL}")
         }
     }
 }
