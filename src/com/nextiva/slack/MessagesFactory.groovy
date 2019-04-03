@@ -30,14 +30,12 @@ class MessagesFactory implements Serializable {
         infoBlocks.add(title)
 
         if (!errorMessage.isEmpty()) {
-            infoBlocks.add(new Divider())
-
             Section error = new Section()
             error.setText(new Text(createErrorMessage(errorMessage)))
             infoBlocks.add(error)
-        }
 
-        infoBlocks.add(new Divider())
+            infoBlocks.add(new Divider())
+        }
 
         Section infoFields = new Section()
         infoFields.setFields(ImmutableList.of(
@@ -172,11 +170,11 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        return "*Branch:* \n${context.env.BRANCH_NAME}"
+        return "*Branch:* ${context.env.BRANCH_NAME}"
     }
 
     private createStatus() {
-        return "*Status:* \n`${context.currentBuild.currentResult}`"
+        return "*Status:* `${context.currentBuild.currentResult}`"
     }
 
     private createTestResults() {
@@ -194,7 +192,7 @@ class MessagesFactory implements Serializable {
         } else {
             summary = "No tests found"
         }
-        return "*Test results:* \n${summary}"
+        return "*Test results:* ${summary}"
     }
 
     private hasTestResults() {
