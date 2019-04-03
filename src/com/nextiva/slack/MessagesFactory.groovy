@@ -71,8 +71,8 @@ class MessagesFactory implements Serializable {
         infoAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
 
         Attachment actionsAttachment = new Attachment()
-        infoAttachment.setBlocks(actionsBlocks)
-        infoAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+        actionsAttachment.setBlocks(actionsBlocks)
+        actionsAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
 
         def message = new SlackMessage()
         message.setAttachments(ImmutableList.of(infoAttachment, actionsAttachment))
