@@ -23,53 +23,59 @@ class MessagesFactory implements Serializable {
     }
 
     def buildStatusMessage(errorMessage = '') {
-        List<Block> blocks = new ArrayList<>()
+        List<Block> infoBlocks = new ArrayList<>()
 
         Section title = new Section()
         title.setText(new Text(createBuildInfoTitle()))
-        blocks.add(title)
+        infoBlocks.add(title)
 
         if (!errorMessage.isEmpty()) {
-            blocks.add(new Divider())
+            infoBlocks.add(new Divider())
 
             Section error = new Section()
             error.setText(new Text(createErrorMessage(errorMessage)))
-            blocks.add(error)
+            infoBlocks.add(error)
         }
 
-        blocks.add(new Divider())
+        infoBlocks.add(new Divider())
 
-        Section infoBlocks = new Section()
-        infoBlocks.setFields(ImmutableList.of(
+        Section infoFields = new Section()
+        infoFields.setFields(ImmutableList.of(
                 new Text(createStatus()),
                 new Text(createBuildBranch()),
                 new Text(createTestResults()))
         )
-        blocks.add(infoBlocks)
+        infoBlocks.add(infoFields)
 
-        blocks.add(new Divider())
+        infoBlocks.add(new Divider())
 
         Section lastCommitMessage = new Section()
         lastCommitMessage.setText(new Text(createLastCommitMessage()))
-        blocks.add(lastCommitMessage)
+        infoBlocks.add(lastCommitMessage)
 
         Context commitAuthor = new Context()
         commitAuthor.setElements(ImmutableList.of(new Text(createCommitAuthor())))
-        blocks.add(commitAuthor)
+        infoBlocks.add(commitAuthor)
+
+        List<Block> actionsBlocks = new ArrayList<>()
 
         Actions buttons = new Actions()
         buttons.setElements(Lists.newArrayList(createJobLinkButton(), createJobConsoleButton()))
         if (hasTestResults()) {
             buttons.getElements().add(createTestResultsButton())
         }
-        blocks.add(buttons)
+        actionsBlocks.add(buttons)
 
-        Attachment attachment = new Attachment()
-        attachment.setBlocks(blocks)
-        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+        Attachment infoAttachment = new Attachment()
+        infoAttachment.setBlocks(infoBlocks)
+        infoAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
+        Attachment actionsAttachment = new Attachment()
+        infoAttachment.setBlocks(actionsBlocks)
+        infoAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
 
         def message = new SlackMessage()
-        message.setAttachments(ImmutableList.of(attachment))
+        message.setAttachments(ImmutableList.of(infoAttachment, actionsAttachment))
 
         return message
     }
@@ -166,11 +172,11 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        return "*Branch:* ${context.env.BRANCH_NAME}"
+        return "*Branch:* \n${context.env.BRANCH_NAME}"
     }
 
     private createStatus() {
-        return "*Status:* `${context.currentBuild.currentResult}`"
+        return "*Status:* \n`${context.currentBuild.currentResult}`"
     }
 
     private createTestResults() {
@@ -188,7 +194,7 @@ class MessagesFactory implements Serializable {
         } else {
             summary = "No tests found"
         }
-        return "*Test results:* ${summary}"
+        return "*Test results:* \n${summary}"
     }
 
     private hasTestResults() {
