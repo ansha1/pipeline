@@ -13,6 +13,8 @@ import com.nextiva.slack.dto.composition.Text
 import com.nextiva.slack.dto.interactive.LinkButton
 import hudson.tasks.test.AbstractTestResultAction
 
+import static com.nextiva.SharedJobsStaticVars.*
+
 class MessagesFactory implements Serializable {
     private final def context
     private def errorMessage = ''
@@ -65,7 +67,7 @@ class MessagesFactory implements Serializable {
 
         Attachment attachment = new Attachment()
         attachment.setBlocks(blocks)
-        attachment.setColor("good")
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
 
         def message = new SlackMessage()
         message.setAttachments(ImmutableList.of(attachment))
