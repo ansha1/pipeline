@@ -30,10 +30,7 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         attachScript 'log'
         helper.registerAllowedMethod 'sh', [Map.class], { c -> 'commit message' }
         mockSlack()
-    }
-
-    def sh(Map map) {
-        return "sh command output"
+        mockMap 'httpRequest'
     }
 
     @Override
@@ -42,10 +39,9 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
     }
 
     @Test
-    void send_build_status_notification() {
+    void send_message() {
         def script = loadScript "vars/slack.groovy"
-        script.sendBuildStatus 'some_channel'
-        checkThatMockedMethodWasExecuted 'slackSend', 1
+        script.sendMessage 'some_channel', new MessagesFactory(this).buildStatusMessage()
         printCallStack()
     }
 
