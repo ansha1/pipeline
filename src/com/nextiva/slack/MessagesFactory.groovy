@@ -217,7 +217,7 @@ class MessagesFactory implements Serializable {
 
     private createJobConsoleButton() {
         def button = new LinkButton()
-        button.setText(new Text("Console", "plain_text"))
+        button.setText(new Text("Console Output", "plain_text"))
         button.setUrl("${context.env.BUILD_URL}console")
         return button
     }
