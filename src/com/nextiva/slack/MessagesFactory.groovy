@@ -35,10 +35,9 @@ class MessagesFactory implements Serializable {
         }
 
         Section infoFields = new Section()
-        infoFields.setFields(ImmutableList.of(
+        infoFields.setFields(Lists.newArrayList(
                 new Text(createStatus()),
-                new Text(createBuildBranch()),
-                new Text(createTestResults()))
+                new Text(createBuildBranch()))
         )
         infoBlocks.add(infoFields)
 
@@ -54,9 +53,6 @@ class MessagesFactory implements Serializable {
 
         Actions buttons = new Actions()
         buttons.setElements(Lists.newArrayList(createJobConsoleButton()))
-        if (hasTestResults()) {
-            buttons.getElements().add(createTestResultsButton())
-        }
         actionsBlocks.add(buttons)
 
         Attachment infoAttachment = new Attachment()
@@ -70,6 +66,10 @@ class MessagesFactory implements Serializable {
         def message = new SlackMessage()
         message.setAttachments(ImmutableList.of(infoAttachment, actionsAttachment))
 
+        if (hasTestResults()) {
+            buttons.getElements().add(createTestResultsButton())
+            infoFields.getFields().add(new Text(createTestResults()))
+        }
         return message
     }
 
