@@ -7,7 +7,6 @@ import com.nextiva.slack.dto.attachments.Attachment
 import com.nextiva.slack.dto.blocks.Actions
 import com.nextiva.slack.dto.blocks.Block
 import com.nextiva.slack.dto.blocks.Context
-import com.nextiva.slack.dto.blocks.Divider
 import com.nextiva.slack.dto.blocks.Section
 import com.nextiva.slack.dto.composition.Text
 import com.nextiva.slack.dto.interactive.LinkButton
@@ -33,8 +32,6 @@ class MessagesFactory implements Serializable {
             Section error = new Section()
             error.setText(new Text(createErrorMessage(errorMessage)))
             infoBlocks.add(error)
-
-            infoBlocks.add(new Divider())
         }
 
         Section infoFields = new Section()
@@ -44,8 +41,6 @@ class MessagesFactory implements Serializable {
                 new Text(createTestResults()))
         )
         infoBlocks.add(infoFields)
-
-        infoBlocks.add(new Divider())
 
         Section lastCommitMessage = new Section()
         lastCommitMessage.setText(new Text(createLastCommitMessage()))
