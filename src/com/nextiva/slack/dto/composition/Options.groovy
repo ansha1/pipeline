@@ -1,6 +1,6 @@
 package com.nextiva.slack.dto.composition
 
-class Options implements Serializable {
+class Options {
     Text label
     List<Option> options
 }

@@ -1,6 +1,6 @@
 package com.nextiva.slack.dto.composition
 
-class ConfirmationDialog implements Serializable {
+class ConfirmationDialog {
     Text title
     Text text
     Text confirm
