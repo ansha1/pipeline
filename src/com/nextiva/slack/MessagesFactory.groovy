@@ -53,7 +53,7 @@ class MessagesFactory implements Serializable {
         List<Block> actionsBlocks = new ArrayList<>()
 
         Actions buttons = new Actions()
-        buttons.setElements(Lists.newArrayList(createJobLinkButton(), createJobConsoleButton()))
+        buttons.setElements(Lists.newArrayList(createJobConsoleButton()))
         if (hasTestResults()) {
             buttons.getElements().add(createTestResultsButton())
         }
@@ -156,7 +156,7 @@ class MessagesFactory implements Serializable {
         if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
             mention = "@here "
         }
-        def subject = "Job: ${getJobName()}, build #${context.env.BUILD_NUMBER}"
+        def subject = "<${context.env.BUILD_URL}|Job: ${getJobName()}, build #${context.env.BUILD_NUMBER}>"
         return "${mention}*${subject}*"
     }
 
@@ -213,13 +213,6 @@ class MessagesFactory implements Serializable {
             lastCommitMessage = "Unknown"
         }
         return "*Last commit:* ```${lastCommitMessage}```"
-    }
-
-    private createJobLinkButton() {
-        def button = new LinkButton()
-        button.setText(new Text("Job", "plain_text"))
-        button.setUrl("${context.env.BUILD_URL}")
-        return button
     }
 
     private createJobConsoleButton() {
