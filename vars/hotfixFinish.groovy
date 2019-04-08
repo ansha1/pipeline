@@ -174,9 +174,8 @@ def call(body) {
             success {
                 script {
                     String user = common.getCurrentUser()
-                    def uploadSpec = """[{"title": "Hotfix ${APP_NAME} ${hotfixVersion} finished successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
-                    slack(slackChannel, uploadSpec)//TODO: Message
+                    SlackMessage slackMessage = new MessagesFactory(this).buildHotfixFinishMessage(hotfixVersion, user)
+                    slack.sendMessage(slackChannel, slackMessage)
                 }
             }
             always {

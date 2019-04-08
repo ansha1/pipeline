@@ -170,6 +170,27 @@ class MessagesFactory implements Serializable {
         return message
     }
 
+    def buildHotfixFinishMessage(String hotfixVersion, String author) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section title = new Section()
+        title.setText(new Text("*Hotfix ${context.APP_NAME} ${hotfixVersion} finished successfully!*"))
+        blocks.add(title)
+
+        Context authorBlock = new Context()
+        authorBlock.setElements(ImmutableList.of(new Text("Author: ${author}")))
+        blocks.add(authorBlock)
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
+        return message
+    }
+
     private createDeployFinishText(String appName, String version, String environment) {
         def text = "`${appName}:${version}` ${environment.toUpperCase()} "
         if (context.currentBuild.currentResult == "SUCCESS") {
