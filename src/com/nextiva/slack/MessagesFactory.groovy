@@ -153,8 +153,12 @@ class MessagesFactory implements Serializable {
         List<Block> blocks = new ArrayList<>()
 
         Section title = new Section()
-        title.setText(new Text("Hotfix ${context.APP_NAME} ${hotfixVersion} started successfully!", "text": "Author: ${author}"))
+        title.setText(new Text("*Hotfix ${context.APP_NAME} ${hotfixVersion} started successfully!*"))
         blocks.add(title)
+
+        Context authorBlock = new Context()
+        authorBlock.setElements(ImmutableList.of(new Text("Author: ${author}")))
+        blocks.add(authorBlock)
 
         Attachment attachment = new Attachment()
         attachment.setBlocks(blocks)
