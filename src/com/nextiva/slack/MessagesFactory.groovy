@@ -124,6 +124,31 @@ class MessagesFactory implements Serializable {
         return message
     }
 
+    def buildMergeFailedMessage(String sourceBranch, String destinationBranch, String pullRequestLink) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section title = new Section()
+        title.setText(new Text("*Failed to automatically merge ${sourceBranch} into ${destinationBranch}.*"))
+        blocks.add(title)
+
+        Section text = new Section()
+        text.setText(new Text("Resolve conflicts and merge pull request"))
+        blocks.add(text)
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("#73797a")
+
+        Actions buttons = new Actions()
+        buttons.setElements(Lists.newArrayList(createLinkButton("Link on pull request", pullRequestLink)))
+        blocks.add(buttons)
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
+        return message
+    }
+
     private createDeployFinishText(String appName, String version, String environment) {
         def text = "`${appName}:${version}` ${environment.toUpperCase()} "
         if (context.currentBuild.currentResult == "SUCCESS") {
@@ -216,23 +241,21 @@ class MessagesFactory implements Serializable {
     }
 
     private createJobConsoleButton() {
-        def button = new LinkButton()
-        button.setText(new Text("Console Output", "plain_text"))
-        button.setUrl("${context.env.BUILD_URL}console")
-        return button
+        return createLinkButton("Console Output", "${context.env.BUILD_URL}console")
     }
 
     private createTestResultsButton() {
-        def button = new LinkButton()
-        button.setText(new Text("Test results", "plain_text"))
-        button.setUrl("${context.env.BUILD_URL}testReport")
-        return button
+        return createLinkButton("Test results", "${context.env.BUILD_URL}testReport")
     }
 
     private createApproveButton() {
+        return createLinkButton("Approve", "${context.env.BUILD_URL}input")
+    }
+
+    private static createLinkButton(String text, String link) {
         def button = new LinkButton()
-        button.setText(new Text("Approve", "plain_text"))
-        button.setUrl("${context.env.BUILD_URL}input")
+        button.setText(new Text(text, "plain_text"))
+        button.setUrl(link)
         return button
     }
 

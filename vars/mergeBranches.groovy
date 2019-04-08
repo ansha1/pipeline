@@ -3,6 +3,8 @@
 This method allows to merge two branches and resolve conflicts automatically, if they affect version in package.json | pom.xml | build.properties only
 if it`s true this method accepts the destination branch changes
 */
+import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.MessagesFactory
 
 import static com.nextiva.SharedJobsStaticVars.*
 
@@ -117,16 +119,7 @@ def pullRequest(String sourceBranch, String destinationBranch, String channelToN
     repositoryUrl = repositoryUrl.trim()
     pullRequestLink = bitbucket.createPr(repositoryUrl, tmpBranch, destinationBranch, title, description)
 
-    def uploadSpec = """[{
-                        "title": "Failed to automatically merge ${sourceBranch} into ${destinationBranch}.",
-                        "text": "Resolve conflicts and merge pull request",
-                        "color": "#73797a",
-                        "attachment_type": "default",
-                        "actions": [{
-                                "text": "Link on pull request",
-                                "type": "button",
-                                "url": "${pullRequestLink}"
-                            }]
-                    }]"""
-    slack(channelToNotify, uploadSpec)
+    SlackMessage slackMessage = MessagesFactory.buildMergeFailedMessage(sourceBranch, destinationBranch, pullRequestLink)
+
+    slack.sendMessage(channelToNotify, slackMessage)
 }
