@@ -1,5 +1,8 @@
 #!groovy
 import com.nextiva.*
+import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.MessagesFactory
+
 import static com.nextiva.SharedJobsStaticVars.*
 
 def call(body) {
@@ -147,9 +150,8 @@ def call(body) {
             success {
                 script {
                     String user = common.getCurrentUser()
-                    def uploadSpec = """[{"title": "Release ${APP_NAME} ${releaseVersion} started successfully!", "text": "Author: ${user}",
-                                        "color": "${SLACK_NOTIFY_COLORS.get(currentBuild.currentResult)}"}]"""
-                    slack(CHANNEL_TO_NOTIFY, uploadSpec)
+                    SlackMessage slackMessage = new MessagesFactory(this).buildReleaseStartMessage(hotfixVersion, user)
+                    slack.sendMessage(slackChannel, slackMessage)
                 }
             }
             always {

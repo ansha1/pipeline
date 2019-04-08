@@ -191,6 +191,48 @@ class MessagesFactory implements Serializable {
         return message
     }
 
+    def buildReleaseStartMessage(String hotfixVersion, String author) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section title = new Section()
+        title.setText(new Text("*Release ${context.APP_NAME} ${hotfixVersion} started successfully!*"))
+        blocks.add(title)
+
+        Context authorBlock = new Context()
+        authorBlock.setElements(ImmutableList.of(new Text("Author: ${author}")))
+        blocks.add(authorBlock)
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
+        return message
+    }
+
+    def buildReleaseFinishMessage(String hotfixVersion, String author) {
+        List<Block> blocks = new ArrayList<>()
+
+        Section title = new Section()
+        title.setText(new Text("*Release ${context.APP_NAME} ${hotfixVersion} finished successfully!*"))
+        blocks.add(title)
+
+        Context authorBlock = new Context()
+        authorBlock.setElements(ImmutableList.of(new Text("Author: ${author}")))
+        blocks.add(authorBlock)
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
+        return message
+    }
+
     private createDeployFinishText(String appName, String version, String environment) {
         def text = "`${appName}:${version}` ${environment.toUpperCase()} "
         if (context.currentBuild.currentResult == "SUCCESS") {
