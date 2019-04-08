@@ -119,7 +119,7 @@ def pullRequest(String sourceBranch, String destinationBranch, String channelToN
     repositoryUrl = repositoryUrl.trim()
     pullRequestLink = bitbucket.createPr(repositoryUrl, tmpBranch, destinationBranch, title, description)
 
-    SlackMessage slackMessage = MessagesFactory.buildMergeFailedMessage(sourceBranch, destinationBranch, pullRequestLink)
+    SlackMessage slackMessage = new MessagesFactory(this).buildMergeFailedMessage(sourceBranch, destinationBranch, pullRequestLink)
 
     slack.sendMessage(channelToNotify, slackMessage)
 }
