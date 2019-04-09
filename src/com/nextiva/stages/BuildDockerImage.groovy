@@ -9,7 +9,7 @@ class BuildDockerImage extends BasicStage {
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-            utils.buildPublishDockerImage()
+//            utils.buildPublishDockerImage()
         }
     }
 }

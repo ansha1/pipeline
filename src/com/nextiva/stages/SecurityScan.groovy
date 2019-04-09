@@ -1,4 +1,4 @@
-package stages
+package com.nextiva.stages
 
 import com.nextiva.stages.BasicStage
 
@@ -9,7 +9,7 @@ class SecurityScan extends BasicStage {
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-           securityScan()
+//           securityScan()
             //veracode
             //tennable
             //sourceClear
