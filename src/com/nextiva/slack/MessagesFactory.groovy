@@ -265,7 +265,7 @@ class MessagesFactory implements Serializable {
         if (buildStatus ==~ "FAILURE" && context.env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
             mention = "@here "
         }
-        def subject = "<${context.env.BUILD_URL}|Job: ${getJobName()}, build #${context.env.BUILD_NUMBER}>"
+        def subject = "Job: <${context.env.BUILD_URL}|${getJobName()}, build #${context.env.BUILD_NUMBER}>"
         return "${mention}*${subject}*"
     }
 
