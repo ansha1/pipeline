@@ -14,10 +14,10 @@ def call(String notifyChannel, def uploadSpec) {
 @SuppressWarnings("GroovyAssignabilityCheck")
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
-    log.info(toJson(message))
+    log.debug(toJson(message))
     httpRequest contentType: 'APPLICATION_JSON',
-            quiet: false,
-            consoleLogResponseBody: true,
+            quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(),
             httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage",
             customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
