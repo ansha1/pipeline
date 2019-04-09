@@ -271,7 +271,7 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        return "*Branch:* <${createRepositoryUrl()}/browse?at=refs%2Fheads%2F${context.env.BRANCH_NAME}" +
+        return "*Branch:* <${createRepositoryUrl()}/browse?at=refs/heads/${context.env.BRANCH_NAME}" +
                 "|${context.env.BRANCH_NAME}>"
     }
 
