@@ -275,7 +275,7 @@ class MessagesFactory implements Serializable {
     }
 
     private createCommitLink() {
-        return "<${context.env.BUILD_URL}|Last commit"
+        return "<${context.env.BUILD_URL}|Last commit>"
     }
 
     private createTestResults() {
