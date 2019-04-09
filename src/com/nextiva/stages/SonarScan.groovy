@@ -1,4 +1,4 @@
-package stages
+package com.nextiva.stages
 
 import com.nextiva.stages.BasicStage
 
@@ -9,9 +9,10 @@ class SonarScan extends BasicStage {
 
     def execute() {
         script.stage(this.getClass().getSimpleName()) {
-            if (jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/) {
-                utils.runSonarScanner(jobConfig.BUILD_VERSION)
-            }
+            //sonar
+//            if (jobConfig.DEPLOY_ONLY ==~ false && env.BRANCH_NAME ==~ /^(develop|dev)$/) {
+//                utils.runSonarScanner(jobConfig.BUILD_VERSION)
+//            }
         }
     }
 }

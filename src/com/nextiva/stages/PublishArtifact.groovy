@@ -1,4 +1,4 @@
-package stages
+package com.nextiva.stages
 
 import com.nextiva.stages.BasicStage
 
@@ -9,7 +9,7 @@ class PublishArtifact extends BasicStage {
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-           publishArtifact
+//           publishArtifact
         }
     }
 }

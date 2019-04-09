@@ -7,6 +7,7 @@ class Checkout extends BasicStage {
         super(script, configuration)
     }
 
+    @Override
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
             script.checkout([
@@ -16,6 +17,11 @@ class Checkout extends BasicStage {
                     extensions                       : script.scm.extensions,
                     userRemoteConfigs                : script.scm.userRemoteConfigs
             ])
+
+             script.sh(
+                    script: "ls -la",
+                    returnStdout: true
+            ).trim()
         }
     }
 }
