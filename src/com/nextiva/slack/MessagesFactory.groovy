@@ -277,7 +277,8 @@ class MessagesFactory implements Serializable {
 
     private createCommitLink() {
         def commit = context.sh(returnStdout: true, script: 'git rev-parse HEAD')
-        return "*Last commit:* <${createRepositoryUrl()}/browse?at=refs%2Fheads%2F${context.env.BRANCH_NAME}|${commit.substring(0, 5)}>"
+        //"${createRepositoryUrl()}/commits/${commit}"
+        return "*Last commit:* <${createRepositoryUrl()}/commits/|${commit.substring(0, 5)}>"
     }
 
     private createRepositoryUrl() {
