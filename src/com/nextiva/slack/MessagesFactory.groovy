@@ -22,54 +22,47 @@ class MessagesFactory implements Serializable {
     }
 
     def buildStatusMessage(errorMessage = '') {
-        List<Block> infoBlocks = new ArrayList<>()
+        List<Block> blocks = new ArrayList<>()
 
         Section title = new Section()
         title.setText(new Text(createBuildInfoTitle()))
-        infoBlocks.add(title)
+        blocks.add(title)
+
+        Section buildInfo = new Section()
+        buildInfo.setText(new Text(createStatus() + "\t\t" + createBuildBranch() + "\t\t" + createCommitLink()))
+        blocks.add(buildInfo)
 
         if (!errorMessage.isEmpty()) {
             Section error = new Section()
             error.setText(new Text(createErrorMessage(errorMessage)))
-            infoBlocks.add(error)
+            blocks.add(error)
         }
 
-        Section infoFields = new Section()
-        infoFields.setFields(Lists.newArrayList(
-                new Text(createStatus()),
-                new Text(createBuildBranch()))
-        )
-        infoBlocks.add(infoFields)
-
-        Section lastCommitMessage = new Section()
-        lastCommitMessage.setText(new Text(createLastCommitMessage()))
-        infoBlocks.add(lastCommitMessage)
+        if (hasTestResults()) {
+            Section testResults = new Section()
+            testResults.setText(new Text(createTestResults()))
+            blocks.add(testResults)
+        }
 
         Context commitAuthor = new Context()
         commitAuthor.setElements(ImmutableList.of(new Text(createCommitAuthor())))
-        infoBlocks.add(commitAuthor)
-
-        List<Block> actionsBlocks = new ArrayList<>()
+        blocks.add(commitAuthor)
 
         Actions buttons = new Actions()
         buttons.setElements(Lists.newArrayList(createJobConsoleButton()))
-        actionsBlocks.add(buttons)
-
-        Attachment infoAttachment = new Attachment()
-        infoAttachment.setBlocks(infoBlocks)
-        infoAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
-
-        Attachment actionsAttachment = new Attachment()
-        actionsAttachment.setBlocks(actionsBlocks)
-        actionsAttachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
-
-        def message = new SlackMessage()
-        message.setAttachments(ImmutableList.of(infoAttachment, actionsAttachment))
+        blocks.add(buttons)
 
         if (hasTestResults()) {
             buttons.getElements().add(createTestResultsButton())
-            infoFields.getFields().add(new Text(createTestResults()))
         }
+
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
+        def message = new SlackMessage()
+        message.setAttachments(ImmutableList.of(attachment))
+
         return message
     }
 
@@ -273,12 +266,16 @@ class MessagesFactory implements Serializable {
         return URLDecoder.decode(context.env.JOB_NAME.toString(), 'UTF-8')
     }
 
-    private createBuildBranch() {
-        return "*Branch:* ${context.env.BRANCH_NAME}"
-    }
-
     private createStatus() {
         return "*Status:* `${context.currentBuild.currentResult}`"
+    }
+
+    private createBuildBranch() {
+        return "*Branch:* <${context.env.BUILD_URL}|${context.env.BRANCH_NAME}>"
+    }
+
+    private createCommitLink() {
+        return "<${context.env.BUILD_URL}|Last commit"
     }
 
     private createTestResults() {
