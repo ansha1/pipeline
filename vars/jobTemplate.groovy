@@ -62,7 +62,8 @@ def call(body) {
         } else if (env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
             appParams.add(string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
                                     'or leave empty for start full build'))
-        } else if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
+        } 
+        if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
             appParams.add(booleanParam(name: 'salesDemoDeployOnly', description: 'Only Deploy to sales demo', defaultValue: false))
         }
         appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
