@@ -271,11 +271,19 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        return "*Branch:* <${context.env.BUILD_URL}|${context.env.BRANCH_NAME}>"
+        return "*Branch:* <${createRepositoryUrl()}/browse?at=refs%2Fheads%2F${context.env.BRANCH_NAME}" +
+                "|${context.env.BRANCH_NAME}>"
     }
 
     private createCommitLink() {
         return "<${context.env.BUILD_URL}|Last commit>"
+    }
+
+    private createRepositoryUrl() {
+        String gitUrl = context.sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+        String repoName = gitUrl.split('/')[-1].replaceAll('.git', '')
+        String projectName = gitUrl.split('/')[-2]
+        return "${BITBUCKET_URL}/projects/${projectName}/repos/${repoName}"
     }
 
     private createTestResults() {
