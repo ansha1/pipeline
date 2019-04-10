@@ -15,7 +15,7 @@ def call(String notifyChannel, def uploadSpec) {
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.info(toJson(message))
-    httpRequest contentType: 'APPLICATION_JSON',
+    httpRequest contentType: 'TEXT_PLAIN',
             quiet: false,//!log.isDebug(),
             consoleLogResponseBody: true,//log.isDebug(),
             httpMode: 'POST',
