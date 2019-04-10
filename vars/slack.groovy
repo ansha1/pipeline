@@ -16,8 +16,8 @@ def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.info(toJson(message))
     httpRequest contentType: 'APPLICATION_JSON',
-            quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(),
+            quiet: false,//!log.isDebug(),
+            consoleLogResponseBody: true,//log.isDebug(),
             httpMode: 'POST',
             url: "https://nextivalab.slack.com/api/chat.postMessage",
             customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
