@@ -29,7 +29,7 @@ class MessagesFactory implements Serializable {
         blocks.add(title)
 
         Section buildInfo = new Section()
-        buildInfo.setText(new Text(createStatus() + "\t\t" + createBuildBranch() + "\t\t" + createCommitLink()))
+        buildInfo.setText(new Text(createStatus() + "\t" + createBuildBranch() + "\t" + createCommitLink()))
         blocks.add(buildInfo)
 
         if (!errorMessage.isEmpty()) {
