@@ -346,7 +346,6 @@ class MessagesFactory implements Serializable {
         def button = new LinkButton()
         button.setText(new Text(text, "plain_text"))
         button.setUrl(link)
-        button.setAction_id("Kappa123")
         return button
     }
 
