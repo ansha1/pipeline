@@ -14,7 +14,7 @@ def call(String notifyChannel, def uploadSpec) {
 @SuppressWarnings("GroovyAssignabilityCheck")
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
-    log.debug(toJson(message))
+    log.info(toJson(message))
     httpRequest contentType: 'APPLICATION_JSON',
             quiet: !log.isDebug(),
             consoleLogResponseBody: log.isDebug(),
