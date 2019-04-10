@@ -60,8 +60,7 @@ def call(body) {
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
             appParams.add(choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack'))
         } else if (env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
-            appParams.add(string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build'))
+            appParams.add(booleanParam(name: 'hotfix_deploy', description: 'Enable hotfix_deploy to deploy to QA/RC', defaultValue: false))
         } 
         if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
             appParams.add(booleanParam(name: 'salesDemoDeployOnly', description: 'Only Deploy to sales demo', defaultValue: false))
