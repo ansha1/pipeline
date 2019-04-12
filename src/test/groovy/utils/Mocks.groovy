@@ -55,7 +55,7 @@ trait Mocks implements BasePipelineAccessor {
         }
         basePipelineTest.helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
         basePipelineTest.helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
-
+        basePipelineTest.helper.registerAllowedMethod "getRepositoryNameFromUrl", [String], { return "k8s-platform" }
     }
 
     /**

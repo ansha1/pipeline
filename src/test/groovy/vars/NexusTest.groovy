@@ -18,11 +18,9 @@ class NexusTest extends BasePipelineTest implements Validator, Mocks {
 
         mockEnv()
         attachScript 'generateBuildProperties', 'log'
-
-        helper.registerAllowedMethod "sh", [Map], { c -> "sh command output" }
-        helper.registerAllowedMethod "writeFile", [Map], { c -> "Write file" }
-        helper.registerAllowedMethod "readProperties", [Map], { return [:] }
+        
         helper.registerAllowedMethod "file", [Map], { c -> "Secret file" }
+        mockGenerateBuildProperties()
     }
 
     @Override
