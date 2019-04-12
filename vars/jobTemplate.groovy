@@ -141,7 +141,7 @@ def call(body) {
                                         timeout(time: 15, unit: 'MINUTES') {
                                             bot.getJenkinsApprove("@${common.getCurrentUserSlackId()}", "Approve", "Decline",
                                                     "Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
-                                                    "Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                                    "Package *${jobConfig.APP_NAME}* with version *${jobConfig.BUILD_VERSION}* " +
                                                             "already exists in Nexus. \n" +
                                                             "Do you want to increase a patch version and continue the process?"
                                                     , "${BUILD_URL}input/", jobConfig.branchPermissions)
