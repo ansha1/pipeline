@@ -112,8 +112,24 @@ class MessagesFactory implements Serializable {
         List<Block> blocks = new ArrayList<>()
 
         Section mainText = new Section()
-        mainText.setText(new Text(createDeployFinishText(appName, version, environment)))
-        blocks.add(mainText)
+        def text = "`${appName}:${version}` ${environment.toUpperCase()} "
+        if (context.currentBuild.currentResult == "SUCCESS") {
+            text += "deployed"
+            mainText.setText(new Text(text))
+            blocks.add(mainText)
+
+            List wishList = context.libraryResource('wishes.txt').readLines()
+            def randomWish = wishList[new Random().nextInt(wishList.size())]
+
+            Context wish = new Context()
+            wish.setElements(ImmutableList.of(new Text(" :tada: ${randomWish}")))
+            blocks.add(wish)
+
+        } else {
+            text += "deploy failed! :disappointed:"
+            mainText.setText(new Text(text))
+            blocks.add(mainText)
+        }
 
         Attachment attachment = new Attachment()
         attachment.setBlocks(blocks)
@@ -232,18 +248,6 @@ class MessagesFactory implements Serializable {
         message.setAttachments(ImmutableList.of(attachment))
 
         return message
-    }
-
-    private createDeployFinishText(String appName, String version, String environment) {
-        def text = "`${appName}:${version}` ${environment.toUpperCase()} "
-        if (context.currentBuild.currentResult == "SUCCESS") {
-            List wishList = context.libraryResource('wishes.txt').readLines()
-            def randomWish = wishList[new Random().nextInt(wishList.size())]
-            text += "deployed\n :tada: ${randomWish}"
-        } else {
-            text += "deploy failed! :disappointed:"
-        }
-        return text
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
