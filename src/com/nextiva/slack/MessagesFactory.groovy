@@ -98,8 +98,12 @@ class MessagesFactory implements Serializable {
         mainText.setText(new Text(createDeployStartText(appName, version, environment, triggeredBy)))
         blocks.add(mainText)
 
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
         def message = new SlackMessage()
-        message.setBlocks(blocks)
+        message.setAttachments(ImmutableList.of(attachment))
 
         return message
     }
@@ -111,8 +115,12 @@ class MessagesFactory implements Serializable {
         mainText.setText(new Text(createDeployFinishText(appName, version, environment)))
         blocks.add(mainText)
 
+        Attachment attachment = new Attachment()
+        attachment.setBlocks(blocks)
+        attachment.setColor("${SLACK_NOTIFY_COLORS.get(context.currentBuild.currentResult)}")
+
         def message = new SlackMessage()
-        message.setBlocks(blocks)
+        message.setAttachments(ImmutableList.of(attachment))
 
         return message
     }
@@ -231,7 +239,7 @@ class MessagesFactory implements Serializable {
         if (context.currentBuild.currentResult == "SUCCESS") {
             List wishList = context.libraryResource('wishes.txt').readLines()
             def randomWish = wishList[new Random().nextInt(wishList.size())]
-            text += "deployed :tada: ${randomWish}"
+            text += "deployed\n :tada: ${randomWish}"
         } else {
             text += "deploy failed! :disappointed:"
         }

@@ -1,6 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
+@Deprecated
 def call(String extraPath='.', String deployEnvironment=null, String pythonName='python3', String venvDir=VENV_DIR) {
     dir(extraPath) {
         pythonUtils.createVirtualEnv(pythonName, venvDir)

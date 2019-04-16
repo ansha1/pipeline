@@ -7,6 +7,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 
 @Deprecated
 def call(String notifyChannel, def uploadSpec) {
+    log.deprecated('Use slack.sendMessage() method.')
     log.debug(uploadSpec)
     slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
 }

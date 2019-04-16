@@ -1,3 +1,4 @@
+@Deprecated
 def call(String notifyChannel) {
     log.deprecated('Use slack.sendBuildStatus() method.')
     currentBuild.rawBuild.result = Result.UNSTABLE
