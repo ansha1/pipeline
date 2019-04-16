@@ -5,7 +5,7 @@ def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_
 
     // get exact repo name from the full URL
     // ssh://git@git.nextiva.xyz:7999/rel/release-management.git -> release-management
-    def formattedRepo = repo.split('/')[-1].split('\\.')[0]
+    def formattedRepo = common.getRepositoryNameFromUrl(repo)
 
     // replace trailing slash in branch name to underscore
     // feature/testbranch -> feature_testbranch
