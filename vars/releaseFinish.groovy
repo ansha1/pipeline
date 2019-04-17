@@ -155,8 +155,8 @@ def call(body) {
             success {
                 script {
                     String user = common.getCurrentUser()
-                    SlackMessage slackMessage = new MessagesFactory(this).buildReleaseFinishMessage(hotfixVersion, user)
-                    slack.sendMessage(slackChannel, slackMessage)
+                    SlackMessage slackMessage = new MessagesFactory(this).buildReleaseFinishMessage(releaseVersion, user)
+                    slack.sendMessage(CHANNEL_TO_NOTIFY, slackMessage)
                 }
             }
             always {

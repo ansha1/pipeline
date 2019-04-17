@@ -8,8 +8,6 @@ import utils.Mocks
 import utils.Validator
 
 class SlackTest extends BasePipelineTest implements Mocks, Validator {
-    def currentBuild
-    def env
 
     @Override
     @Before
@@ -17,14 +15,7 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         scriptRoots += '/'
         super.setUp()
 
-        currentBuild = [rawBuild: mockObjects.job]
-        env = [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3'
-        ]
+        binding.setVariable('currentBuild', [rawBuild: mockObjects.job])
 
         mockLog()
         attachScript 'log'
@@ -41,14 +32,8 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
     @Test
     void send_message() {
         def script = loadScript "vars/slack.groovy"
-        script.sendMessage 'some_channel', new MessagesFactory(this).buildStatusMessage()
+        script.sendBuildStatus 'some_channel'
         printCallStack()
-    }
-
-    @Test
-    void factory_test() {
-        def script = loadScript "vars/slack.groovy"
-        println script.toJson(new MessagesFactory(this).buildStatusMessage())
     }
 
 }
