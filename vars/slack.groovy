@@ -2,14 +2,23 @@
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.MessagesFactory
 import groovy.json.JsonOutput
-
 import static com.nextiva.SharedJobsStaticVars.*
+
 
 @Deprecated
 def call(String notifyChannel, def uploadSpec) {
     log.deprecated('Use slack.sendMessage() method.')
-    log.debug(uploadSpec)
-    slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+    privateMessage(notifyChannel, uploadSpec)
+}
+
+@Deprecated
+def privateMessage(String slackUserId, String uploadSpec) {
+    log.deprecated('Use slack.sendMessage() method.')
+    log.debug("uploadSpec: " + uploadSpec)
+    def attachments = java.net.URLEncoder.encode(uploadSpec, "UTF-8")
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
+            url: "${SLACK_URL}/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
@@ -20,7 +29,7 @@ def sendMessage(String notifyChannel, SlackMessage message) {
             quiet: !log.isDebug(),
             consoleLogResponseBody: log.isDebug(),
             httpMode: 'POST',
-            url: "https://nextivalab.slack.com/api/chat.postMessage",
+            url: "${SLACK_URL}/api/chat.postMessage",
             customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
             requestBody: toJson(message)
 }
@@ -78,7 +87,7 @@ def deployFinish(String appName, String version, String environment, String noti
 }
 
 def getSlackUserIdByEmail(String userMail) {
-    def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
+    def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "${SLACK_URL}/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
 
     if (responseJson.ok) {
