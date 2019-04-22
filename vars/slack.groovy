@@ -9,7 +9,16 @@ import static com.nextiva.SharedJobsStaticVars.*
 def call(String notifyChannel, def uploadSpec) {
     log.deprecated('Use slack.sendMessage() method.')
     log.debug(uploadSpec)
-    slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+    privateMessage(notifyChannel, uploadSpec)
+}
+
+@Deprecated
+def privateMessage(String slackUserId, String uploadSpec) {
+    log.debug("uploadSpec: " + uploadSpec)
+    def attachments = java.net.URLEncoder.encode(uploadSpec, "UTF-8")
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
+            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
