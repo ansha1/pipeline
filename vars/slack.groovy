@@ -2,18 +2,18 @@
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.MessagesFactory
 import groovy.json.JsonOutput
-
 import static com.nextiva.SharedJobsStaticVars.*
+
 
 @Deprecated
 def call(String notifyChannel, def uploadSpec) {
     log.deprecated('Use slack.sendMessage() method.')
-    log.debug(uploadSpec)
     privateMessage(notifyChannel, uploadSpec)
 }
 
 @Deprecated
 def privateMessage(String slackUserId, String uploadSpec) {
+    log.deprecated('Use slack.sendMessage() method.')
     log.debug("uploadSpec: " + uploadSpec)
     def attachments = java.net.URLEncoder.encode(uploadSpec, "UTF-8")
     httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
