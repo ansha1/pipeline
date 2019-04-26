@@ -250,7 +250,7 @@ def call(body) {
                 when {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ || jobConfig.isHotfixDeploy }
                 }
-                parallel {
+                stages {
                     stage('Kubernetes deployment') {
                         when {
                             expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.salesDemoDeployOnly == false }
