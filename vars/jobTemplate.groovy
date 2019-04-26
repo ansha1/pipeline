@@ -265,8 +265,9 @@ def call(body) {
                                     kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
                                             jobConfig.kubernetesDeploymentsList)
 
-                            newrelic.postDeployment(jobConfig)
-                            }}
+                                    newrelic.postDeployment(jobConfig)
+                                }
+                            }
                         }
                         stage('Sales Demo Kubernetes deployment') {
                             when {
@@ -283,8 +284,8 @@ def call(body) {
                                         kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
                                                 jobConfig.kubernetesDeploymentsList)
 
-                                    newrelic.postDeployment(jobConfig)
-                                }catch (e) {
+                                        newrelic.postDeployment(jobConfig)
+                                    } catch (e) {
                                         log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
                                         currentBuild.result = 'UNSTABLE'
                                     }
@@ -307,9 +308,7 @@ def call(body) {
                                         def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                         runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
-
-
-                                            newrelic.postDeployment(jobConfig)
+                                    newrelic.postDeployment(jobConfig)
                                 }
                             }
                         }
@@ -328,8 +327,8 @@ def call(body) {
                                             runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                         }
 
-                                    newrelic.postDeployment(jobConfig)
-                                }catch (e) {
+                                        newrelic.postDeployment(jobConfig)
+                                    } catch (e) {
                                         log.warning("Ansible deployment to Sales Demo failed.\n${e}")
                                         currentBuild.result = Result.UNSTABLE
                                     }
