@@ -141,8 +141,14 @@ jobTemplate {
     /* artifactNumToKeepStr - defines a number of artifacts to keep. If the parameter is omitted the default value 7 will be used */
     // artifactNumToKeepStr = '7'
 
-    /* NEWRELIC_APP_ID_MAP - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id */
-    // NEWRELIC_APP_ID_MAP = ['production': '87818090']
+    /*
+    // NEW_RELIC_APP_ID - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id
+    // NEW_RELIC_APP_ID = ['production': '87818090']
+    //
+    // NEW_RELIC_APP_NAME - defines application name used in New Relic. If provided, the deployment information
+    //  will attempt to be posted to New Relic. If an ID is specified with NEW_RELIC_APP_ID, that value will be preferred
+    // NEW_RELIC_APP_NAME = 'Analytics Service'
+    */
 
     /* JDK_VERSION - defines the JDK Version that the Jenkins job will use - See https://jenkins.nextiva.xyz/jenkins/configureTools/ under JDK for options */
     // JDK_VERSION = 'Java 8 Install automatically'
