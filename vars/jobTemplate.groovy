@@ -63,7 +63,7 @@ def call(body) {
             appParams.add(booleanParam(name: 'hotfix_deploy', description: 'Enable hotfix_deploy to deploy to QA/RC', defaultValue: false))
         } 
         if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
-            appParams.add(booleanParam(name: 'salesDemoDeployOnly', description: 'Only Deploy to sales demo', defaultValue: false))
+            appParams.add(choice(choices: 'prod+sales-demo\nprod\nsales-demo', description: 'Where deploy?', name: 'deployDst'))
         }
         appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
         properties([
@@ -104,9 +104,6 @@ def call(body) {
                             jobConfig.INVENTORY_PATH += "-${params.stack}"
                         }
 
-                        if (params.salesDemoDeployOnly) {
-                            jobConfig.salesDemoDeployOnly = true
-                        }
                         env.APP_NAME = jobConfig.APP_NAME
                         env.INVENTORY_PATH = jobConfig.INVENTORY_PATH
                         env.PLAYBOOK_PATH = jobConfig.PLAYBOOK_PATH
@@ -253,7 +250,8 @@ def call(body) {
                 stages {
                     stage('Kubernetes deployment') {
                         when {
-                            expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.salesDemoDeployOnly == false }
+                            expression {
+                                (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.DEPLOY_ON_K8S
                         }
                         steps {
                             script {
@@ -269,7 +267,7 @@ def call(body) {
                     }
                     stage('Sales Demo Kubernetes deployment') {
                        when {
-                            expression { jobConfig.DEPLOY_ON_K8S == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                            expression { env.BRANCH_NAME == 'master' && jobConfig.DEPLOY_ON_K8S && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/}
                         }
                         steps {
                             script {
@@ -289,7 +287,9 @@ def call(body) {
                     }
                     stage('Ansible deployment') {
                         when {
-                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true && jobConfig.salesDemoDeployOnly == false }
+                            expression {
+                                (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.ANSIBLE_DEPLOYMENT
+                            }
                         }
                         steps {
                             script {
@@ -316,7 +316,7 @@ def call(body) {
                     }
                     stage('Sales Demo Ansible deployment') {
                        when {
-                            expression { jobConfig.ANSIBLE_DEPLOYMENT == true && jobConfig.deployToSalesDemo == true && env.BRANCH_NAME == 'master' }
+                            expression { env.BRANCH_NAME == 'master' && jobConfig.ANSIBLE_DEPLOYMENT && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/ }
                         }
                         steps {
                             script {
@@ -339,7 +339,7 @@ def call(body) {
             }
             stage('Healthcheck') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && !(params.deployDst == "sales-demo") }
                 }
                 steps {
                     script {
@@ -352,7 +352,7 @@ def call(body) {
             stage("Post deploy stage") {
                 when {
                     expression {
-                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false
+                        jobConfig.projectFlow.get('postDeployCommands') && env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && !(params.deployDst == "sales-demo")
                         }
                 }
                 steps {
@@ -367,7 +367,7 @@ def call(body) {
             }
             stage('QA integration tests') {
                 when {
-                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && jobConfig.salesDemoDeployOnly == false }
+                    expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ && !(params.deployDst == "sales-demo") }
                 }
                 steps {
                     //after successfully deploy on environment start QA CORE TEAM Integration and smoke tests with this application
