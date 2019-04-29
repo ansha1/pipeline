@@ -83,7 +83,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
                 'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common',
-                'aws', 'generateBuildProperties', 'securityScan'
+                'aws', 'generateBuildProperties', 'securityScan', 'newrelic'
 
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
