@@ -250,10 +250,10 @@ def call(body) {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ || jobConfig.isHotfixDeploy }
                 }
                 stages {
-                    stage('Kubernetes deployment') {
-                        when {
-                            expression {
-                                (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.DEPLOY_ON_K8S
+                        stage('Kubernetes deployment') {
+                            when {
+                                expression {
+                                    (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.DEPLOY_ON_K8S }
                             }
                             steps {
                                 script {
@@ -336,7 +336,6 @@ def call(body) {
                             }
 
                         }
-                    }
                 }
             }
             stage('Healthcheck') {
