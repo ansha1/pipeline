@@ -30,7 +30,7 @@ class SharedJobsStaticVars {
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final DEFAULT_NODE_LABEL = 'debian'
-    static final JS_NODE_LABEL = 'js'
+    static final JS_NODE_LABEL = 'slave_node8'
     static final ANSIBLE_NODE_LABEL = 'ansible'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
     static final KUBERNETES_REPO_BRANCH = 'develop'
@@ -47,11 +47,11 @@ class SharedJobsStaticVars {
             OR the primary approver in Arizona: Keerthi Suraparaju <keerthi.suraparaju@nextiva.com>, second-level approver Ebrahim Feyzi <ebrahim.feyzi@nextiva.com>  with unlocking request for RC environment.\n
             If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
-    static final NEWRELIC_API_KEY_MAP = ['production': '83904bdc782deef7783afde4a50348538b758577a208889']
     //Slack app bot token for getting slack userID over email
     static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     static final SLACK_STATUS_REPORT_CHANNEL_RC = 'rc-platform-support'
+    static final SLACK_URL = 'https://nextivalab.slack.com'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
     static final BITBUCKET_URL = 'https://git.nextiva.xyz'
@@ -72,4 +72,5 @@ class SharedJobsStaticVars {
     static final BITBUCKET_SECTION_MARKER = '###### '
     static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
     static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
+    static final VAULT_URL = "https://vault.tooling.nextiva.io"
 }

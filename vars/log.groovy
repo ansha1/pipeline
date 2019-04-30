@@ -11,17 +11,26 @@ def call(String message) {
     print(message.toString())
 }
 
+String getUpstreamMethodName() {
+    try {
+        return StackTraceUtils.sanitize(new Throwable()).stackTrace[2].methodName
+    } catch (e) {
+        warning("Can't get upstream method name for deprecation message! ${e}")
+        return 'unknown'
+    }
+}
+
 Boolean isDebug() {
     return params.DEBUG || new Boolean("${env.DEBUG}")
 }
 
 def info(message) {
-    def list = message.toString().readLines()
+    List list = message.toString().readLines()
     list.each{blueBold("[INFO] " + it)}
 }
 
 def warning(message) {
-    def list = message.toString().readLines()
+    List list = message.toString().readLines()
     list.each{yellowBold("[WARNING] " + it)}
 }
 
@@ -30,28 +39,24 @@ def warn(message){
 }
 
 def error(message) {
-    def list = message.toString().readLines()
+    List list = message.toString().readLines()
     list.each{redBold("[ERROR] " + it)}
 }
 
 def debug(message) {
     if(isDebug()){
-        def list = message.toString().readLines()
-        list.each{magnetaBold("[DEBUG] " + it)}
+        String upstreamMethodName = getUpstreamMethodName()
+        List list = message.toString().readLines()
+        list.each{magnetaBold("[DEBUG:${upstreamMethodName}] " + it)}
     }
 }
 
 def deprecated(message) {
-    def list = message.toString().readLines()
-    list.each{magnetaBold("[DEPRECATED] " + it)}
+    String upstreamMethodName = getUpstreamMethodName()
+    List list = message.toString().readLines()
 
-    String upstreamMethodName = ''
-    try {
-        upstreamMethodName = StackTraceUtils.sanitize(new Throwable()).stackTrace[1].methodName
-    } catch (e) {
-        warning("Can't get upstream method name for deprecation message! ${e}")
-        upstreamMethodName = 'unknown'
-    }
+    list.each{magnetaBold("[DEPRECATED:${upstreamMethodName}] " + it)}
+
     prometheus.sendGauge('deprecated', PROMETHEUS_DEFAULT_METRIC, [upstream_method: upstreamMethodName, message: message])
 }
 

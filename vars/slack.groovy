@@ -1,27 +1,58 @@
 #!groovy
-import java.net.URLEncoder
+import com.nextiva.slack.dto.SlackMessage
+import com.nextiva.slack.MessagesFactory
+import groovy.json.JsonOutput
 import static com.nextiva.SharedJobsStaticVars.*
-import java.net.URLDecoder
-import java.util.Random
 
 
+@Deprecated
 def call(String notifyChannel, def uploadSpec) {
-    log.debug(uploadSpec)
-    slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: "slackToken")
+    log.deprecated('Use slack.sendMessage() method.')
+    privateMessage(notifyChannel, uploadSpec)
 }
 
-def sendBuildStatus(String notifyChannel) {
-    def uploadSpec = buildStatusMessageBody()
-    call(notifyChannel, uploadSpec)
+@Deprecated
+def privateMessage(String slackUserId, String uploadSpec) {
+    log.deprecated('Use slack.sendMessage() method.')
+    log.debug("uploadSpec: " + uploadSpec)
+    def attachments = java.net.URLEncoder.encode(uploadSpec, "UTF-8")
+    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
+            url: "${SLACK_URL}/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
+}
+
+@SuppressWarnings("GroovyAssignabilityCheck")
+def sendMessage(String notifyChannel, SlackMessage message) {
+    message.setChannel(notifyChannel)
+    log.debug(toJson(message))
+    httpRequest contentType: 'APPLICATION_JSON_UTF8',
+            quiet: !log.isDebug(),
+            consoleLogResponseBody: log.isDebug(),
+            httpMode: 'POST',
+            url: "${SLACK_URL}/api/chat.postMessage",
+            customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
+            requestBody: toJson(message)
+}
+
+@SuppressWarnings("GroovyAssignabilityCheck")
+private static toJson(SlackMessage message) {
+    def json = JsonOutput.toJson(message)
+    //JsonOutput can be configured for this in groovy 2.5
+    return json.replaceAll("(,)?\"(\\w*?)\":null", '').replaceAll("\\{,", '{')
+}
+
+def sendBuildStatus(String notifyChannel, String errorMessage = '') {
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage(errorMessage)
+    sendMessage(notifyChannel, message)
 }
 
 def commitersOnly() {
     try {
-        def uploadSpec = buildStatusMessageBody()
+        SlackMessage message = new MessagesFactory(this).buildStatusMessage()
         def commitAuthors = getCommitAuthors()
         commitAuthors.each {
             def slackUserId = getSlackUserIdByEmail(it)
-            privateMessage(slackUserId, uploadSpec)
+            sendMessage(slackUserId, message)
         }
     } catch (e) {
         log.warn("Failed send Slack notification to the commit authors: " + e.toString())
@@ -29,55 +60,34 @@ def commitersOnly() {
 }
 
 def prOwnerPrivateMessage(String url) {
-    def prOwner = bitbucket.prOwnerEmail(url)
-    def uploadSpec = buildStatusMessageBody()
+    String prOwner = bitbucket.prOwnerEmail(url)
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
-    privateMessage(getUserFromSlackObject, uploadSpec)
+    sendMessage(getUserFromSlackObject, message)
 }
 
-def privateMessage(String slackUserId, String message) {
-    log.debug("Message: " + message)
-    def attachments = java.net.URLEncoder.encode(message, "UTF-8")
-    httpRequest contentType: 'APPLICATION_JSON', quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
-            url: "https://nextivalab.slack.com/api/chat.postMessage?token=${SLACK_BOT_TOKEN}&channel=${slackUserId}&as_user=true&attachments=${attachments}"
-}
-
-def buildStatusMessageBody() {
-    def mention = ''
-    def buildStatus = currentBuild.currentResult
-    def commitInfoRaw = sh returnStdout: true, script: "git show --pretty=format:'The author was %an, %ar. Commit message: %s' | sed -n 1p"
-    def commitInfo = commitInfoRaw.trim()
-    if(buildStatus ==~ "FAILURE" && env.BRANCH_NAME ==~ /^(release\/.+|dev|master)$/) {
-        mention = "@here "
+def sendBuildStatusPrivateMessage(String slackUserId) {
+    SlackMessage message = new MessagesFactory(this).buildStatusMessage()
+    try {
+        sendMessage(slackUserId, message)
+    } catch (e) {
+        log.warn("Failed send Slack notification to the authors: " + e.toString())
     }
-    String jobName = URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
-    def subject = "Build status: ${buildStatus} Job: ${jobName} #${env.BUILD_ID}"
-    def uploadSpec = """[
-        {
-            "title": "${mention}${subject}",
-            "text": "${commitInfo}",
-            "color": "${SLACK_NOTIFY_COLORS.get(buildStatus)}",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "text": "Console output",
-                    "type": "button",
-                    "url": "${env.BUILD_URL}console"
-                },
-                {
-                    "text": "Test results",
-                    "type": "button",
-                    "url": "${env.BUILD_URL}testReport"
-                }
-            ]
-        }
-    ]"""
-    return uploadSpec
+}
+
+def deployStart(String appName, String version, String environment, String notifyChannel) {
+    def triggeredBy = getSlackUserIdByEmail(common.getCurrentUserEmail())
+    SlackMessage message = new MessagesFactory(this).buildDeployStartMessage(appName, version, environment, triggeredBy)
+    sendMessage(notifyChannel, message)
+}
+
+def deployFinish(String appName, String version, String environment, String notifyChannel) {
+    SlackMessage message = new MessagesFactory(this).buildDeployFinishMessage(appName, version, environment)
+    sendMessage(notifyChannel, message)
 }
 
 def getSlackUserIdByEmail(String userMail) {
-    def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "https://nextivalab.slack.com/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
+    def response = httpRequest quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(), url: "${SLACK_URL}/api/users.lookupByEmail?token=${SLACK_BOT_TOKEN}&email=${userMail}"
     def responseJson = readJSON text: response.content
 
     if (responseJson.ok) {
@@ -87,36 +97,4 @@ def getSlackUserIdByEmail(String userMail) {
         def defaultId = 'C9FRGVBPB'
         return defaultId
     }
-}
-
-def sendBuildStatusPrivateMessage(String slackUserId) {
-    def uploadSpec = buildStatusMessageBody()
-    try {
-        privateMessage(slackUserId, uploadSpec)
-    } catch (e) {
-        log.warn("Failed send Slack notification to the authors: " + e.toString())
-    }
-}
-
-def deployStart(String appName, String version, String environment, String notifyChannel) {
-    def triggeredBy = getSlackUserIdByEmail(common.getCurrentUserEmail())
-    def message = "`${appName}:${version}` ${environment.toUpperCase()} deploy started by <@${triggeredBy}>"
-
-    slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
-}
-
-def deployFinish(String appName, String version, String environment, String notifyChannel) {
-
-    def wishList = libraryResource('wishes.txt').readLines()
-    def randomWish = wishList[pickRandomNumber(wishList.size())]
-    def buildStatus = currentBuild.currentResult == "SUCCESS" ? "deployed :tada: ${randomWish}" : "deploy failed! :disappointed:"
-
-    def message = "`${appName}:${version}` ${environment.toUpperCase()} ${buildStatus}"
-
-    slackSend(channel: notifyChannel, color: SLACK_NOTIFY_COLORS.get(currentBuild.currentResult), message: message, tokenCredentialId: "slackToken")
-}
-
-Integer pickRandomNumber(Integer max) {
-    Random rand = new Random()
-    return rand.nextInt(max)
 }

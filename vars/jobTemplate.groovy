@@ -34,6 +34,8 @@ def call(body) {
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
         artifactNumToKeepStr = pipelineParams.artifactNumToKeepStr
         NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
+        NEW_RELIC_APP_ID = pipelineParams.NEW_RELIC_APP_ID
+        NEW_RELIC_APP_NAME = pipelineParams.NEW_RELIC_APP_NAME
         jdkVersion = pipelineParams.JDK_VERSION
         mavenVersion = pipelineParams.MAVEN_VERSION
         BLUE_GREEN_DEPLOY = pipelineParams.BLUE_GREEN_DEPLOY
@@ -60,8 +62,7 @@ def call(body) {
         if (jobConfig.BLUE_GREEN_DEPLOY && env.BRANCH_NAME == 'master') {
             appParams.add(choice(choices: 'a\nb', description: 'Select A or B when deploying to Production', name: 'stack'))
         } else if (env.BRANCH_NAME ==~ /^hotfix\/.+$/) {
-            appParams.add(string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                                    'or leave empty for start full build'))
+            appParams.add(booleanParam(name: 'hotfix_deploy', description: 'Enable hotfix_deploy to deploy to QA/RC', defaultValue: false))
         } 
         if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
             appParams.add(booleanParam(name: 'salesDemoDeployOnly', description: 'Only Deploy to sales demo', defaultValue: false))
@@ -141,7 +142,7 @@ def call(body) {
                                         timeout(time: 15, unit: 'MINUTES') {
                                             bot.getJenkinsApprove("@${common.getCurrentUserSlackId()}", "Approve", "Decline",
                                                     "Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
-                                                    "Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
+                                                    "Package *${jobConfig.APP_NAME}* with version *${jobConfig.BUILD_VERSION}* " +
                                                             "already exists in Nexus. \n" +
                                                             "Do you want to increase a patch version and continue the process?"
                                                     , "${BUILD_URL}input/", jobConfig.branchPermissions)
@@ -265,6 +266,8 @@ def call(body) {
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
                                         jobConfig.kubernetesDeploymentsList)
+
+                                newrelic.postDeployment(jobConfig)
                             }
                         }
                     }
@@ -280,6 +283,8 @@ def call(body) {
                                     log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                     kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
                                         jobConfig.kubernetesDeploymentsList)
+
+                                    newrelic.postDeployment(jobConfig)
                                 }
                                 catch (e) {
                                     log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
@@ -303,15 +308,7 @@ def call(body) {
                                     runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
 
-                                try {
-                                    if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(jobConfig.ANSIBLE_ENV) && NEWRELIC_API_KEY_MAP.containsKey(jobConfig.ANSIBLE_ENV)) {
-                                        newrelic.postBuildVersion(jobConfig.NEWRELIC_APP_ID_MAP[jobConfig.ANSIBLE_ENV], NEWRELIC_API_KEY_MAP[jobConfig.ANSIBLE_ENV],
-                                                jobConfig.BUILD_VERSION)
-                                    }
-                                }
-                                catch (e) {
-                                    log.warning("An error occurred: Could not log deployment to New Relic. Check integration configuration.\n${e}")
-                                }
+                                newrelic.postDeployment(jobConfig)
                             }
                         }
                     }
@@ -327,6 +324,8 @@ def call(body) {
                                         def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                         runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
+
+                                    newrelic.postDeployment(jobConfig)
                                 }
                                 catch (e) {
                                     log.warning("Ansible deployment to Sales Demo failed.\n${e}")

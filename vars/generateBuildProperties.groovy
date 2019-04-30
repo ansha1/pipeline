@@ -11,7 +11,7 @@ def call(String deployEnvironment, String version, String jobName) {
     buildProperties.job_name = URLDecoder.decode(jobName, 'UTF-8')
     buildProperties.commit = common.getCurrentCommit()
     buildProperties.build_date_time = sh returnStdout: true, script: 'date'
-    buildProperties.repository_url = common.getRepositoryUrl()
+    buildProperties.repository_name = common.getRepositoryNameFromUrl(common.getRepositoryUrl())
 
     String propsToWrite = ''
     buildProperties.each {
