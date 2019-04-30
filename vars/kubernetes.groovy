@@ -117,7 +117,7 @@ def vaultInstall() {
         log.info("Going to install vault client 1.1.0 version")
         sh """
             wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
-            unzip vault.zip
+            unzip -o vault.zip
             ./vault -v
            """
     }
