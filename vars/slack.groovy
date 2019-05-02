@@ -5,10 +5,8 @@ import groovy.json.JsonOutput
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-@Deprecated
 def call(String notifyChannel, def uploadSpec) {
-    log.deprecated('Use slack.sendMessage() method.')
-    privateMessage(notifyChannel, uploadSpec)
+    slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: 'slackToken')
 }
 
 @Deprecated
@@ -32,6 +30,11 @@ def sendMessage(String notifyChannel, SlackMessage message) {
             url: "${SLACK_URL}/api/chat.postMessage",
             customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
             requestBody: toJson(message)
+}
+
+def sendPrivatMessage(String notifyChannel, SlackMessage message) {
+    message.as_user = true
+    sendMessage(notifyChannel, message)
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
@@ -63,13 +66,13 @@ def prOwnerPrivateMessage(String url) {
     String prOwner = bitbucket.prOwnerEmail(url)
     SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
-    sendMessage(getUserFromSlackObject, message)
+    sendPrivatMessage(getUserFromSlackObject, message)
 }
 
 def sendBuildStatusPrivateMessage(String slackUserId) {
     SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     try {
-        sendMessage(slackUserId, message)
+        sendPrivatMessage(slackUserId, message)
     } catch (e) {
         log.warn("Failed send Slack notification to the authors: " + e.toString())
     }
