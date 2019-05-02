@@ -283,10 +283,12 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        if(env.CHANGE_URL){
-            return "*PR* <${env.CHANGE_URL}|${context.env.BRANCH_NAME}>"
+        if(context.env.CHANGE_URL){
+            // if PR then add link to the Bitbucket PR overview
+            return "*PR* <${context.env.CHANGE_URL}|${context.env.BRANCH_NAME}>"
         }
         else {
+            // Add link to the branch
             return "*Branch:* <${createRepositoryUrl()}/browse?at=refs/heads/${context.env.BRANCH_NAME}" +
                     "|${context.env.BRANCH_NAME}>"
         }
