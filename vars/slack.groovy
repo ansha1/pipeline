@@ -31,6 +31,7 @@ def sendMessage(String notifyChannel, SlackMessage message) {
                                url: "${SLACK_URL}/api/chat.postMessage",
                                customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
                                requestBody: toJson(message)
+                               validResponseCodes: '100:599'
 
     def jsonResponse = new JsonSlurper().parseText(response.content)
     if(jsonResponse.error) {
@@ -39,7 +40,7 @@ def sendMessage(String notifyChannel, SlackMessage message) {
         if(jsonResponse.error == 'channel_not_found' || jsonResponse.error == 'not_in_channel') {
             log.magnetaBold("""
             Jenkins can't send the notification into the Slack channel: ${notifyChannel}
-            Slack channel does not exist or the Jenkins user is not a member of the channel.
+            Slack channel does not exist or the Jenkins user is not a member of private channel.
             """)
         }
     }
