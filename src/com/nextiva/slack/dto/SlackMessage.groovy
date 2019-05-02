@@ -6,7 +6,7 @@ import com.nextiva.slack.dto.blocks.Block
 class SlackMessage implements Serializable {
     String channel
     String text = ''
-    Boolean as_user = false
+    Boolean as_user = true
     @Deprecated
     List<Attachment> attachments
     List<Block> blocks

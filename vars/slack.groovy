@@ -31,8 +31,8 @@ def sendMessage(String notifyChannel, SlackMessage message) {
                                url: "${SLACK_URL}/api/chat.postMessage",
                                customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
                                requestBody: toJson(message)
-    def jsonResponse = new JsonSlurper().parseText(response.content)
 
+    def jsonResponse = new JsonSlurper().parseText(response.content)
     if(jsonResponse.error) {
         log.warning("Slack send error message: ${jsonResponse.error}")
 
