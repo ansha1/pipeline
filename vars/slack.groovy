@@ -2,6 +2,7 @@
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.MessagesFactory
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import static com.nextiva.SharedJobsStaticVars.*
 
 
@@ -23,13 +24,25 @@ def privateMessage(String slackUserId, String uploadSpec) {
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.debug(toJson(message))
-    httpRequest contentType: 'APPLICATION_JSON_UTF8',
-            quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(),
-            httpMode: 'POST',
-            url: "${SLACK_URL}/api/chat.postMessage",
-            customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
-            requestBody: toJson(message)
+    def response = httpRequest contentType: 'APPLICATION_JSON_UTF8',
+                               quiet: !log.isDebug(),
+                               consoleLogResponseBody: log.isDebug(),
+                               httpMode: 'POST',
+                               url: "${SLACK_URL}/api/chat.postMessage",
+                               customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
+                               requestBody: toJson(message)
+    def jsonResponse = new JsonSlurper().parseText(response.content)
+
+    if(jsonResponse.error) {
+        log.warning("Slack send error message: ${jsonResponse.error}")
+
+        if(jsonResponse.error == 'channel_not_found' || jsonResponse.error == 'not_in_channel') {
+            log.magnetaBold("""
+            Jenkins can't send the notification into the Slack channel: ${notifyChannel}
+            Slack channel does not exist or the Jenkins user is not a member of the channel.
+            """)
+        }
+    }
 }
 
 def sendPrivatMessage(String notifyChannel, SlackMessage message) {
@@ -40,7 +53,7 @@ def sendPrivatMessage(String notifyChannel, SlackMessage message) {
 @SuppressWarnings("GroovyAssignabilityCheck")
 private static toJson(SlackMessage message) {
     def json = JsonOutput.toJson(message)
-    //JsonOutput can be configured for this in groovy 2.5
+    // JsonOutput can be configured for this in groovy 2.5
     return json.replaceAll("(,)?\"(\\w*?)\":null", '').replaceAll("\\{,", '{')
 }
 
