@@ -285,7 +285,7 @@ class MessagesFactory implements Serializable {
     private createBuildBranch() {
         if(context.env.CHANGE_URL){
             // if PR then add link to the Bitbucket PR overview
-            return "*PR* <${context.env.CHANGE_URL}|${context.env.CHANGE_ID}>"
+            return "*PR:* <${context.env.CHANGE_URL}|${context.env.CHANGE_ID}>"
         }
         else {
             // Add link to the branch
