@@ -33,6 +33,10 @@ def sendMessage(String notifyChannel, SlackMessage message) {
                                requestBody: toJson(message)
                                validResponseCodes: '100:599'
 
+    if(response.status < 200 || response.status > 399) {
+        log.warning("Error sending message to Slack (response code: response.status)")
+    }
+
     def jsonResponse = new JsonSlurper().parseText(response.content)
     if(jsonResponse.error) {
         log.warning("Slack send error message: ${jsonResponse.error}")
