@@ -283,8 +283,13 @@ class MessagesFactory implements Serializable {
     }
 
     private createBuildBranch() {
-        return "*Branch:* <${createRepositoryUrl()}/browse?at=refs/heads/${context.env.BRANCH_NAME}" +
-                "|${context.env.BRANCH_NAME}>"
+        if(env.CHANGE_URL){
+            return "*PR* <${env.CHANGE_URL}|${context.env.BRANCH_NAME}>"
+        }
+        else {
+            return "*Branch:* <${createRepositoryUrl()}/browse?at=refs/heads/${context.env.BRANCH_NAME}" +
+                    "|${context.env.BRANCH_NAME}>"
+        }
     }
 
     private createCommitLink() {
