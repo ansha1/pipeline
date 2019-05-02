@@ -35,5 +35,4 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         script.sendBuildStatus 'some_channel'
         printCallStack()
     }
-
 }

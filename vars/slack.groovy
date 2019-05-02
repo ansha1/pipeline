@@ -24,29 +24,29 @@ def privateMessage(String slackUserId, String uploadSpec) {
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.debug(toJson(message))
-    def response = httpRequest contentType: 'APPLICATION_JSON_UTF8',
+
+    try {
+        def response = httpRequest contentType: 'APPLICATION_JSON_UTF8',
                                quiet: !log.isDebug(),
                                consoleLogResponseBody: log.isDebug(),
                                httpMode: 'POST',
                                url: "${SLACK_URL}/api/chat.postMessage",
                                customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
                                requestBody: toJson(message)
-                               validResponseCodes: '100:599'
 
-    if(response.status < 200 || response.status > 399) {
-        log.warning("Error sending message to Slack (response code: response.status)")
-    }
+        def jsonResponse = new JsonSlurper().parseText(response.content)
+        if (jsonResponse.error) {
+            log.warning("Slack send error message: ${jsonResponse.error}")
 
-    def jsonResponse = new JsonSlurper().parseText(response.content)
-    if(jsonResponse.error) {
-        log.warning("Slack send error message: ${jsonResponse.error}")
-
-        if(jsonResponse.error == 'channel_not_found' || jsonResponse.error == 'not_in_channel') {
-            log.magnetaBold("""
-            Jenkins can't send the notification into the Slack channel: ${notifyChannel}
-            Slack channel does not exist or the Jenkins user is not a member of private channel.
-            """)
+            if (jsonResponse.error == 'channel_not_found' || jsonResponse.error == 'not_in_channel') {
+                log.magnetaBold("""
+                Jenkins can't send the notification into the Slack channel: ${notifyChannel}
+                Slack channel does not exist or the Jenkins user is not a member of private channel.
+                """)
+            }
         }
+    } catch (e) {
+        log.warning("Error sending message to Slack (${e})")
     }
 }
 
