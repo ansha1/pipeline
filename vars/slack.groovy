@@ -2,13 +2,12 @@
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.MessagesFactory
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-@Deprecated
 def call(String notifyChannel, def uploadSpec) {
-    log.deprecated('Use slack.sendMessage() method.')
-    privateMessage(notifyChannel, uploadSpec)
+    slackSend(channel: notifyChannel, attachments: uploadSpec, tokenCredentialId: 'slackToken')
 }
 
 @Deprecated
@@ -25,19 +24,41 @@ def privateMessage(String slackUserId, String uploadSpec) {
 def sendMessage(String notifyChannel, SlackMessage message) {
     message.setChannel(notifyChannel)
     log.debug(toJson(message))
-    httpRequest contentType: 'APPLICATION_JSON_UTF8',
-            quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(),
-            httpMode: 'POST',
-            url: "${SLACK_URL}/api/chat.postMessage",
-            customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
-            requestBody: toJson(message)
+
+    try {
+        def response = httpRequest contentType: 'APPLICATION_JSON_UTF8',
+                               quiet: !log.isDebug(),
+                               consoleLogResponseBody: log.isDebug(),
+                               httpMode: 'POST',
+                               url: "${SLACK_URL}/api/chat.postMessage",
+                               customHeaders: [[name: 'Authorization', value: "Bearer ${SLACK_BOT_TOKEN}"]],
+                               requestBody: toJson(message)
+
+        def jsonResponse = new JsonSlurper().parseText(response.content)
+        if (jsonResponse.error) {
+            log.warning("Slack send error message: ${jsonResponse.error}")
+
+            if (jsonResponse.error == 'channel_not_found' || jsonResponse.error == 'not_in_channel') {
+                log.magnetaBold("""
+                Jenkins can't send the notification into the Slack channel: ${notifyChannel}
+                Slack channel does not exist or the Jenkins user is not a member of private channel.
+                """)
+            }
+        }
+    } catch (e) {
+        log.warning("Error sending message to Slack (${e})")
+    }
+}
+
+def sendPrivatMessage(String notifyChannel, SlackMessage message) {
+    message.as_user = true
+    sendMessage(notifyChannel, message)
 }
 
 @SuppressWarnings("GroovyAssignabilityCheck")
 private static toJson(SlackMessage message) {
     def json = JsonOutput.toJson(message)
-    //JsonOutput can be configured for this in groovy 2.5
+    // JsonOutput can be configured for this in groovy 2.5
     return json.replaceAll("(,)?\"(\\w*?)\":null", '').replaceAll("\\{,", '{')
 }
 
@@ -63,13 +84,13 @@ def prOwnerPrivateMessage(String url) {
     String prOwner = bitbucket.prOwnerEmail(url)
     SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     def getUserFromSlackObject = getSlackUserIdByEmail(prOwner)
-    sendMessage(getUserFromSlackObject, message)
+    sendPrivatMessage(getUserFromSlackObject, message)
 }
 
 def sendBuildStatusPrivateMessage(String slackUserId) {
     SlackMessage message = new MessagesFactory(this).buildStatusMessage()
     try {
-        sendMessage(slackUserId, message)
+        sendPrivatMessage(slackUserId, message)
     } catch (e) {
         log.warn("Failed send Slack notification to the authors: " + e.toString())
     }

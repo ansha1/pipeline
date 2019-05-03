@@ -108,8 +108,8 @@ def runDownstreamJobs() {
 
     parallel jsIntegration: {
         build job: 'nextiva-pipeline-tests/test-js-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
-    //}, pythonLibIntegration: {
-    //    build job: 'nextiva-pipeline-tests/test-python-lib-pipeline/master', parameters: [string(name: 'deploy_version', value: '')]
+    }, pythonLibIntegration: {
+        build job: 'nextiva-pipeline-tests/test-python-lib-pipeline/master', parameters: [string(name: 'deploy_version', value: '')]
     }, javaIntegration: {
         build job: 'nextiva-pipeline-tests/test-java-pipeline/dev', parameters: [string(name: 'deploy_version', value: '')]
     }, pythonIntegration: {
