@@ -2,6 +2,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import groovy.json.JsonOutput
 
+
 String getSourceBranchFromPr(String url) {
 
     def props = getPrFromUrl(url)

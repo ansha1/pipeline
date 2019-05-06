@@ -29,6 +29,6 @@ class BuildPublishDockerImageTest extends BasePipelineTest implements Validator,
         script.call 'appName', 'buildVersion'
         printCallStack()
         checkThatMethodWasExecutedWithValue 'push', '.*latest.*'
-        checkThatMockedMethodWasExecuted 'sh', 5
+        checkThatMockedMethodWasExecuted 'sh', 4
     }
 }
