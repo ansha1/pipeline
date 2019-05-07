@@ -66,6 +66,8 @@ def call(body) {
         }
         if (env.BRANCH_NAME == "master" && jobConfig.deployToSalesDemo) {
             appParams.add(choice(choices: 'prod+sales-demo\nprod\nsales-demo', description: 'Where deploy?', name: 'deployDst'))
+        } else if (env.BRANCH_NAME == "master") {
+            appParams.add(string(name: 'deployDst', value: 'prod'))
         }
         appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
         properties([
