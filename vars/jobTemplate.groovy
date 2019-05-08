@@ -252,92 +252,93 @@ def call(body) {
                     expression { env.BRANCH_NAME ==~ /^(dev|develop|master|release\/.+)$/ || jobConfig.isHotfixDeploy }
                 }
                 stages {
-                        stage('Kubernetes deployment') {
-                            when {
-                                expression {
-                                    (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.DEPLOY_ON_K8S }
+                    stage('Kubernetes deployment') {
+                        when {
+                            expression {
+                                (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.DEPLOY_ON_K8S
                             }
-                            steps {
-                                script {
-                                    if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                        slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
-                                    }
+                        }
+                        steps {
+                            script {
+                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                }
+                                log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
+                                log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
+                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
+                                        jobConfig.kubernetesDeploymentsList)
+
+                                newrelic.postDeployment(jobConfig)
+                            }
+                        }
+                    }
+                    stage('Sales Demo Kubernetes deployment') {
+                        when {
+                            expression {
+                                env.BRANCH_NAME == 'master' && jobConfig.DEPLOY_ON_K8S && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/
+                            }
+                        }
+                        steps {
+                            script {
+
+                                try {
                                     log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                     log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
+                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
                                             jobConfig.kubernetesDeploymentsList)
 
                                     newrelic.postDeployment(jobConfig)
+                                } catch (e) {
+                                    log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = 'UNSTABLE'
                                 }
                             }
                         }
-                        stage('Sales Demo Kubernetes deployment') {
-                            when {
-                                expression {
-                                    env.BRANCH_NAME == 'master' && jobConfig.DEPLOY_ON_K8S && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/
-                                }
-                            }
-                            steps {
-                                script {
-
-                                    try {
-                                        log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
-                                        log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                        kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
-                                                jobConfig.kubernetesDeploymentsList)
-
-                                        newrelic.postDeployment(jobConfig)
-                                    } catch (e) {
-                                        log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
-                                        currentBuild.result = 'UNSTABLE'
-                                    }
-                                }
+                    }
+                    stage('Ansible deployment') {
+                        when {
+                            expression {
+                                (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.ANSIBLE_DEPLOYMENT
                             }
                         }
-                        stage('Ansible deployment') {
-                            when {
-                                expression {
-                                    (env.BRANCH_NAME != "master" || params.deployDst ==~ /^(prod\+sales-demo|prod)$/) && jobConfig.ANSIBLE_DEPLOYMENT
+                        steps {
+                            script {
+                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
                                 }
-                            }
-                            steps {
-                                script {
-                                    if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                        slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
-                                    }
 
+                                sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                    def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
+                                    runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                }
+                                newrelic.postDeployment(jobConfig)
+                            }
+                        }
+                    }
+                    stage('Sales Demo Ansible deployment') {
+                        when {
+                            expression {
+                                env.BRANCH_NAME == 'master' && jobConfig.ANSIBLE_DEPLOYMENT && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/
+                            }
+                        }
+                        steps {
+                            script {
+
+                                try {
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                        runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
+                                        runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
+
                                     newrelic.postDeployment(jobConfig)
+                                } catch (e) {
+                                    log.warning("Ansible deployment to Sales Demo failed.\n${e}")
+                                    currentBuild.result = Result.UNSTABLE
                                 }
                             }
                         }
-                        stage('Sales Demo Ansible deployment') {
-                            when {
-                                expression {
-                                    env.BRANCH_NAME == 'master' && jobConfig.ANSIBLE_DEPLOYMENT && params.deployDst ==~ /^(prod\+sales-demo|sales-demo)$/
-                                }
-                            }
-                            steps {
-                                script {
 
-                                    try {
-                                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                                            def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
-                                            runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
-                                        }
-
-                                        newrelic.postDeployment(jobConfig)
-                                    } catch (e) {
-                                        log.warning("Ansible deployment to Sales Demo failed.\n${e}")
-                                        currentBuild.result = Result.UNSTABLE
-                                    }
-                                }
-                            }
-
-                        }
+                    }
                 }
             }
             stage('Healthcheck') {
@@ -368,10 +369,10 @@ def call(body) {
                                     sh jobConfig.projectFlow.get('postDeployCommands')
                                 }
                             }
-                        }catch(e){
+                        } catch (e) {
                             log.warn("there was problem in the post deploy stage $e")
                             currentBuild.result = 'UNSTABLE'
-                        } finally{
+                        } finally {
                             step([$class: 'CucumberReportPublisher']) //PIPELINE-134
                         }
                     }
