@@ -362,10 +362,17 @@ def call(body) {
                 }
                 steps {
                     script {
-                        sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
-                            docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
-                                sh jobConfig.projectFlow.get('postDeployCommands')
+                        try {
+                            sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                                docker.withRegistry(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID) {
+                                    sh jobConfig.projectFlow.get('postDeployCommands')
+                                }
                             }
+                        }catch(e){
+                            log.warn("there was problem in the post deploy stage $e")
+                            currentBuild.result = 'UNSTABLE'
+                        } finally{
+                            step([$class: 'CucumberReportPublisher']) //PIPELINE-134
                         }
                     }
                 }
