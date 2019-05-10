@@ -72,7 +72,7 @@ class SharedJobsStaticVars {
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
 
     static final Map JNLP_CONTAINER = ["image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
-                                       "args"                 : "${computer.jnlpmac} ${computer.name}",
+                                       "args"                 : "\${computer.jnlpmac} \${computer.name}",
                                        "resourceRequestMemory": "256Mi",
                                        "resourceLimitMemory"  : "512Mi"]
     static final Map KUBERNETES_CONTAINER = ["image"                : "repository.nextiva.xyz/aws-provisioning:0.1.9",

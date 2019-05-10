@@ -1,6 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
+package com.nextiva.stage
 
 class Checkout extends BasicStage {
     protected Checkout(script, configuration) {

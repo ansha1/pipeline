@@ -1,6 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
+package com.nextiva.stage
 
 class UnitTest extends BasicStage {
     protected UnitTest(script, configuration) {

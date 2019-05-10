@@ -1,9 +1,19 @@
 package com.nextiva.branch.model
 
-class GitFlow implements BranchingModel{
+class GitFlow implements BranchingModel {
+
+    // Stages for tests default executing flow for feature/ PR/ branch types
+    private final List<String> test = ["Checkout", "UnitTest", "SonarScan", "IntegrationTest", "SendNotifications"]
+
+    // Tests + Publish + Deploy artifacts for dev release branch types
+    private final List<String> testPublishDeploy = ["VerifyArtifactVersionInNexus", "BuildArtifact", "BuildDockerImage", "PublishArtifact", "PublishDockerImage",
+                                                    "SecurityScan""]
+    // Stages for master or deploy only execute strategy
+    private final List<String> deploy = ["Checkout", "Deploy", "PostDeploy", "QACoreTeamTest", "SendNotifications"]
+
     @Override
     String getRepository(String branchName) {
-        switch (branchName){
+        switch (branchName) {
             case ~/^master|hotfix\/.+|release\/.+$/:
                 return "production"
         }
@@ -16,20 +26,22 @@ class GitFlow implements BranchingModel{
     }
 
     @Override
-    List getStages(String branchName){
-        switch (branchName){
+    List getStages(String branchName) {
+        List<String> flow
+        switch (branchName) {
             case ~/(dev|develop)$/:
+                flow =
                 break
             case ~/^release\/.+$/:
+                flow =
                 break
             case "master":
                 break
             case ~/^hotfix\/.+$/:
                 break
             default:
+                flow = testStages
                 break
-
-
         }
         return flow
     }
@@ -44,3 +56,5 @@ class GitFlow implements BranchingModel{
 
 
 
+testStagesSet
+buildPublishStagesSet

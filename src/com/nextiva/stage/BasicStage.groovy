@@ -1,27 +1,65 @@
-package com.nextiva.stages
+package com.nextiva.stage
 
 
 abstract class BasicStage implements Serializable {
 
     final protected script
     final protected Map configuration
-    static List GENERAL_BUILD_STEPS_WITH_PREDEFINED_ORDER = [
-            'Checkout',
-            'VerifyArtifactVersionInNexus',
-            'UnitTest',
-            'SonarScan',
-            'BuildArtifact',
-            'BuildDockerImage',
-            'PublishArtifact',
-            'PublishDockerImage',
-            'SecurityScan',
-            'IntegrationTest',
-            'DeployToK8s',
-            'DeployByAnsible',
-            'Healthcheck',
-            'PostDeploy',
-            'QACoreTeamTest',
-            'SendNotifications'
+
+    static final Map STAGES = ["Checkout"                    : [""],
+                               "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
+                                                                "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
+                                                                                   "trunkbased": /^master$/]
+                               ],
+                               "UnitTest"                    : ["deployOnly"    : false,
+                                                                "branchingModel": ["gitflow"   : /^!(master)$/,
+                                                                                   "trunkbased": /^.*$/]
+                               ],
+                               "SonarScan"                   : ["deployOnly"            : false,
+                                                                "isSonarAnalysisEnabled": true,
+                                                                "branchingModel"        : ["gitflow"   : /^(develop|dev)$/,
+                                                                                           "trunkbased": /^master$/]
+                               ],
+                               "IntegrationTest"             : ["deployOnly"               : false,
+                                                                "isIntegrationTestsEnabled": true,
+                                                                "branchingModel"           : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
+                                                                                              "trunkbased": /^!(master)$/]
+                               ],
+                               "BuildArtifact"               : ["deployOnly"    : false,
+                                                                "buildArtifact" : true,
+                                                                "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                                   "trunkbased": /^master$/]
+                               ],
+                               "BuildDockerImage"            : ["deployOnly"      : false,
+                                                                "buildDockerImage": true,
+                                                                "branchingModel"  : ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                                     "trunkbased": /^master$/]
+                               ],
+                               "PublishArtifact"             : ["deployOnly"     : false,
+                                                                "publishArtifact": true,
+                                                                "branchingModel" : ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                                    "trunkbased": /^master$/]
+                               ],
+                               "PublishDockerImage"          : ["deployOnly"        : false,
+                                                                "publishDockerImage": true,
+                                                                "branchingModel"    : ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                                       "trunkbased": /^master$/],
+                               ],
+                               "SecurityScan"                : ["deployOnly"           : false,
+                                                                "isSecurityScanEnabled": true,
+                                                                "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
+                                                                                          "trunkbased": /^!(master)$/]
+                               ],
+                               "Deploy"                      : ["branchingModel": ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
+                                                                                   "trunkbased": /^(master)$/]
+                               ],
+                               "PostDeploy"                  : ["isPostDeployEnabled": true,
+                                                                "branchingModel"     : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
+                                                                                        "trunkbased": /^(master)$/]
+                               ],
+                               "QACoreTeamTest"              : ["branchingModel": ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
+                                                                                   "trunkbased": /^(master)$/]],
+
     ]
 
 
@@ -81,28 +119,28 @@ abstract class BasicStage implements Serializable {
                 case 'BuildDockerImage':
                     if (deployOnly) break
                     if (!buildDockerImage) break
-                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name())||(branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
+                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
                         jobFlowInstancesList.add(new BuildDockerImage(script, configuration))
                     }
                     break
                 case 'PublishArtifact':
                     if (deployOnly) break
                     if (!publishArtifact) break
-                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name())||(branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
+                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
                         jobFlowInstancesList.add(new PublishArtifact(script, configuration))
                     }
                     break
                 case 'PublishDockerImage':
                     if (deployOnly) break
                     if (!publishDockerImage) break
-                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name())||(branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
+                    if ((branchName ==~ /^(dev|develop|hotfix\/.+|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
                         jobFlowInstancesList.add(new PublishDockerImage(script, configuration))
                     }
                     break
                 case 'SecurityScan':
                     if (deployOnly) break
                     if (!isSecurityScanEnabled) break
-                    if ((branchName ==~ /^(release|hotfix)\/.+$/ && branchingModel == BranchingModel.GITFLOW.name())||(branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
+                    if ((branchName ==~ /^(release|hotfix)\/.+$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
                         jobFlowInstancesList.add(new SecurityScan(script, configuration))
                     }
                     break
@@ -127,12 +165,12 @@ abstract class BasicStage implements Serializable {
                 case 'PostDeploy':
                     if (deployOnly) break
                     if (!postdeploycommands) break
-                    if ((branchName ==~ /^(dev|develop|master|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name())||(branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
+                    if ((branchName ==~ /^(dev|develop|master|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchName == "master" && branchingModel == BranchingModel.TRUNCKBASED.name())) {
                         jobFlowInstancesList.add(new PostDeploy(script, configuration))
                     }
                     break
                 case 'Healthcheck':
-                    if((branchName ==~ /^(dev|develop|master|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchingModel == BranchingModel.TRUNCKBASED.name() && branchName == "master")) {
+                    if ((branchName ==~ /^(dev|develop|master|release\/.+)$/ && branchingModel == BranchingModel.GITFLOW.name()) || (branchingModel == BranchingModel.TRUNCKBASED.name() && branchName == "master")) {
                         jobFlowInstancesList.add(new Healthcheck(script, configuration))
                     }
                     break
@@ -142,7 +180,7 @@ abstract class BasicStage implements Serializable {
                         jobFlowInstancesList.add(new QACoreTeamTest(script, configuration))
                     }
                     break
-                // SendNotifications should be moved to the separated method
+            // SendNotifications should be moved to the separated method
                 case 'SendNotifications':
                     jobFlowInstancesList.add(new SendNotifications(script, configuration))
                     break
@@ -153,6 +191,12 @@ abstract class BasicStage implements Serializable {
 
         return jobFlowInstancesList
     }
+
+    private createStageFromName(String ClassName, def script, def configuration){
+        return Class.forName()    .forName()
+    }
+
+
 
     abstract execute()
 

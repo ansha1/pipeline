@@ -1,6 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
+package com.nextiva.stage
 
 class QACoreTeamTest extends BasicStage {
     protected QACoreTeamTest(script, configuration) {

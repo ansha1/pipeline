@@ -1,7 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
-
+package com.nextiva.stage
 
 class DeployByAnsible extends BasicStage {
     protected DeployByAnsible(script, Configuration configuration) {

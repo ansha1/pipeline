@@ -1,6 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
+package com.nextiva.stage
 
 class DeployToK8s extends BasicStage {
     protected DeployToK8s(script, configuration) {

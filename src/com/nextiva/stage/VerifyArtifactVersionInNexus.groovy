@@ -1,7 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
-import hudson.model.Result
+package com.nextiva.stage
 
 class VerifyArtifactVersionInNexus extends BasicStage {
     protected VerifyArtifactVersionInNexus(script, configuration) {

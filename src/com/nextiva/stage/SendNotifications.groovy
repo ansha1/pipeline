@@ -1,6 +1,4 @@
-package com.nextiva.stages
-
-import com.nextiva.stages.BasicStage
+package com.nextiva.stage
 
 class SendNotifications extends BasicStage {
     protected SendNotifications(script, configuration) {
