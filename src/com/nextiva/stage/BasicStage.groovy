@@ -67,7 +67,7 @@ abstract class BasicStage implements Serializable {
         this.script = script
         this.configuration = configuration
     }
-
+/*
     static BasicStage loadConfiguration(script, configuration) {
 
         List<BasicStage> jobFlowInstancesList = []
@@ -196,7 +196,7 @@ abstract class BasicStage implements Serializable {
         return Class.forName()    .forName()
     }
 
-
+*/
 
     abstract execute()
 
