@@ -83,16 +83,17 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
                 'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common',
-                'aws', 'generateBuildProperties', 'securityScan'
+                'aws', 'generateBuildProperties', 'securityScan', 'newrelic'
 
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
-        helper.registerAllowedMethod 'sh', [Map], { c -> 'some output' }
         helper.registerAllowedMethod 'readProperties', [Map], { [:] }
+        helper.registerAllowedMethod 'readMavenPom', [Map], { ['version':'1.0.1'] }
         helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
 
         mockEnv()
         mockDocker()
+        mockSlack()
 
         mockClosure 'pipeline', 'agent', 'tools', 'options', 'stages', 'steps', 'script',
                 'when', 'expression', 'parallel', 'post', 'always'

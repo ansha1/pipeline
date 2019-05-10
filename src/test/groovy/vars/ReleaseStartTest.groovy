@@ -56,6 +56,9 @@ class ReleaseStartTest extends BasePipelineTest implements Validator, Mocks {
             if (map.get('script') ==~ 'git branch -r.*') {
                 return null
             }
+            if (map.get('script') ==~ 'git config remote.origin.url') {
+                return 'ssh://git@git.nextiva.xyz:7999/rel/pipelines.git'
+            }
             return 'sh command output'
         }
         def script = loadScript "vars/releaseStart.groovy"

@@ -41,7 +41,9 @@ def call(body) {
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
     defaultSlackNotificationMap = [(CHANNEL_TO_NOTIFY): LIST_OF_DEFAULT_BRANCH_PATTERNS] ?: [:]
     slackNotifictionScope = pipelineParams.channelToNotifyPerBranch ?: defaultSlackNotificationMap
-    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP ?: [:]
+    NEWRELIC_APP_ID_MAP = pipelineParams.NEWRELIC_APP_ID_MAP
+    NEW_RELIC_APP_ID = pipelineParams.NEW_RELIC_APP_ID
+    NEW_RELIC_APP_NAME = pipelineParams.NEW_RELIC_APP_NAME
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION
     BLUE_GREEN_DEPLOY = getBooleanDefault(pipelineParams.BLUE_GREEN_DEPLOY, false)
@@ -56,7 +58,6 @@ def call(body) {
     kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo ?: DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO
     inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo ?: DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO
     inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
-    salesDemoDeployOnly = false
 
     switch (env.BRANCH_NAME) {
         case 'dev':

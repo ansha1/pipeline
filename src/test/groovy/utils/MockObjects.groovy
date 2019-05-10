@@ -84,6 +84,10 @@ class MockObjects {
                 }
                 return 'cause'
             }
+
+            def getAction(action) {
+                return null
+            }
         }
         //noinspection UnnecessaryQualifiedReference
         MockObjects.updateInterceptors(job, basePipelineTest.helper)
