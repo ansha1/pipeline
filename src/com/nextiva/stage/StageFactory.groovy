@@ -63,8 +63,10 @@ class StageFactory {
     ]
 
 
-    static BasicStage getStage(Class clazz, Script script, configuration){
+    static BasicStage getStage(Script script, Class clazz, Map configuration){
         return clazz.getDeclaredConstructor(Script, Map).newInstance(script, configuration)
     }
 
+
+//    static BasicStage getStageByName(String stageName)
 }
