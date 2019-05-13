@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class Checkout extends BasicStage {
-    protected Checkout(Script script, Map configuration) {
+    Checkout(Script script, Map configuration) {
         super(script, configuration)
     }
 
