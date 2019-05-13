@@ -109,7 +109,7 @@ class StageFactory {
                     return true
                     break
                 case "branchingModel":
-                    Pattern branchPattern = value.get(configuration.get("branchingModel"))
+                    Pattern branchPattern = Pattern.compile(value.get(configuration.get("branchingModel")))
                     return configuration.get("branch") ==~ branchPattern
                     break
                 default:
