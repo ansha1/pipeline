@@ -5,7 +5,7 @@ class StageFactory {
     static Map getStages() {
         return Stages
     }
-    static final Map Stages = ["Checkout"                    : [""],
+    static final Map Stages = ["Checkout"                    : ["Class"         : Checkout.class,],
                                "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
                                                                 "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
                                                                                    "trunkbased": /^master$/]
