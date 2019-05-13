@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class SonarScan extends BasicStage {
-    protected SonarScan(script, configuration) {
+    SonarScan(script, configuration) {
         super(script, configuration)
     }
 

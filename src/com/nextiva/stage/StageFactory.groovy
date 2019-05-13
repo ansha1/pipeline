@@ -79,7 +79,7 @@ class StageFactory {
         try {
             return clazz.getDeclaredConstructor(Script, Map).newInstance(script, configuration)
         } catch (e) {
-            error("Can't create stage $clazz because of error $e")
+            script.error("Can't create stage $clazz because of error $e")
         }
     }
 

@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class IntegrationTest extends BasicStage {
-    protected IntegrationTest(script, configuration) {
+    IntegrationTest(script, configuration) {
         super(script, configuration)
     }
 

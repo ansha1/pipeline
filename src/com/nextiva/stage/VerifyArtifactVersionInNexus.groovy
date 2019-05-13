@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class VerifyArtifactVersionInNexus extends BasicStage {
-    protected VerifyArtifactVersionInNexus(script, configuration) {
+    VerifyArtifactVersionInNexus(script, configuration) {
         super(script, configuration)
     }
 

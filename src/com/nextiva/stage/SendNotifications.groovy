@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class SendNotifications extends BasicStage {
-    protected SendNotifications(script, configuration) {
+    SendNotifications(script, configuration) {
         super(script, configuration)
     }
 

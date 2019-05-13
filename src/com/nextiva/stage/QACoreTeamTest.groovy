@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class QACoreTeamTest extends BasicStage {
-    protected QACoreTeamTest(script, configuration) {
+    QACoreTeamTest(script, configuration) {
         super(script, configuration)
     }
 

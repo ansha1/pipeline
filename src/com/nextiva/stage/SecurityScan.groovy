@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class SecurityScan extends BasicStage {
-    protected SecurityScan(script, configuration) {
+    SecurityScan(script, configuration) {
         super(script, configuration)
     }
 

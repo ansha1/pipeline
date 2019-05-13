@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class Healthcheck extends BasicStage {
-    protected Healthcheck(script, configuration) {
+    Healthcheck(script, configuration) {
         super(script, configuration)
     }
 

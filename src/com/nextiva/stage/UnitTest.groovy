@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class UnitTest extends BasicStage {
-    protected UnitTest(script, configuration) {
+    UnitTest(script, configuration) {
         super(script, configuration)
     }
 

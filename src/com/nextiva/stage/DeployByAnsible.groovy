@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class DeployByAnsible extends BasicStage {
-    protected DeployByAnsible(script, Configuration configuration) {
+    DeployByAnsible(script, Configuration configuration) {
         super(script, configuration)
     }
 

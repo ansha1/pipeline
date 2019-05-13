@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class BuildDockerImage extends BasicStage {
-    protected BuildDockerImage(script, configuration) {
+    BuildDockerImage(script, configuration) {
         super(script, configuration)
     }
 
