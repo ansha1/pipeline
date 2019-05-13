@@ -102,7 +102,7 @@ class StageFactory {
     /**
      * checkForExecuting checking that stage should be in the current pipeline flow, based on provided configuration
      */
-    Boolean checkForExecuting(Map stageDefinition, Map configuration) {
+    static Boolean checkForExecuting(Map stageDefinition, Map configuration) {
         return stageDefinition.every { key, value ->
             switch (key) {
                 case "class":
