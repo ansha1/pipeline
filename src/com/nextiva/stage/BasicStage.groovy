@@ -63,7 +63,7 @@ abstract class BasicStage implements Serializable {
     ]
 
 
-    protected BasicStage(script, configuration) {
+    protected BasicStage(Script script, Map configuration) {
         this.script = script
         this.configuration = configuration
     }
