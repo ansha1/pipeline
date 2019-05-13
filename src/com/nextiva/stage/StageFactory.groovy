@@ -91,6 +91,7 @@ class StageFactory {
     static List<BasicStage> getStagesFromConfiguration(Script script, Map configuration) {
         List<BasicStage> flow = []
         stages.each { k, v ->
+            log.debug("get $k and $v")
             if (checkForExecuting(v, configuration)) {
                 flow.add(getStage(script, v.get("class"), configuration))
             }
