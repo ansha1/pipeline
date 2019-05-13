@@ -68,6 +68,11 @@ abstract class BasicStage implements Serializable {
         this.configuration = configuration
     }
 
+//    BasicStage(script, Map configuration) {
+//        this.script = script
+//        this.configuration = configuration
+//    }
+
     static BasicStage loadConfiguration(script, configuration) {
         return Class.forName("com.nextiva.stage.Checkout")
     }
