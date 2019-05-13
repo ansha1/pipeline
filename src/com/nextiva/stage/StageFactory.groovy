@@ -69,7 +69,8 @@ class StageFactory {
                                ],
                                "QACoreTeamTest"              : ["class"         : QACoreTeamTest.class,
                                                                 "branchingModel": ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                                   "trunkbased": /^(master)$/]],
+                                                                                   "trunkbased": /^(master)$/]
+                               ],
 
     ]
 
@@ -83,7 +84,7 @@ class StageFactory {
     }
 
     static BasicStage getStageByName(String stageName, Script script, Map configuration) {
-        Class stageClass = stages.get(stageName).get("Class")
+        Class stageClass = stages.get(stageName).get("class")
         return getStage(script, stageClass, configuration)
     }
 
