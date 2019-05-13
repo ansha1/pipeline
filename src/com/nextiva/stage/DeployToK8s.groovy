@@ -7,9 +7,6 @@ class DeployToK8s extends BasicStage {
 
     @Override
     def execute(){
-        script.sh(
-                script: "deploy to k8s",
-                returnStdout: true
-        ).trim()
+        script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
     }
 }

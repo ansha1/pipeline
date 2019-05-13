@@ -7,6 +7,7 @@ class VerifyArtifactVersionInNexus extends BasicStage {
 
     def execute() {
         script.stage(this.getClass().getSimpleName()) {
+            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
 //
 //            if (configuration.DEPLOY_ONLY == false && env.BRANCH_NAME ==~ /^((hotfix|release)\/.+)$/) {
 //
@@ -51,12 +52,7 @@ class VerifyArtifactVersionInNexus extends BasicStage {
 //                    jobConfig.setBuildVersion()
 //                }
 //            }
-            script.sh(
-                    script: "echo 'HEHEHE'",
-                    returnStdout: true
-            ).trim()
+
         }
-
-
     }
 }

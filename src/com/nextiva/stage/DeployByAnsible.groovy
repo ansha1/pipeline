@@ -7,10 +7,6 @@ class DeployByAnsible extends BasicStage {
 
     @Override
     def execute(){
-        configuration.ansible
-        script.sh(
-                script: "deploy by Ansible",
-                returnStdout: true
-        ).trim()
+        script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
     }
 }

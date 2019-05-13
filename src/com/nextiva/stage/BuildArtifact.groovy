@@ -7,7 +7,7 @@ class BuildArtifact extends BasicStage {
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-//buildArtifact
+            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
         }
     }
 }

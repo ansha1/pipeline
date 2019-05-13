@@ -8,6 +8,7 @@ class PublishDockerImage extends BasicStage {
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
 //           publishDockerImage
+            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
         }
     }
 }

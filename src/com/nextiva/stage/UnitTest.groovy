@@ -7,6 +7,7 @@ class UnitTest extends BasicStage {
 
     def execute() {
         script.stage(this.getClass().getSimpleName()) {
+            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
 //        script.stage(this.getClass().getSimpleName()) {
 //           utils.build()
 //        }

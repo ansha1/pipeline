@@ -7,7 +7,7 @@ class Deploy extends BasicStage {
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-            //deploy on kubernetes environment
+            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
         }
     }
 }
