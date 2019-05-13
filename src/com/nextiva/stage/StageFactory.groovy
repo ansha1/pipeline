@@ -91,7 +91,7 @@ class StageFactory {
     static List<BasicStage> getStagesFromConfiguration(Script script, Map configuration) {
         List<BasicStage> flow = []
         stages.each { k, v ->
-            log.debug("get $k and $v")
+            script.log.debug("get $k and $v and config $configuration")
             if (checkForExecuting(v, configuration)) {
                 flow.add(getStage(script, v.get("class"), configuration))
             }
@@ -103,7 +103,6 @@ class StageFactory {
      * checkForExecuting checking that stage should be in the current pipeline flow, based on provided configuration
      */
     Boolean checkForExecuting(Map stageDefinition, Map configuration) {
-        log.debug("check if the current stage $stageDefinition is available for execution in the current configuration $configuration")
         return stageDefinition.every { key, value ->
             switch (key) {
                 case "class":
