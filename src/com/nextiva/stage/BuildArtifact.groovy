@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class BuildArtifact extends BasicStage {
-    BuildArtifact(script, configuration) {
+    BuildArtifact(Script script, Map configuration) {
         super(script, configuration)
     }
 

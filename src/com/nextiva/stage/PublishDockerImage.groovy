@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class PublishDockerImage extends BasicStage {
-    PublishDockerImage(script, configuration) {
+    PublishDockerImage(Script script, Map configuration) {
         super(script, configuration)
     }
 

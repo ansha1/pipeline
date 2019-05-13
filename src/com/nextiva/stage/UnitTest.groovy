@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class UnitTest extends BasicStage {
-    UnitTest(script, configuration) {
+    UnitTest(Script script, Map configuration) {
         super(script, configuration)
     }
 

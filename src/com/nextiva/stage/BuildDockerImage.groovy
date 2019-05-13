@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class BuildDockerImage extends BasicStage {
-    BuildDockerImage(script, configuration) {
+    BuildDockerImage(Script script, Map configuration) {
         super(script, configuration)
     }
 

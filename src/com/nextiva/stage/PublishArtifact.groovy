@@ -1,7 +1,7 @@
 package com.nextiva.stage
 
 class PublishArtifact extends BasicStage {
-    PublishArtifact(script, configuration) {
+    PublishArtifact(Script script, Map configuration) {
         super(script, configuration)
     }
 
