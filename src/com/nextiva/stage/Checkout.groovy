@@ -1,10 +1,14 @@
 package com.nextiva.stage
 
 class Checkout extends BasicStage {
-    protected Checkout(script, configuration) {
-        super(script, configuration)
-    }
+//    protected Checkout(script, configuration) {
+//        super(script, configuration)
+//    }
 
+    protected Checkout(Script script, Map configuration) {
+        this.script = script
+        this.configuration = configuration
+    }
     @Override
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
