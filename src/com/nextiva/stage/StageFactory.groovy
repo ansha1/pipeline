@@ -11,13 +11,13 @@ class StageFactory {
                                                                 "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
                                                                                    "trunkbased": /^master$/]
                                ],
-                               "UnitTest"                    : ["deployOnly"    : false,
-                                                                "class"         : UnitTest.class,
+                               "UnitTest"                    : ["class"         : UnitTest.class,
+                                                                "deployOnly"    : false,
                                                                 "branchingModel": ["gitflow"   : /^!(master)$/,
                                                                                    "trunkbased": /^.*$/]
                                ],
-                               "SonarScan"                   : ["deployOnly"            : false,
-                                                                "class"                 : SonarScan.class,
+                               "SonarScan"                   : ["class"                 : SonarScan.class,
+                                                                "deployOnly"            : false,
                                                                 "isSonarAnalysisEnabled": true,
                                                                 "branchingModel"        : ["gitflow"   : /^(develop|dev)$/,
                                                                                            "trunkbased": /^master$/]
@@ -73,7 +73,6 @@ class StageFactory {
                                ],
 
     ]
-
 
     static BasicStage getStage(Script script, Class clazz, Map configuration) {
         try {
