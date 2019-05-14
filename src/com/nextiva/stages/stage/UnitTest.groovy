@@ -1,4 +1,6 @@
-package com.nextiva.stage
+package com.nextiva.stages.stage
+
+import com.nextiva.stages.stage.BasicStage
 
 class UnitTest extends BasicStage {
     UnitTest(Script script, Map configuration) {

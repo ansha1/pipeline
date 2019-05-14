@@ -1,7 +1,7 @@
-package com.nextiva.stage
+package com.nextiva.stages.stage
 
-class DeployToK8s extends BasicStage {
-    DeployToK8s(Script script, Map configuration) {
+class DeployByAnsible extends BasicStage {
+    DeployByAnsible(Script script, Map configuration) {
         super(script, configuration)
     }
 

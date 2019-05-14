@@ -1,4 +1,18 @@
-package com.nextiva.stage
+package com.nextiva.stages
+
+import com.nextiva.stages.stage.BasicStage
+import com.nextiva.stages.stage.BuildArtifact
+import com.nextiva.stages.stage.BuildDockerImage
+import com.nextiva.stages.stage.Checkout
+import com.nextiva.stages.stage.Deploy
+import com.nextiva.stages.stage.IntegrationTest
+import com.nextiva.stages.stage.PostDeploy
+import com.nextiva.stages.stage.PublishArtifact
+import com.nextiva.stages.stage.PublishDockerImage
+import com.nextiva.stages.stage.QACoreTeamTest
+import com.nextiva.stages.stage.SecurityScan
+import com.nextiva.stages.stage.SonarScan
+import com.nextiva.stages.stage.UnitTest
 
 import java.util.regex.Pattern
 

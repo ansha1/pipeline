@@ -6,20 +6,21 @@ class Config implements Serializable {
     private Map pipelineParams = new HashMap()
     private Script script
 
-
     protected Config(Script script, Map pipelineParams) {
         this.script = script
         this.pipelineParams << pipelineParams
         validate()
         setDefaults()
+        setExtraEnvVariables()
         collectJobParameters()
         configureSlave()
     }
 
-    void validate() {
+    private void validate() {
         // Checking mandatory variables
         List<String> configurationErrors = []
 
+        //TODO: add default appname generation based on the repository name
         if (!pipelineParams.containsKey("appName")) {
             configurationErrors.add("Application Name is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
@@ -29,7 +30,8 @@ class Config implements Serializable {
         if (!pipelineParams.containsKey("buildTool")) {
             configurationErrors.add("BuildTool is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
-        if (!pipelineParams.containsKey("branchingModel")) {
+        //TODO: move branching model(gitflow and trunkbased) to the class or enum
+        if (!pipelineParams.get("branchingModel") ==~ /^gitflow|trunkbased$/) {
             configurationErrors.add("BranchingModel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
 
@@ -38,7 +40,7 @@ class Config implements Serializable {
         }
     }
 
-    void setDefaults() {
+    private void setDefaults() {
         //Build flags
         //Use default value, this also creates the key/value pair in the map.
         pipelineParams.get("buildArtifact", false)
@@ -50,23 +52,50 @@ class Config implements Serializable {
         pipelineParams.get("publishStaticAssetsToS3", true)
         pipelineParams.get("pathToSrc", script.env.WORKSPACE)
         pipelineParams.put("branchName", script.env.BRANCH_NAME)
+        pipelineParams.get("extraEnvs", [:])
         pipelineParams.get("applicationDependencies", [:])  //list of application dependencies for build
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
     }
 
-    void collectJobParameters(){
-        generate parameters
-        jobWithProperties
-        private Map generateJobParameters(Map pipelineParams){
-            switch (pipelineParams.get("branchName")){
+    private void collectJobParameters(){
+        Map properties = generateJobParameters(Map pipelineParams)
+        pipelineParams.put("params",jobWithProperties(properties))
+    }
 
-            }
+    private Map generateJobParameters(Map pipelineParams){
+
+
+        dev|develop  dev env
+        release     qa
+        master      prod, sales demo
+
+
+        environment
+        dev
+
+
+        def appParams = [string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
+                'or leave empty for start full build')]
+        if (env.BRANCH_NAME == "master" && ) {
+            appParams.add(choice(choices: 'prod+sales-demo\nprod\nsales-demo', description: 'Where deploy?', name: 'deployDst'))
+        } else if (env.BRANCH_NAME == "master") {
+            appParams.add(choice(choices: 'prod', description: 'Where deploy?', name: 'deployDst'))
+        }
+        appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
+
+
+
+        switch (pipelineParams.get("branchName")){
+case
         }
     }
 
-    void configureSlave() {
+    private void setExtraEnvVariables(){
+        pipelineParams.extraEnvs.each { k, v -> script.env[k] = v }
+    }
+    private void configureSlave() {
         //Slave settings
         this.buildContainer = pipelineParams.get("buildContainer")
         if (!buildContainer) {

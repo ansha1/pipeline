@@ -1,14 +1,17 @@
-package com.nextiva.stage
+package com.nextiva.stages.stage
 
-class PublishArtifact extends BasicStage {
-    PublishArtifact(Script script, Map configuration) {
+class SecurityScan extends BasicStage {
+    SecurityScan(Script script, Map configuration) {
         super(script, configuration)
     }
 
     def execute(){
         script.stage(this.getClass().getSimpleName()) {
-//           publishArtifact
             script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
+//           securityScan()
+            //veracode
+            //tennable
+            //sourceClear
         }
     }
 }
