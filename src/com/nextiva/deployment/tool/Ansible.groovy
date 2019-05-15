@@ -1,8 +1,6 @@
 package com.nextiva.deployment.tool
-import groovy.transform.MapConstructor
 
-@MapConstructor
-class Ansible implements DeploymentTool{
+class Ansible implements DeploymentTool {
     String type
     String image //ansible image
     String repository    //dev, qa, production, sales-demo
@@ -12,7 +10,7 @@ class Ansible implements DeploymentTool{
     String args
     List healthchecks
 
-    Boolean deploy(){
+    Boolean deploy() {
         println("this is ansible deployment" + toString())
         return true
     }
