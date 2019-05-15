@@ -18,4 +18,17 @@ class Ansible implements DeploymentTool{
         return true
     }
 
+    @Override
+    public String toString() {
+        return "Ansible{" +
+                "type='" + type + '\'' +
+                ", image='" + image + '\'' +
+                ", repository='" + repository + '\'' +
+                ", branch='" + branch + '\'' +
+                ", playbookPath='" + playbookPath + '\'' +
+                ", inventoryPath='" + inventoryPath + '\'' +
+                ", args='" + args + '\'' +
+                ", healthchecks=" + healthchecks +
+                '}';
+    }
 }
