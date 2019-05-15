@@ -1,8 +1,7 @@
 package com.nextiva.deployment.tool
+import groovy.transform.MapConstructor
 
-import groovy.transform.ToString
-
-//@ToString
+@MapConstructor
 class Ansible implements DeploymentTool{
     String type
     String image //ansible image
