@@ -4,6 +4,7 @@ import groovy.transform.ToString
 
 //@ToString
 class Ansible implements DeploymentTool{
+    String type
     String image //ansible image
     String repository    //dev, qa, production, sales-demo
     String branch

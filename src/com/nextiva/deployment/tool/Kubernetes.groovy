@@ -4,6 +4,7 @@ import groovy.transform.ToString
 
 //@ToString
 class Kubernetes implements DeploymentTool {
+    String type
     String image    //: kubeprovisioningimage
     String appName  //: "interaction"
     String buildversion //: "1.3.0"
