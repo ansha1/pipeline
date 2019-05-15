@@ -2,7 +2,7 @@ package com.nextiva.deployment.tool
 
 import groovy.transform.ToString
 
-@ToString
+//@ToString
 class Kubernetes implements DeploymentTool {
     String image    //: kubeprovisioningimage
     String appName  //: "interaction"

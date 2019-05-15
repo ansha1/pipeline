@@ -2,7 +2,7 @@ package com.nextiva.deployment.tool
 
 import groovy.transform.ToString
 
-@ToString
+//@ToString
 class Ansible implements DeploymentTool{
     String image //ansible image
     String repository    //dev, qa, production, sales-demo
