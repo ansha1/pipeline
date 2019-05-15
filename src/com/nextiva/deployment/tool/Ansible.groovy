@@ -12,7 +12,8 @@ class Ansible implements DeploymentTool{
     String args
     List healthchecks
 
-    Boolean deploy(Map playbookContext){
+    Boolean deploy(){
+        println("this is ansible deployment" + toString())
         return true
     }
 

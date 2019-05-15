@@ -3,7 +3,7 @@ package com.nextiva.deployment.tool
 import groovy.transform.ToString
 
 @ToString
-class Kubernetes implements DeploymentTool{
+class Kubernetes implements DeploymentTool {
     String image    //: kubeprovisioningimage
     String appName  //: "interaction"
     String buildversion //: "1.3.0"
@@ -14,7 +14,8 @@ class Kubernetes implements DeploymentTool{
     String healthchecks //: []
 
     @Override
-    Boolean deploy(Map<String, String> playbookContext) {
-        return null
+    Boolean deploy() {
+        println("this is kubernetes deployment" + toString())
+        return true
     }
 }
