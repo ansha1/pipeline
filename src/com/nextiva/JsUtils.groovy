@@ -64,11 +64,12 @@ def buildAssets(Map args) {
 
 def publishAssets(String appName, String buildVersion, String environment, Map args) {
     def distPath = args.get('distPath', 'dist/static')
-    Boolean publishToS3 = args.get('publishStaticAssetsToS3')
+    Boolean publishToS3 = args.get('publishStaticAssetsToS3', PUBLISH_STATICASSETS_TO_S3_DEFAULT)
     log.info("publishStaticAssetsToS3: ${publishToS3}")
 
     dir(pathToSrc) {
         nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
+
         if (publishToS3) {
             aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
         }    

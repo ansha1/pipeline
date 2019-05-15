@@ -70,4 +70,5 @@ class SharedJobsStaticVars {
     static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
     static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
+    static final PUBLISH_STATICASSETS_TO_S3_DEFAULT = true
 }
