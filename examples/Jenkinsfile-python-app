@@ -5,7 +5,7 @@
 jobTemplate {
 
     APP_NAME = 'nextiva-python-app'
-    DEPLOY_ON_K8S = 'false'
+    DEPLOY_ON_K8S = false
     BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/nextiva-python-app/'
     PLAYBOOK_PATH = 'ansible/role-based_playbooks/nextiva-python-app-deploy.yml'
     CHANNEL_TO_NOTIFY = 'nextiva-python-app'
