@@ -16,7 +16,7 @@ class DeploymentBuilder {
                       "ansibleArgs"  : 'args']
 
 
-    DeploymentTool static build(Map deployment){
+    static DeploymentTool build(Map deployment){
         switch (deployment.get("type")){
             case "Ansible":
                 return new Ansible(deployment)
