@@ -43,7 +43,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 void runTests(Map args) {
     try {
         log.info("Start unit tests JavaScript")
-        def languageVersion = args.get('languageVersion')
         def testCommands = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
@@ -57,8 +56,12 @@ void runTests(Map args) {
 def buildAssets(Map args) {
     def distPath = args.get('distPath', 'dist/static')
     def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
+    String staticAssetsAddress = args.get('staticAssetsAddress')
+
     dir(pathToSrc) {
-        sh "${buildCommands}"
+        withEnv(["STATIC_ASSETS_ADDRESS=${staticAssetsAddress}"]) {
+            sh "${buildCommands}"
+        }
     }
 }
 

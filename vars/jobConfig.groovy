@@ -67,6 +67,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
+            projectFlow['staticAssetsAddress'] = ""  // """https://static.${kubernetesCluster}"
             break
         case ~/^release\/.+$/:
             kubernetesCluster = kubernetesClusterMap.get('qa')
@@ -74,6 +75,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
+            projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
             break
         case ~/^hotfix\/.+$/:
             kubernetesCluster = 'none'
@@ -81,6 +83,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('qa')
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
+            projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
             break
         case 'master':
             kubernetesCluster = kubernetesClusterMap.get('production')
@@ -88,6 +91,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('production')
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
+            projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
             break
         default:
             kubernetesCluster = 'none'
@@ -95,6 +99,7 @@ def call(body) {
             healthCheckUrl = []
             branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
             DEPLOY_ENVIRONMENT = ''
+            projectFlow['staticAssetsAddress'] = ''
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
