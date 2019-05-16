@@ -1,0 +1,31 @@
+#!groovy
+@Library('pipeline') _
+
+nextivaPipeline {
+    appName = "myapp"                       //mandatory
+    channelToNotify = "testchannel"         //mandatory
+    branchingModel = "gitflow"              //optional
+    build = [["name"                 : "mvn",
+              "pathToSrc"            : ".",
+              "buildCommands"        : """pwd""",
+              "publishArtifact"      : true,
+              "image"                : "mvn:latest",
+              "resourceRequestCpu"   : "1",
+              "resourceLimitCpu"     : "1",
+              "resourceRequestMemory": "1Gi",
+              "resourceLimitMemory"  : "1Gi",],
+             ["name"           : "docker",
+              "publishArtifact": true,]]
+
+    test = ["unitTestCommands": """pwd""",
+            "integrationTestCommands:" """pwd""",
+            "postUnitTestCommands": """pwd""",
+            "postIntegrationTestCommands": """pwd""",
+            "dependencies"    : ["postgres"   : "",
+                                 "rabbitmq-ha": "",
+                                 "interaction": "latest",]]
+
+
+    test?.containsKey("integrationTestCommands")
+    deploy = ["postDeployCommands":"pwd",]
+}

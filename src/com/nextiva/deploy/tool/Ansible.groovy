@@ -1,7 +1,6 @@
-package com.nextiva.deployment.tool
+package com.nextiva.deploy.tool
 
 class Ansible implements DeploymentTool {
-    String type
     String image //ansible image
     String repository    //dev, qa, production, sales-demo
     String branch
@@ -13,6 +12,17 @@ class Ansible implements DeploymentTool {
     Boolean deploy() {
         println("this is ansible deployment" + toString())
         return true
+    }
+
+    Ansible(Map type, String image, String repository, String branch, String playbookPath, String inventoryPath, String args, List healthchecks) {
+        this.type = type
+        this.image = image
+        this.repository = repository
+        this.branch = branch
+        this.playbookPath = playbookPath
+        this.inventoryPath = inventoryPath
+        this.args = args
+        this.healthchecks = healthchecks
     }
 
     @Override

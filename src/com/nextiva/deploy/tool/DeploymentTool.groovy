@@ -1,4 +1,4 @@
-package com.nextiva.deployment.tool
+package com.nextiva.deploy.tool
 
 interface DeploymentTool {
     Boolean deploy()

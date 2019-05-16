@@ -1,14 +1,17 @@
 package com.nextiva.config
 
+import java.util.regex.Pattern
+
 import static com.nextiva.SharedJobsStaticVars.*
 
 class Config implements Serializable {
-    private Map pipelineParams = new HashMap()
+    // used to store all parameters passed into config
+    Map configuration = [:]
     private Script script
 
-    protected Config(Script script, Map pipelineParams) {
+    Config(Script script, Map pipelineParams) {
         this.script = script
-        this.pipelineParams << pipelineParams
+        configuration << pipelineParams
         validate()
         setDefaults()
         setExtraEnvVariables()
@@ -21,83 +24,78 @@ class Config implements Serializable {
         List<String> configurationErrors = []
 
         //TODO: add default appname generation based on the repository name
-        if (!pipelineParams.containsKey("appName")) {
-            configurationErrors.add("Application Name is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        if (!configuration.containsKey("appName")) {
+            configurationErrors.add("Application Name is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
-        if (!pipelineParams.containsKey("channelToNotify")) {
-            configurationErrors.add("Slack notification channel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        if (!configuration.containsKey("channelToNotify")) {
+            configurationErrors.add("Slack notification channel is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
-        if (!pipelineParams.containsKey("buildTool")) {
-            configurationErrors.add("BuildTool is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
-        }
-        //TODO: move branching model(gitflow and trunkbased) to the class or enum
-        if (!pipelineParams.get("branchingModel") ==~ /^gitflow|trunkbased$/) {
-            configurationErrors.add("BranchingModel is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
+        if (!configuration.containsKey("build")) {
+            configurationErrors.add("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
 
         if (!configurationErrors.isEmpty()) {
-            error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
+            script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
     }
 
     private void setDefaults() {
         //Build flags
         //Use default value, this also creates the key/value pair in the map.
-        pipelineParams.get("buildArtifact", false)
-        pipelineParams.get("buildDockerImage", true)
-        pipelineParams.get("publishArtifact", false)
-        pipelineParams.get("publishDockerImage", true)
-        pipelineParams.get("isSecurityScanEnabled", true)
-        pipelineParams.get("isSonarAnalysisEnabled", true)
-        pipelineParams.get("publishStaticAssetsToS3", true)
-        pipelineParams.get("pathToSrc", script.env.WORKSPACE)
-        pipelineParams.put("branchName", script.env.BRANCH_NAME)
-        pipelineParams.get("extraEnvs", [:])
-        pipelineParams.get("applicationDependencies", [:])  //list of application dependencies for build
+        //TODO: move branching model(gitflow and trunkbased) to the class or enum
+        configuration.get("branchingModel", "gitflow")
+        configuration.put("isUnitTestEnabled", configuration.test?.containsKey("unitTestCommands"))
+        configuration.put("isIntegrationTestEnabled", configuration.test?.containsKey("integrationTestCommands"))
+        configuration.put("isDeployEnabled", configuration.containsKey("deploy"))
+        configuration.put("isPostDeployEnabled", configuration.deploy?.containsKey("postDeployCommands"))
+        configuration.get("isSecurityScanEnabled", true)
+        configuration.get("isSonarAnalysisEnabled", true)
+        configuration.get("isQACoreTeamTestEnabled", true)
+        configuration.get("publishStaticAssetsToS3", true)
+        configuration.get("pathToSrc", script.env.WORKSPACE)
+        configuration.put("branchName", script.env.BRANCH_NAME)
+        configuration.get("extraEnvs", [:])
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
     }
 
-    private void collectJobParameters(){
-        Map properties = generateJobParameters(Map pipelineParams)
-        pipelineParams.put("params",jobWithProperties(properties))
+    private void collectJobParameters() {
+        Map properties = generateJobParameters(Map configuration)
+        configuration.put("params", jobWithProperties(properties))
     }
 
-    private Map generateJobParameters(Map pipelineParams){
+    private List generateJobParameters() {
+        List paramlist = []
+        def branchName = configuration.get("branchName")
+        def branchingModel = configuration.get("branchingModel")
 
+        List jobParameters = [["parameter"     : script.string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
+                               "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
+                                                  "trunkbased": /^master$/],
+                              ],
+                              ["parameter"     : script.choice(choices: configuration.get("deployDstList"), description: 'Where deploy?', name: 'deployDst'),
+                               "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
+                                                  "trunkbased": /^master$/],
+                              ]]
 
-        dev|develop  dev env
-        release     qa
-        master      prod, sales demo
-
-
-        environment
-        dev
-
-
-        def appParams = [string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only \n' +
-                'or leave empty for start full build')]
-        if (env.BRANCH_NAME == "master" && ) {
-            appParams.add(choice(choices: 'prod+sales-demo\nprod\nsales-demo', description: 'Where deploy?', name: 'deployDst'))
-        } else if (env.BRANCH_NAME == "master") {
-            appParams.add(choice(choices: 'prod', description: 'Where deploy?', name: 'deployDst'))
+        jobParameters.each {
+            Pattern branchPattern = Pattern.compile(it.get("branchingModel").get(branchingModel))
+            if (branchName ==~ branchPattern) {
+                paramlist.add(it.get("parameter"))
+            }
         }
-        appParams.add(booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false))
 
-
-
-        switch (pipelineParams.get("branchName")){
-case
-        }
+        return paramlist
     }
 
-    private void setExtraEnvVariables(){
-        pipelineParams.extraEnvs.each { k, v -> script.env[k] = v }
+    private void setExtraEnvVariables() {
+        configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
+
     private void configureSlave() {
         //Slave settings
-        this.buildContainer = pipelineParams.get("buildContainer")
+        this.buildContainer = configuration.get("buildContainer")
         if (!buildContainer) {
             configurationErrors.add("BuildContainer is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
@@ -106,21 +104,28 @@ case
 
 
             if (!deployOnly) {
-                containerResources.put("buildContainer",buildContainer)
+                containerResources.put("buildContainer", buildContainer)
             }
             if (kubernetesDeployment) {
-                containerResources.put("kubernetes",KUBERNETES_CONTAINER)
+                containerResources.put("kubernetes", KUBERNETES_CONTAINER)
             }
             if (ansibleDeployment) {
-                containerResources.put("ansible",ANSIBLE_CONTAINER)
+                containerResources.put("ansible", ANSIBLE_CONTAINER)
             }
             DOCKER_CONTAINER
             return containerResources
         }
     }
 
+    Map getConfiguration() {
+        return configuration
+    }
+}
+
+
+
 /////add deployment keys
-//    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
+//    kubernetesDeploymentsList = configuration.kubernetesDeploymentsList ?: [APP_NAME]
 //    kubernetesClusterMap
 //    ansibleRepo
 //    ansibleRepoBranch
@@ -139,6 +144,4 @@ case
 //    postdeploycommands
 //    deploy only
 //    BUILD_VERSION
-//    ANSIBLE_EXTRA_VARS
-}
-
+//    ANSIBLE_EXTRA_VARSrceLimitMemory = containerConfig.get("resourceLimitMemory", "6144Mi")

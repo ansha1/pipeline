@@ -1,13 +1,12 @@
 package com.nextiva.stages.stage
 
-class PublishDockerImage extends Stage {
-    PublishDockerImage(Script script, Map configuration) {
+class CollectBuildResults extends Stage {
+    CollectBuildResults(Script script, Map configuration) {
         super(script, configuration)
     }
 
-    def execute(){
+    def execute() {
         script.stage(this.getClass().getSimpleName()) {
-//           publishDockerImage
             script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
         }
     }

@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-class Deploy extends BasicStage {
+class Deploy extends Stage {
     Deploy(Script script, Map configuration) {
         super(script, configuration)
     }

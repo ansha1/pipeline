@@ -1,5 +1,7 @@
 import com.nextiva.config.Config
-import com.nextiva.stage.StageFactory
+import com.nextiva.stages.StageFactory
+import com.nextiva.stages.stage.Stage
+
 def call(body) {
     // evaluate the body block, and collect configuration into the object
     def pipelineParams = [:]
@@ -9,24 +11,25 @@ def call(body) {
 
     Config config = new Config(this, pipelineParams)
 
-    Map configuration = config.getConfiguration()
+    List<Stage> flow = StageFactory.getStagesFromConfiguration(this, config.getConfiguration())
 
-    List flow = StageFactory.getStagesFromConfiguration(this, configuration)
+    Stage notificationSender = flow.pop()
+    Stage resultsCollector = flow.pop()
 
     kubernetesSlave(configuration) {
         try {
             flow.each {
                 it.execute()
             }
-        } catch(t){
+        } catch (t) {
             //some error handeling
             currentBuild.result = "FAILED"
             log.error("this is  error $t")
         } finally {
             //test results collecting
-            println("test results has been collected")
+            resultsCollector.execute()
             //slack notification
-            println("slack notification about build")
+            notificationSender.execute()
         }
     }
 }

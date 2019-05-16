@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-class DeployByAnsible extends BasicStage {
+class DeployByAnsible extends Stage {
     DeployByAnsible(Script script, Map configuration) {
         super(script, configuration)
     }

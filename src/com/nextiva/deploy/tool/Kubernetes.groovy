@@ -1,10 +1,7 @@
-package com.nextiva.deployment.tool
+package com.nextiva.deploy.tool
 
-import groovy.transform.ToString
-
-//@ToString
 class Kubernetes implements DeploymentTool {
-    String type
+    String name
     String image    //: kubeprovisioningimage
     String appName  //: "interaction"
     String buildversion //: "1.3.0"

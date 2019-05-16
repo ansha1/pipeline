@@ -1,13 +1,12 @@
-package com.nextiva.deployment
+package com.nextiva.deploy
 
-import com.nextiva.deployment.tool.Ansible
-import com.nextiva.deployment.tool.DeploymentTool
-import com.nextiva.deployment.tool.Kubernetes
+import com.nextiva.deploy.tool.*
+
 import hudson.AbortException
 
 class DeploymentBuilder {
 
-    Map deployment = ["type"         : "Ansible",
+    Map deployment = ["name"         : "Ansible",
                       "image"        : "ansibleimage",
                       "repository"   : "repo",
                       "branch"       : "master",

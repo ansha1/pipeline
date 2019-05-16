@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-class SonarScan extends BasicStage {
+class SonarScan extends Stage {
     SonarScan(Script script, Map configuration) {
         super(script, configuration)
     }

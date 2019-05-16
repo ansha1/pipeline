@@ -1,8 +1,6 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.stages.stage.BasicStage
-
-class VerifyArtifactVersionInNexus extends BasicStage {
+class VerifyArtifactVersionInNexus extends Stage {
     VerifyArtifactVersionInNexus(Script script, Map configuration) {
         super(script, configuration)
     }

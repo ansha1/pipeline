@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-class SendNotifications extends BasicStage {
+class SendNotifications extends Stage {
     SendNotifications(Script script, Map configuration) {
         super(script, configuration)
     }

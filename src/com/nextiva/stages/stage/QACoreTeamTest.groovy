@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-class QACoreTeamTest extends BasicStage {
+class QACoreTeamTest extends Stage {
     QACoreTeamTest(Script script, Map configuration) {
         super(script, configuration)
     }
