@@ -53,11 +53,11 @@ def runSonarScanner(String projectVersion) {
 
 void buildForVeracode(String appName, String buildVersion, String environment, Map args) {
 
-    /*
-       *  veracode does not support spring-boot applications, therefore we remove <executable>true</executable> from any
-       *  pom.xml files that contain them and then do standard (non deploy) build in maven to prepare for submission to scan in veracode
-       *
-       */
+    /**
+     *  veracode does not support spring-boot applications, therefore we remove <executable>true</executable> from any
+     *  pom.xml files that contain them and then do standard (non deploy) build in maven to prepare for submission to scan in veracode
+     *
+     */
 
     //sets modulesPropertiesField which we need in jobTemplate.groovy where it runs veracodeScan.groovy to know the components that need to be uploaded for scanning.
     getPropertiesForVeracode()
@@ -86,22 +86,21 @@ void buildForVeracode(String appName, String buildVersion, String environment, M
         } catch (e) {
             error("buildForVeracode fail ${e}")
         }
-
     }
 }
 
 List getPropertiesForVeracode() {
 
-    /*
-   *  method getPropertiesForVeracode() is used to collect the maven modules properties from a local source
-   *  It returns a list of Maps with module's groupId, artifactId, artifactVersion, packaging and finalName
-   */
+    /**
+     *  method getPropertiesForVeracode() is used to collect the maven modules properties from a local source
+     *  It returns a list of Maps with module's groupId, artifactId, artifactVersion, packaging and finalName
+     */
 
     log.info("get Java artifacts properties: groupId, version, artifactId, packaging and finalName")
     List artifactsListProperties = []
     dir(pathToSrc) {
 
-       // sh "mvn -q clean install -DskipTests=true"
+        // sh "mvn -q clean install -DskipTests=true"
 
         def artifactsProperties = sh returnStdout: true, script: """
                                                                     mvn -q -Dexec.executable=\'echo\' -Dexec.args=\'\${project.groupId} \${project.artifactId} \${project.version} \${project.packaging} \${project.build.finalName}\' exec:exec -U
@@ -113,7 +112,6 @@ List getPropertiesForVeracode() {
             log.debug("Received propertiesList: $propertiesList")
             if (propertiesList.size() >= 4) {
                 artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3], 'finalName': propertiesList[4]]
-
             }
         }
     }
@@ -125,7 +123,7 @@ List getPropertiesForVeracode() {
 
 
 List getModulesProperties() {
-    /*
+    /**
     *  method getModulesProperties() is used to collect the maven modules properties from a local source
     *  It returns a list of Maps with module's groupId, artifactId, artifactVersion, packaging
     */
@@ -147,7 +145,6 @@ List getModulesProperties() {
             log.debug("Received propertiesList: $propertiesList")
             if (propertiesList.size() >= 3) { //sanity check, without this our tests fail
                 artifactsListProperties << ['groupId': propertiesList[0], 'artifactVersion': propertiesList[2], 'artifactId': propertiesList[1], 'packaging': propertiesList[3]]
-
             }
         }
     }
@@ -233,7 +230,6 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
             error("buildPublish fail ${e}")
         }
     }
-
 }
 
 void buildRelease(String appName, String buildVersion, String environment, Map args, String deployVersion) {
