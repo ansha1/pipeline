@@ -43,7 +43,6 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 void runTests(Map args) {
     try {
         log.info("Start unit tests JavaScript")
-        def languageVersion = args.get('languageVersion')
         def testCommands = args.get('testCommands', 'npm install && npm run test && npm run lint')
 
         dir(pathToSrc) {
@@ -57,17 +56,23 @@ void runTests(Map args) {
 def buildAssets(Map args) {
     def distPath = args.get('distPath', 'dist/static')
     def buildCommands = args.get('buildCommands', "export OUTPUT_PATH=${distPath} && npm install && npm run dist")
-            dir(pathToSrc) {
-                sh "${buildCommands}"
-            }
+    String staticAssetsAddress = args.get('staticAssetsAddress')
+
+    dir(pathToSrc) {
+        withEnv(["STATIC_ASSETS_ADDRESS=${staticAssetsAddress}"]) {
+            sh "${buildCommands}"
+        }
+    }
 }
 
 def publishAssets(String appName, String buildVersion, String environment, Map args) {
     def distPath = args.get('distPath', 'dist/static')
-    Boolean publishToS3 = args.get('publishStaticAssetsToS3')
+    Boolean publishToS3 = args.get('publishStaticAssetsToS3', PUBLISH_STATICASSETS_TO_S3_DEFAULT)
     log.info("publishStaticAssetsToS3: ${publishToS3}")
+
     dir(pathToSrc) {
         nexus.uploadStaticAssets(environment, distPath, buildVersion, appName, pathToSrc)
+
         if (publishToS3) {
             aws.uploadFrontToS3(appName, buildVersion, environment, args, pathToSrc)
         }    
@@ -81,5 +86,4 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     log.info("ENV: ${environment}")
     buildAssets(args)
     publishAssets(appName, buildVersion, environment, args)
-
 }
