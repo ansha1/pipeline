@@ -67,7 +67,7 @@ def call(body) {
             healthCheckUrl = healthCheckMap.get('dev')
             branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
-            projectFlow['staticAssetsAddress'] = ""  // "https://static.${kubernetesCluster}"
+            projectFlow['staticAssetsAddress'] = ''
             break
         case ~/^release\/.+$/:
             kubernetesCluster = kubernetesClusterMap.get('qa')
