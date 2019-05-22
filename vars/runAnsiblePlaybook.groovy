@@ -35,7 +35,6 @@ def getPlaybookContext(String inventoryPath, String playbookPath, Map extraVars)
 
 def execute(String repoDir, String playbookContext, String playbookPath) {
     script {
-        isRCLocked.checkState()
         stage('Run ansible playbook ' + playbookPath) {
             sh "cd ${repoDir} && ansible-playbook ${playbookContext}"
         }

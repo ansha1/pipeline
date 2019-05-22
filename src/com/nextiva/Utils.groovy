@@ -8,4 +8,12 @@ class Utils {
                 returnStdout: true
         ).trim()
     }
+
+    static void shOrClosure(script, def command) {
+        if (command instanceof Closure){
+            command()
+        }else{
+            shWithOutput(script, command)
+        }
+    }
 }

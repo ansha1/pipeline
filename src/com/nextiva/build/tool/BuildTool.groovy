@@ -1,9 +1,23 @@
 package com.nextiva.build.tool
 
-interface BuildTool {
+import static com.nextiva.Utils.shOrClosure
+
+abstract class BuildTool {
+    String tool
+    String pathToSrc
+    def buildCommands
+    Boolean publishArtifact
+    String image
+    String resourceRequestCpu
+    String resourceLimitCpu
+    String resourceRequestMemory
+    String resourceLimitMemory
+
     void setVersion(version)
     String getVersion()
-    void build()
+    void build(){
+        shOrClosure(script, buildCommands)
+    }
     void publish()
     void isArtifactAvailableInRepo()
 

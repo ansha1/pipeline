@@ -4,7 +4,7 @@ import com.nextiva.deploy.tool.*
 
 import hudson.AbortException
 
-class DeploymentBuilder {
+class DeployFactory {
 
     Map deployment = ["name"         : "Ansible",
                       "image"        : "ansibleimage",
@@ -15,7 +15,7 @@ class DeploymentBuilder {
                       "ansibleArgs"  : 'args']
 
 
-    static DeploymentTool build(Map deployment){
+    static DeployTool build(Map deployment){
         switch (deployment.get("type")){
             case "Ansible":
                 return new Ansible(deployment)

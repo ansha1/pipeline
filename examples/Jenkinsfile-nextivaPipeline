@@ -5,7 +5,9 @@ nextivaPipeline {
     appName = "myapp"                       //mandatory
     channelToNotify = "testchannel"         //mandatory
     branchingModel = "gitflow"              //optional
-    build = [["name"                 : "mvn",
+    language = "java"                       //only for ansible deployment
+    isSonarEnabled = fasle
+    build = [["tool"                 : "mvn",
               "pathToSrc"            : ".",
               "buildCommands"        : """pwd""",
               "publishArtifact"      : true,
@@ -14,18 +16,32 @@ nextivaPipeline {
               "resourceLimitCpu"     : "1",
               "resourceRequestMemory": "1Gi",
               "resourceLimitMemory"  : "1Gi",],
-             ["name"           : "docker",
+             ["tool"           : "docker",
               "publishArtifact": true,]]
 
-    test = ["unitTestCommands": """pwd""",
-            "integrationTestCommands:" """pwd""",
-            "postUnitTestCommands": """pwd""",
+    test = ["unitTestCommands"           : """pwd""",
+            "integrationTestCommands:"   : """pwd""",
+            "postUnitTestCommands"       : """pwd""",
             "postIntegrationTestCommands": """pwd""",
-            "dependencies"    : ["postgres"   : "",
-                                 "rabbitmq-ha": "",
-                                 "interaction": "latest",]]
+            "dependencies"               : ["postgres"   : "",
+                                            "rabbitmq-ha": "",
+                                            "interaction": "latest",]]
+
+    deploy = ["tool"              : "kubernetes",
+              "image"             : "kubeprovisioning:2.7",
+              "repostiory"        : "ssh git nextiva xyz",
+              "branch"            : "master",
+              "postDeployCommands": "pwd",]
+
+    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
+                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
+                                  "ansibleInventory": "rc"],
+                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
+                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+                                  "branchPattern": /^master$/,]
+    ]
 
 
-    test?.containsKey("integrationTestCommands")
-    deploy = ["postDeployCommands":"pwd",]
+    branchPermissions = [:]
+
 }

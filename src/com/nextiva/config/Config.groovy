@@ -1,6 +1,7 @@
 package com.nextiva.config
 
-import java.util.regex.Pattern
+import com.nextiva.environment.Environment
+import com.nextiva.environment.EnvironmentFactory
 
 import static com.nextiva.SharedJobsStaticVars.*
 
@@ -11,11 +12,11 @@ class Config implements Serializable {
 
     Config(Script script, Map pipelineParams) {
         this.script = script
-        configuration << pipelineParams
+        this.configuration << pipelineParams
         validate()
         setDefaults()
         setExtraEnvVariables()
-        collectJobParameters()
+        setJobParameters()
         configureSlave()
     }
 
@@ -23,7 +24,7 @@ class Config implements Serializable {
         // Checking mandatory variables
         List<String> configurationErrors = []
 
-        //TODO: add default appname generation based on the repository name
+        //TODO: add default appName generation based on the repository name
         if (!configuration.containsKey("appName")) {
             configurationErrors.add("Application Name is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
@@ -40,7 +41,7 @@ class Config implements Serializable {
     }
 
     private void setDefaults() {
-        //Build flags
+        //Set flags
         //Use default value, this also creates the key/value pair in the map.
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
         configuration.get("branchingModel", "gitflow")
@@ -51,8 +52,6 @@ class Config implements Serializable {
         configuration.get("isSecurityScanEnabled", true)
         configuration.get("isSonarAnalysisEnabled", true)
         configuration.get("isQACoreTeamTestEnabled", true)
-        configuration.get("publishStaticAssetsToS3", true)
-        configuration.get("pathToSrc", script.env.WORKSPACE)
         configuration.put("branchName", script.env.BRANCH_NAME)
         configuration.get("extraEnvs", [:])
 
@@ -60,33 +59,17 @@ class Config implements Serializable {
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
     }
 
-    private void collectJobParameters() {
-        Map properties = generateJobParameters(Map configuration)
-        configuration.put("params", jobWithProperties(properties))
+    private void configureEnvironment() {
+        if (configuration.get("isDeployEnabled")) {
+            EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
+            List<Environment> environmentsToDeploy =  environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
+            configuration.deploy?.put("environmentsToDeploy", environmentsToDeploy)
+        }
     }
 
-    private List generateJobParameters() {
-        List paramlist = []
-        def branchName = configuration.get("branchName")
-        def branchingModel = configuration.get("branchingModel")
-
-        List jobParameters = [["parameter"     : script.string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
-                               "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
-                                                  "trunkbased": /^master$/],
-                              ],
-                              ["parameter"     : script.choice(choices: configuration.get("deployDstList"), description: 'Where deploy?', name: 'deployDst'),
-                               "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
-                                                  "trunkbased": /^master$/],
-                              ]]
-
-        jobParameters.each {
-            Pattern branchPattern = Pattern.compile(it.get("branchingModel").get(branchingModel))
-            if (branchName ==~ branchPattern) {
-                paramlist.add(it.get("parameter"))
-            }
-        }
-
-        return paramlist
+    private void setJobParameters() {
+        JobProperties jobProperties = new JobProperties(script, configuration)
+        configuration.put("jobProperties", jobProperties.toMap())
     }
 
     private void setExtraEnvVariables() {
@@ -94,15 +77,15 @@ class Config implements Serializable {
     }
 
     private void configureSlave() {
+        Map build = [:]
+
         //Slave settings
-        this.buildContainer = configuration.get("buildContainer")
+        this.buildContainer = configuration.get("build").get
         if (!buildContainer) {
             configurationErrors.add("BuildContainer is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
         }
         private Map<String, Map> containerResources() {
             Map<String, Map> containerResources = ["jnlp", JNLP_CONTAINER]
-
-
             if (!deployOnly) {
                 containerResources.put("buildContainer", buildContainer)
             }
@@ -123,25 +106,3 @@ class Config implements Serializable {
 }
 
 
-
-/////add deployment keys
-//    kubernetesDeploymentsList = configuration.kubernetesDeploymentsList ?: [APP_NAME]
-//    kubernetesClusterMap
-//    ansibleRepo
-//    ansibleRepoBranch
-//    FULL_INVENTORY_PATH
-//    BASIC_INVENTORY_PATH
-//    DEPLOY_ON_K8S
-//    ANSIBLE_DEPLOYMENT
-//    kubernetesCluster
-//    ANSIBLE_ENV
-//    DEPLOY_ENVIRONMENT
-//            flow:
-//    buildcommants
-//    unittestcommands
-//    integrationtestcommands
-//    testpostcommands
-//    postdeploycommands
-//    deploy only
-//    BUILD_VERSION
-//    ANSIBLE_EXTRA_VARSrceLimitMemory = containerConfig.get("resourceLimitMemory", "6144Mi")
