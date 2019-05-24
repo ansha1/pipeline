@@ -199,10 +199,10 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 }
 
 
-void runTests(Map args) {
+void runTests(Map projectFlow) {
     log.info("Start unit tests Java")
 
-    def testCommands = args.get('testCommands', 'mvn --batch-mode clean install -U jacoco:report && mvn checkstyle:checkstyle')
+    def testCommands = projectFlow.get('testCommands', 'mvn --batch-mode clean install -U jacoco:report && mvn checkstyle:checkstyle')
     dir(pathToSrc) {
         try {
             sh testCommands
@@ -217,12 +217,12 @@ void runTests(Map args) {
 }
 
 
-void buildPublish(String appName, String buildVersion, String environment, Map args) {
+void buildPublish(String appName, String buildVersion, String environment, Map projectFlow) {
     log.info("Build and publish Java application.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("ENV: ${environment}")
-    def buildCommands = args.get('buildCommands', 'mvn deploy -U --batch-mode -DskipTests')
+    def buildCommands = projectFlow.get('buildCommands', 'mvn deploy -U --batch-mode -DskipTests')
     dir(pathToSrc) {
         try {
             sh "${buildCommands}"
@@ -232,14 +232,14 @@ void buildPublish(String appName, String buildVersion, String environment, Map a
     }
 }
 
-void buildRelease(String appName, String buildVersion, String environment, Map args, String deployVersion) {
+void buildRelease(String appName, String buildVersion, String environment, Map projectFlow, String deployVersion) {
     log.info("Build and Release Java application.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
     log.info("DEPLOY_VERSION: ${deployVersion}")
     log.info("ENV: ${environment}")
     def deployVersionArg = deployVersion.isEmpty() ? "" : "-DreleaseVersion=${deployVersion}"
-    def releaseCommand = args.get("releaseCommands", "mvn --batch-mode release:prepare -DskipTests ${deployVersionArg} && mvn --batch-mode release:perform -DskipTests")
+    def releaseCommand = projectFlow.get("releaseCommands", "mvn --batch-mode release:prepare -DskipTests ${deployVersionArg} && mvn --batch-mode release:perform -DskipTests")
     dir(pathToSrc) {
         try {
             sh "${releaseCommand}"
