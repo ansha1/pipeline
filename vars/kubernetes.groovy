@@ -40,9 +40,12 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
         try {
             kubernetesDeploymentsList.each {
+                if(!it.contains('/')) {
+                    it = "deployment/${it}"
+                }
                 sh """
                    unset KUBERNETES_SERVICE_HOST
-                   kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                   kubectl rollout status ${it} --namespace ${nameSpace}
                 """
             }
         } catch (e) {
