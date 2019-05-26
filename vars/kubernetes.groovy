@@ -128,7 +128,9 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
     sh """
-       unset KUBERNETES_SERVICE_HOST
+       # fix for builds running in kubernetes, clean up predefined variables.
+       for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+
        ./kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
     """
 }
