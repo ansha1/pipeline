@@ -59,16 +59,16 @@ Boolean verifyPackageInNexus(String packageName, String packageVersion, String d
 }
 
 
-void runTests(Map args) {
+void runTests(Map projectFlow) {
     log.info('============================')
     log.info('Start Python unit tests')
     log.info('============================')
     
-    def languageVersion = args.get('languageVersion', 'python3.6')
-    def testCommands = args.get('testCommands', '''pip install -r requirements.txt
+    def languageVersion = projectFlow.get('languageVersion', 'python3.6')
+    def testCommands = projectFlow.get('testCommands', '''pip install -r requirements.txt
                                                    pip install -r requirements-test.txt
                                                    python setup.py test''')
-    def testPostCommands = args.get('testPostCommands')
+    def testPostCommands = projectFlow.get('testPostCommands')
 
     dir(pathToSrc) {
         pythonUtils.createVirtualEnv(languageVersion)
@@ -126,7 +126,7 @@ void runTests(Map args) {
 }
 
 
-void buildPublish(String appName, String buildVersion, String environment, Map args) {
+void buildPublish(String appName, String buildVersion, String environment, Map projectFlow) {
     log.info("Build and publish Python.")
     log.info("APP_NAME: ${appName}")
     log.info("BUILD_VERSION: ${buildVersion}")
