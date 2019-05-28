@@ -9,6 +9,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
     kubectlInstall()
     vaultInstall()
+    jqInstall()
 
     withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
              "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
@@ -99,7 +100,7 @@ def vaultLogin() {
 
 def kubectlInstall() {
     try {
-        log.info("Ensure that kubectl installed")
+        log.info("Ensure that kubectl is nstalled")
         sh "kubectl version --client=true"
     } catch (e) {
         log.info("Going to install latest stable kubectl")
@@ -122,6 +123,21 @@ def vaultInstall() {
             wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
             unzip -o vault.zip
             ./vault -v
+           """
+    }
+}
+
+def jqInstall() {
+    try {
+        log.info("Ensure that jq is installed")
+        sh "jq --version"
+    } catch (e) {
+        log.info("Going to install latest stable jq")
+        sh """
+            curl -LO https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+            mv jq-linux64 jq
+            chmod +x ./jq
+            ./jq --version
            """
     }
 }
