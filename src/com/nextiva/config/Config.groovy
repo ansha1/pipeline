@@ -5,7 +5,7 @@ import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 
-import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
+import static com.nextiva.SharedJobsStaticVars.DEFAULT_CONTAINERS
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -118,7 +118,7 @@ class Config implements Serializable {
     }
 
     Map getJenkinsContainer() {
-        return configuration.get("jenkinsContainer", getDEFAULT_CONTAINERS().get("jnlp"))
+        return configuration.get("jenkinsContainer", DEFAULT_CONTAINERS().get("jnlp"))
     }
 
     Map getBuildDependencies() {
