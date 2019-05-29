@@ -10,7 +10,7 @@ import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
-    private Script script
+    protected Script script
 
     Config(Script script, Map pipelineParams) {
         this.script = script
