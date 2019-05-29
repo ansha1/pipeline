@@ -69,7 +69,7 @@ class JobProperties {
         return result
     }
 
-    private Map getParams(Script script) {
+    Map getParams(Script script) {
         def params = script.jobWithProperties(toMap())
         return params
     }
