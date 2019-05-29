@@ -7,8 +7,9 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = pipelineParams
     body()
-
+    log.info("closure complete")
     Config config = new Config(this, pipelineParams)
+    log.info("config creation complete")
     kubernetesSlave(config.getSlaveConfiguration()) {
         pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
     }
