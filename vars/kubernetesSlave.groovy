@@ -1,14 +1,14 @@
 import io.fabric8.kubernetes.client.KubernetesClient
 import static com.nextiva.SharedJobsStaticVars.*
+import static com.nextiva.Utils.buildID
 import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
-    String namespaceName = slaveConfig.get("namespace", iD)
 
     Map jobProperties = slaveConfig.get("jobProperties")
-    if (!jobProperties) {
+    if (jobProperties) {
         jobWithProperties(jobProperties)
     }
 
@@ -17,19 +17,15 @@ def call(Map slaveConfig, body) {
         error "ContainerResources is not defined, please define it in your slaveConfig: $slaveConfig"
     }
 
-    def jobTimeoutMinutes = slaveConfig.get("jobTimeoutMinutes", "60")
-
-    withNamespace(namespaceName) {
+    withNamespace(iD) {
         def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
         podTemplate(label: "parent-$iD", yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, namespace: namespaceName, containers: containers(containerResources), volumes: volumes()) {
+        podTemplate(label: iD, namespace: iD, containers: containers(containerResources), volumes: volumes()) {
             timestamps {
                 ansiColor('xterm') {
-                    timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
-                        node(label) {
-                            body()
-                        }
+                    node(iD) {
+                        body()
                     }
                 }
             }

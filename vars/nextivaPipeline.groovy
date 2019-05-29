@@ -1,5 +1,4 @@
 import com.nextiva.config.Config
-import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 
 def call(body) {
@@ -10,23 +9,22 @@ def call(body) {
     body()
 
     Config config = new Config(this, pipelineParams)
-
-    List<Stage> stages = StageFactory.getStagesFromConfiguration(this, config.getConfiguration())
-
-    kubernetesSlave(configuration) {
-        pipelineExecution(stages)
+    kubernetesSlave(config.getSlaveConfiguration()) {
+        pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
     }
 }
 
-def pipelineExecution(List<Stage> stages){
+void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
 
     //exclude steps than should be executed in the finally block
     Stage notify = flow.pop()
     Stage resultsCollector = flow.pop()
 
     try {
-        stages.each {
-            it.execute()
+        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
+            stages.each {
+                it.execute()
+            }
         }
     } catch (t) {
         //some error handling

@@ -2,8 +2,10 @@ package com.nextiva.config
 
 import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
+import com.nextiva.stages.StageFactory
+import com.nextiva.stages.stage.Stage
 
-import static com.nextiva.SharedJobsStaticVars.*
+import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -12,11 +14,13 @@ class Config implements Serializable {
 
     Config(Script script, Map pipelineParams) {
         this.script = script
-        this.configuration << pipelineParams
+        this.configuration = pipelineParams
         validate()
         setDefaults()
+        configureEnvironment()
         setExtraEnvVariables()
         setJobParameters()
+        configureStages()
         configureSlave()
     }
 
@@ -45,8 +49,13 @@ class Config implements Serializable {
         //Use default value, this also creates the key/value pair in the map.
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
         configuration.get("branchingModel", "gitflow")
-        configuration.put("isUnitTestEnabled", configuration.test?.containsKey("unitTestCommands"))
-        configuration.put("isIntegrationTestEnabled", configuration.test?.containsKey("integrationTestCommands"))
+        configuration.get("jobTimeoutMinutes", "60")
+        configuration.put("isUnitTestEnabled", configuration.build.any {
+            it.containsKey("unitTestCommands")
+        })
+        configuration.put("isIntegrationTestEnabled", configuration.build.any {
+            it.containsKey("integrationTestCommands")
+        })
         configuration.put("isDeployEnabled", configuration.containsKey("deploy"))
         configuration.put("isPostDeployEnabled", configuration.deploy?.containsKey("postDeployCommands"))
         configuration.get("isSecurityScanEnabled", true)
@@ -62,8 +71,8 @@ class Config implements Serializable {
     private void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
-            List<Environment> environmentsToDeploy =  environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
-            configuration.deploy?.put("environmentsToDeploy", environmentsToDeploy)
+            List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
+            configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
     }
 
@@ -77,31 +86,45 @@ class Config implements Serializable {
     }
 
     private void configureSlave() {
-        Map build = [:]
+        SlaveFactory slaveFactory = new SlaveFactory(this)
+        configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
+    }
 
-        //Slave settings
-        this.buildContainer = configuration.get("build").get
-        if (!buildContainer) {
-            configurationErrors.add("BuildContainer is undefined. You have to add it in the commonConfig  <<LINK_ON_CONFLUENCE>>")
-        }
-        private Map<String, Map> containerResources() {
-            Map<String, Map> containerResources = ["jnlp", JNLP_CONTAINER]
-            if (!deployOnly) {
-                containerResources.put("buildContainer", buildContainer)
-            }
-            if (kubernetesDeployment) {
-                containerResources.put("kubernetes", KUBERNETES_CONTAINER)
-            }
-            if (ansibleDeployment) {
-                containerResources.put("ansible", ANSIBLE_CONTAINER)
-            }
-            DOCKER_CONTAINER
-            return containerResources
-        }
+    private void configureStages() {
+        List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
+        configuration.put("stages", stages)
     }
 
     Map getConfiguration() {
         return configuration
+    }
+
+    Map getSlaveConfiguration() {
+        return configuration.get("slaveConfiguration")
+    }
+
+    String getJobTimeoutMinutes() {
+        return configuration.get("jobTimeoutMinutes")
+    }
+
+    Map getJenkinsContainer() {
+        return configuration.get("jenkinsContainer", getDEFAULT_CONTAINERS().get("jnlp"))
+    }
+
+    Map getBuildDependencies() {
+        return configuration.get("dependencies")
+    }
+
+    Map getBuildConfiguration() {
+        return configuration.get("build")
+    }
+
+    Map getDeployConfiguration() {
+        return configuration.get("deploy")
+    }
+
+    List<Stage> getStages() {
+        return configuration.get("stages")
     }
 }
 

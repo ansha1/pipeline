@@ -8,7 +8,6 @@ abstract class DeployTool implements Serializable {
     Map configuration
 
     String name
-    String image
     String repository
     String branch
     List<Environment> environments

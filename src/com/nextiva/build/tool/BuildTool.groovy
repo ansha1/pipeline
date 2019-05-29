@@ -3,23 +3,22 @@ package com.nextiva.build.tool
 import static com.nextiva.Utils.shOrClosure
 
 abstract class BuildTool {
-    String tool
+    String name
     String pathToSrc
     def buildCommands
-    Boolean publishArtifact
-    String image
-    String resourceRequestCpu
-    String resourceLimitCpu
-    String resourceRequestMemory
-    String resourceLimitMemory
+    def postBuildCommands
+    def unitTestCommands
+    def postUnitTestCommands
+    def integrationTestCommands
+    def postIntegrationTestCommands
 
-    void setVersion(version)
-    String getVersion()
-    void build(){
-        shOrClosure(script, buildCommands)
-    }
-    void publish()
-    void isArtifactAvailableInRepo()
+    Boolean publishArtifact
+
+    abstract void setVersion(String version)
+    abstract String getVersion()
+    abstract Boolean build()
+    abstract Boolean publish()
+    abstract Boolean isArtifactAvailableInRepo()
 
 //    protected echo(msg){
 ////        script.echo("[${this.getClass().getSimpleName()}] ${msg}")

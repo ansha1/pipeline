@@ -71,17 +71,19 @@ class SharedJobsStaticVars {
     static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
 
-    static final Map JNLP_CONTAINER = ["image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
-                                       "args"                 : "\${computer.jnlpmac} \${computer.name}",
-                                       "resourceRequestMemory": "256Mi",
-                                       "resourceLimitMemory"  : "512Mi"]
-    static final Map KUBERNETES_CONTAINER = ["image"                : "repository.nextiva.xyz/aws-provisioning:0.1.9",
-                                             "resourceRequestMemory": "64Mi",
-                                             "resourceLimitMemory"  : "256Mi"]
-    static final Map DOCKER_CONTAINER = ["image"                : "docker:stable-git",
-                                         "resourceRequestMemory": "128Mi",
-                                         "resourceLimitMemory"  : "256Mi"]
-    static final Map ANSIBLE_CONTAINER = ["image"                : "repository.nextiva.xyz/ansible:2.4.0",
-                                          "resourceRequestMemory": "128Mi",
-                                          "resourceLimitMemory"  : "512Mi"]
+    static final Map DEFAULT_CONTAINERS = ["jnlp"   : ["image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
+                                                       "args"                 : "\${computer.jnlpmac} \${computer.name}",
+                                                       "resourceRequestMemory": "256Mi",
+                                                       "resourceLimitMemory"  : "512Mi"],
+                                           "kubeup" : ["image"                : "repository.nextiva.xyz/aws-provisioning:0.1.9",
+                                                       "resourceRequestMemory": "64Mi",
+                                                       "resourceLimitMemory"  : "256Mi"],
+                                           "docker" : ["image"                : "docker:stable-git",
+                                                       "resourceRequestMemory": "128Mi",
+                                                       "resourceLimitMemory"  : "256Mi"],
+                                           "ansible": ["image"                : "repository.nextiva.xyz/ansible:2.4.0",
+                                                       "resourceRequestMemory": "128Mi",
+                                                       "resourceLimitMemory"  : "512Mi"],
+
+    ]
 }

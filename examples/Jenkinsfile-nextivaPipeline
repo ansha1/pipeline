@@ -7,31 +7,33 @@ nextivaPipeline {
     branchingModel = "gitflow"              //optional
     language = "java"                       //only for ansible deployment
     isSonarEnabled = fasle
-    build = [["tool"                 : "mvn",
-              "pathToSrc"            : ".",
-              "buildCommands"        : """pwd""",
-              "publishArtifact"      : true,
-              "image"                : "mvn:latest",
-              "resourceRequestCpu"   : "1",
-              "resourceLimitCpu"     : "1",
-              "resourceRequestMemory": "1Gi",
-              "resourceLimitMemory"  : "1Gi",],
-             ["tool"           : "docker",
-              "publishArtifact": true,]]
 
-    test = ["unitTestCommands"           : """pwd""",
-            "integrationTestCommands:"   : """pwd""",
-            "postUnitTestCommands"       : """pwd""",
-            "postIntegrationTestCommands": """pwd""",
-            "dependencies"               : ["postgres"   : "",
-                                            "rabbitmq-ha": "",
-                                            "interaction": "latest",]]
+    build = ["mvn"   : ["pathToSrc"                  : ".",
+                        "buildCommands"              : """pwd""",
+                        "postBuildCommands"          : """pwd""",
+                        "unitTestCommands"           : """pwd""",
+                        "postUnitTestCommands"       : """pwd""",
+                        "integrationTestCommands:"   : """pwd""",
+                        "postIntegrationTestCommands": """pwd""",
+                        "publishArtifact"            : true,
+                        "image"                      : "mvn:latest",
+                        "resourceRequestCpu"         : "1",
+                        "resourceLimitCpu"           : "1",
+                        "resourceRequestMemory"      : "1Gi",
+                        "resourceLimitMemory"        : "1Gi",],
+             "docker": ["publishArtifact": true,]]
 
-    deploy = ["tool"              : "kubernetes",
-              "image"             : "kubeprovisioning:2.7",
-              "repostiory"        : "ssh git nextiva xyz",
-              "branch"            : "master",
-              "postDeployCommands": "pwd",]
+    dependencies = ["postgres"   : "",
+                    "rabbitmq-ha": "",
+                    "interaction": "latest",]
+
+    deploy = ["kubeup" : ["cloudApp"          : "$appName",
+                          "image"             : "kubeprovisioning:2.7",
+                          "repostiory"        : "ssh git nextiva xyz",
+                          "branch"            : "master",
+                          "postDeployCommands": "pwd",],
+              "ansible": [:]
+    ]
 
     environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
                    "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
@@ -40,7 +42,6 @@ nextivaPipeline {
                    "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
                                   "branchPattern": /^master$/,]
     ]
-
 
     branchPermissions = [:]
 
