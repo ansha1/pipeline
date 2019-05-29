@@ -13,7 +13,9 @@ class Config implements Serializable {
     Script script
 
     Config(Script script, Map pipelineParams) {
+        script.log.info("1 complete")
         this.script = script
+        script.log.info("2 complete")
         this.configuration = pipelineParams
         script.log.info("preload complete")
         validate()
