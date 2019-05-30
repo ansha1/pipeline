@@ -31,12 +31,12 @@ class SlaveFactory {
     private static Map configureToolContainers(Map<String, Map> tools) {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
-            Map toolContainerConfiguration = getDEFAULT_CONTAINERS().get(tool)
-            toolContainerConfiguration.leftShift(toolConfiguration.subMap(["image",
-                                                                           "resourceRequestCpu",
-                                                                           "resourceLimitCpu",
-                                                                           "resourceRequestMemory",
-                                                                           "resourceLimitMemory",
+            Map toolContainerConfiguration = DEFAULT_CONTAINERS.get(tool)
+            (toolContainerConfiguration << toolConfiguration.subMap(["image",
+                                                                     "resourceRequestCpu",
+                                                                     "resourceLimitCpu",
+                                                                     "resourceRequestMemory",
+                                                                     "resourceLimitMemory",
             ]).findAll {
                 it.value
             })

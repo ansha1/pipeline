@@ -6,8 +6,6 @@ import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 
-import static com.nextiva.SharedJobsStaticVars.DEFAULT_CONTAINERS
-
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
