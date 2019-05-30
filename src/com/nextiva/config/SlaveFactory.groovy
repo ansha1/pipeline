@@ -38,7 +38,6 @@ class SlaveFactory {
     Map configureToolContainers(Map<String, Map> tools) {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
-            echo("tool $tool toolConfiguration $toolConfiguration")
             Map toolContainerConfiguration = DEFAULT_CONTAINERS.get(tool)
             toolContainerConfiguration << toolConfiguration.subMap(["image",
                                                                      "resourceRequestCpu",
@@ -50,6 +49,7 @@ class SlaveFactory {
             }
             toolContainers.put(tool, toolContainerConfiguration)
         }
+        echo("toolContainers $toolContainers")
         return toolContainers
     }
 
