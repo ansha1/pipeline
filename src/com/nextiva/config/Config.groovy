@@ -83,8 +83,11 @@ class Config implements Serializable {
     @NonCPS
     void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
+            echo("1")
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
+            echo("2")
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
+            echo("3")
             configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
     }
