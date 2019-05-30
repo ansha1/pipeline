@@ -34,7 +34,7 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
         echo("=================================")
-        echo("${configuration.toString()}")
+        configuration.each {k,v -> echo("$k = $v")}
     }
 
     @NonCPS
