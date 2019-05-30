@@ -97,8 +97,11 @@ class Config implements Serializable {
     @NonCPS
     void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
+        echo("1=================================")
         def props = jobProperties.getParams()
+        echo("2=================================")
         configuration.put("jobProperties", props)
+        echo("3=================================")
     }
 
     @NonCPS

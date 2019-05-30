@@ -22,9 +22,7 @@ class JobProperties {
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.auth = configuration.get("auth", [:])
-        script.echo("1")
         this.paramlist = generateParamList(script, configuration)
-        script.echo("2")
     }
 
     @NonCPS
