@@ -108,7 +108,7 @@ class Config implements Serializable {
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(this)
         def slaveconfig = slaveFactory.getSlaveConfiguration()
-        echo(slaveconfig)
+        echo("configuration>> $slaveconfig")
         configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
     }
 
