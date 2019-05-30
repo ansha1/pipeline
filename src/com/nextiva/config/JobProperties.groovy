@@ -73,11 +73,7 @@ class JobProperties {
 
     @NonCPS
     Map getParams() {
-        script.echo("111")
-        Map jobMap = toMap()
-        script.echo("222")
-        def params = script.jobWithProperties(jobMap)
-        script.echo("333")
+        def params = script.jobWithProperties(toMap())
         return params
     }
 
