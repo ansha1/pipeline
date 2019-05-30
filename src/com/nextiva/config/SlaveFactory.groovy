@@ -35,7 +35,7 @@ class SlaveFactory {
         echo("slaveConfig $slaveConfig")
     }
 
-    private Map configureToolContainers(Map<String, Map> tools) {
+    Map configureToolContainers(Map<String, Map> tools) {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
             echo("tool $tool toolConfiguration $toolConfiguration")
