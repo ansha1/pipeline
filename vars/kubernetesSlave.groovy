@@ -4,6 +4,7 @@ import static com.nextiva.Utils.buildID
 import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
+    echo("slaveConfig  kubeslave $slaveConfig")
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
 
