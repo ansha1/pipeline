@@ -2,16 +2,20 @@ import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
 
 def call(body) {
-    // evaluate the body block, and collect configuration into the object
-    def pipelineParams = [:]
-    body.resolveStrategy = Closure.DELEGATE_FIRST
-    body.delegate = pipelineParams
-    body()
-    log.info("closure complete")
-    Config config = new Config(this, pipelineParams)
-    log.info("config creation complete")
-    kubernetesSlave(config.getSlaveConfiguration()) {
-        pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
+    timestamps {
+        ansiColor('xterm') {
+            // evaluate the body block, and collect configuration into the object
+            def pipelineParams = [:]
+            body.resolveStrategy = Closure.DELEGATE_FIRST
+            body.delegate = pipelineParams
+            body()
+            log.info("closure complete")
+            Config config = new Config(this, pipelineParams)
+            log.info("config creation complete")
+            kubernetesSlave(config.getSlaveConfiguration()) {
+                pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
+            }
+        }
     }
 }
 
