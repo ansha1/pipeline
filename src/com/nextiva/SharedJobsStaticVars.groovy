@@ -84,6 +84,9 @@ class SharedJobsStaticVars {
                                            "ansible": ["image"                : "repository.nextiva.xyz/ansible:2.4.0",
                                                        "resourceRequestMemory": "128Mi",
                                                        "resourceLimitMemory"  : "512Mi"],
+                                           "maven"  : ["image"                : "maven:3.6.1-jdk-8",
+                                                       "resourceRequestMemory": "128Mi",
+                                                       "resourceLimitMemory"  : "1Gi"],
 
     ]
 }
