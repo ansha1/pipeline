@@ -20,16 +20,15 @@ class SlaveFactory {
         echo("2containerResources $containerResources")
 
         Map buildTools = configuration.get("build")
-        echo("buildTools $buildTools")
         if (buildTools) {
-            containerResources = containerResources << configureToolContainers(buildTools)
+            containerResourcesbuildTools))
             echo("if 3containerResources $containerResources")
         }
         echo("3containerResources $containerResources")
 
         Map deployTools = configuration.get("deploy")
         if (deployTools) {
-            containerResources = containerResources << configureToolContainers(deployTools)
+            containerResources.putAll(deployTools)
         }
         echo("4containerResources $containerResources")
         slaveConfig.put("containerResources", containerResources)
