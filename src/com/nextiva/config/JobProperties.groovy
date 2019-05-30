@@ -25,6 +25,7 @@ class JobProperties {
         this.paramlist = generateParamList(script, configuration)
         script.echo("2")
         this.params = getParams(script)
+        script.echo("3")
     }
 
     @NonCPS
