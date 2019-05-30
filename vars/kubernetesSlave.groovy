@@ -7,9 +7,8 @@ def call(Map slaveConfig, body) {
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
 
-    Map jobProperties = slaveConfig.get("jobProperties")
-    if (jobProperties) {
-        jobWithProperties(jobProperties)
+    if (slaveConfig.containsKey("jobProperties")) {
+        jobWithProperties(slaveConfig.get("jobProperties"))
     }
 
     Map<String, Map> containerResources = slaveConfig.get("containerResources")
