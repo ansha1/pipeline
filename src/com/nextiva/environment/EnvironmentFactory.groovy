@@ -1,5 +1,7 @@
 package com.nextiva.environment
 
+import com.cloudbees.groovy.cps.NonCPS
+
 class EnvironmentFactory {
 
     private Map environment = ["dev"       : ["name"               : "dev",
@@ -44,7 +46,7 @@ class EnvironmentFactory {
             v << environmentFromJenkinsfile.get(k, [:])
         }
     }
-
+    @NonCPS
     public List<Environment> getAvailableEnvironmentsForBranch(String branchName) {
         List<Environment> environments = []
         envs = environment.findAll { branchName ==~ it.value.branchPattern }
