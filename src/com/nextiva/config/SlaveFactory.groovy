@@ -16,6 +16,7 @@ class SlaveFactory {
 
         Map buildTools = config.getBuildConfiguration()
         if (buildTools) {
+
             containerResources << configureToolContainers(buildTools)
         }
 
@@ -31,14 +32,14 @@ class SlaveFactory {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
             Map toolContainerConfiguration = getDEFAULT_CONTAINERS().get(tool)
-            toolContainerConfiguration << toolConfiguration.subMap(["image",
-                                                                    "resourceRequestCpu",
-                                                                    "resourceLimitCpu",
-                                                                    "resourceRequestMemory",
-                                                                    "resourceLimitMemory",
+            toolContainerConfiguration.leftShift(toolConfiguration.subMap(["image",
+                                                                           "resourceRequestCpu",
+                                                                           "resourceLimitCpu",
+                                                                           "resourceRequestMemory",
+                                                                           "resourceLimitMemory",
             ]).findAll {
                 it.value
-            }
+            })
             toolContainers.put(tool, toolContainerConfiguration)
         }
         return toolContainers
