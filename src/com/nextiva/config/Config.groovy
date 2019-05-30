@@ -14,24 +14,20 @@ class Config implements Serializable {
     Script script
 
     Config(Script script, Map pipelineParams) {
-//        script.log.info("1 complete")
         this.script = script
-//        script.log.info("2 complete")
         this.configuration = pipelineParams
-//        script.log.info("preload complete")
-//        validate()
-//        script.log.info("preload complete")
-//        setDefaults()
+        validate()
+        setDefaults()
 //        script.log.info("preload setDefaults() complete")
-//        configureEnvironment()
+        configureEnvironment()
 //        script.log.info("preload configureEnvironment()complete")
-//        setExtraEnvVariables()
+        setExtraEnvVariables()
 //        script.log.info("preload setExtraEnvVariables() complete")
-//        setJobParameters()
+        setJobParameters()
 //        script.log.info("preload setJobParameters() complete")
-//        configureStages()
+        configureStages()
 //        script.log.info("preload configureStages() complete")
-//        configureSlave()
+        configureSlave()
 //        script.log.info("preload configureSlave() complete")
     }
     @NonCPS
