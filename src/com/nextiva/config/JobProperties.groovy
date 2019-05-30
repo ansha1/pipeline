@@ -5,6 +5,7 @@ import com.cloudbees.groovy.cps.NonCPS
 import java.util.regex.Pattern
 
 class JobProperties {
+    Script script
     List jobTriggers
     String buildDaysToKeepStr
     String buildNumToKeepStr
@@ -12,9 +13,9 @@ class JobProperties {
     String buildArtifactNumToKeepStr
     List paramlist
     Map auth
-    Map params
 
     JobProperties(Script script, Map configuration) {
+        this.script = script
         this.jobTriggers = configuration.get("jobTriggers", [])
         this.buildDaysToKeepStr = configuration.get("buildDaysToKeepStr", "30")
         this.buildNumToKeepStr = configuration.get("buildNumToKeepStr", "30")
@@ -24,8 +25,6 @@ class JobProperties {
         script.echo("1")
         this.paramlist = generateParamList(script, configuration)
         script.echo("2")
-        this.params = getParams(script)
-        script.echo("3")
     }
 
     @NonCPS
@@ -71,13 +70,12 @@ class JobProperties {
         result.put("buildArtifactNumToKeepStr", buildArtifactNumToKeepStr)
         result.put("paramlist", paramlist)
         result.put("auth", auth)
-        result.put("params", params)
 
         return result
     }
 
     @NonCPS
-    Map getParams(Script script) {
+    Map getParams() {
         def params = script.jobWithProperties(toMap())
         return params
     }
