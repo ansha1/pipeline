@@ -20,8 +20,8 @@ class DeployFactory {
             case "Ansible":
                 return new Ansible(deployment)
                 break
-            case "Kubernetes":
-                return new Kubernetes(deployment)
+            case "Kubeup":
+                return new Kubeup(deployment)
                 break
             default:
                 throw new AbortException("Can't create deployment class from map $deployment")

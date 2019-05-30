@@ -1,11 +1,12 @@
 package com.nextiva.config
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 
-//import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
+import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -53,7 +54,7 @@ class Config implements Serializable {
             script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
     }
-
+    @NonCPS
     private void setDefaults() {
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
@@ -78,6 +79,7 @@ class Config implements Serializable {
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
     }
 
+    @NonCPS
     private void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
@@ -86,20 +88,24 @@ class Config implements Serializable {
         }
     }
 
+    @NonCPS
     private void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         configuration.put("jobProperties", jobProperties.toMap())
     }
 
+    @NonCPS
     private void setExtraEnvVariables() {
         configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
 
+    @NonCPS
     private void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(this)
         configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
     }
 
+    @NonCPS
     private void configureStages() {
         List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
         configuration.put("stages", stages)
@@ -117,9 +123,9 @@ class Config implements Serializable {
         return configuration.get("jobTimeoutMinutes")
     }
 
-//    Map getJenkinsContainer() {
-//        return configuration.get("jenkinsContainer", getDEFAULT_CONTAINERS().get("jnlp"))
-//    }
+    Map getJenkinsContainer() {
+        return configuration.get("jenkinsContainer", getDEFAULT_CONTAINERS().get("jnlp"))
+    }
 
     Map getBuildDependencies() {
         return configuration.get("dependencies")

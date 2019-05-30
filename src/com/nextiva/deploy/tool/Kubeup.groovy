@@ -2,8 +2,8 @@ package com.nextiva.deploy.tool
 
 import com.nextiva.environment.Environment
 
-class Kubernetes extends DeployTool {
-    Kubernetes(Script script, List<Environment> environments, Map configuration) {
+class Kubeup extends DeployTool {
+    Kubeup(Script script, List<Environment> environments, Map configuration) {
         super(script, environments, configuration)
     }
     @Override
