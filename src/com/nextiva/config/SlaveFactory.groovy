@@ -1,5 +1,7 @@
 package com.nextiva.config
 
+import com.cloudbees.groovy.cps.NonCPS
+
 import static com.nextiva.SharedJobsStaticVars.DEFAULT_CONTAINERS
 
 class SlaveFactory {
@@ -10,17 +12,20 @@ class SlaveFactory {
         this.script = script
         Map containerResources = [:]
         containerResources.put("jnlp", configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp")))
-
+echo("1")
         Map dependencies = configuration.get("dependencies")
         if (dependencies) {
             containerResources.put("kubeup", DEFAULT_CONTAINERS.get("kubeup"))
         }
+        echo("2")
 
         Map buildTools = configuration.get("build")
         if (buildTools) {
             containerResources << configureToolContainers(buildTools)
         }
 
+        echo("3")
+        echo("3")
         Map deployTools = configuration.get("deploy")
         if (deployTools) {
             containerResources << configureToolContainers(deployTools)
@@ -48,5 +53,10 @@ class SlaveFactory {
     Map getSlaveConfiguration() {
         script.echo("slaveconfig is $slaveConfig<<")
         return slaveConfig
+    }
+
+    @NonCPS
+    protected echo(msg) {
+        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
 }
