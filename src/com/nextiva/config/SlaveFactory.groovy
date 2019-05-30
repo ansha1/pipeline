@@ -15,6 +15,7 @@ class SlaveFactory {
 echo("1")
         Map dependencies = configuration.get("dependencies")
         if (dependencies) {
+            echo("deps $dependencies")
             containerResources.put("kubeup", DEFAULT_CONTAINERS.get("kubeup"))
         }
         echo("2")
