@@ -31,6 +31,7 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
     }
+
     @NonCPS
     void validate() {
         // Checking mandatory variables
@@ -51,6 +52,7 @@ class Config implements Serializable {
             script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
     }
+
     @NonCPS
     void setDefaults() {
         //Set flags
@@ -61,8 +63,8 @@ class Config implements Serializable {
         configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
             toolConfiguration.containsKey("unitTestCommands")
         })
-        configuration.put("isIntegrationTestEnabled", configuration.build.any {
-            it.containsKey("integrationTestCommands")
+        configuration.put("isIntegrationTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
+            toolConfiguration.containsKey("integrationTestCommands")
         })
         configuration.put("isDeployEnabled", configuration.containsKey("deploy"))
         configuration.put("isPostDeployEnabled", configuration.deploy?.containsKey("postDeployCommands"))
@@ -141,7 +143,7 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    protected echo(msg){
+    protected echo(msg) {
         script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
 }
