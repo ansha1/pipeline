@@ -107,6 +107,8 @@ class Config implements Serializable {
     @NonCPS
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(this)
+        def slaveconfig = slaveFactory.getSlaveConfiguration()
+        echo(slaveconfig)
         configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
     }
 
