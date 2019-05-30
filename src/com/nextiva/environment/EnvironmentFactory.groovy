@@ -38,7 +38,7 @@ class EnvironmentFactory {
 
     EnvironmentFactory(Map configuration) {
         Map deployConfiguration = configuration.subMap(["appName", "buildVersion", "kubernetesDeploymentsList", "ansiblePlaybookPath", "ansibleInventoryPath"])
-        environmentFromJenkinsfile = configuration.get("environment", [:])
+        Map environmentFromJenkinsfile = configuration.get("environment", [:])
         environment.each { k, v ->
             v << deployConfiguration
             v << environmentFromJenkinsfile.get(k, [:])
