@@ -77,6 +77,7 @@ class JobProperties {
         Map jobMap = toMap()
         script.echo("222")
         def params = script.jobWithProperties(jobMap)
+        script.echo("333")
         return params
     }
 
