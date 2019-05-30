@@ -8,7 +8,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
     log.info("closure complete")
-//    Config config = new Config(this, pipelineParams)
+    Config config = new Config(this, pipelineParams)
     log.info("config creation complete")
     kubernetesSlave(config.getSlaveConfiguration()) {
         pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())

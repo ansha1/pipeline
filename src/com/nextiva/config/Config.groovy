@@ -34,8 +34,8 @@ class Config implements Serializable {
 //        configureSlave()
 //        script.log.info("preload configureSlave() complete")
     }
-
-    private void validate() {
+    @NonCPS
+    void validate() {
         // Checking mandatory variables
         List<String> configurationErrors = []
 
@@ -55,7 +55,7 @@ class Config implements Serializable {
         }
     }
     @NonCPS
-    private void setDefaults() {
+    void setDefaults() {
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
@@ -80,7 +80,7 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    private void configureEnvironment() {
+    void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
@@ -89,24 +89,24 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    private void setJobParameters() {
+    void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         configuration.put("jobProperties", jobProperties.toMap())
     }
 
     @NonCPS
-    private void setExtraEnvVariables() {
+    void setExtraEnvVariables() {
         configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
 
     @NonCPS
-    private void configureSlave() {
+    void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(this)
         configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
     }
 
     @NonCPS
-    private void configureStages() {
+    void configureStages() {
         List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
         configuration.put("stages", stages)
     }
