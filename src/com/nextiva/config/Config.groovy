@@ -17,18 +17,19 @@ class Config implements Serializable {
         this.script = script
         this.configuration = pipelineParams
         validate()
+        echo("preload validate() complete")
         setDefaults()
-//        script.log.info("preload setDefaults() complete")
+        echo("preload setDefaults() complete")
         configureEnvironment()
-//        script.log.info("preload configureEnvironment()complete")
+        echo("preload configureEnvironment()complete")
         setExtraEnvVariables()
-//        script.log.info("preload setExtraEnvVariables() complete")
+        echo("preload setExtraEnvVariables() complete")
         setJobParameters()
-//        script.log.info("preload setJobParameters() complete")
+        echo("preload setJobParameters() complete")
         configureStages()
-//        script.log.info("preload configureStages() complete")
+        echo("preload configureStages() complete")
         configureSlave()
-//        script.log.info("preload configureSlave() complete")
+        echo("preload configureSlave() complete")
     }
     @NonCPS
     void validate() {
@@ -137,6 +138,10 @@ class Config implements Serializable {
 
     List<Stage> getStages() {
         return configuration.get("stages")
+    }
+
+    protected echo(msg){
+        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
 }
 
