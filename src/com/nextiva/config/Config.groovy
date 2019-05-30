@@ -30,6 +30,8 @@ class Config implements Serializable {
         echo("preload configureStages() complete")
         configureSlave()
         echo("preload configureSlave() complete")
+        echo("=================================")
+        echo("$configuration")
     }
 
     @NonCPS
