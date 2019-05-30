@@ -1,12 +1,12 @@
 package com.nextiva.config
 
-import com.cloudbees.groovy.cps.NonCPS
-import com.nextiva.environment.Environment
-import com.nextiva.environment.EnvironmentFactory
-import com.nextiva.stages.StageFactory
-import com.nextiva.stages.stage.Stage
-
-import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
+//import com.cloudbees.groovy.cps.NonCPS
+//import com.nextiva.environment.Environment
+//import com.nextiva.environment.EnvironmentFactory
+//import com.nextiva.stages.StageFactory
+//import com.nextiva.stages.stage.Stage
+//
+//import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -14,11 +14,11 @@ class Config implements Serializable {
     Script script
 
     Config(Script script, Map pipelineParams) {
-        script.log.info("1 complete")
-//        this.script = script
-        script.log.info("2 complete")
-//        this.configuration = pipelineParams
-        script.log.info("preload complete")
+//        script.log.info("1 complete")
+        this.script = script
+//        script.log.info("2 complete")
+        this.configuration = pipelineParams
+//        script.log.info("preload complete")
 //        validate()
 //        script.log.info("preload complete")
 //        setDefaults()
