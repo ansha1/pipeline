@@ -12,26 +12,26 @@ class SlaveFactory {
         this.script = script
         Map containerResources = [:]
         containerResources.put("jnlp", configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp")))
-echo("1")
+        echo("1containerResources $containerResources")
         Map dependencies = configuration.get("dependencies")
         if (dependencies) {
-            echo("deps $dependencies")
             containerResources.put("kubeup", DEFAULT_CONTAINERS.get("kubeup"))
         }
-        echo("2")
+        echo("2containerResources $containerResources")
 
         Map buildTools = configuration.get("build")
         if (buildTools) {
             containerResources << configureToolContainers(buildTools)
         }
+        echo("3containerResources $containerResources")
 
-        echo("3")
-        echo("3")
         Map deployTools = configuration.get("deploy")
         if (deployTools) {
             containerResources << configureToolContainers(deployTools)
         }
+        echo("4containerResources $containerResources")
         slaveConfig.put("containerResources", containerResources)
+        echo("slaveConfig $slaveConfig")
     }
 
     private static Map configureToolContainers(Map<String, Map> tools) {
