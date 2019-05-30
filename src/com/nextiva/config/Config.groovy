@@ -58,8 +58,8 @@ class Config implements Serializable {
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
         configuration.get("branchingModel", "gitflow")
         configuration.get("jobTimeoutMinutes", "60")
-        configuration.put("isUnitTestEnabled", configuration.build.any {
-            it.containsKey("unitTestCommands")
+        configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
+            toolConfiguration.containsKey("unitTestCommands")
         })
         configuration.put("isIntegrationTestEnabled", configuration.build.any {
             it.containsKey("integrationTestCommands")
