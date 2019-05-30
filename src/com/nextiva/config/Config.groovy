@@ -124,7 +124,7 @@ class Config implements Serializable {
     }
 
     Map getJenkinsContainer() {
-        return configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.jnlp)
+        return configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp"))
     }
 
     Map getBuildDependencies() {
