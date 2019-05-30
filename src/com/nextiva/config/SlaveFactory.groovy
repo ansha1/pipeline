@@ -1,30 +1,30 @@
 package com.nextiva.config
 
-import static com.nextiva.SharedJobsStaticVars.getDEFAULT_CONTAINERS
+import static com.nextiva.SharedJobsStaticVars.DEFAULT_CONTAINERS
 
 class SlaveFactory {
+    protected Script script
     private Map slaveConfig = [:]
 
-    SlaveFactory(Config config) {
+    SlaveFactory(Script script, Map configuration) {
+        this.script = script
         Map containerResources = [:]
-        containerResources.put("jnlp", config.getJenkinsContainer())
+        containerResources.put("jnlp", configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp")))
 
-        Map dependencies = config.getBuildDependencies()
+        Map dependencies = configuration.get("dependencies")
         if (dependencies) {
-            containerResources.put("kubeup", getDEFAULT_CONTAINERS().get("kubeup"))
+            containerResources.put("kubeup", DEFAULT_CONTAINERS.get("kubeup"))
         }
 
-        Map buildTools = config.getBuildConfiguration()
+        Map buildTools = configuration.get("build")
         if (buildTools) {
-
             containerResources << configureToolContainers(buildTools)
         }
 
-        Map deployTools = config.getDeployConfiguration()
+        Map deployTools = configuration.get("deploy")
         if (deployTools) {
             containerResources << configureToolContainers(deployTools)
         }
-
         slaveConfig.put("containerResources", containerResources)
     }
 

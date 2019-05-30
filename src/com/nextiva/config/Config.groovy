@@ -106,7 +106,7 @@ class Config implements Serializable {
 
     @NonCPS
     void configureSlave() {
-        SlaveFactory slaveFactory = new SlaveFactory(this)
+        SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveconfig = slaveFactory.getSlaveConfiguration()
         echo("configuration>> $slaveconfig")
         configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
@@ -128,22 +128,6 @@ class Config implements Serializable {
 
     String getJobTimeoutMinutes() {
         return configuration.get("jobTimeoutMinutes")
-    }
-
-    Map getJenkinsContainer() {
-        return configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp"))
-    }
-
-    Map getBuildDependencies() {
-        return configuration.get("dependencies")
-    }
-
-    Map getBuildConfiguration() {
-        return configuration.get("build")
-    }
-
-    Map getDeployConfiguration() {
-        return configuration.get("deploy")
     }
 
     List<Stage> getStages() {
