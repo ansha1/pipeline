@@ -21,12 +21,12 @@ class JobProperties {
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.auth = configuration.get("auth", [:])
-        this.paramlist = generateParamList(configuration)
+        this.paramlist = generateParamList(script, configuration)
         this.params = getParams(script)
     }
 
     @NonCPS
-    private List generateParamList(Map configuration) {
+    private List generateParamList(Script script, Map configuration) {
         List paramlist = []
         String branchName = configuration.get("branchName")
         String branchingModel = configuration.get("branchingModel")
@@ -38,11 +38,11 @@ class JobProperties {
             environmentsToDeploy.add(0, "")
         }
 
-        List jobParameters = [["parameter"     : string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
+        List jobParameters = [["parameter"     : script.string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
                                "branchingModel": ["gitflow"   : /^(release)\/.+$/,
                                                   "trunkbased": /^master$/],
                               ],
-                              ["parameter"     : choice(choices: environmentsToDeploy, description: 'Where deploy?', name: 'deployDst'),
+                              ["parameter"     : script.choice(choices: environmentsToDeploy, description: 'Where deploy?', name: 'deployDst'),
                                "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
                                                   "trunkbased": /^master$/],
                               ]]
