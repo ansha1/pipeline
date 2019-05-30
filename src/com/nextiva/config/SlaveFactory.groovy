@@ -20,6 +20,7 @@ class SlaveFactory {
         echo("2containerResources $containerResources")
 
         Map buildTools = configuration.get("build")
+        echo("buildTools $buildTools")
         if (buildTools) {
             containerResources << configureToolContainers(buildTools)
         }
