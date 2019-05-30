@@ -12,25 +12,19 @@ class SlaveFactory {
         this.script = script
         Map containerResources = [:]
         containerResources.put("jnlp", configuration.get("jenkinsContainer", DEFAULT_CONTAINERS.get("jnlp")))
-        echo("1containerResources $containerResources")
         Map dependencies = configuration.get("dependencies")
         if (dependencies) {
             containerResources.put("kubeup", DEFAULT_CONTAINERS.get("kubeup"))
         }
-        echo("2containerResources $containerResources")
-
         Map buildTools = configuration.get("build")
         if (buildTools) {
-            containerResources.putAll(configureToolContainers(buildTools))
-            echo("if 3containerResources $containerResources")
+            containerResources << configureToolContainers(buildTools)
         }
-        echo("3containerResources $containerResources")
 
         Map deployTools = configuration.get("deploy")
         if (deployTools) {
-            containerResources.putAll(configureToolContainers(deployTools))
+            containerResources << configureToolContainers(deployTools)
         }
-        echo("4containerResources $containerResources")
         slaveConfig.put("containerResources", containerResources)
         echo("slaveConfig $slaveConfig")
     }
@@ -41,10 +35,10 @@ class SlaveFactory {
         tools.each { tool, toolConfiguration ->
             Map toolContainerConfiguration = DEFAULT_CONTAINERS.get(tool)
             toolContainerConfiguration << toolConfiguration.subMap(["image",
-                                                                     "resourceRequestCpu",
-                                                                     "resourceLimitCpu",
-                                                                     "resourceRequestMemory",
-                                                                     "resourceLimitMemory",
+                                                                    "resourceRequestCpu",
+                                                                    "resourceLimitCpu",
+                                                                    "resourceRequestMemory",
+                                                                    "resourceLimitMemory",
             ]).findAll {
                 it.value
             }
@@ -54,8 +48,8 @@ class SlaveFactory {
         return toolContainers
     }
 
+    @NonCPS
     Map getSlaveConfiguration() {
-        script.echo("slaveconfig is $slaveConfig<<")
         return slaveConfig
     }
 
