@@ -18,6 +18,7 @@ def call(Map configuration) {
     return params
 }
 
+@NonCPS
 List generateProperties(Map configuration) {
 
     /* jobTriggers can be of these types:
@@ -66,7 +67,7 @@ List generateProperties(Map configuration) {
     return propertiesList
 }
 
-
+@NonCPS
 List<String> generateSecurityPermissions(List<String> allowedUsers) {
     List<String> permissions = ['hudson.model.Item.Read:authenticated']
     allowedUsers.each {
