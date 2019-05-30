@@ -140,6 +140,7 @@ class Config implements Serializable {
         return configuration.get("stages")
     }
 
+    @NonCPS
     protected echo(msg){
         script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
