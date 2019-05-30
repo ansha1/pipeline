@@ -16,6 +16,9 @@ class Config implements Serializable {
     Config(Script script, Map pipelineParams) {
         this.script = script
         this.configuration = pipelineParams
+    }
+
+    void configure(){
         validate()
         echo("preload validate() complete")
         setDefaults()

@@ -11,6 +11,7 @@ def call(body) {
             body()
             log.info("closure complete")
             Config config = new Config(this, pipelineParams)
+            config.configure()
             log.info("config creation complete")
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())

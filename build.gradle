@@ -23,6 +23,7 @@ version = "0.2.0-SNAPSHOT"
 
 dependencies {
     compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.6', ext: 'pom'
+    compile group: 'com.cloudbees', name: 'groovy-cps', version: '1.12'
     compile group: 'org.jenkins-ci.main', name: 'jenkins-core', version: '2.177'
     testCompile group: 'org.jenkins-ci.main', name: 'jenkins-core', version: '2.177'
     compile group: 'org.eclipse.hudson', name: 'hudson-core', version: '3.3.0', {
@@ -39,7 +40,7 @@ dependencies {
 sourceSets {
     main {
         groovy {
-            srcDirs = ['src/']
+            srcDirs = ['src/', 'vars/']
         }
     }
 
