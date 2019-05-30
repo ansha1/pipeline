@@ -57,7 +57,7 @@ class JobProperties {
         return paramlist
     }
 
-    @NonCPS
+
     Map toMap() {
         Map result = [:]
         result.put("jobTriggers", jobTriggers)
