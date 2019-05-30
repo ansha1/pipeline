@@ -35,6 +35,7 @@ class SlaveFactory {
         echo("slaveConfig $slaveConfig")
     }
 
+    @NonCPS
     Map configureToolContainers(Map<String, Map> tools) {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
