@@ -32,14 +32,14 @@ class SlaveFactory {
         Map toolContainers = [:]
         tools.each { tool, toolConfiguration ->
             Map toolContainerConfiguration = DEFAULT_CONTAINERS.get(tool)
-            (toolContainerConfiguration << toolConfiguration.subMap(["image",
+            toolContainerConfiguration << toolConfiguration.subMap(["image",
                                                                      "resourceRequestCpu",
                                                                      "resourceLimitCpu",
                                                                      "resourceRequestMemory",
                                                                      "resourceLimitMemory",
             ]).findAll {
                 it.value
-            })
+            }
             toolContainers.put(tool, toolContainerConfiguration)
         }
         return toolContainers
