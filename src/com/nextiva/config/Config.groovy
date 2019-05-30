@@ -142,7 +142,7 @@ class Config implements Serializable {
 
     @NonCPS
     protected echo(msg){
-        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
+        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
     }
 }
 
