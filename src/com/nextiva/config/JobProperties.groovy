@@ -63,7 +63,6 @@ class JobProperties {
         result.put("jobTriggers", jobTriggers)
         result.put("buildDaysToKeepStr", buildDaysToKeepStr)
         result.put("buildNumToKeepStr", buildNumToKeepStr)
-        result.put("buildNumToKeepStr", buildNumToKeepStr)
         result.put("buildArtifactDaysToKeepStr", buildArtifactDaysToKeepStr)
         result.put("buildArtifactNumToKeepStr", buildArtifactNumToKeepStr)
         result.put("paramlist", paramlist)
@@ -74,7 +73,10 @@ class JobProperties {
 
     @NonCPS
     Map getParams() {
-        def params = script.jobWithProperties(toMap())
+        script.echo("111")
+        Map jobMap = toMap()
+        script.echo("222")
+        def params = script.jobWithProperties(jobMap)
         return params
     }
 
