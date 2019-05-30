@@ -46,6 +46,7 @@ class SlaveFactory {
     }
 
     Map getSlaveConfiguration() {
+        script.echo("slaveconfig is $slaveConfig<<")
         return slaveConfig
     }
 }
