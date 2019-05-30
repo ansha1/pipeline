@@ -23,6 +23,7 @@ class SlaveFactory {
         echo("buildTools $buildTools")
         if (buildTools) {
             containerResources << configureToolContainers(buildTools)
+            echo("if 3containerResources $containerResources")
         }
         echo("3containerResources $containerResources")
 
