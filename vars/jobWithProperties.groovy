@@ -1,3 +1,4 @@
+import com.cloudbees.groovy.cps.NonCPS
 /**
  * This method is used for configuration job parameters from the code
  * Acceptable Map cloud contain following parameters
@@ -9,6 +10,7 @@
  * List paramlist
  * Map auth
  **/
+@NonCPS
 def call(Map configuration) {
     node("master") {
         properties(generateProperties(configuration))
