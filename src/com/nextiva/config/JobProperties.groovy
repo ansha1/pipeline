@@ -1,5 +1,7 @@
 package com.nextiva.config
 
+import com.cloudbees.groovy.cps.NonCPS
+
 import java.util.regex.Pattern
 
 class JobProperties {
@@ -23,6 +25,7 @@ class JobProperties {
         this.params = getParams(script)
     }
 
+    @NonCPS
     private List generateParamList(Map configuration) {
         List paramlist = []
         String branchName = configuration.get("branchName")
@@ -69,6 +72,7 @@ class JobProperties {
         return result
     }
 
+    @NonCPS
     Map getParams(Script script) {
         def params = script.jobWithProperties(toMap())
         return params

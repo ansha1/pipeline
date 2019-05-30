@@ -83,24 +83,21 @@ class Config implements Serializable {
     @NonCPS
     void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
-            echo("1")
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
-            echo("2")
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
-            echo("3")
             configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
+    }
+
+    @NonCPS
+    void setExtraEnvVariables() {
+        configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
 
     @NonCPS
     void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         configuration.put("jobProperties", jobProperties.toMap())
-    }
-
-    @NonCPS
-    void setExtraEnvVariables() {
-        configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
 
     @NonCPS
