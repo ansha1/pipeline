@@ -49,7 +49,7 @@ class EnvironmentFactory {
     @NonCPS
     public List<Environment> getAvailableEnvironmentsForBranch(String branchName) {
         List<Environment> environments = []
-        envs = environment.findAll { branchName ==~ it.value.branchPattern }
+        Map envs = environment.findAll { branchName ==~ it.value.branchPattern }
         envs.each {
             environments.add(new Environment(it))
         }
