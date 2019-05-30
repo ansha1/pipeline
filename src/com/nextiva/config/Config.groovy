@@ -102,6 +102,7 @@ class Config implements Serializable {
         configuration.put("jobProperties", props)
     }
 
+    @NonCPS
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveconfig = slaveFactory.getSlaveConfiguration()
