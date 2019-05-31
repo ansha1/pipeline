@@ -35,7 +35,7 @@ def call(Map slaveConfig, body) {
 
 
 List containers(Map<String, Map> containerResources) {
-    List result
+    List result = []
     containerResources.each { k, v ->
         v.put("name", k)
         result << containerInstance(v)
@@ -103,6 +103,7 @@ def withNamespace(String namespaceName, body) {
         log.info("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
+        currentBuild.result = "FAILED"
         log.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)
