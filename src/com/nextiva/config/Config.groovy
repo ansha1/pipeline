@@ -109,7 +109,7 @@ class Config implements Serializable {
         echo("configuration>>>>>> $slaveConfiguration")
         configuration.put("1", slaveConfiguration)
         Map get = configuration.get("1")
-        echo("configuration<<<<< $get")
+        echo("1<<<<< $get")
     }
 
     @NonCPS
