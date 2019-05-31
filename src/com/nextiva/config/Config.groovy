@@ -102,7 +102,7 @@ class Config implements Serializable {
         configuration.put("jobProperties", props)
     }
 
-    @NonCPS
+//    @NonCPS
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
@@ -138,7 +138,7 @@ class Config implements Serializable {
 
     @NonCPS
     protected echo(msg) {
-        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
+        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
 }
 
