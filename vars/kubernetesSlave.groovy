@@ -103,7 +103,7 @@ def withNamespace(String namespaceName, body) {
         log.info("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
-        log.error("There is error in withNamespace method ${e}")
+        log.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)
         log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
