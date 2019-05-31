@@ -26,7 +26,6 @@ class SlaveFactory {
             containerResources << configureToolContainers(deployTools)
         }
         slaveConfig.put("containerResources", containerResources)
-        echo("slaveConfig $slaveConfig")
     }
 
     @NonCPS
