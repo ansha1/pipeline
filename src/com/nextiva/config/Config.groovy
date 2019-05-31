@@ -108,6 +108,8 @@ class Config implements Serializable {
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
         echo("configuration>>>>>> $slaveConfiguration")
         configuration.put("slaveConfiguration", slaveConfiguration)
+        Map get = configuration.get("slaveConfiguration")
+        echo("configuration<<<<< $get")
     }
 
     @NonCPS
