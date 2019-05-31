@@ -121,9 +121,9 @@ class Config implements Serializable {
     }
 
     Map getSlaveConfiguration() {
-        def get = сonfiguration.get("slaveConfiguration")
+        Map get = configuration.get("slaveConfiguration")
         echo("configuration<<<<< $get")
-        return configuration.get("slaveConfiguration")
+        return get
     }
 
     String getJobTimeoutMinutes() {
