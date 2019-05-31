@@ -1,3 +1,4 @@
+import com.cloudbees.groovy.cps.NonCPS
 import io.fabric8.kubernetes.client.KubernetesClient
 import static com.nextiva.SharedJobsStaticVars.*
 import static com.nextiva.Utils.buildID
@@ -19,9 +20,9 @@ def call(Map slaveConfig, body) {
 
     withNamespace(iD) {
         def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
-        podTemplate(label: "parent-$iD", yaml: parentPodTemplateYaml) {}
+        podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, namespace: iD, containers: containers(containerResources), volumes: volumes()) {
+        podTemplate(label: iD, namespace: iD, showRawYaml: false, inheritFrom: "parent-$iD", containers: containers(containerResources), volumes: volumes()) {
             timestamps {
                 ansiColor('xterm') {
                     node(iD) {
@@ -113,7 +114,7 @@ def withNamespace(String namespaceName, body) {
 
 
 @NonCPS
-def getKubernetesClient() {
+KubernetesClient getKubernetesClient() {
     return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
 }
 
@@ -124,9 +125,19 @@ def createNamespace(String namespaceName) {
         log.info("Running build in the already created namespace")
         return true
     }
-
-    def kubernetesClient = getKubernetesClient()
+    KubernetesClient kubernetesClient = getKubernetesClient()
+    //Create namespace
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+    //Create mandatory secrets in the namespace
+
+    String mavenSecret = libraryResource 'kubernetes/maven-secret.yaml'
+    kubernetesClient.secrets().load(mavenSecret).createOrReplaceWithNew().withData()
+            .withNewMetadata().withNamespace(namespaceName).endMetadata().done()
+
+    String regSecret = libraryResource 'kubernetes/regsecret.yaml'
+    kubernetesClient.secrets().load(regSecret).createOrReplaceWithNew().withData()
+            .withNewMetadata().withNamespace(namespaceName).endMetadata().done()
+
     kubernetesClient = null
     return namespace
 }
@@ -138,7 +149,7 @@ Boolean deleteNamespace(String namespaceName) {
         log.info("Namespace ${namespaceName} can't be deleted because it is perisitent")
         return false
     }
-    def kubernetesClient = getKubernetesClient()
+    KubernetesClient kubernetesClient = getKubernetesClient()
     Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
