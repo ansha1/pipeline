@@ -102,13 +102,12 @@ class Config implements Serializable {
         configuration.put("jobProperties", props)
     }
 
-//    @NonCPS
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
         echo("configuration>>>>>> $slaveConfiguration")
-        this.configuration.put("1", slaveConfiguration)
-        Map get = this.configuration.get("1")
+        configuration.put("1", slaveConfiguration)
+        Map get = configuration.get("1")
         echo("1<<<<< $get")
     }
 
