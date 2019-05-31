@@ -105,9 +105,9 @@ class Config implements Serializable {
     @NonCPS
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
-        def slaveconfig = slaveFactory.getSlaveConfiguration()
-        echo("configuration>>>>>> $slaveconfig")
-        configuration.put("slaveConfiguration", slaveFactory.getSlaveConfiguration())
+        def slaveConfiguration = slaveFactory.getSlaveConfiguration()
+        echo("configuration>>>>>> $slaveConfiguration")
+        configuration.put("slaveConfiguration", slaveConfiguration)
     }
 
     @NonCPS
@@ -121,6 +121,8 @@ class Config implements Serializable {
     }
 
     Map getSlaveConfiguration() {
+        def get = сonfiguration.get("slaveConfiguration")
+        echo("configuration<<<<< $get")
         return configuration.get("slaveConfiguration")
     }
 

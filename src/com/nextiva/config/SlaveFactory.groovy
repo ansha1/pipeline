@@ -44,7 +44,6 @@ class SlaveFactory {
             }
             toolContainers.put(tool, toolContainerConfiguration)
         }
-        echo("toolContainers $toolContainers")
         return toolContainers
     }
 
