@@ -122,7 +122,7 @@ class Config implements Serializable {
     }
 
     Map getSlaveConfiguration() {
-        Map get = configuration.get("slaveConfiguration")
+        Map get = this.configuration.get("slaveConfiguration")
         echo("configuration<<<<< $get")
         return get
     }
