@@ -107,8 +107,8 @@ class Config implements Serializable {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
         echo("configuration>>>>>> $slaveConfiguration")
-        configuration.put("slaveConfiguration", slaveConfiguration)
-        Map get = configuration.get("slaveConfiguration")
+        configuration.put("1", slaveConfiguration)
+        Map get = configuration.get("1")
         echo("configuration<<<<< $get")
     }
 
