@@ -72,6 +72,7 @@ class SharedJobsStaticVars {
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
 
     static final Map DEFAULT_CONTAINERS = ["jnlp"   : ["image"                : "jenkinsci/jnlp-slave:3.27-1-alpine",
+                                                       "command"              : "cat",
                                                        "args"                 : "\${computer.jnlpmac} \${computer.name}",
                                                        "resourceRequestMemory": "256Mi",
                                                        "resourceLimitMemory"  : "512Mi"],
