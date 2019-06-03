@@ -110,7 +110,9 @@ class Config implements Serializable {
 
     void configureStages() {
         List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
-        echo("stages:$stages")
+        echo("selected stages")
+        stages.each { echo(it.getClass().getSimpleName()) }
+
         configuration.put("stages", stages)
     }
 
