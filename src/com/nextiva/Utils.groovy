@@ -63,4 +63,13 @@ class Utils {
             echo "Found build cause ${detectedCause}"
         }
     }
+
+    static String collectionToString(def collection){
+        //This method needs to reduce output in Jenkins console when print object entryset
+        String toString = ""
+        collection.each { k, v ->
+            toString += "[$k]: $v\n"
+        }
+        return toString
+    }
 }

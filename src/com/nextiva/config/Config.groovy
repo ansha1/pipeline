@@ -5,6 +5,7 @@ import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
+import static com.nextiva.Utils.collectionToString
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -32,7 +33,7 @@ class Config implements Serializable {
         configureSlave()
         info("preload configureSlave() complete")
         info("=================================")
-        info("Configuration complete:\n ${toString()}")
+        info("Configuration complete:\n ${collectionToString(configuration)}")
     }
 
     void validate() {
@@ -105,9 +106,6 @@ class Config implements Serializable {
 
     void configureStages() {
         List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
-        echo("selected stages")
-        stages.each { echo(it.getClass().getSimpleName()) }
-
         configuration.put("stages", stages)
     }
 
@@ -124,8 +122,8 @@ class Config implements Serializable {
     }
 
     List<Stage> getStages() {
-        def stages = configuration.get("stages")
-        echo("stages:$stages")
+        List stages = configuration.get("stages")
+        info("stages:${collectionToString(stages)}")
         return stages
     }
 
@@ -137,15 +135,6 @@ class Config implements Serializable {
     @NonCPS
     protected debug(msg) {
         script.log.debug("[${this.getClass().getSimpleName()}] ${msg}")
-    }
-
-    @Override
-    String toString() {
-        String toString = ''
-        configuration.each { k, v ->
-            toString += "[$k]=$v\n"
-        }
-        return toString
     }
 
 }
