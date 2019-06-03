@@ -162,7 +162,7 @@ def createResourceFromLibrary(String resourcePath, String kind, String namespace
         case "Secret":
             Secret secret = kubernetesClient.secrets().load(new ByteArrayInputStream(libraryResource.getBytes())).get()
             secret.metadata.namespace = namespaceName
-            def result = kubernetesClient.secrets().inNamespace("namespaceName").create(secret)
+            def result = kubernetesClient.secrets().inNamespace(namespaceName).create(secret)
             kubernetesClient = null
             log.info("created resource $result")
             return result
