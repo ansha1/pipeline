@@ -1,4 +1,5 @@
 import com.cloudbees.groovy.cps.NonCPS
+import io.fabric8.kubernetes.api.model.Secret
 import io.fabric8.kubernetes.client.KubernetesClient
 import static com.nextiva.SharedJobsStaticVars.*
 import static com.nextiva.Utils.buildID
@@ -129,14 +130,8 @@ def createNamespace(String namespaceName) {
     //Create namespace
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
     //Create mandatory secrets in the namespace
-
-    String mavenSecret = libraryResource 'kubernetes/maven-secret.yaml'
-    kubernetesClient.secrets().load(mavenSecret).createOrReplaceWithNew().withData()
-            .withNewMetadata().withNamespace(namespaceName).endMetadata().done()
-
-    String regSecret = libraryResource 'kubernetes/regsecret.yaml'
-    kubernetesClient.secrets().load(regSecret).createOrReplaceWithNew().withData()
-            .withNewMetadata().withNamespace(namespaceName).endMetadata().done()
+    createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
+    createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
 
     kubernetesClient = null
     return namespace
@@ -153,4 +148,22 @@ Boolean deleteNamespace(String namespaceName) {
     Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
+}
+
+@NonCPS
+void createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
+    String libraryResource = libraryResource(resourcePath)
+    KubernetesClient kubernetesClient = getKubernetesClient()
+    switch (kind) {
+        case "Secret":
+            Secret secret = kubernetesClient.secrets().load(new ByteArrayInputStream(libraryResource.getBytes())).edit()
+                    .withNewMetadata().withNamespace(namespaceName).endMetadata().done()
+            def result = kubernetesClient.secrets().inNamespace("namespaceName").create(secret)
+            kubernetesClient = null
+            log.debug("created resource $result")
+            break
+        default:
+            kubernetesClient = null
+            error("This resource kind: $kind, resourcePath: $resourcePath is not supported")
+    }
 }
