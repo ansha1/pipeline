@@ -129,9 +129,12 @@ def createNamespace(String namespaceName) {
     KubernetesClient kubernetesClient = getKubernetesClient()
     //Create namespace
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+    log.info("created namespace")
     //Create mandatory secrets in the namespace
     createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
+    log.info("created mvnsecret")
     createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
+    log.info("created regsecret")
 
     kubernetesClient = null
     return namespace
