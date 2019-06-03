@@ -154,7 +154,7 @@ Boolean deleteNamespace(String namespaceName) {
 }
 
 @NonCPS
-void createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
+def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
     String libraryResource = libraryResource(resourcePath)
     KubernetesClient kubernetesClient = getKubernetesClient()
     switch (kind) {
@@ -164,6 +164,7 @@ void createResourceFromLibrary(String resourcePath, String kind, String namespac
             def result = kubernetesClient.secrets().inNamespace("namespaceName").create(secret)
             kubernetesClient = null
             log.info("created resource $result")
+            return result
             break
         default:
             kubernetesClient = null
