@@ -32,10 +32,15 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
         echo("=================================")
+
+        echo("Configuration complete:")
+
+configuration.each { k, v -> echo("$k = $v") }
+
+
         configuration.each { k, v -> echo("$k = $v") }
     }
 
-    @NonCPS
     void validate() {
         // Checking mandatory variables
         List<String> configurationErrors = []
@@ -56,7 +61,6 @@ class Config implements Serializable {
         }
     }
 
-    @NonCPS
     void setDefaults() {
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
@@ -81,7 +85,6 @@ class Config implements Serializable {
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
     }
 
-    @NonCPS
     void configureEnvironment() {
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
@@ -90,12 +93,10 @@ class Config implements Serializable {
         }
     }
 
-    @NonCPS
     void setExtraEnvVariables() {
         configuration.extraEnvs.each { k, v -> script.env[k] = v }
     }
 
-    @NonCPS
     void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         def props = jobProperties.getParams()
@@ -138,6 +139,16 @@ class Config implements Serializable {
     protected echo(msg) {
         script.echo("[${this.getClass().getSimpleName()}] ${msg}")
     }
+
+    @Override
+    String toString(){
+        String toString = ''
+        configuration.each { k,v ->
+            toString += "[$k]=$v\n"
+        }
+        return toString
+    }
+
 }
 
 
