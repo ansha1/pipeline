@@ -23,8 +23,8 @@ def call(body) {
 void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
 
     //exclude steps than should be executed in the finally block
-    Stage notify = flow.pop()
-    Stage resultsCollector = flow.pop()
+    Stage notify = stages.pop()
+    Stage resultsCollector = stages.pop()
 
     try {
         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
