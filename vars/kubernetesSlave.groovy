@@ -119,7 +119,7 @@ KubernetesClient getKubernetesClient() {
     return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
 }
 
-@NonCPS
+//@NonCPS
 def createNamespace(String namespaceName) {
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
@@ -132,15 +132,15 @@ def createNamespace(String namespaceName) {
     log.info("created namespace")
     //Create mandatory secrets in the namespace
     def sec1 = createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
-    println("sec1 $sec1")
+    log.info("sec1 $sec1")
     def sec2 = createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
-    println("sec2 $sec2")
+    log.info("sec2 $sec2")
 
     kubernetesClient = null
     return namespace
 }
 
-@NonCPS
+//@NonCPS
 Boolean deleteNamespace(String namespaceName) {
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
