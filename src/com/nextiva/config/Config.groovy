@@ -108,9 +108,9 @@ class Config implements Serializable {
         configuration.put("slaveConfiguration", slaveConfiguration)
     }
 
-    @NonCPS
     void configureStages() {
         List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
+        echo("stages:$stages")
         configuration.put("stages", stages)
     }
 
