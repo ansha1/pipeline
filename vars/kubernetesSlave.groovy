@@ -131,10 +131,8 @@ def createNamespace(String namespaceName) {
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
     log.info("created namespace")
     //Create mandatory secrets in the namespace
-    def res1 = createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
-    log.info("created mvnsecret $res1")
-    def res2 = createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
-    log.info("created regsecret $res2")
+    createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
+    createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
 
     kubernetesClient = null
     return namespace
@@ -153,11 +151,11 @@ Boolean deleteNamespace(String namespaceName) {
     return result
 }
 
-
-def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
-    log.info("enter method")
+@NonCPS
+void createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
+    log.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
     String libraryResource = libraryResource resource: resourcePath
-    log.info("libraryResource:$libraryResource")
+    log.debug("libraryResource:$libraryResource")
     KubernetesClient kubernetesClient = getKubernetesClient()
     switch (kind) {
         case "Secret":
@@ -165,7 +163,7 @@ def createResourceFromLibrary(String resourcePath, String kind, String namespace
             secret.metadata.namespace = namespaceName
             def result = kubernetesClient.secrets().inNamespace(namespaceName).create(secret)
             kubernetesClient = null
-            log.info("created resource $result")
+            log.debug("created resource $result")
             return result
             break
         default:
