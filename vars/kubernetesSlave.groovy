@@ -103,14 +103,14 @@ List processEnvVars(Map extraEnv) {
 def withNamespace(String namespaceName, body) {
     try {
         def ns = createNamespace(namespaceName)
-        log.info("Created namespace ${ns}")
+        log.debug("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
         currentBuild.result = "FAILED"
         log.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)
-        log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
+        log.debug("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
     }
 }
 

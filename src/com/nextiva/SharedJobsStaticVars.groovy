@@ -71,9 +71,8 @@ class SharedJobsStaticVars {
     static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
 
-    static final Map DEFAULT_CONTAINERS = ["jnlp"   : ["image"                : "jenkinsci/jnlp-slave:3.29-1-alpine",
-                                                       "command"              : "cat",
-                                                       "args"                 : "\${computer.jnlpmac} \${computer.name}",
+    static final Map DEFAULT_CONTAINERS = ["jnlp"   : ["image"                : "jenkins/jnlp-slave:3.29-1-alpine",
+                                                       "command"              : "/usr/local/bin/jenkins-slave",
                                                        "resourceRequestMemory": "256Mi",
                                                        "resourceLimitMemory"  : "512Mi"],
                                            "kubeup" : ["image"                : "repository.nextiva.xyz/aws-provisioning:0.1.16",
