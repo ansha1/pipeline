@@ -156,7 +156,7 @@ Boolean deleteNamespace(String namespaceName) {
 @NonCPS
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
     log.info("1")
-    String libraryResource = libraryResource(resource: resourcePath)
+    String libraryResource = libraryResource resource: resourcePath
     log.info("libraryResource:$libraryResource")
     KubernetesClient kubernetesClient = getKubernetesClient()
     switch (kind) {
