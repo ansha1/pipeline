@@ -6,7 +6,7 @@ import static com.nextiva.Utils.buildID
 import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
-    echo("slaveConfig  kubeslave $slaveConfig")
+    log.debug("slaveConfig: $slaveConfig")
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
 
@@ -23,7 +23,7 @@ def call(Map slaveConfig, body) {
         def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
         podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, namespace: iD, showRawYaml: false, inheritFrom: "parent-$iD",
+        podTemplate(label: iD, namespace: iD, showRawYaml: true, inheritFrom: "parent-$iD",
                 slaveConnectTimeout: 300, imagePullSecrets: ['regsecret'], containers: containers(containerResources), volumes: volumes()) {
             timestamps {
                 ansiColor('xterm') {
