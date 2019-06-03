@@ -9,7 +9,7 @@ def call(body) {
             body.resolveStrategy = Closure.DELEGATE_FIRST
             body.delegate = pipelineParams
             body()
-            log.info("closure complete")
+            log.info("Starting Nextiva Pipeline")
             Config config = new Config(this, pipelineParams)
             config.configure()
             log.info("config creation complete")

@@ -25,12 +25,8 @@ def call(Map slaveConfig, body) {
 
         podTemplate(label: iD, namespace: iD, showRawYaml: true, inheritFrom: "parent-$iD",
                 slaveConnectTimeout: 300, imagePullSecrets: ['regsecret'], containers: containers(containerResources), volumes: volumes()) {
-            timestamps {
-                ansiColor('xterm') {
-                    node(iD) {
-                        body()
-                    }
-                }
+            node(iD) {
+                body()
             }
         }
     }
