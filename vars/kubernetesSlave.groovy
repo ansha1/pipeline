@@ -23,7 +23,7 @@ def call(Map slaveConfig, body) {
         def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
         podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, namespace: iD, showRawYaml: false, inheritFrom: "parent-$iD", containers: containers(containerResources), volumes: volumes()) {
+        podTemplate(label: iD, namespace: iD, showRawYaml: false, inheritFrom: "parent-$iD", imagePullSecrets: [ 'regsecret' ], containers: containers(containerResources), volumes: volumes()) {
             timestamps {
                 ansiColor('xterm') {
                     node(iD) {
