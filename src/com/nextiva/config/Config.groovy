@@ -6,6 +6,7 @@ import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 import static com.nextiva.Utils.collectionToString
+import static groovy.json.JsonOutput.*
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -34,6 +35,8 @@ class Config implements Serializable {
         info("preload configureSlave() complete")
         info("=================================")
         info("Configuration complete:\n ${collectionToString(configuration)}")
+        info("=================================")
+        info("Configuration complete:\n ${toJson(configuration)}")
     }
 
     void validate() {
