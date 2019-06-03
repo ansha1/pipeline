@@ -153,9 +153,9 @@ Boolean deleteNamespace(String namespaceName) {
 
 @NonCPS
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
-    log.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
+    log.info("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
     String libraryResource = libraryResource resource: resourcePath
-    log.debug("libraryResource:$libraryResource")
+    log.info("libraryResource:$libraryResource")
     KubernetesClient kubernetesClient = getKubernetesClient()
     switch (kind) {
         case "Secret":
@@ -163,7 +163,7 @@ def createResourceFromLibrary(String resourcePath, String kind, String namespace
             secret.metadata.namespace = namespaceName
             def result = kubernetesClient.secrets().inNamespace(namespaceName).create(secret)
             kubernetesClient = null
-            log.debug("created resource $result")
+            log.info("created resource $result")
             return result
             break
         default:
