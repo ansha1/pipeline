@@ -32,13 +32,7 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
         echo("=================================")
-
-        echo("Configuration complete:")
-
-configuration.each { k, v -> echo("$k = $v") }
-
-
-        configuration.each { k, v -> echo("$k = $v") }
+        echo("Configuration complete:\n $toString()")
     }
 
     void validate() {
@@ -141,9 +135,9 @@ configuration.each { k, v -> echo("$k = $v") }
     }
 
     @Override
-    String toString(){
+    String toString() {
         String toString = ''
-        configuration.each { k,v ->
+        configuration.each { k, v ->
             toString += "[$k]=$v\n"
         }
         return toString
