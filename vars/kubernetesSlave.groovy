@@ -155,7 +155,7 @@ Boolean deleteNamespace(String namespaceName) {
 
 
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
-    log.info("1")
+    log.info("enter method")
     String libraryResource = libraryResource resource: resourcePath
     log.info("libraryResource:$libraryResource")
     KubernetesClient kubernetesClient = getKubernetesClient()
