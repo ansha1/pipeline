@@ -153,7 +153,7 @@ Boolean deleteNamespace(String namespaceName) {
     return result
 }
 
-@NonCPS
+
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
     log.info("1")
     String libraryResource = libraryResource resource: resourcePath
