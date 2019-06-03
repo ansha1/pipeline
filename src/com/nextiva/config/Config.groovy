@@ -32,7 +32,7 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
         echo("=================================")
-        echo("Configuration complete:\n $toString()")
+        echo("Configuration complete:\n ${toString()}")
     }
 
     void validate() {
