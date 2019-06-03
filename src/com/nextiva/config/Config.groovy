@@ -18,21 +18,21 @@ class Config implements Serializable {
 
     void configure() {
         validate()
-        echo("preload validate() complete")
+        info("preload validate() complete")
         setDefaults()
-        echo("preload setDefaults() complete")
+        info("preload setDefaults() complete")
         configureEnvironment()
-        echo("preload configureEnvironment()complete")
+        info("preload configureEnvironment()complete")
         setExtraEnvVariables()
-        echo("preload setExtraEnvVariables() complete")
+        info("preload setExtraEnvVariables() complete")
         setJobParameters()
-        echo("preload setJobParameters() complete")
+        info("preload setJobParameters() complete")
         configureStages()
-        echo("preload configureStages() complete")
+        info("preload configureStages() complete")
         configureSlave()
-        echo("preload configureSlave() complete")
-        echo("=================================")
-        echo("Configuration complete:\n ${toString()}")
+        info("preload configureSlave() complete")
+        info("=================================")
+        info("Configuration complete:\n ${toString()}")
     }
 
     void validate() {
@@ -130,8 +130,13 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    protected echo(msg) {
-        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
+    protected info(msg) {
+        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
+    }
+
+    @NonCPS
+    protected debug(msg) {
+        script.log.debug("[${this.getClass().getSimpleName()}] ${msg}")
     }
 
     @Override
