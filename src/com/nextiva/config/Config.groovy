@@ -16,7 +16,7 @@ class Config implements Serializable {
         this.configuration = pipelineParams
     }
 
-    void configure(){
+    void configure() {
         validate()
         echo("preload validate() complete")
         setDefaults()
@@ -32,7 +32,7 @@ class Config implements Serializable {
         configureSlave()
         echo("preload configureSlave() complete")
         echo("=================================")
-        configuration.each {k,v -> echo("$k = $v")}
+        configuration.each { k, v -> echo("$k = $v") }
     }
 
     @NonCPS
@@ -119,9 +119,7 @@ class Config implements Serializable {
     }
 
     Map getSlaveConfiguration() {
-        Map get = configuration.get("slaveConfiguration")
-        echo("configuration<<<<< $get")
-        return get
+        return configuration.get("slaveConfiguration")
     }
 
     String getJobTimeoutMinutes() {
@@ -129,7 +127,9 @@ class Config implements Serializable {
     }
 
     List<Stage> getStages() {
-        return configuration.get("stages")
+        def stages = configuration.get("stages")
+        echo("stages:$stages")
+        return stages
     }
 
     @NonCPS
