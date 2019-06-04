@@ -8,7 +8,7 @@ import static groovy.json.JsonOutput.toJson
 
 
 def call(body) {
-    Logger.init(this, LogLevel.INFO)
+    Logger.init(this, env.LOG_LEVEL)
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
