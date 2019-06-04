@@ -263,10 +263,11 @@ class Logger implements Serializable {
             } else {
                 objectName = ""
             }
+            def objectString = ""
             if (object instanceof Collection) {
-                String objectString = prettyPrint(toJson(object))
+                objectString = prettyPrint(toJson(object))
             } else {
-                String objectString = object.toString()
+                objectString = object.toString()
             }
             String msg = "$name : $message -> $objectName$objectString"
             writeLogMsg(logLevel, msg)
