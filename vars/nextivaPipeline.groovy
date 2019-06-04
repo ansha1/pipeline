@@ -1,7 +1,11 @@
 import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
+import com.nextiva.utils.Logger
+
+
 
 def call(body) {
+    Logger log = new Logger(this)
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
@@ -21,7 +25,7 @@ def call(body) {
 }
 
 void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
-
+    Logger log = new Logger(this)
     //exclude steps than should be executed in the finally block
     Stage notify = stages.pop()
     Stage resultsCollector = stages.pop()
