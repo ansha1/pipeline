@@ -1,11 +1,11 @@
 import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
+import com.nextiva.utils.LogLevel
 import com.nextiva.utils.Logger
 
 
-
 def call(body) {
-    Logger log = new Logger(this)
+    Logger.init(this, LogLevel.INFO)
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
