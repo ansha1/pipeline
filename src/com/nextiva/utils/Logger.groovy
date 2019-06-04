@@ -263,7 +263,7 @@ class Logger implements Serializable {
             } else {
                 objectName = ""
             }
-            if (objectName instanceof Collection) {
+            if (object instanceof Collection) {
                 String objectString = prettyPrint(toJson(object))
             } else {
                 String objectString = object.toString()
