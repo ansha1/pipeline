@@ -5,13 +5,16 @@ import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
-import static com.nextiva.Utils.collectionToString
+import com.nextiva.utils.Logger
+
 import static groovy.json.JsonOutput.*
 
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
     Script script
+
+    Logger log = new Logger(this)
 
     Config(Script script, Map pipelineParams) {
         this.script = script
@@ -20,23 +23,14 @@ class Config implements Serializable {
 
     void configure() {
         validate()
-        info("preload validate() complete")
         setDefaults()
-        info("preload setDefaults() complete")
         configureEnvironment()
-        info("preload configureEnvironment()complete")
         setExtraEnvVariables()
-        info("preload setExtraEnvVariables() complete")
         setJobParameters()
-        info("preload setJobParameters() complete")
         configureStages()
-        info("preload configureStages() complete")
         configureSlave()
-        info("preload configureSlave() complete")
-        info("=================================")
-        info("Configuration complete:\n ${collectionToString(configuration)}")
-        info("=================================")
-        info("Configuration complete:\n ${toJson(configuration)}")
+        log.info("================================================================")
+        log.info("Configuration complete:\n", configuration)
     }
 
     void validate() {
@@ -57,6 +51,7 @@ class Config implements Serializable {
         if (!configurationErrors.isEmpty()) {
             script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
+        log.debug("preload validate() complete")
     }
 
     void setDefaults() {
@@ -81,6 +76,7 @@ class Config implements Serializable {
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
+        log.debug("preload setDefaults() complete")
     }
 
     void configureEnvironment() {
@@ -89,34 +85,41 @@ class Config implements Serializable {
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
             configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
+        log.debug("preload configureEnvironment()complete")
     }
 
     void setExtraEnvVariables() {
         configuration.extraEnvs.each { k, v -> script.env[k] = v }
+        log.debug("preload setExtraEnvVariables() complete")
     }
 
     void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         def props = jobProperties.getParams()
         configuration.put("jobProperties", props)
+        log.debug("preload setJobParameters() complete \n ${prettyPrint(toJson(props))}")
+    }
+
+    void configureStages() {
+        List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
+        configuration.put("stages", stages)
+        log.debug("preload configureStages() complete \n stages: \n ${prettyPrint(toJson(stages))}")
     }
 
     void configureSlave() {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
         configuration.put("slaveConfiguration", slaveConfiguration)
-    }
-
-    void configureStages() {
-        List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
-        configuration.put("stages", stages)
+        log.debug("preload configureSlave() complete  \n ${prettyPrint(toJson(slaveConfiguration))}")
     }
 
     Map getConfiguration() {
+        log.debug("returning configuration \n ${prettyPrint(toJson(configuration))}")
         return configuration
     }
 
     Map getSlaveConfiguration() {
+        log.debug("returning configuration \n ${prettyPrint(toJson(configuration.get("slaveConfiguration")))}")
         return configuration.get("slaveConfiguration")
     }
 
@@ -126,19 +129,19 @@ class Config implements Serializable {
 
     List<Stage> getStages() {
         List stages = configuration.get("stages")
-        info("stages:${collectionToString(stages)}")
+        log.debug("Pipeline stages: \n ${prettyPrint(toJson(stages))}")
         return stages
     }
 
-    @NonCPS
-    protected info(msg) {
-        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
-    }
-
-    @NonCPS
-    protected debug(msg) {
-        script.log.debug("[${this.getClass().getSimpleName()}] ${msg}")
-    }
+//    @NonCPS
+//    protected debug(msg) {
+//        script.log.debug("[${this.getClass().getSimpleName()}] [${this.getClass().getEnclosingMethod().getName()}] ${msg}")
+//    }
+//
+//    @NonCPS
+//    protected info(msg) {
+//        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
+//    }
 
 }
 
