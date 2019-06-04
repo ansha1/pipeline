@@ -9,6 +9,7 @@ import static groovy.json.JsonOutput.toJson
 
 def call(body) {
     Logger.init(this, env.LOG_LEVEL)
+    Logger log = new Logger(this)
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
@@ -19,9 +20,6 @@ def call(body) {
             log.info("Starting Nextiva Pipeline")
             Config config = new Config(this, pipelineParams)
             config.configure()
-            log.info("config creation complete")
-            config.getConfiguration()
-            echo(prettyPrint(toJson(config.getConfiguration())))
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
             }
@@ -38,13 +36,14 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
     try {
         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
             stages.each {
+                log.debug("executing stage", it)
                 it.execute()
             }
         }
     } catch (t) {
         //some error handling
         currentBuild.result = "FAILED"
-        log.error("this is  error $t")
+        log.error("error in the pipeline execution", t)
     } finally {
         //test results collecting
         resultsCollector.execute()
