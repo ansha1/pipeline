@@ -3,6 +3,9 @@ import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.LogLevel
 import com.nextiva.utils.Logger
 
+import static groovy.json.JsonOutput.prettyPrint
+import static groovy.json.JsonOutput.toJson
+
 
 def call(body) {
     Logger.init(this, LogLevel.INFO)
@@ -17,6 +20,8 @@ def call(body) {
             Config config = new Config(this, pipelineParams)
             config.configure()
             log.info("config creation complete")
+            config.getConfiguration()
+            echo(prettyPrint(toJson(config.getConfiguration())))
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
             }
