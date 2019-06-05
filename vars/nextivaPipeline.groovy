@@ -1,11 +1,6 @@
 import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
-import com.nextiva.utils.LogLevel
 import com.nextiva.utils.Logger
-
-import static groovy.json.JsonOutput.prettyPrint
-import static groovy.json.JsonOutput.toJson
-
 
 def call(body) {
     Logger.init(this, env.LOG_LEVEL)

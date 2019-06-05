@@ -13,7 +13,6 @@ class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
     Script script
-
     Logger log = new Logger(this)
 
     Config(Script script, Map pipelineParams) {
@@ -30,7 +29,7 @@ class Config implements Serializable {
         configureStages()
         configureSlave()
         log.info("================================================================")
-        log.info("Configuration complete:\n", configuration)
+        log.debug("Configuration complete:\n", configuration)
     }
 
     void validate() {
@@ -96,8 +95,18 @@ class Config implements Serializable {
     void setJobParameters() {
         JobProperties jobProperties = new JobProperties(script, configuration)
         def props = jobProperties.getParams()
+
+        //TODO: move this into proper place
+        log.debug("Chosen deploy version", props.deployVersion)
+        def deployOnly = false
+        if (props.deployVersion){
+            deployOnly = true
+        }
+        configuration.put("deployOnly", deployOnly)
+
         configuration.put("jobProperties", props)
         log.debug("preload setJobParameters() complete \n ${prettyPrint(toJson(props))}")
+
     }
 
     void configureStages() {

@@ -1,11 +1,13 @@
 package com.nextiva.stages
 
 import com.nextiva.stages.stage.*
+import com.nextiva.utils.Logger
 
 import java.util.regex.Pattern
 
 
 class StageFactory {
+    Logger log = new Logger(this)
 
     static final Map stages = ["Checkout"                    : ["class": Checkout.class,],
 
@@ -68,7 +70,7 @@ class StageFactory {
                                ],
     ]
 
-    static Stage getStage(Script script, Class clazz, Map configuration) {
+    static Stage createStage(Script script, Class clazz, Map configuration) {
         try {
             return clazz.getDeclaredConstructor(Script, Map).newInstance(script, configuration)
         } catch (e) {
@@ -78,25 +80,29 @@ class StageFactory {
 
     static Stage getStageByName(String stageName, Script script, Map configuration) {
         Class stageClass = stages.get(stageName).get("class")
-        return getStage(script, stageClass, configuration)
+        return createStage(script, stageClass, configuration)
     }
 
-    static List<Stage> getStagesFromConfiguration(Script script, Map configuration) {
+    List<Stage> getStagesFromConfiguration(Script script, Map configuration) {
+        log.debug("Checking which steps are allowed to be executed with this configuration")
         List<Stage> flow = []
         stages.each { k, v ->
-            script.log.debug("get $k and $v and config $configuration")
+            log.debug("Trying to create stage: \n $k \n with definition: \n $v \n")
             if (checkForExecuting(v, configuration)) {
-                flow.add(getStage(script, v.get("class"), configuration))
+                flow.add(createStage(script, v.get("class"), configuration))
             }
         }
+        log.debug("Current flow: ", flow)
         return flow
     }
 
     /**
      * checkForExecuting checking that stage should be in the current pipeline flow, based on provided configuration
      */
-    static Boolean checkForExecuting(Map stageDefinition, Map configuration) {
+    Boolean checkForExecuting(Map stageDefinition, Map configuration) {
+
         return stageDefinition.every { key, value ->
+            log.debug("Checking step $key:", value)
             switch (key) {
                 case "class":
                     return true
