@@ -94,10 +94,13 @@ class StageFactory {
         List<Stage> flow = []
         stages.each { k, v ->
             log.debug("Trying to create stage: \n $k \n with definition: \n $v \n")
-            if (checkForExecuting(v, configuration)) {
+            Boolean executing = checkForExecuting(v, configuration)
+            log.debug("Executing: $executing")
+            if (executing) {
                 flow.add(createStage(v.get("class")))
             }
         }
+        log.debug("======================================================================================")
         log.debug("Current flow: ", flow)
         return flow
     }
@@ -106,9 +109,9 @@ class StageFactory {
      * checkForExecuting checking that stage should be in the current pipeline flow, based on provided configuration
      */
     Boolean checkForExecuting(Map stageDefinition, Map configuration) {
+        Boolean executing = false
 
-        return stageDefinition.every { key, value ->
-            log.debug("Checking step $key:", value)
+        executing = stageDefinition.every { key, value ->
             switch (key) {
                 case "class":
                     return true
@@ -126,5 +129,6 @@ class StageFactory {
                     break
             }
         }
+        return executing
     }
 }
