@@ -93,7 +93,7 @@ class StageFactory {
         log.debug("Checking which steps are allowed to be executed with this configuration")
         List<Stage> flow = []
         stages.each { k, v ->
-            log.debug("Trying to create stage: \n $k \n with definition: \n $v \n")
+            log.debug("Trying to create stage: $k \n with definition: \n $v \n")
             Boolean executing = checkForExecuting(v, configuration)
             log.debug("Executing: $executing")
             if (executing) {
@@ -112,17 +112,26 @@ class StageFactory {
         Boolean executing = false
 
         executing = stageDefinition.every { key, value ->
+            log.debug("Checking key $key")
             switch (key) {
                 case "class":
                     return true
                     break
                 case "branchingModel":
-                    Pattern branchPattern = Pattern.compile(value.get(configuration.get("branchingModel")))
-                    return configuration.get("branchName") ==~ branchPattern
+                    String branchingModel = configuration.get("branchingModel")
+                    Pattern branchPattern = Pattern.compile(value.get(branchingModel))
+                    String branchName = configuration.get("branchName")
+                    log.debug("Comparing branch pattern >>$branchPattern<< for branchimg model >>$branchingModel<< with branch >>$branchName<<")
+                    Boolean result = branchingModel ==~ branchPattern
+                    log.debug("result: $result")
+                    return result
                     break
                 default:
                     if (configuration.containsKey(key)) {
-                        return configuration.get(key) == value
+                        def configurationValue = configuration.get(key)
+                        log.debug("comparing configuration value: $configurationValue  and definition value: $value for this key: $key")
+                        Boolean result = configurationValue == value
+                        return result
                     } else {
                         return true
                     }
