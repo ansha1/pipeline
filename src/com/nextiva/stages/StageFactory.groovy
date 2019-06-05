@@ -131,6 +131,7 @@ class StageFactory {
                         def configurationValue = configuration.get(key)
                         log.debug("comparing configuration value: $configurationValue  and definition value: $value for this key: $key")
                         Boolean result = configurationValue == value
+                        log.debug("result: $result")
                         return result
                     } else {
                         return true
