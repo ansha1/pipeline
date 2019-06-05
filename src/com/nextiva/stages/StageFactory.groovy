@@ -95,7 +95,7 @@ class StageFactory {
         stages.each { k, v ->
             log.debug("Trying to create stage: \n $k \n with definition: \n $v \n")
             if (checkForExecuting(v, configuration)) {
-                flow.add(createStage(script, v.get("class"), configuration))
+                flow.add(createStage(v.get("class")))
             }
         }
         log.debug("Current flow: ", flow)
