@@ -90,12 +90,12 @@ class StageFactory {
     }
 
     List<Stage> getStagesFromConfiguration() {
-        log.debug("Checking which steps are allowed to be executed with this configuration")
+        log.debug("Check what steps are allowed to perform with this configuration")
         List<Stage> flow = []
         stages.each { k, v ->
-            log.debug("Trying to create stage: $k \n with definition: \n $v \n")
+            log.debug("Trying to create stage: $k  with definition: \n $v \n")
             Boolean executing = checkForExecuting(v, configuration)
-            log.debug("Executing: $executing")
+            log.debug("Stage $k add: $executing")
             if (executing) {
                 flow.add(createStage(v.get("class")))
             }
