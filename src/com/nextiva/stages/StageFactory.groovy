@@ -29,7 +29,7 @@ class StageFactory {
                                "UnitTest"                    : ["class"            : UnitTest.class,
                                                                 "isUnitTestEnabled": true,
                                                                 "deployOnly"       : false,
-                                                                "branchingModel"   : ["gitflow"   : /^(?!master)$/,
+                                                                "branchingModel"   : ["gitflow"   : /^(?!^master$)/,
                                                                                       "trunkbased": /^.*$/]
                                ],
                                "SonarScan"                   : ["class"                 : SonarScan.class,
@@ -42,7 +42,7 @@ class StageFactory {
                                                                 "class"                   : IntegrationTest.class,
                                                                 "isIntegrationTestEnabled": true,
                                                                 "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
-                                                                                             "trunkbased": /^(?!master)$/]
+                                                                                             "trunkbased": /^(?!^master$)/]
                                ],
                                "Publish"                     : ["deployOnly"    : false,
                                                                 "class"         : PublishArtifact.class,
@@ -53,7 +53,7 @@ class StageFactory {
                                                                 "isSecurityScanEnabled": true,
                                                                 "class"                : SecurityScan.class,
                                                                 "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
-                                                                                          "trunkbased": /^(?!master)$/]
+                                                                                          "trunkbased": /^(?!^master$)/]
                                ],
                                "Deploy"                      : ["class"          : Deploy.class,
                                                                 "isDeployEnabled": true,
