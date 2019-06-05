@@ -21,6 +21,7 @@ class Config implements Serializable {
     }
 
     void configure() {
+        log.debug("start job configuration")
         validate()
         setDefaults()
         configureEnvironment()
@@ -28,11 +29,11 @@ class Config implements Serializable {
         setJobParameters()
         configureStages()
         configureSlave()
-        log.info("================================================================")
         log.debug("Configuration complete:\n", configuration)
     }
 
     void validate() {
+        log.debug("start validate()")
         // Checking mandatory variables
         List<String> configurationErrors = []
 
@@ -50,10 +51,11 @@ class Config implements Serializable {
         if (!configurationErrors.isEmpty()) {
             script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
         }
-        log.debug("preload validate() complete")
+        log.debug("complete validate()")
     }
 
     void setDefaults() {
+        log.debug("start setDefaults()")
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
@@ -75,55 +77,63 @@ class Config implements Serializable {
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
-        log.debug("preload setDefaults() complete")
+        log.debug("complete setDefaults()")
     }
 
     void configureEnvironment() {
+        log.debug("start configureEnvironment()")
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
             configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
-        log.debug("preload configureEnvironment()complete")
+        log.debug("complete configureEnvironment()")
     }
 
     void setExtraEnvVariables() {
+        log.debug("start setExtraEnvVariables() complete")
         configuration.extraEnvs.each { k, v ->
             log.debug("[$k]=$v")
             script.env[k] = v
         }
-        log.debug("preload setExtraEnvVariables() complete")
+        log.debug("complete setExtraEnvVariables() complete")
     }
 
     void setJobParameters() {
+        log.debug("start setJobParameters()")
         JobProperties jobProperties = new JobProperties(script, configuration)
         def props = jobProperties.getParams()
+        log.debug("Job properties", props)
+        configuration.put("jobProperties", props)
 
-        //TODO: move this into proper place
+        //TODO: move this into the proper place
         log.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
         if (props.deployVersion) {
             deployOnly = true
         }
+        log.debug("set deployOnly: $deployOnly")
         configuration.put("deployOnly", deployOnly)
 
-        configuration.put("jobProperties", props)
-        log.debug("preload setJobParameters() complete \n ${prettyPrint(toJson(props))}")
-
+        log.debug("complete setJobParameters()")
     }
 
     void configureStages() {
+        log.debug("start configureStages()")
         StageFactory stageFactory = new StageFactory(script, configuration)
         List<Stage> stages = stageFactory.getStagesFromConfiguration()
+        log.debug("Selected stages:", stages)
         configuration.put("stages", stages)
-        log.debug("preload configureStages() complete \n stages: \n ${prettyPrint(toJson(stages))}")
+        log.debug("complete configureStages()")
     }
 
     void configureSlave() {
+        log.debug("start configureSlave()")
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
+        log.debug("slave configuration:", slaveConfiguration)
         configuration.put("slaveConfiguration", slaveConfiguration)
-        log.debug("preload configureSlave() complete ", slaveConfiguration)
+        log.debug("complete configureSlave()")
     }
 
     Map getConfiguration() {
