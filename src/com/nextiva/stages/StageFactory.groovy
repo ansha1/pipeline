@@ -121,7 +121,8 @@ class StageFactory {
                     String branchingModel = configuration.get("branchingModel")
                     Pattern branchPattern = Pattern.compile(value.get(branchingModel))
                     String branchName = configuration.get("branchName")
-                    log.debug("Comparing branch pattern >>$branchPattern<< for branchimg model >>$branchingModel<< with branch >>$branchName<<")
+                    log.debug("Branching model from configuration: $branchingModel")
+                    log.debug("Comparing branch pattern $branchPattern with branch $branchName")
                     Boolean result = branchingModel ==~ branchPattern
                     log.debug("result: $result")
                     return result
