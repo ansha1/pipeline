@@ -29,7 +29,7 @@ class StageFactory {
                                "UnitTest"                    : ["class"            : UnitTest.class,
                                                                 "isUnitTestEnabled": true,
                                                                 "deployOnly"       : false,
-                                                                "branchingModel"   : ["gitflow"   : /^(?!^master$)/,
+                                                                "branchingModel"   : ["gitflow"   : /^\b(?!master\b)\w+$/,
                                                                                       "trunkbased": /^.*$/]
                                ],
                                "SonarScan"                   : ["class"                 : SonarScan.class,
