@@ -7,8 +7,14 @@ import java.util.regex.Pattern
 
 
 class StageFactory {
+    Script script
+    Map configuration
     Logger log = new Logger(this)
 
+    StageFactory(Script script, Map configuration) {
+        this.script = script
+        this.configuration = configuration
+    }
     static final Map stages = ["Checkout"                    : ["class": Checkout.class,],
 
                                "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
@@ -70,7 +76,7 @@ class StageFactory {
                                ],
     ]
 
-    static Stage createStage(Script script, Class clazz, Map configuration) {
+    Stage createStage(Class clazz) {
         try {
             return clazz.getDeclaredConstructor(Script, Map).newInstance(script, configuration)
         } catch (e) {
@@ -78,12 +84,12 @@ class StageFactory {
         }
     }
 
-    static Stage getStageByName(String stageName, Script script, Map configuration) {
+    Stage getStageByName(String stageName) {
         Class stageClass = stages.get(stageName).get("class")
-        return createStage(script, stageClass, configuration)
+        return createStage(stageClass)
     }
 
-    List<Stage> getStagesFromConfiguration(Script script, Map configuration) {
+    List<Stage> getStagesFromConfiguration() {
         log.debug("Checking which steps are allowed to be executed with this configuration")
         List<Stage> flow = []
         stages.each { k, v ->

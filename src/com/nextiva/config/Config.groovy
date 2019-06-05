@@ -88,7 +88,10 @@ class Config implements Serializable {
     }
 
     void setExtraEnvVariables() {
-        configuration.extraEnvs.each { k, v -> script.env[k] = v }
+        configuration.extraEnvs.each { k, v ->
+            log.debug("[$k]=$v")
+            script.env[k] = v
+        }
         log.debug("preload setExtraEnvVariables() complete")
     }
 
@@ -99,7 +102,7 @@ class Config implements Serializable {
         //TODO: move this into proper place
         log.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
-        if (props.deployVersion){
+        if (props.deployVersion) {
             deployOnly = true
         }
         configuration.put("deployOnly", deployOnly)
@@ -110,7 +113,8 @@ class Config implements Serializable {
     }
 
     void configureStages() {
-        List<Stage> stages = StageFactory.getStagesFromConfiguration(script, configuration)
+        StageFactory stageFactory = new StageFactory(script, configuration)
+        List<Stage> stages = stageFactory.getStagesFromConfiguration()
         configuration.put("stages", stages)
         log.debug("preload configureStages() complete \n stages: \n ${prettyPrint(toJson(stages))}")
     }
@@ -119,17 +123,18 @@ class Config implements Serializable {
         SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
         def slaveConfiguration = slaveFactory.getSlaveConfiguration()
         configuration.put("slaveConfiguration", slaveConfiguration)
-        log.debug("preload configureSlave() complete  \n ${prettyPrint(toJson(slaveConfiguration))}")
+        log.debug("preload configureSlave() complete ", slaveConfiguration)
     }
 
     Map getConfiguration() {
-        log.debug("returning configuration \n ${prettyPrint(toJson(configuration))}")
+        log.debug("returning configuration ", configuration)
         return configuration
     }
 
     Map getSlaveConfiguration() {
-        log.debug("returning configuration \n ${prettyPrint(toJson(configuration.get("slaveConfiguration")))}")
-        return configuration.get("slaveConfiguration")
+        Map slaveConfiguration = configuration.get("slaveConfiguration")
+        log.debug("returning slave configuration ", slaveConfiguration)
+        return slaveConfiguration
     }
 
     String getJobTimeoutMinutes() {
@@ -138,20 +143,9 @@ class Config implements Serializable {
 
     List<Stage> getStages() {
         List stages = configuration.get("stages")
-        log.debug("Pipeline stages: \n ${prettyPrint(toJson(stages))}")
+        log.debug("Pipeline stages: \n", stages)
         return stages
     }
-
-//    @NonCPS
-//    protected debug(msg) {
-//        script.log.debug("[${this.getClass().getSimpleName()}] [${this.getClass().getEnclosingMethod().getName()}] ${msg}")
-//    }
-//
-//    @NonCPS
-//    protected info(msg) {
-//        script.log.info("[${this.getClass().getSimpleName()}] ${msg}")
-//    }
-
 }
 
 
