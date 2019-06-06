@@ -101,7 +101,7 @@ class StageFactory {
             }
         }
         log.debug("======================================================================================")
-        log.debug("Current flow: ", flow.toString())
+        log.debug("Current flow: ", flow)
         return flow
     }
 
