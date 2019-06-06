@@ -1,4 +1,5 @@
 import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.utils.Logger
 import io.fabric8.kubernetes.api.model.Secret
 import io.fabric8.kubernetes.client.KubernetesClient
 import static com.nextiva.SharedJobsStaticVars.*
@@ -6,7 +7,8 @@ import static com.nextiva.utils.Utils.buildID
 import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
-    log.debug("slaveConfig: $slaveConfig")
+    Logger log = new Logger(this)
+    log.debug("Got slaveConfig", slaveConfig)
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
 

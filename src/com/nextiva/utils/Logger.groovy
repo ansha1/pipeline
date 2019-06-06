@@ -3,7 +3,7 @@ package com.nextiva.utils
 import com.cloudbees.groovy.cps.NonCPS
 import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException
 
-import static groovy.json.JsonOutput.*
+//import static groovy.json.JsonOutput.*
 
 /**
  * Logging functionality for the pipeline scripts.
@@ -264,6 +264,7 @@ class Logger implements Serializable {
                 objectName = ""
             }
             def objectString = ""
+            //TODO: make prettyPrint of Collection type objects.  Json prettyPrint throw java.lang.StackOverflowError
 //            if (object instanceof Collection || object instanceof Map) {
 //                objectString = prettyPrint(toJson(object))
 //            } else {
