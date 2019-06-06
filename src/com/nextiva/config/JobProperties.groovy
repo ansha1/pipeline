@@ -78,7 +78,6 @@ class JobProperties {
         return result
     }
 
-    @NonCPS
     Map getParams() {
         def params = script.jobWithProperties(toMap())
         return params
