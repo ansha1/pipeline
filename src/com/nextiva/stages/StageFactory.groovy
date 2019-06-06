@@ -42,7 +42,7 @@ class StageFactory {
                                                                 "class"                   : IntegrationTest.class,
                                                                 "isIntegrationTestEnabled": true,
                                                                 "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
-                                                                                             "trunkbased": /^(?!^master$)/]
+                                                                                             "trunkbased": /^\b(?!master\b)\w+$/]
                                ],
                                "Publish"                     : ["deployOnly"    : false,
                                                                 "class"         : PublishArtifact.class,
@@ -53,7 +53,7 @@ class StageFactory {
                                                                 "isSecurityScanEnabled": true,
                                                                 "class"                : SecurityScan.class,
                                                                 "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
-                                                                                          "trunkbased": /^(?!^master$)/]
+                                                                                          "trunkbased": /^\b(?!master\b)\w+$/]
                                ],
                                "Deploy"                      : ["class"          : Deploy.class,
                                                                 "isDeployEnabled": true,
