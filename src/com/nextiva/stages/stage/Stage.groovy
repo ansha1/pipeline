@@ -13,9 +13,9 @@ abstract class Stage implements Serializable {
 
     abstract execute()
 
-    @Override
-    String toString(){
-        return this.getClass().getSimpleName()
-    }
+//    @Override
+//    String toString(){
+//        return this.getClass().getSimpleName()
+//    }
 
 }
