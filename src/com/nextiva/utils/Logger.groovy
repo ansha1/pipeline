@@ -264,11 +264,11 @@ class Logger implements Serializable {
                 objectName = ""
             }
             def objectString = ""
-            if (object instanceof Collection || object instanceof Map) {
-                objectString = prettyPrint(toJson(object))
-            } else {
+//            if (object instanceof Collection || object instanceof Map) {
+//                objectString = prettyPrint(toJson(object))
+//            } else {
                 objectString = object.toString()
-            }
+//            }
             String msg = "$name : $message -> $objectName$objectString"
             writeLogMsg(logLevel, msg)
         }
