@@ -18,6 +18,7 @@ class Logger implements Serializable {
     /**
      * The log level
      */
+
     static LogLevel level = LogLevel.TRACE
 
     /**
@@ -370,5 +371,26 @@ class Logger implements Serializable {
         }
 
         return objectName
+    }
+
+    /**
+     * Helper function to set loglevel
+     * @param logLevel
+     * @return
+     */
+    @NonCPS
+    static void setLogLevel(LogLevel level) {
+        Logger.level = level
+    }
+
+    /**
+     * Helper function to set loglevel from given string
+     * @param sLevel
+     * @return
+     */
+    @NonCPS
+    static void setLogLevel(String sLevel) {
+        if (sLevel == null) sLevel = LogLevel.INFO
+        setLogLevel(LogLevel.fromString(sLevel))
     }
 }

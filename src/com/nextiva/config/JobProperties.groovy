@@ -1,6 +1,7 @@
 package com.nextiva.config
 
 import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.utils.Logger
 
 import java.util.regex.Pattern
 
@@ -13,6 +14,8 @@ class JobProperties {
     String buildArtifactNumToKeepStr
     List paramlist
     Map auth
+
+    Logger log = new Logger(this)
 
     JobProperties(Script script, Map configuration) {
         this.script = script
@@ -45,6 +48,10 @@ class JobProperties {
                               ["parameter"     : script.choice(choices: environmentsToDeploy, description: 'Where deploy?', name: 'deployDst'),
                                "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
                                                   "trunkbased": /^master$/],
+                              ],
+                              ["parameter"     : script.choice(choices: ["INFO", "DEBUG", "TRACE", "ALL"], description: 'Pipeline Log level', name: 'JOB_LOG_LEVEL'),
+                               "branchingModel": ["gitflow"   : /^.*$/,
+                                                  "trunkbased": /^.*$/],
                               ]]
 
         jobParameters.each {

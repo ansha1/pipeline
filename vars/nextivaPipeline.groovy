@@ -3,7 +3,7 @@ import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
 
 def call(body) {
-    Logger.init(this, env.LOG_LEVEL)
+    Logger.init(this)
     Logger log = new Logger(this)
     timestamps {
         ansiColor('xterm') {
@@ -15,6 +15,7 @@ def call(body) {
             log.info("Starting Nextiva Pipeline")
             Config config = new Config(this, pipelineParams)
             config.configure()
+            Logger.setLogLevel(env.JOB_LOG_LEVEL)
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
             }
