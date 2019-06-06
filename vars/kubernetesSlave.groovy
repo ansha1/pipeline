@@ -2,8 +2,7 @@ import com.cloudbees.groovy.cps.NonCPS
 import io.fabric8.kubernetes.api.model.Secret
 import io.fabric8.kubernetes.client.KubernetesClient
 import static com.nextiva.SharedJobsStaticVars.*
-import static com.nextiva.Utils.buildID
-import org.csanchez.jenkins.plugins.kubernetes.*
+import static com.nextiva.utils.Utils.buildID
 
 def call(Map slaveConfig, body) {
     log.debug("slaveConfig: $slaveConfig")

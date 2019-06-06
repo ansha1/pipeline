@@ -1,4 +1,4 @@
-package com.nextiva
+package com.nextiva.utils
 
 import com.cloudbees.groovy.cps.NonCPS
 import jenkins.model.Jenkins
