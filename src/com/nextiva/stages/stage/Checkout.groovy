@@ -22,4 +22,9 @@ class Checkout extends Stage {
             ).trim()
         }
     }
+
+    @Override
+    String toString(){
+        return this.getClass().getSimpleName()
+    }
 }
