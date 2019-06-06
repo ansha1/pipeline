@@ -6,7 +6,7 @@ class Checkout extends Stage {
     }
 
     @Override
-    def execute(){
+    def execute() {
         script.stage(this.getClass().getSimpleName()) {
             script.checkout([
                     $class                           : 'GitSCM',
@@ -16,15 +16,10 @@ class Checkout extends Stage {
                     userRemoteConfigs                : script.scm.userRemoteConfigs
             ])
 
-             script.sh(
+            script.sh(
                     script: "ls -la",
                     returnStdout: true
             ).trim()
         }
-    }
-
-    @Override
-    String toString(){
-        return this.getClass().getSimpleName()
     }
 }
