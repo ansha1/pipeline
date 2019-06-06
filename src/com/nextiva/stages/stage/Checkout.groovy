@@ -7,6 +7,9 @@ class Checkout extends Stage {
 
     @Override
     def execute() {
+        log.debug("this is checkout debug message")
+        log.info("this is checkout info message")
+        log.trace("this is checkout trace message")
         script.stage(this.getClass().getSimpleName()) {
             script.checkout([
                     $class                           : 'GitSCM',

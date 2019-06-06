@@ -54,6 +54,25 @@ class Config implements Serializable {
         log.debug("complete validate()")
     }
 
+    void setJobParameters() {
+        log.debug("start setJobParameters()")
+        JobProperties jobProperties = new JobProperties(script, configuration)
+        def props = jobProperties.getParams()
+        log.debug("Job properties", props)
+        configuration.put("jobProperties", props)
+
+        //TODO: move this into the proper place
+        log.debug("Chosen deploy version", props.deployVersion)
+        def deployOnly = false
+        if (props.deployVersion) {
+            deployOnly = true
+        }
+        log.debug("set deployOnly: $deployOnly")
+        configuration.put("deployOnly", deployOnly)
+
+        log.debug("complete setJobParameters()")
+    }
+
     void setDefaults() {
         log.debug("start setDefaults()")
         //Set flags
@@ -97,25 +116,6 @@ class Config implements Serializable {
             script.env[k] = v
         }
         log.debug("complete setExtraEnvVariables() complete")
-    }
-
-    void setJobParameters() {
-        log.debug("start setJobParameters()")
-        JobProperties jobProperties = new JobProperties(script, configuration)
-        def props = jobProperties.getParams()
-        log.debug("Job properties", props)
-        configuration.put("jobProperties", props)
-
-        //TODO: move this into the proper place
-        log.debug("Chosen deploy version", props.deployVersion)
-        def deployOnly = false
-        if (props.deployVersion) {
-            deployOnly = true
-        }
-        log.debug("set deployOnly: $deployOnly")
-        configuration.put("deployOnly", deployOnly)
-
-        log.debug("complete setJobParameters()")
     }
 
     void configureStages() {
