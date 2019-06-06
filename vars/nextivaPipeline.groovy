@@ -3,7 +3,7 @@ import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
 
 def call(body) {
-    Logger.init(this)
+    Logger.init(this, env.LOG_LEVEL)
     Logger log = new Logger(this)
     timestamps {
         ansiColor('xterm') {
