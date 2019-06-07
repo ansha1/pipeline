@@ -1,4 +1,4 @@
-@Library('pipeline@develop') _
+@Library('pipeline') _
 
 
 def image = getImageByLanguage(params.language, params.languageVersion)
