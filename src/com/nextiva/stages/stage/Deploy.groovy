@@ -1,13 +1,33 @@
 package com.nextiva.stages.stage
 
+import com.nextiva.deploy.tool.DeployTool
+
+import static com.nextiva.utils.Utils.shOrClosure
+
 class Deploy extends Stage {
     Deploy(Script script, Map configuration) {
         super(script, configuration)
     }
 
-    def execute(){
-        script.stage(this.getClass().getSimpleName()) {
-            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
+    @Override
+    def stageBody() {
+        Map deploy = configuration.get("build")
+        deploy.each { toolName, toolConfig ->
+            withStage("${toolName} ${stageName()}") {
+                DeployTool tool = toolConfig.get("tool")
+                try {
+                    tool.deploy()
+                    def postDeployCommands = toolConfig.get("postDeployCommands")
+                    if (postDeployCommands != null) {
+                        withStage("${toolName} ${stageName()} postDeploy") {
+                            shOrClosure(script, postDeployCommands)
+                        }
+                    }
+                } catch (e) {
+                    log.error("Error when executing ${toolName} ${stageName()}:", e)
+                    throw e
+                }
+            }
         }
     }
 }

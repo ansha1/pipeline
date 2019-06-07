@@ -7,8 +7,6 @@ import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
 
-import static groovy.json.JsonOutput.*
-
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
@@ -87,7 +85,7 @@ class Config implements Serializable {
             toolConfiguration.containsKey("integrationTestCommands")
         })
         configuration.put("isDeployEnabled", configuration.containsKey("deploy"))
-        configuration.put("isPostDeployEnabled", configuration.deploy?.containsKey("postDeployCommands"))
+        configuration.get("isJobHasDependencies", configuration.containsKey("dependencies"))
         configuration.get("isSecurityScanEnabled", true)
         configuration.get("isSonarAnalysisEnabled", true)
         configuration.get("isQACoreTeamTestEnabled", true)

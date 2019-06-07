@@ -1,37 +1,39 @@
 package com.nextiva.build.tool
 
+import com.nextiva.Version
+import com.nextiva.utils.Logger
+import static com.nextiva.utils.Utils.shOrClosure
+
 abstract class BuildTool {
-    String name
-    String pathToSrc
-    def buildCommands
-    def postBuildCommands
-    def unitTestCommands
-    def postUnitTestCommands
-    def integrationTestCommands
-    def postIntegrationTestCommands
+    Logger log = new Logger(this)
+    Script script
+    Map toolConfiguration
+
+    String pathToSrc = "."
+    Version version
     Boolean publishArtifact
 
-    BuildTool(Script script, String name, String pathToSrc, def buildCommands, def postBuildCommands, def unitTestCommands,
-              def postUnitTestCommands, def integrationTestCommands, def postIntegrationTestCommands, Boolean publishArtifact) {
-
+    BuildTool(Script script, Map toolConfiguration) {
+        this.script = script
+        this.toolConfiguration = toolConfiguration
     }
-
 
     abstract void setVersion(String version)
 
     abstract String getVersion()
 
-    abstract Boolean build()
+    Boolean execute(def command) {
+        script.dir(pathToSrc) {
+            script.container(this.getClass().getSimpleName().toLowerCase()) {
+                shOrClosure(script, command)
+            }
+        }
+    }
 
-    abstract Boolean unitTest()
-
-    abstract Boolean integrationTest()
-
-    abstract Boolean publish()
+    abstract void sonarScan()
+    abstract void securityScan()
+    abstract void publish()
 
     abstract Boolean isArtifactAvailableInRepo()
 
-//    protected echo(msg){
-////        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
-////    }
 }

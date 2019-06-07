@@ -15,9 +15,6 @@ def call(body) {
             log.info("Starting Nextiva Pipeline")
             Config config = new Config(this, pipelineParams)
             config.configure()
-
-            print(env.JOB_LOG_LEVEL)
-            Logger.init(this, env.JOB_LOG_LEVEL)
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
             }

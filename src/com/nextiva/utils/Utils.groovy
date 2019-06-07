@@ -12,12 +12,14 @@ class Utils {
         ).trim()
     }
 
-    static void shOrClosure(script, def command) {
+    static def shOrClosure(script, def command) {
+        def result
         if (command instanceof Closure) {
-            command()
+            result = command()
         } else {
-            shWithOutput(script, command)
+            result = shWithOutput(script, command)
         }
+        return result
     }
 
     /**
@@ -64,7 +66,7 @@ class Utils {
         }
     }
 
-    static String collectionToString(def collection){
+    static String collectionToString(def collection) {
         //This method needs to reduce output in Jenkins console when print object entryset
         String toString = ""
         collection.each { k, v ->

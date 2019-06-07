@@ -14,11 +14,23 @@ abstract class Stage implements Serializable {
         this.configuration = configuration
     }
 
-    abstract execute()
+    def execute() {
+        withStage(stageName()){
+            stageBody()
+        }
+    }
 
-    @Override
-    String toString(){
+    abstract def stageBody()
+
+    static String stageName() {
         return this.getClass().getSimpleName()
     }
 
+    def withStage(String stageName, def body){
+        log.debug("Start executing $stageName stage")
+        script.stage(stageName) {
+            body()
+        }
+        log.debug("Execuiton $stageName stage complete")
+    }
 }

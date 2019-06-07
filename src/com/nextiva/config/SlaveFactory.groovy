@@ -51,8 +51,4 @@ class SlaveFactory {
         return slaveConfig
     }
 
-    @NonCPS
-    protected echo(msg) {
-        script.echo("[${this.getClass().getSimpleName()}] ${msg}")
-    }
 }

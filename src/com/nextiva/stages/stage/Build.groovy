@@ -2,29 +2,28 @@ package com.nextiva.stages.stage
 
 import com.nextiva.build.tool.BuildTool
 
-class UnitTest extends Stage {
-    UnitTest(Script script, Map configuration) {
+class Build extends Stage {
+    Build(Script script, Map configuration) {
         super(script, configuration)
     }
 
-    @Override
     def stageBody() {
         Map build = configuration.get("build")
         build.each {toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
                 BuildTool tool = toolConfig.get("tool")
                 try {
-                    def unitTestCommands = toolConfig.get("unitTestCommands")
-                    log.debug("executing ", unitTestCommands)
-                    tool.execute(unitTestCommands)
+                    def buildCommands = toolConfig.get("buildCommands")
+                    log.debug("executing ", buildCommands)
+                    tool.execute(buildCommands)
                 } catch (e) {
                     log.error("Error when executing ${toolName} ${stageName()}:", e)
                     throw e
                 } finally {
-                    def postUnitTestCommands = toolConfig.get("postUnitTestCommands")
-                    if (postUnitTestCommands != null) {
-                        log.debug("executing ", postUnitTestCommands)
-                        tool.execute(postUnitTestCommands)
+                    def postBuildCommands = toolConfig.get("postBuildCommands")
+                    if (postBuildCommands != null) {
+                        log.debug("executing ", postBuildCommands)
+                        tool.execute(postBuildCommands)
                     }
                 }
             }

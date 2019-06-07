@@ -15,65 +15,67 @@ class StageFactory {
         this.script = script
         this.configuration = configuration
     }
-    static final Map stages = ["Checkout"                    : ["class": Checkout.class,],
-
-                               "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
-                                                                "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
-                                                                                   "trunkbased": /^master$/]
-                               ],
-                               "Build"                       : ["deployOnly"    : false,
-                                                                "class"         : BuildArtifact.class,
-                                                                "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
-                                                                                   "trunkbased": /^master$/]
-                               ],
-                               "UnitTest"                    : ["class"            : UnitTest.class,
-                                                                "isUnitTestEnabled": true,
-                                                                "deployOnly"       : false,
-                                                                "branchingModel"   : ["gitflow"   : /^\b(?!master\b)\w+$/,
-                                                                                      "trunkbased": /^.*$/]
-                               ],
-                               "SonarScan"                   : ["class"                 : SonarScan.class,
-                                                                "deployOnly"            : false,
-                                                                "isSonarAnalysisEnabled": true,
-                                                                "branchingModel"        : ["gitflow"   : /^(develop|dev)$/,
-                                                                                           "trunkbased": /^master$/]
-                               ],
-                               "IntegrationTest"             : ["deployOnly"              : false,
-                                                                "class"                   : IntegrationTest.class,
-                                                                "isIntegrationTestEnabled": true,
-                                                                "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
-                                                                                             "trunkbased": /^\b(?!master\b)\w+$/]
-                               ],
-                               "Publish"                     : ["deployOnly"    : false,
-                                                                "class"         : PublishArtifact.class,
-                                                                "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
-                                                                                   "trunkbased": /^master$/]
-                               ],
-                               "SecurityScan"                : ["deployOnly"           : false,
-                                                                "isSecurityScanEnabled": true,
-                                                                "class"                : SecurityScan.class,
-                                                                "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
-                                                                                          "trunkbased": /^\b(?!master\b)\w+$/]
-                               ],
-                               "Deploy"                      : ["class"          : Deploy.class,
-                                                                "isDeployEnabled": true,
-                                                                "branchingModel" : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                                    "trunkbased": /^(master)$/]
-                               ],
-                               "PostDeploy"                  : ["isPostDeployEnabled": true,
-                                                                "class"              : PostDeploy.class,
-                                                                "branchingModel"     : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                                        "trunkbased": /^(master)$/]
-                               ],
-                               "QACoreTeamTest"              : ["class"                  : QACoreTeamTest.class,
-                                                                "isQACoreTeamTestEnabled": true,
-                                                                "branchingModel"         : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                                            "trunkbased": /^(master)$/]
-                               ],
-                               "CollectBuildResults"         : ["class": CollectBuildResults.class,
-                               ],
-                               "SendNotifications"           : ["class": SendNotifications.class,
-                               ],
+    static final Map stages = [
+            "StartBuildDependencies"      : ["deployOnly"          : false,
+                                             "isJobHasDependencies": true,
+                                             "class"               : StartBuildDependencies.class,
+                                             "branchingModel"      : ["gitflow"   : /^\b(?!master\b)\w+$/,
+                                                                      "trunkbased": /^.*$/]
+            ],
+            "Checkout"                    : ["class": Checkout.class,
+            ],
+            "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
+                                             "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
+                                                                "trunkbased": /^master$/]
+            ],
+            "Build"                       : ["deployOnly"    : false,
+                                             "class"         : Build.class,
+                                             "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                "trunkbased": /^master$/]
+            ],
+            "UnitTest"                    : ["class"            : UnitTest.class,
+                                             "isUnitTestEnabled": true,
+                                             "deployOnly"       : false,
+                                             "branchingModel"   : ["gitflow"   : /^\b(?!master\b)\w+$/,
+                                                                   "trunkbased": /^.*$/]
+            ],
+            "SonarScan"                   : ["class"                 : SonarScan.class,
+                                             "deployOnly"            : false,
+                                             "isSonarAnalysisEnabled": true,
+                                             "branchingModel"        : ["gitflow"   : /^(develop|dev)$/,
+                                                                        "trunkbased": /^master$/]
+            ],
+            "IntegrationTest"             : ["deployOnly"              : false,
+                                             "class"                   : IntegrationTest.class,
+                                             "isIntegrationTestEnabled": true,
+                                             "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
+                                                                          "trunkbased": /^\b(?!master\b)\w+$/]
+            ],
+            "Publish"                     : ["deployOnly"    : false,
+                                             "class"         : Publish.class,
+                                             "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
+                                                                "trunkbased": /^master$/]
+            ],
+            "SecurityScan"                : ["deployOnly"           : false,
+                                             "isSecurityScanEnabled": true,
+                                             "class"                : SecurityScan.class,
+                                             "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
+                                                                       "trunkbased": /^\b(?!master\b)\w+$/]
+            ],
+            "Deploy"                      : ["class"          : Deploy.class,
+                                             "isDeployEnabled": true,
+                                             "branchingModel" : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
+                                                                 "trunkbased": /^(master)$/]
+            ],
+            "QACoreTeamTest"              : ["class"                  : QACoreTeamTest.class,
+                                             "isQACoreTeamTestEnabled": true,
+                                             "branchingModel"         : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
+                                                                         "trunkbased": /^(master)$/]
+            ],
+            "CollectBuildResults"         : ["class": CollectBuildResults.class,
+            ],
+            "SendNotifications"           : ["class": SendNotifications.class,
+            ],
     ]
 
     Stage createStage(Class clazz) {

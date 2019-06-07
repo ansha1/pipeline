@@ -6,11 +6,8 @@ class Checkout extends Stage {
     }
 
     @Override
-    def execute() {
-        log.debug("this is checkout debug message")
-        log.info("this is checkout info message")
-        log.trace("this is checkout trace message")
-        script.stage(this.getClass().getSimpleName()) {
+    def stageBody() {
+        try {
             script.checkout([
                     $class                           : 'GitSCM',
                     branches                         : script.scm.branches,
@@ -18,11 +15,9 @@ class Checkout extends Stage {
                     extensions                       : script.scm.extensions,
                     userRemoteConfigs                : script.scm.userRemoteConfigs
             ])
-
-            script.sh(
-                    script: "ls -la",
-                    returnStdout: true
-            ).trim()
+        } catch (e) {
+            log.error("Error when executing ${stageName()}:", e)
+            throw e
         }
     }
 }

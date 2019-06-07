@@ -5,9 +5,11 @@ class CollectBuildResults extends Stage {
         super(script, configuration)
     }
 
-    def execute() {
-        script.stage(this.getClass().getSimpleName()) {
-            script.print("This is execuiton of ${this.getClass().getSimpleName()} stage")
-        }
+    def stageBody() {
+       log.info("Collecting logs from containers")
+        //code
+       log.info("Collecting JUnit results")
+        //code
+       log.info("Publish to S3")
     }
 }
