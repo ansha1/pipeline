@@ -1,6 +1,5 @@
 package com.nextiva.build.tool
 
-import com.nextiva.Version
 import com.nextiva.utils.Logger
 import static com.nextiva.utils.Utils.shOrClosure
 
@@ -10,7 +9,7 @@ abstract class BuildTool {
     Map toolConfiguration
 
     String pathToSrc = "."
-    Version version
+    String version
     Boolean publishArtifact
 
     BuildTool(Script script, Map toolConfiguration) {
