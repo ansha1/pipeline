@@ -3,7 +3,6 @@ package com.nextiva.stages.stage
 import com.nextiva.utils.Logger
 
 class Checkout extends Stage {
-    Logger log = new Logger(this)
     Checkout(Script script, Map configuration) {
         super(script, configuration)
     }
