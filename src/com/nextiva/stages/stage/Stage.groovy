@@ -12,7 +12,6 @@ abstract class Stage implements Serializable {
     protected Stage(Script script, Map configuration) {
         this.script = script
         this.configuration = configuration
-        this.log = new Logger(this)
     }
 
     def execute() {
