@@ -74,6 +74,7 @@ def containerInstance(Map containerConfig) {
 def volumes() {
     [
             hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+            hostPathVolume(hostPath: '/opt/shared_repos', mountPath: 'opt/shared_repos'),
             hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
             hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
             hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
