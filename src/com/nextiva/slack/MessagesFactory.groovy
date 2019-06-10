@@ -376,7 +376,7 @@ class MessagesFactory implements Serializable {
     }
 
     private createPrTitle() {
-        String prTitle = getTitleFromPr(context.env.CHANGE_URL)
+        String prTitle = context.bitbucket.getTitleFromPr(context.env.CHANGE_URL)
         return "*Title:* ${prTitle}"
     }
 }
