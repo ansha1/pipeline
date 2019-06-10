@@ -27,7 +27,7 @@ class Config implements Serializable {
         setExtraEnvVariables()
         initBuildTools()
         configureDeployEnvironment()
-        initDepoyTools()
+        initDeployTools()
         configureStages()
         configureSlave()
         log.debug("Configuration complete:", configuration)
@@ -136,6 +136,15 @@ class Config implements Serializable {
         log.debug("slave configuration:", slaveConfiguration)
         configuration.put("slaveConfiguration", slaveConfiguration)
         log.debug("complete configureSlave()")
+    }
+
+    void initBuildTools(){
+        log.debug("start initBuildTools()")
+        log.complete("start initBuildTools()")
+    }
+    void initDeployTools(){
+        log.debug("start initDepoyTools()")
+        log.complete("start initDepoyTools()")
     }
 
     Map getConfiguration() {
