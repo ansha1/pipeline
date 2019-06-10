@@ -16,7 +16,9 @@ class StartBuildDependencies extends Stage {
                 String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
                 String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
                 log.info("Starting dependency $appName")
-                script.kubernetes.deploy(appName, version, clusterDomain, appName, namespace)
+                script.container("kubeup") {
+                    script.kubernetes.deploy(appName, version, clusterDomain, appName, namespace)
+                }
             }
         } catch (e) {
             log.error("Error when executing ${stageName()}:", e)
