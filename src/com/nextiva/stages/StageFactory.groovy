@@ -19,7 +19,7 @@ class StageFactory {
             "StartBuildDependencies"      : ["deployOnly"          : false,
                                              "isJobHasDependencies": true,
                                              "class"               : StartBuildDependencies.class,
-                                             "branchingModel"      : ["gitflow"   : /^\b(?!master\b)\w+$/,
+                                             "branchingModel"      : ["gitflow"   : /^\b(?!master\b).+$/,
                                                                       "trunkbased": /^.*$/]
             ],
             "Checkout"                    : ["class": Checkout.class,
@@ -36,7 +36,7 @@ class StageFactory {
             "UnitTest"                    : ["class"            : UnitTest.class,
                                              "isUnitTestEnabled": true,
                                              "deployOnly"       : false,
-                                             "branchingModel"   : ["gitflow"   : /^\b(?!master\b)\w+$/,
+                                             "branchingModel"   : ["gitflow"   : /^\b(?!master\b).+$/,
                                                                    "trunkbased": /^.*$/]
             ],
             "SonarScan"                   : ["class"                 : SonarScan.class,
@@ -49,7 +49,7 @@ class StageFactory {
                                              "class"                   : IntegrationTest.class,
                                              "isIntegrationTestEnabled": true,
                                              "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
-                                                                          "trunkbased": /^\b(?!master\b)\w+$/]
+                                                                          "trunkbased": /^\b(?!master\b).+$/]
             ],
             "Publish"                     : ["deployOnly"    : false,
                                              "class"         : Publish.class,
@@ -60,7 +60,7 @@ class StageFactory {
                                              "isSecurityScanEnabled": true,
                                              "class"                : SecurityScan.class,
                                              "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
-                                                                       "trunkbased": /^\b(?!master\b)\w+$/]
+                                                                       "trunkbased": /^\b(?!master\b).+$/]
             ],
             "Deploy"                      : ["class"          : Deploy.class,
                                              "isDeployEnabled": true,
@@ -103,7 +103,6 @@ class StageFactory {
             }
         }
         log.debug("======================================================================================")
-        log.debug("Current flow: ${flow.toString()} ")
         log.debug("Current flow: $flow ")
         return flow
     }
