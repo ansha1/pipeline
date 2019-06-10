@@ -140,11 +140,11 @@ class Config implements Serializable {
 
     void initBuildTools(){
         log.debug("start initBuildTools()")
-        log.complete("start initBuildTools()")
+        log.debug("complete initBuildTools()")
     }
     void initDeployTools(){
-        log.debug("start initDepoyTools()")
-        log.complete("start initDepoyTools()")
+        log.debug("start initDeployTools()")
+        log.debug("complete initDeployTools()")
     }
 
     Map getConfiguration() {

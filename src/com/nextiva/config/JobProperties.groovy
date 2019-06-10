@@ -49,7 +49,7 @@ class JobProperties {
                                "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
                                                   "trunkbased": /^master$/],
                               ],
-                              ["parameter"     : script.choice(choices: ["INFO", "DEBUG", "TRACE", "ALL"], description: 'Pipeline Log level', name: 'JOB_LOG_LEVEL'),
+                              ["parameter"     : script.choice(choices: ["DEBUG","INFO", "DEBUG", "TRACE", "ALL"], description: 'Pipeline Log level', name: 'JOB_LOG_LEVEL'),
                                "branchingModel": ["gitflow"   : /^.*$/,
                                                   "trunkbased": /^.*$/],
                               ]]
