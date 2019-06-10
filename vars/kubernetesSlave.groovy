@@ -99,6 +99,7 @@ List processEnvVars(Map extraEnv) {
  * @param body Closure which will be executed
  * */
 def withNamespace(String namespaceName, body) {
+    Logger log = new Logger(this)
     try {
         def ns = createNamespace(namespaceName)
         log.debug("Created namespace ${ns}")
@@ -119,6 +120,7 @@ KubernetesClient getKubernetesClient() {
 }
 
 def createNamespace(String namespaceName) {
+    Logger log = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
         log.info("Running build in the already created namespace")
@@ -139,6 +141,7 @@ def createNamespace(String namespaceName) {
 }
 
 Boolean deleteNamespace(String namespaceName) {
+    Logger log = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
         log.info("Namespace ${namespaceName} can't be deleted because it is perisitent")
@@ -151,6 +154,7 @@ Boolean deleteNamespace(String namespaceName) {
 }
 
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
+    Logger log = new Logger(this)
     log.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
     String libraryResource = libraryResource resourcePath
     log.debug("libraryResource:$libraryResource")

@@ -4,7 +4,7 @@ import com.nextiva.utils.Logger
 import static com.nextiva.utils.Utils.shOrClosure
 
 abstract class BuildTool {
-    Logger log = new Logger(this)
+
     Script script
     Map toolConfiguration
 
@@ -23,6 +23,7 @@ abstract class BuildTool {
 
     Boolean execute(def command) {
         script.dir(pathToSrc) {
+            log.debug("executing tool command in container ${this.getClass().getSimpleName().toLowerCase()}")
             script.container(this.getClass().getSimpleName().toLowerCase()) {
                 shOrClosure(script, command)
             }

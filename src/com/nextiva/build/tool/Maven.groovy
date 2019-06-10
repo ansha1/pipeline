@@ -1,8 +1,11 @@
 package com.nextiva.build.tool
 
+import com.nextiva.utils.Logger
+
 import static com.nextiva.SharedJobsStaticVars.SONAR_QUBE_ENV
 
 class Maven extends BuildTool {
+    Logger log = new Logger(this)
 
     Maven(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)

@@ -1,11 +1,12 @@
 package com.nextiva.config
 
-import com.cloudbees.groovy.cps.NonCPS
+
 import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
+import hudson.AbortException
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -21,13 +22,15 @@ class Config implements Serializable {
     void configure() {
         log.debug("start job configuration")
         validate()
-        setDefaults()
-        configureEnvironment()
-        setExtraEnvVariables()
         setJobParameters()
+        setDefaults()
+        setExtraEnvVariables()
+        initBuildTools()
+        configureDeployEnvironment()
+        initDepoyTools()
         configureStages()
         configureSlave()
-        log.debug("Configuration complete:\n", configuration)
+        log.debug("Configuration complete:", configuration)
     }
 
     void validate() {
@@ -47,7 +50,8 @@ class Config implements Serializable {
         }
 
         if (!configurationErrors.isEmpty()) {
-            script.error("Found error(s) in the configuration:\n ${configurationErrors.toString()}")
+            log.error("Found error(s) in the configuration:", configurationErrors)
+            throw new AbortException("errors in the configuration")
         }
         log.debug("complete validate()")
     }
@@ -59,7 +63,7 @@ class Config implements Serializable {
         log.debug("Job properties", props)
         configuration.put("jobProperties", props)
 
-        //TODO: move this into the proper place
+
         log.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
         if (props.deployVersion) {
@@ -97,14 +101,14 @@ class Config implements Serializable {
         log.debug("complete setDefaults()")
     }
 
-    void configureEnvironment() {
-        log.debug("start configureEnvironment()")
+    void configureDeployEnvironment() {
+        log.debug("start configureDeployEnvironment()")
         if (configuration.get("isDeployEnabled")) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
             configuration.put("environmentsToDeploy", environmentsToDeploy)
         }
-        log.debug("complete configureEnvironment()")
+        log.debug("complete configureDeployEnvironment()")
     }
 
     void setExtraEnvVariables() {

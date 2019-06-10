@@ -9,16 +9,18 @@ class SendNotifications extends Stage {
 
     @Override
     def stageBody() {
-        //TODO: refactor for the native class usage
-        script.slack.sendBuildStatus(configuration.get("channelToNotify"))
-        String branchName = configuration.get("branchName")
-        if (branchName ==~ /^(PR.+)$/) {
-            script.slack.prOwnerPrivateMessage(script.env.CHANGE_URL)
-        }
-        if (branchName ==~ /^(release\/.+)$/) {
-            String appName = configuration.get("appName")
-            String buildVersion = configuration.get("buildVersion")
-            script.slack.deployFinish(appName, buildVersion, "qa", SLACK_STATUS_REPORT_CHANNEL_RC)
+        script.container("jnlp") {
+            //TODO: refactor for the native class usage
+            script.slack.sendBuildStatus(configuration.get("channelToNotify"))
+            String branchName = configuration.get("branchName")
+            if (branchName ==~ /^(PR.+)$/) {
+                script.slack.prOwnerPrivateMessage(script.env.CHANGE_URL)
+            }
+            if (branchName ==~ /^(release\/.+)$/) {
+                String appName = configuration.get("appName")
+                String buildVersion = configuration.get("buildVersion")
+                script.slack.deployFinish(appName, buildVersion, "qa", SLACK_STATUS_REPORT_CHANNEL_RC)
+            }
         }
     }
 }

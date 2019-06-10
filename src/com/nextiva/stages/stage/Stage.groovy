@@ -5,13 +5,14 @@ import com.nextiva.utils.Logger
 
 abstract class Stage implements Serializable {
 
-    final protected script
+    Script script
     Map configuration
-    Logger log = new Logger(this)
+    Logger log
 
     protected Stage(Script script, Map configuration) {
         this.script = script
         this.configuration = configuration
+        this.log = new Logger(this)
     }
 
     def execute() {

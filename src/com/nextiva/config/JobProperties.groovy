@@ -41,8 +41,8 @@ class JobProperties {
             environmentsToDeploy.add(0, "")
         }
 
-        List jobParameters = [["parameter"     : script.string(name: 'deploy_version', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
-                               "branchingModel": ["gitflow"   : /^(release)\/.+$/,
+        List jobParameters = [["parameter"     : script.string(name: 'deployVersion', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
+                               "branchingModel": ["gitflow"   : /^(dev|develop|master|release\/.+)$/,
                                                   "trunkbased": /^master$/],
                               ],
                               ["parameter"     : script.choice(choices: environmentsToDeploy, description: 'Where deploy?', name: 'deployDst'),
