@@ -22,8 +22,8 @@ class Config implements Serializable {
     void configure() {
         log.debug("start job configuration")
         validate()
-        setJobParameters()
         setDefaults()
+        setJobParameters()
         setExtraEnvVariables()
         initBuildTools()
         configureDeployEnvironment()
