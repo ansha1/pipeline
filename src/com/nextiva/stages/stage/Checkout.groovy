@@ -11,6 +11,7 @@ class Checkout extends Stage {
     @Override
     def stageBody() {
         try {
+            sssss
             script.checkout([
                     $class                           : 'GitSCM',
                     branches                         : script.scm.branches,
