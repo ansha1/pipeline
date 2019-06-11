@@ -144,7 +144,6 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
             httpMode: 'PUT',
             url: prUrl,
             requestBody: JsonOutput.toJson(updatedPr)
-
 }
 
 static Map<String, String> parseDescription(String description) {
@@ -189,13 +188,13 @@ static String descriptionToString(Map<String, String> description) {
         }
     }
 
-    // PIPELINE-160
-    // 32767 - is a maximum number of chars in PR description.
+    // PIPELINE-160 - The maximum number of chars in PR description is 32767
     Integer maxDescriptionSize = 32767
     String cropMessage = "\n\nThe description is cropped due to reached limitation ..."
 
     if(convertedDescription.size() > maxDescriptionSize) {
         convertedDescription = convertedDescription.take(maxDescriptionSize - cropMessage.size()) + cropMessage
+        log.debug("Reached the maximum number of chars in PR description.")
     }
     return convertedDescription
 }
