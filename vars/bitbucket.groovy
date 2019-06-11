@@ -3,6 +3,14 @@ import static com.nextiva.SharedJobsStaticVars.*
 import groovy.json.JsonOutput
 
 
+String getTitleFromPr(String url) {
+
+    def props = getPrFromUrl(url)
+    def prTitle = props.title.trim()
+    log.info("PR title: ${prTitle}")
+    return prTitle
+}
+
 String getSourceBranchFromPr(String url) {
 
     def props = getPrFromUrl(url)
