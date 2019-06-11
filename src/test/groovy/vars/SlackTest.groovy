@@ -18,7 +18,7 @@ class SlackTest extends BasePipelineTest implements Mocks, Validator {
         binding.setVariable('currentBuild', [rawBuild: mockObjects.job])
 
         mockLog()
-        attachScript 'log'
+        attachScript 'log', 'common'
         helper.registerAllowedMethod 'sh', [Map.class], { c -> 'commit message' }
         mockSlack()
         mockMap 'httpRequest'

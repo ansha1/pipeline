@@ -52,7 +52,8 @@ class MessagesFactory implements Serializable {
         }
 
         Context commitAuthor = new Context()
-        commitAuthor.setElements(ImmutableList.of(new Text(createCommitAuthor())))
+        String commitAuthorName = context.common.getCommitAuthorName()
+        commitAuthor.setElements(ImmutableList.of(new Text("Commit author: ${commitAuthorName}")))
         blocks.add(commitAuthor)
 
         Actions buttons = new Actions()
@@ -333,27 +334,6 @@ class MessagesFactory implements Serializable {
 
     private hasTestResults() {
         return context.currentBuild.rawBuild.getAction(AbstractTestResultAction.class) != null
-    }
-
-    private createCommitAuthor() {
-        def commitAuthor
-        try {
-            def commit = context.sh(returnStdout: true, script: 'git rev-parse HEAD')
-            commitAuthor = context.sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
-        } catch (ignored) {
-            commitAuthor = "Unknown"
-        }
-        return "Commit author: ${commitAuthor}"
-    }
-
-    private createLastCommitMessage() {
-        def lastCommitMessage
-        try {
-            lastCommitMessage = context.sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-        } catch (ignored) {
-            lastCommitMessage = "Unknown"
-        }
-        return "*Last commit:* ```${lastCommitMessage}```"
     }
 
     private createJobConsoleButton() {
