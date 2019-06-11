@@ -28,6 +28,13 @@ class MessagesFactory implements Serializable {
         title.setText(new Text(createBuildInfoTitle()))
         blocks.add(title)
 
+        if(context.env.CHANGE_URL) {
+            // if PR then add PR title in the message
+            Section prTitle = new Section()
+            prTitle.setText(new Text(createPrTitle()))
+            blocks.add(prTitle)
+        }
+
         Section buildInfo = new Section()
         buildInfo.setText(new Text(createStatus() + "\t" + createBuildBranch() + "\t" + createCommitLink()))
         blocks.add(buildInfo)
@@ -368,6 +375,8 @@ class MessagesFactory implements Serializable {
         return button
     }
 
+    private createPrTitle() {
+        String prTitle = context.bitbucket.getTitleFromPr(context.env.CHANGE_URL)
+        return "*Title:* ${prTitle}"
+    }
 }
-
-
