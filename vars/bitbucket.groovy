@@ -144,7 +144,6 @@ def updatePrDescriptionSection(String repositoryUrl, String prID, String section
             httpMode: 'PUT',
             url: prUrl,
             requestBody: JsonOutput.toJson(updatedPr)
-
 }
 
 static Map<String, String> parseDescription(String description) {
@@ -176,7 +175,7 @@ static Map<String, String> parseDescription(String description) {
 
 static String descriptionToString(Map<String, String> description) {
 
-    def convertedDescription = ''
+    String convertedDescription = ''
 
     description.entrySet().each { Map.Entry<String, String> entry ->
         if (entry.getKey() == '') {
@@ -189,5 +188,6 @@ static String descriptionToString(Map<String, String> description) {
         }
     }
 
-    return convertedDescription
+    // PIPELINE-160 - The maximum number of chars in PR description is 32767
+    return convertedDescription.take(32767)
 }
