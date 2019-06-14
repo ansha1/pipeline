@@ -9,7 +9,8 @@ class Kubeup extends DeployTool {
     }
 
     @Override
-    Boolean deploy() {
+    Boolean deploy(String cloudApp, String version, String cluster, String namespace, String configset) {
+
         println("this is kubernetes deployment" + toString())
         return true
     }
