@@ -25,7 +25,7 @@ class Utils {
     /**
      * Returns the id of the build, which consists of the job name,
      * build number.
-     * By convention, the names of Kub ernetes resources should be up to maximum length of 253 characters and consist of
+     * By convention, the names of Kubernetes resources should be up to maximum length of 253 characters and consist of
      * lower case alphanumeric characters, -, and ., but certain resources have more specific restrictions.
      * @param jobName usually env.JOB_NAME
      * @param buildNum usually env.BUILD_NUMBER
@@ -60,7 +60,7 @@ class Utils {
     def isJobStartedByCause(Script script, Class cause) {
         def startedByGivenCause = false
         def detectedCause = getRawBuild(script).getCause(cause)
-        if (null != detectedCause) {
+        if (detectedCause != null) {
             startedByGivenCause = true
             echo "Found build cause ${detectedCause}"
         }
