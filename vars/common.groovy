@@ -143,3 +143,29 @@ String getRepositoryNameFromUrl(String repositoryUrl) {
         return tokens[3].replace('.git', '')
     }
 }
+
+String getCommitAuthorName() {
+    try {
+        def commit = getCurrentCommit()
+        return sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    } catch (ignored) {
+        return "Unknown"
+    }
+}
+
+String getCommitAuthorEmail() {
+    try {
+        def commit = getCurrentCommit()
+        return sh(returnStdout: true, script: "git --no-pager show -s --format='%ae' ${commit}").trim()
+    } catch (ignored) {
+        return "unknown@unknown.com"
+    }
+}
+
+String getCommitMessage() {
+    try {
+        return sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    } catch (ignored) {
+        return "Unknown"
+    }
+}

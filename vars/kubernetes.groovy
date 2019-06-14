@@ -9,6 +9,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
     kubectlInstall()
     vaultInstall()
+    jqInstall()
 
     withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
              "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
@@ -40,9 +41,12 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
         try {
             kubernetesDeploymentsList.each {
+                if(!it.contains('/')) {
+                    it = "deployment/${it}"
+                }
                 sh """
                    unset KUBERNETES_SERVICE_HOST
-                   kubectl rollout status deployment/${it} --namespace ${nameSpace}
+                   kubectl rollout status ${it} --namespace ${nameSpace}
                 """
             }
         } catch (e) {
@@ -96,7 +100,7 @@ def vaultLogin() {
 
 def kubectlInstall() {
     try {
-        log.info("Ensure that kubectl installed")
+        log.info("Ensure that kubectl is nstalled")
         sh "kubectl version --client=true"
     } catch (e) {
         log.info("Going to install latest stable kubectl")
@@ -123,12 +127,29 @@ def vaultInstall() {
     }
 }
 
+def jqInstall() {
+    try {
+        log.info("Ensure that jq is installed")
+        sh "jq --version"
+    } catch (e) {
+        log.info("Going to install latest stable jq")
+        sh """
+            curl -LO https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+            mv jq-linux64 jq
+            chmod +x ./jq
+            ./jq --version
+           """
+    }
+}
+
 def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean dryRun = false) {
     String dryRunParam = dryRun ? '--dry-run' : ''
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
     sh """
-       unset KUBERNETES_SERVICE_HOST
+       # fix for builds running in kubernetes, clean up predefined variables.
+       for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+
        ./kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
     """
 }
