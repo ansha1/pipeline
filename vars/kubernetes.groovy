@@ -76,7 +76,10 @@ def login(String clusterDomain) {
 
         log.info("Going to install kubelogin (${kubelogin_version})")
         pythonUtils.createVirtualEnv("python3", k8sEnv)
-        pythonUtils.venvSh("pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz", false, k8sEnv)
+        pythonUtils.venvSh("""
+            pip3 install -U wheel
+            pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
+        """, false, k8sEnv)
 
         pythonUtils.venvSh("""
             unset KUBERNETES_SERVICE_HOST
