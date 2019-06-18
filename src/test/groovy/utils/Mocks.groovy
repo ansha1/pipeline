@@ -26,7 +26,8 @@ trait Mocks implements BasePipelineAccessor {
                 BUILD_ID   : 'Build Id',
                 BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
                 BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3'
+                NODE_NAME  : 'Debian Slave 3',
+                GIT_URL    : 'ssh://git@git.nextiva.xyz:7999/KEY/repository.git'
         ]
     }
 
