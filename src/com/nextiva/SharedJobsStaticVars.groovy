@@ -68,12 +68,9 @@ class SharedJobsStaticVars {
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
     static final BITBUCKET_SECTION_MARKER = '###### '
     static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = 'sales-demo'
-    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = 'sales-demo.nextiva.io'
-    static final VAULT_URL = 'https://vault.tooling.nextiva.io'
-    static final PUBLISH_STATICASSETS_TO_S3_DEFAULT = true
+    static final DEFAULT_KUBERNETES_CLUSTER_SALES_DEMO = 'sales-demo.nextiva.io'
+    static final PUBLISH_STATIC_ASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
-    static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = "sales-demo"
-    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = "sales-demo.nextiva.io"
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
     static final JENKINS_KUBERNETES_CLUSTER_DOMAIN = "tooling.nextiva.io"
 
