@@ -6,6 +6,7 @@ import com.nextiva.utils.Logger
 abstract class DeployTool implements Serializable {
 
     Script script
+    String toolHome
     Map configuration
     Logger log
 
@@ -16,6 +17,7 @@ abstract class DeployTool implements Serializable {
 
     DeployTool(Script script, List<Environment> environments, Map configuration) {
         this.script = script
+        this.toolHome = getToolHome()
         this.configuration = configuration
         this.environments = environments
         this.name = configuration.get("deploy")
@@ -32,10 +34,8 @@ abstract class DeployTool implements Serializable {
     }
 
     String getToolHome(){
-        return "deploy/${getName()}"
+        return "${script.env.WORKSPACE}/deploy/${getName()}"
     }
-
-    abstract Boolean deploy()
 
     abstract void init()
 }
