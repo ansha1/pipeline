@@ -149,7 +149,7 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
     String dryRunParam = dryRun ? '--dry-run' : ''
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
-    String kubeupEnv = ".venv_kubeup"
+    String kubeupEnv = ".venv_kubeup_${common.getRandomInt()}"
     pythonUtils.createVirtualEnv("python3", kubeupEnv)
     pythonUtils.venvSh("""
         # fix for builds running in kubernetes, clean up predefined variables.
