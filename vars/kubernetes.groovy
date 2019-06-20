@@ -10,6 +10,7 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
     kubectlInstall()
     vaultInstall()
     jqInstall()
+    //kubeupInstall()
 
     withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
              "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
@@ -145,6 +146,13 @@ def jqInstall() {
     }
 }
 
+def kubeupInstall() {
+    sh """
+       pip3 install -U wheel
+       pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
+       """
+}
+
 def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean dryRun = false) {
     String dryRunParam = dryRun ? '--dry-run' : ''
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
@@ -153,6 +161,6 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
        # fix for builds running in kubernetes, clean up predefined variables.
        for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
 
-       ./kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
+       kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
     """
 }
