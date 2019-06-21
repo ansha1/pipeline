@@ -75,8 +75,8 @@ class Kubeup extends DeployTool {
     }
 
     def kubeLogin(String clusterDomain) {
-        script.withCredentials([usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            script.sh(script: """
+        script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
+            shWithOutput(script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes
