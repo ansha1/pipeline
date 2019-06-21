@@ -129,7 +129,7 @@ class Config implements Serializable {
         if (configuration.containsKey("dependencies")) {
             Map kubeup = ["name": "kubeup"]
             kubeup = toolFactory.mergeWithDefaults(kubeup)
-            configuration.slaveConfig.containerResources.put("kubeup", kubeup)
+            configuration.slaveConfiguration.containerResources.put("kubeup", kubeup)
             isJobHasDependencies = true
         }
         configuration.put("isJobHasDependencies", isJobHasDependencies)
@@ -147,7 +147,7 @@ class Config implements Serializable {
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
             toolConfig = toolFactory.mergeWithDefaults(toolConfig)
-            configuration.slaveConfig.containerResources.put(tool, toolConfig)
+            configuration.slaveConfiguration.containerResources.put(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
         }
@@ -168,7 +168,7 @@ class Config implements Serializable {
             deployTools.each { tool, toolConfig ->
                 log.debug("got deploy tool $tool")
                 toolConfig = toolFactory.mergeWithDefaults(toolConfig)
-                configuration.slaveConfig.containerResources.put(tool, toolConfig)
+                configuration.slaveConfiguration.containerResources.put(tool, toolConfig)
                 Tool instance = toolFactory.build(script, toolConfig)
                 toolConfig.put("instance", instance)
             }
