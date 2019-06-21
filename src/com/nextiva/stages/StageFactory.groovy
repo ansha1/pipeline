@@ -16,13 +16,13 @@ class StageFactory {
         this.configuration = configuration
     }
     static final Map stages = [
+            "Checkout"                    : ["class": Checkout.class,
+            ],
             "StartBuildDependencies"      : ["deployOnly"          : false,
                                              "isJobHasDependencies": true,
                                              "class"               : StartBuildDependencies.class,
                                              "branchingModel"      : ["gitflow"   : /^\b(?!master\b).+$/,
                                                                       "trunkbased": /^.*$/]
-            ],
-            "Checkout"                    : ["class": Checkout.class,
             ],
             "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
                                              "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
