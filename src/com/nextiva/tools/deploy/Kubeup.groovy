@@ -29,14 +29,16 @@ class Kubeup extends DeployTool {
         log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
         clone(script, repository, branch, toolHome)
         log.debug("clone complete")
-        script.dir(toolHome) {
-            kubectlInstall()
-            kubeupInstall()
-            vaultInstall()
-            jqInstall()
-            kubeloginInstall()
+        script.container(getName()) {
+            script.dir(toolHome) {
+                kubectlInstall()
+                kubeupInstall()
+                vaultInstall()
+                jqInstall()
+                kubeloginInstall()
+            }
+            kubeLogin(clusterDomain)
         }
-        kubeLogin(clusterDomain)
         log.debug("init complete")
     }
 
