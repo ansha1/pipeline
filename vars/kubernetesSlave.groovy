@@ -22,11 +22,31 @@ def call(Map slaveConfig, body) {
     }
 
     withNamespace(iD) {
-        def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
-        podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
+//        def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
+//        podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
 
-        podTemplate(label: iD, namespace: iD, showRawYaml: true, inheritFrom: "parent-$iD",
-                slaveConnectTimeout: 300, imagePullSecrets: ['regsecret'], containers: containers(containerResources), volumes: volumes()) {
+        podTemplate(label: iD, namespace: iD, showRawYaml: true,
+//                inheritFrom: "parent-$iD",
+                annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
+                nodeSelector: 'dedicatedgroup=jenkins-slave',
+                slaveConnectTimeout: 300, imagePullSecrets: ['regsecret'], containers: containers(containerResources), volumes: volumes(), yaml: """
+spec:
+  imagePullSecrets:
+  - name: regsecret
+  tolerations:
+  - key: tooling.nextiva.io
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: dedicatedgroup
+            operator: In
+            values:
+            - jenkins-slave""") {
             node(iD) {
                 body()
             }
