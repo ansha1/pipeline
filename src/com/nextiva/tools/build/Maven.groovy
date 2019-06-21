@@ -43,7 +43,7 @@ class Maven extends BuildTool {
 
 
     @Override
-    publish() {
+    void publish() {
         execute(toolConfiguration.get("publishCommands", "mvn deploy -U --batch-mode -DskipTests"))
     }
 
