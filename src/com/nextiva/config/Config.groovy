@@ -159,7 +159,8 @@ class Config implements Serializable {
         log.debug("start configureDeployTools()")
         String deployTool = configuration.get("deployTool")
         if (deployTool != null) {
-            Map deploy = [deployTool: ["name": deployTool]]
+            Map deploy = [:]
+            deploy.put(deployTool, [:])
             configuration.put("deploy", deploy)
         } else {
             log.debug("deployTool is undefined")
