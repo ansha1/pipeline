@@ -47,7 +47,7 @@ class ToolFactory {
         Map defaultConfig = DEFAULT_TOOL_CONFIGURATION.get(tool)
         log.debug("got default tool config", defaultConfig)
         Map result = defaultConfig << toolConfig
-        log.debug("toolСonfig after merge", toolConfig)
+        log.debug("toolСonfig after merge", result)
         return result
     }
 }
