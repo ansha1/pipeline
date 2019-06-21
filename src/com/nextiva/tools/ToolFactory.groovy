@@ -41,13 +41,6 @@ class ToolFactory {
         }
     }
 
-    Map buildAndPutInMap(Script script, Map toolConfig) {
-        toolConfig = mergeWithDefaults(toolConfig)
-        Tool instance = build(script, toolConfig)
-        toolConfig.put("instance", instance)
-        return toolConfig
-    }
-
     Map mergeWithDefaults(Map toolConfig) {
         String tool = toolConfig.get("name")
         log.debug("got tool $tool")

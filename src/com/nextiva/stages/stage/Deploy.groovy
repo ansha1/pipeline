@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.deploy.tool.DeployTool
+import com.nextiva.tools.deploy.DeployTool
 
 import static com.nextiva.utils.Utils.shOrClosure
 
@@ -14,7 +14,7 @@ class Deploy extends Stage {
         Map deploy = configuration.get("build")
         deploy.each { toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
-                DeployTool tool = toolConfig.get("tool")
+                DeployTool tool = toolConfig.get("instance")
                 try {
                     tool.deploy()
                     def postDeployCommands = toolConfig.get("postDeployCommands")

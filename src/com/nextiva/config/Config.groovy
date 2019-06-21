@@ -5,10 +5,10 @@ import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
+import com.nextiva.tools.Tool
 import com.nextiva.tools.ToolFactory
 import com.nextiva.utils.Logger
 import hudson.AbortException
-import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 
 class Config implements Serializable {
     // used to store all parameters passed into config
@@ -138,7 +138,7 @@ class Config implements Serializable {
 
     void configureBuildTools() {
         log.debug("start configureBuildTools()")
-        Map buildTools = configuration.get("build")
+        Map<String, Map> buildTools = configuration.get("build")
         if (buildTools == null) {
             log.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
             throw new AbortException("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
@@ -146,8 +146,10 @@ class Config implements Serializable {
 
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
-            toolConfig = toolFactory.buildAndPutInMap(script, toolConfig)
+            toolConfig = toolFactory.mergeWithDefaults(toolConfig)
             configuration.slaveConfig.containerResources.put(tool, toolConfig)
+            Tool instance = toolFactory.build(script, toolConfig)
+            toolConfig.put("instance", instance)
         }
         log.debug("complete configureBuildTools()")
     }
@@ -161,12 +163,14 @@ class Config implements Serializable {
             log.debug("deployTool is undefined")
         }
 
-        Map deployTools = configuration.get("deploy")
+        Map<String, Map> deployTools = configuration.get("deploy")
         if (deployTools != null) {
             deployTools.each { tool, toolConfig ->
                 log.debug("got deploy tool $tool")
-                toolConfig = toolFactory.buildAndPutInMap(script, toolConfig)
+                toolConfig = toolFactory.mergeWithDefaults(toolConfig)
                 configuration.slaveConfig.containerResources.put(tool, toolConfig)
+                Tool instance = toolFactory.build(script, toolConfig)
+                toolConfig.put("instance", instance)
             }
             configuration.put("isDeployEnabled", true)
         } else {

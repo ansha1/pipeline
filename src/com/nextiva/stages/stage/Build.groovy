@@ -1,6 +1,6 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
 
 class Build extends Stage {
     Build(Script script, Map configuration) {
@@ -11,7 +11,7 @@ class Build extends Stage {
         Map build = configuration.get("build")
         build.each {toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
-                BuildTool tool = toolConfig.get("tool")
+                BuildTool tool = toolConfig.get("instance")
                 try {
                     def buildCommands = toolConfig.get("buildCommands")
                     log.debug("executing ", buildCommands)

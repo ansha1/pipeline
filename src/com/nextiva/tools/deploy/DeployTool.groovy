@@ -26,6 +26,4 @@ abstract class DeployTool implements Serializable, Tool {
         script.healthCheck.list(healthCheck)
         return true
     }
-
-    abstract void init()
 }

@@ -1,6 +1,7 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
+
 
 class SecurityScan extends Stage {
     SecurityScan(Script script, Map configuration) {
@@ -12,7 +13,7 @@ class SecurityScan extends Stage {
         Map build = configuration.get("build")
         build.each { toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
-                BuildTool tool = toolConfig.get("tool")
+                BuildTool tool = toolConfig.get("instance")
                 try {
                     tool.securityScan()
                 } catch (e) {

@@ -1,6 +1,7 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
+
 
 class VerifyArtifactVersionInNexus extends Stage {
     VerifyArtifactVersionInNexus(Script script, Map configuration) {
@@ -12,7 +13,7 @@ class VerifyArtifactVersionInNexus extends Stage {
 
         build.each { toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
-                BuildTool tool = toolConfig.get("tool")
+                BuildTool tool = toolConfig.get("instance")
                 try {
                     log.debug("checking artifact availability for ${toolName}")
                     if (tool.isArtifactAvailableInRepo()) {

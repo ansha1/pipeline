@@ -12,8 +12,9 @@ class Kubeup extends DeployTool {
         super(script, configuration)
     }
 
-    Boolean deploy(String cloudApp, String version, String clusterDomain, String namespace, String configset) {
-        kubeLogin(clusterDomain)
+    Boolean deploy(String cloudApp, String version, String namespace, String configset) {
+        log.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
+
         vaultLogin(SharedJobsStaticVars.VAULT_URL)
         log.info('Checking of application manifests ...')
         install(cloudApp, version, namespace, configset, true)
@@ -23,8 +24,7 @@ class Kubeup extends DeployTool {
         return true
     }
 
-    @Override
-    void init() {
+    void init(String clusterDomain) {
         log.debug("start init ${getName()} tool")
         log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
         clone(script, repository, branch, toolHome)
@@ -36,6 +36,7 @@ class Kubeup extends DeployTool {
             jqInstall()
             kubeloginInstall()
         }
+        kubeLogin(clusterDomain)
         log.debug("init complete")
     }
 

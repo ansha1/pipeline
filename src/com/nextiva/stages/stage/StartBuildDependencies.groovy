@@ -1,5 +1,8 @@
 package com.nextiva.stages.stage
 
+import com.nextiva.tools.ToolFactory
+import com.nextiva.tools.deploy.Kubeup
+
 import static com.nextiva.utils.Utils.buildID
 import static com.nextiva.SharedJobsStaticVars.JENKINS_KUBERNETES_CLUSTER_DOMAIN
 
@@ -11,17 +14,16 @@ class StartBuildDependencies extends Stage {
     @Override
     def stageBody() {
         try {
-            Map dependencies = configuration.get("dependencies")
+            Map<String, String> dependencies = configuration.get("dependencies")
+            ToolFactory toolFactory = new ToolFactory()
+            Kubeup kubeup = toolFactory.buildWithDefault(script, ["name": "kubeup"])
+            String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
+            kubeup.init(clusterDomain)
             dependencies.each { cloudApp, version ->
-                String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
                 String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
-                log.info("Starting build dependency $cloudApp")
-
-
-                script.container("kubeup") {
-                    log.debug("start kubernetes deploy with appname=$appName, version=$version, clusterDomain=$clusterDomain, deploymentList =$deploymentsList")
-                    script.kubernetes.deploy(appName, version, clusterDomain, deploymentsList, namespace)
-                }
+                //TODO: change configset
+                String configset = "aws-dev"
+                kubeup.deploy(cloudApp, version, namespace, configset)
             }
         } catch (e) {
             log.error("Error when executing ${stageName()}:", e)

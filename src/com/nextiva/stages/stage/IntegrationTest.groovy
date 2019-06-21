@@ -1,6 +1,7 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
+
 
 class IntegrationTest extends Stage {
     IntegrationTest(Script script, Map configuration) {
@@ -12,7 +13,7 @@ class IntegrationTest extends Stage {
         Map build = configuration.get("build")
         build.each {toolName, toolConfig ->
             withStage("${toolName} ${stageName()}") {
-                BuildTool tool = toolConfig.get("tool")
+                BuildTool tool = toolConfig.get("instance")
                 try {
                     def integrationTestCommands = toolConfig.get("integrationTestCommands")
                     log.debug("executing ", integrationTestCommands)

@@ -1,6 +1,7 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
+
 
 class SonarScan extends Stage {
     SonarScan(Script script, Map configuration) {
@@ -11,7 +12,7 @@ class SonarScan extends Stage {
     def stageBody() {
         Map build = configuration.get("build")
         build.each {
-            BuildTool tool = it.get("tool")
+            BuildTool tool = it.get("instance")
             try {
                 tool.sonarScan()
             } catch (e) {

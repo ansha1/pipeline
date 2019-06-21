@@ -1,6 +1,7 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.build.tool.BuildTool
+import com.nextiva.tools.build.BuildTool
+
 
 class Publish extends Stage {
     Publish(Script script, Map configuration) {
@@ -13,7 +14,7 @@ class Publish extends Stage {
         build.each { toolName, toolConfig ->
             if (toolConfig.get("publishArtifact")) {
                 withStage("${toolName} ${stageName()}") {
-                    BuildTool tool = toolConfig.get("tool")
+                    BuildTool tool = toolConfig.get("instance")
                     try {
                         tool.publish()
                     } catch (e) {
