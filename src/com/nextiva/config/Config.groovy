@@ -129,7 +129,7 @@ class Config implements Serializable {
         if (configuration.containsKey("dependencies")) {
             Map kubeup = ["name": "kubeup"]
             kubeup = toolFactory.mergeWithDefaults(kubeup)
-            configuration.slaveConfiguration.containerResources.put("kubeup", kubeup)
+            putSlaveContainerResource("kubeup", kubeup)
             isJobHasDependencies = true
         }
         configuration.put("isJobHasDependencies", isJobHasDependencies)
@@ -148,7 +148,7 @@ class Config implements Serializable {
             log.debug("got build tool $tool")
             toolConfig.put("name", tool)
             toolConfig = toolFactory.mergeWithDefaults(toolConfig)
-            configuration.slaveConfiguration.containerResources.put(tool, toolConfig)
+            putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
         }
@@ -170,7 +170,7 @@ class Config implements Serializable {
                 log.debug("got deploy tool $tool")
                 toolConfig.put("name", tool)
                 toolConfig = toolFactory.mergeWithDefaults(toolConfig)
-                configuration.slaveConfiguration.containerResources.put(tool, toolConfig)
+                putSlaveContainerResource(tool, toolConfig)
                 Tool instance = toolFactory.build(script, toolConfig)
                 toolConfig.put("instance", instance)
             }
@@ -215,6 +215,10 @@ class Config implements Serializable {
 
     String getJobTimeoutMinutes() {
         return configuration.get("jobTimeoutMinutes")
+    }
+
+    Boolean putSlaveContainerResource(String name, Map containerResource){
+        return configuration.slaveConfiguration.containerResources.put(name, containerResource)
     }
 
     List<Stage> getStages() {
