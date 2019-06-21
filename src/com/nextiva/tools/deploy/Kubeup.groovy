@@ -86,7 +86,7 @@ class Kubeup extends DeployTool {
 
     def vaultLogin(String vaultUrl) {
         log.debug("trying to login in the Vault")
-        script.withCredentials([usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
+        script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
                 sh "vault login -method=ldap -no-print -address ${vaultUrl} username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
             } catch (e) {
