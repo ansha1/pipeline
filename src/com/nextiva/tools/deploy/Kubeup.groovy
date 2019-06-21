@@ -42,6 +42,10 @@ class Kubeup extends DeployTool {
         log.debug("init complete")
     }
 
+    def kubeupInstall(){
+        log.debug("kubeupInstall start")
+        log.debug("kubeupInstall complete")
+    }
     def kubectlInstall() {
         log.debug("kubectlInstall start")
         script.kubernetes.kubectlInstall()
