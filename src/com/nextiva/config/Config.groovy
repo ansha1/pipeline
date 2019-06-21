@@ -156,10 +156,11 @@ class Config implements Serializable {
     }
 
     void configureDeployTools() {
-        log.debug("start configureDeployTool()")
+        log.debug("start configureDeployTools()")
         String deployTool = configuration.get("deployTool")
         if (deployTool != null) {
-            configuration.put("deploy", [deployTool: [:]])
+            Map deploy = [deployTool: ["name": deployTool]]
+            configuration.put("deploy", deploy)
         } else {
             log.debug("deployTool is undefined")
         }
@@ -217,7 +218,7 @@ class Config implements Serializable {
         return configuration.get("jobTimeoutMinutes")
     }
 
-    Boolean putSlaveContainerResource(String name, Map containerResource){
+    Boolean putSlaveContainerResource(String name, Map containerResource) {
         return configuration.slaveConfiguration.containerResources.put(name, containerResource)
     }
 
