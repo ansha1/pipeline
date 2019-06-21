@@ -5,13 +5,16 @@ import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
+import com.nextiva.tools.ToolFactory
 import com.nextiva.utils.Logger
 import hudson.AbortException
+import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
     Script script
+    ToolFactory toolFactory = new ToolFactory()
     Logger log = new Logger(this)
 
     Config(Script script, Map pipelineParams) {
@@ -24,12 +27,13 @@ class Config implements Serializable {
         validate()
         setDefaults()
         setJobParameters()
-        setExtraEnvVariables()
-        initBuildTools()
-        configureDeployEnvironment()
-        initDeployTools()
-        configureStages()
         configureSlave()
+        setExtraEnvVariables()
+        configureDependencyProvisioning()
+        configureBuildTools()
+        configureDeployTools()
+        configureDeployEnvironment()
+        configureStages()
         log.debug("Configuration complete:", configuration)
     }
 
@@ -45,15 +49,34 @@ class Config implements Serializable {
         if (!configuration.containsKey("channelToNotify")) {
             configurationErrors.add("Slack notification channel is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
-        if (!configuration.containsKey("build")) {
-            configurationErrors.add("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
-        }
-
         if (!configurationErrors.isEmpty()) {
             log.error("Found error(s) in the configuration:", configurationErrors)
             throw new AbortException("errors in the configuration")
         }
         log.debug("complete validate()")
+    }
+
+    void setDefaults() {
+        log.debug("start setDefaults()")
+        //Set flags
+        //Use default value, this also creates the key/value pair in the map.
+        //TODO: move branching model(gitflow and trunkbased) to the class or enum
+        configuration.get("branchingModel", "gitflow")
+        configuration.get("jobTimeoutMinutes", "60")
+        configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
+            toolConfiguration.containsKey("unitTestCommands")
+        })
+        configuration.put("isIntegrationTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
+            toolConfiguration.containsKey("integrationTestCommands")
+        })
+        configuration.get("isSecurityScanEnabled", true)
+        configuration.get("isSonarAnalysisEnabled", true)
+        configuration.get("isQACoreTeamTestEnabled", true)
+        configuration.put("branchName", script.env.BRANCH_NAME)
+
+        //TODO: use new newrelic method
+        //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
+        log.debug("complete setDefaults()")
     }
 
     void setJobParameters() {
@@ -75,30 +98,82 @@ class Config implements Serializable {
         log.debug("complete setJobParameters()")
     }
 
-    void setDefaults() {
-        log.debug("start setDefaults()")
-        //Set flags
-        //Use default value, this also creates the key/value pair in the map.
-        //TODO: move branching model(gitflow and trunkbased) to the class or enum
-        configuration.get("branchingModel", "gitflow")
-        configuration.get("jobTimeoutMinutes", "60")
-        configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
-            toolConfiguration.containsKey("unitTestCommands")
-        })
-        configuration.put("isIntegrationTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
-            toolConfiguration.containsKey("integrationTestCommands")
-        })
-        configuration.put("isDeployEnabled", configuration.containsKey("deploy"))
-        configuration.get("isJobHasDependencies", configuration.containsKey("dependencies"))
-        configuration.get("isSecurityScanEnabled", true)
-        configuration.get("isSonarAnalysisEnabled", true)
-        configuration.get("isQACoreTeamTestEnabled", true)
-        configuration.put("branchName", script.env.BRANCH_NAME)
-        configuration.get("extraEnvs", [:])
+    void configureSlave() {
+        log.debug("start configureSlave()")
+        Map containerResources = [:]
+        Map jenkinsContainer = configuration.get("jenkinsContainer", ["name": "jnlp"])
+        jenkinsContainer = toolFactory.mergeWithDefaults(jenkinsContainer)
+        log.debug("added jenkins container")
+        containerResources.put("jnlp", jenkinsContainer)
+        Map slaveConfiguration = ["containerResources": containerResources]
+        log.debug("slave configuration:", slaveConfiguration)
+        configuration.put("slaveConfiguration", slaveConfiguration)
+        log.debug("complete configureSlave()")
+    }
 
-        //TODO: use new newrelic method
-        //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
-        log.debug("complete setDefaults()")
+    void setExtraEnvVariables() {
+        log.debug("start setExtraEnvVariables() complete")
+        Map extraEnvs = configuration.get("extraEnvs")
+        if (extraEnvs != null) {
+            extraEnvs.each { k, v ->
+                log.debug("[$k]=$v")
+                script.env[k] = v
+            }
+        }
+        log.debug("complete setExtraEnvVariables() complete")
+    }
+
+    void configureDependencyProvisioning() {
+        log.debug("start configuring build dependency provisioning")
+        Boolean isJobHasDependencies = false
+        if (configuration.containsKey("dependencies")) {
+            Map kubeup = ["kubeup": [:]]
+            kubeup = toolFactory.mergeWithDefaults(kubeup)
+            configuration.slaveConfig.containerResources.put("kubeup", kubeup)
+            isJobHasDependencies = true
+        }
+        configuration.put("isJobHasDependencies", isJobHasDependencies)
+        log.debug("complete configuring build dependency provisioning")
+    }
+
+    void configureBuildTools() {
+        log.debug("start configureBuildTools()")
+        Map buildTools = configuration.get("build")
+        if (buildTools == null) {
+            log.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
+            throw new AbortException("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
+        }
+
+        buildTools.each { tool, toolConfig ->
+            log.debug("got build tool $tool")
+            toolConfig = toolFactory.buildAndPutInMap(script, toolConfig)
+            configuration.slaveConfig.containerResources.put(tool, toolConfig)
+        }
+        log.debug("complete configureBuildTools()")
+    }
+
+    void configureDeployTools() {
+        log.debug("start configureDeployTool()")
+        String deployTool = configuration.get("deployTool")
+        if (deployTool != null) {
+            configuration.put("deploy", [deployTool: [:]])
+        } else {
+            log.debug("deployTool is undefined")
+        }
+
+        Map deployTools = configuration.get("deploy")
+        if (deployTools != null) {
+            deployTools.each { tool, toolConfig ->
+                log.debug("got deploy tool $tool")
+                toolConfig = toolFactory.buildAndPutInMap(script, toolConfig)
+                configuration.slaveConfig.containerResources.put(tool, toolConfig)
+            }
+            configuration.put("isDeployEnabled", true)
+        } else {
+            log.info("Deploy tools is undefined isDeployEnabled=false")
+            configuration.put("isDeployEnabled", false)
+        }
+        log.debug("complete configureDeployTool()")
     }
 
     void configureDeployEnvironment() {
@@ -111,15 +186,6 @@ class Config implements Serializable {
         log.debug("complete configureDeployEnvironment()")
     }
 
-    void setExtraEnvVariables() {
-        log.debug("start setExtraEnvVariables() complete")
-        configuration.extraEnvs.each { k, v ->
-            log.debug("[$k]=$v")
-            script.env[k] = v
-        }
-        log.debug("complete setExtraEnvVariables() complete")
-    }
-
     void configureStages() {
         log.debug("start configureStages()")
         StageFactory stageFactory = new StageFactory(script, configuration)
@@ -129,23 +195,6 @@ class Config implements Serializable {
         log.debug("complete configureStages()")
     }
 
-    void configureSlave() {
-        log.debug("start configureSlave()")
-        SlaveFactory slaveFactory = new SlaveFactory(script, configuration)
-        def slaveConfiguration = slaveFactory.getSlaveConfiguration()
-        log.debug("slave configuration:", slaveConfiguration)
-        configuration.put("slaveConfiguration", slaveConfiguration)
-        log.debug("complete configureSlave()")
-    }
-
-    void initBuildTools(){
-        log.debug("start initBuildTools()")
-        log.debug("complete initBuildTools()")
-    }
-    void initDeployTools(){
-        log.debug("start initDeployTools()")
-        log.debug("complete initDeployTools()")
-    }
 
     Map getConfiguration() {
         log.debug("returning configuration ", configuration)

@@ -1,21 +1,20 @@
-package com.nextiva.deploy.tool
+package com.nextiva.tools.deploy
 
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.Multimap
-import com.nextiva.environment.Environment
+import com.nextiva.SharedJobsStaticVars
 
-import static com.nextiva.SharedJobsStaticVars.VAULT_URL
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
 class Kubeup extends DeployTool {
-    Kubeup(Script script, List<Environment> environments, Map configuration) {
-        super(script, environments, configuration)
+    Kubeup(Script script, Map configuration) {
+        super(script, configuration)
     }
 
     Boolean deploy(String cloudApp, String version, String clusterDomain, String namespace, String configset) {
         kubeLogin(clusterDomain)
-        vaultLogin(VAULT_URL)
+        vaultLogin(SharedJobsStaticVars.VAULT_URL)
         log.info('Checking of application manifests ...')
         install(cloudApp, version, namespace, configset, true)
         log.info('Deploying application into Kubernetes ...')
@@ -32,6 +31,7 @@ class Kubeup extends DeployTool {
         log.debug("clone complete")
         script.dir(toolHome) {
             kubectlInstall()
+            kubeupInstall()
             vaultInstall()
             jqInstall()
             kubeloginInstall()
@@ -122,10 +122,10 @@ class Kubeup extends DeployTool {
                 case it.startsWith("statefulset.apps"):
                     objectsToValidate.put("statefulset", extractObject(it))
                     break
-                case it.startsWith("daemonset.apps"):
+                case it.startsWith("daemonset.extentions"):
                     objectsToValidate.put("daemonset", extractObject(it))
                     break
-                case it.startsWith("job.apps"):
+                case it.startsWith("job.batch"):
                     objectsToValidate.put("job", extractObject(it))
                     break
             }
@@ -134,8 +134,6 @@ class Kubeup extends DeployTool {
         objectsToValidate.entries().each { type, name ->
             shWithOutput(script, "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name}")
         }
-
-
     }
 
     String extractObject(String rawString) {

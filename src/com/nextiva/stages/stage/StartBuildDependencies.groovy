@@ -12,11 +12,12 @@ class StartBuildDependencies extends Stage {
     def stageBody() {
         try {
             Map dependencies = configuration.get("dependencies")
-            dependencies.each { appName, version ->
+            dependencies.each { cloudApp, version ->
                 String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
                 String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
-                List deploymentsList = [appName]
-                log.info("Starting dependency $appName")
+                log.info("Starting build dependency $cloudApp")
+
+
                 script.container("kubeup") {
                     log.debug("start kubernetes deploy with appname=$appName, version=$version, clusterDomain=$clusterDomain, deploymentList =$deploymentsList")
                     script.kubernetes.deploy(appName, version, clusterDomain, deploymentsList, namespace)

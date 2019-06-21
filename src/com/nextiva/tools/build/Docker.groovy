@@ -1,4 +1,4 @@
-package com.nextiva.build.tool
+package com.nextiva.tools.build
 
 import com.nextiva.utils.Logger
 

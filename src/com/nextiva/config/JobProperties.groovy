@@ -21,7 +21,7 @@ class JobProperties {
         this.script = script
         this.jobTriggers = configuration.get("jobTriggers", [])
         this.buildDaysToKeepStr = configuration.get("buildDaysToKeepStr", "30")
-        this.buildNumToKeepStr = configuration.get("buildNumToKeepStr", "30")
+        this.buildNumToKeepStr = configuration.get("buildNumToKeepStr", "50")
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
         this.auth = configuration.get("auth", [:])

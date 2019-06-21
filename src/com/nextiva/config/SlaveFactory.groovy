@@ -2,7 +2,7 @@ package com.nextiva.config
 
 import com.cloudbees.groovy.cps.NonCPS
 
-import static com.nextiva.SharedJobsStaticVars.DEFAULT_CONTAINERS
+import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 
 class SlaveFactory {
     protected Script script

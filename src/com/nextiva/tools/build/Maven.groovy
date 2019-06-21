@@ -1,8 +1,7 @@
-package com.nextiva.build.tool
+package com.nextiva.tools.build
 
+import com.nextiva.SharedJobsStaticVars
 import com.nextiva.utils.Logger
-
-import static com.nextiva.SharedJobsStaticVars.SONAR_QUBE_ENV
 
 class Maven extends BuildTool {
     Logger log = new Logger(this)
@@ -14,7 +13,7 @@ class Maven extends BuildTool {
     @Override
     void sonarScan() {
         execute {
-            script.withSonarQubeEnv(SONAR_QUBE_ENV) {
+            script.withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
                 sh 'mvn sonar:sonar'
             }
         }

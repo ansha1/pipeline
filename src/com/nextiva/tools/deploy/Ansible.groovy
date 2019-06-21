@@ -1,11 +1,18 @@
-package com.nextiva.deploy.tool
-
-import com.nextiva.environment.Environment
+package com.nextiva.tools.deploy
 
 class Ansible extends DeployTool {
-    Ansible(Script script, List<Environment> environments, Map configuration) {
-        super(script, environments, configuration)
+
+    Ansible(Script script, Map configuration) {
+        super(script, configuration)
     }
+
+//    Map deployment = ["name"         : "Ansible",
+//                      "image"        : "ansibleimage",
+//                      "repository"   : "repo",
+//                      "branch"       : "master",
+//                      "inventoryPath": 'ansible/role-based_playbooks/inventory/java-app/dev',
+//                      "playbookPath" : 'ansible/role-based_playbooks/java-app.yml',
+//                      "ansibleArgs"  : 'args']
 
     Boolean deploy() {
         environments.each {

@@ -1,11 +1,14 @@
-package com.nextiva.build.tool
+package com.nextiva.tools.build
 
-import com.nextiva.utils.Logger
+import com.nextiva.tools.Tool
+
 import static com.nextiva.utils.Utils.shOrClosure
 
-abstract class BuildTool {
+abstract class BuildTool implements Serializable, Tool {
 
     Script script
+    String name
+
     Map toolConfiguration
 
     String pathToSrc = "."
@@ -14,7 +17,7 @@ abstract class BuildTool {
 
     BuildTool(Script script, Map toolConfiguration) {
         this.script = script
-        this.toolConfiguration = toolConfiguration
+        this.name = toolConfiguration.get("name")
     }
 
     abstract void setVersion(String version)
@@ -30,6 +33,9 @@ abstract class BuildTool {
         }
     }
 
+    String getName(){
+        return name
+    }
     abstract void sonarScan()
     abstract void securityScan()
     abstract void publish()

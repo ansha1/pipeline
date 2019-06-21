@@ -1,11 +1,11 @@
-package com.nextiva.build.tool
+package com.nextiva.tools.build
 
 import com.nextiva.utils.Logger
 
-class Pip extends BuildTool{
+class Npm extends BuildTool{
     Logger log = new Logger(this)
 
-    Pip(Script script, Map toolConfiguration) {
+    Npm(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
 }
