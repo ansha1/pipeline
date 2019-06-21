@@ -7,7 +7,7 @@ class Utils {
 
     static String shWithOutput(script, String command) {
         return script.sh(
-                script: command,
+                script: command + " 2>&1",
                 returnStdout: true
         ).trim()
     }
