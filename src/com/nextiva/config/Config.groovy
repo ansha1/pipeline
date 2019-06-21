@@ -127,7 +127,7 @@ class Config implements Serializable {
         log.debug("start configuring build dependency provisioning")
         Boolean isJobHasDependencies = false
         if (configuration.containsKey("dependencies")) {
-            Map kubeup = ["kubeup": [:]]
+            Map kubeup = ["name": "kubeup"]
             kubeup = toolFactory.mergeWithDefaults(kubeup)
             configuration.slaveConfig.containerResources.put("kubeup", kubeup)
             isJobHasDependencies = true
