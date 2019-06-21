@@ -22,14 +22,9 @@ def call(Map slaveConfig, body) {
     }
 
     withNamespace(iD) {
-//        def parentPodTemplateYaml = libraryResource 'podtemplate/default.yaml'
-//        podTemplate(label: "parent-$iD", showRawYaml: false, yaml: parentPodTemplateYaml) {}
-
-        podTemplate(label: iD, namespace: iD, showRawYaml: true,
-//                inheritFrom: "parent-$iD",
+        podTemplate(label: iD, namespace: iD, showRawYaml: false, slaveConnectTimeout: 300,
                 annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
-                nodeSelector: 'dedicatedgroup=jenkins-slave',
-                slaveConnectTimeout: 300, imagePullSecrets: ['regsecret'], containers: containers(containerResources), volumes: volumes(), yaml: """
+                containers: containers(containerResources), volumes: volumes(), yaml: """
 spec:
   imagePullSecrets:
   - name: regsecret
