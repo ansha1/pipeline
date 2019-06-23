@@ -18,7 +18,7 @@ def call(String title = 'Should we proceed?', String text = 'Jenkins is waiting 
             def slackMessage = new MessagesFactory(this).buildApproveMessage(title, text)
             slack.sendPrivatMessage(UserSlackId, slackMessage)
 
-            return input(id: 'Proceed', message: message, ok: yesText, submitter: authorizedApprovers.join(","),
+            return input(id: 'Proceed', message: text, ok: yesText, submitter: authorizedApprovers.join(","),
                     submitterParameter: 'approver')
         }
     }
