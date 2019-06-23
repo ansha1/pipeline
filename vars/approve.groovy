@@ -4,7 +4,8 @@ import com.nextiva.slack.MessagesFactory
 def call(String message = 'Should we proceed?', String UserSlackId, List authorizedApprovers = [], Integer minutes = 5) {
     timeout(minutes) {
         print('111111111')
-        SlackMessage slackMessage = new MessagesFactory(this).buildApproveMessage(message)
+        def slackMessage = new MessagesFactory(this).buildApproveMessage(message)
+        print(slackMessage)
         print('2222222222')
         slack.sendMessage(UserSlackId, slackMessage)
         print('3333333333')
