@@ -169,3 +169,7 @@ String getCommitMessage() {
         return "Unknown"
     }
 }
+
+private getJobName() {
+    return URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
+}

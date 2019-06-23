@@ -1,21 +1,31 @@
 import com.nextiva.slack.MessagesFactory
+import static com.nextiva.SharedJobsStaticVars.*
 
 
-def call(String message = 'Should we proceed?', String UserSlackId, List authorizedApprovers = [], Integer minutes = 5) {
+def call(String title = 'Should we proceed?', String text = 'Jenkins is waiting for your approval',
+         String UserSlackId, String yesText = 'Approve', String noText = 'Decline',
+         List authorizedApprovers = [], Integer minutes = 15) {
+
     timeout(minutes) {
-        print('111111111')
-        def slackMessage = new MessagesFactory(this).buildApproveMessage(message)
-        print(slackMessage)
-        print('2222222222')
-        slack.sendMessage(UserSlackId, slackMessage)
-        print('3333333333')
-        return input(id: 'Proceed', message: message, ok: 'Approve', submitter: authorizedApprovers.join(","),
-                submitterParameter: 'approver')
+
+        if(JENKINS_BOT_ENABLE) {
+            String titleLink = "${BUILD_URL}input/"
+
+            return bot.getJenkinsApprove(UserSlackId, yesText, noText, title, titleLink, text, titleLink,
+                    authorizedApprovers)
+        }
+        else {
+            def slackMessage = new MessagesFactory(this).buildApproveMessage(title, text)
+            slack.sendPrivatMessage(UserSlackId, slackMessage)
+
+            return input(id: 'Proceed', message: message, ok: yesText, submitter: authorizedApprovers.join(","),
+                    submitterParameter: 'approver')
+        }
     }
 }
 
 @Deprecated
-def sendToPrivate(String message = 'Should we proceed?', String UserSlackId, List authorizedApprovers, Integer minutes = 5) {
+def sendToPrivate(String title, String UserSlackId, List authorizedApprovers, Integer minutes = 5) {
     log.deprecated('Use approve() method.')
-    call(message, UserSlackId, authorizedApprovers, minutes)
+    call(title, UserSlackId, authorizedApprovers, minutes)
 }

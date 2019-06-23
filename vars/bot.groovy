@@ -19,7 +19,7 @@ def getJenkinsApprove(String slackReceiver, String yesText, String noText, Strin
     // Old implementation with non-interactive notification
     // It's here to quickly switch to it if Jenkins Bot doesn't work.
     /*
-    return approve.sendToPrivate(text, slackReceiver, authorizedApprovers)
+    return approve(text, slackReceiver, authorizedApprovers)
     */
 
     log.debug("Slack receiver: " + slackReceiver)
