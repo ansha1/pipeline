@@ -20,6 +20,12 @@ def getJenkinsApprove(String slackReceiver, String yesText, String noText, Strin
     log.debug("Jenkins input URL: " + jenkinsInputUrl)
     log.debug("Message: " + text)
 
+    // Old implementation with non-interactive notification
+    // It's here to quickly switch to it if Jenkins Bot doesn't work.
+    /*
+    approve.sendToPrivate(text, slackReceiver, authorizedApprovers)
+    */
+
     def inputId = "${common.getRandomInt()}"
     def postBody = [slack_receiver: slackReceiver, yes_text: yesText, no_text: noText, title: title,
                     title_link: titleLink, text: text, jenkins_input_url: jenkinsInputUrl + "${inputId}/submit"]
