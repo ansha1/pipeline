@@ -4,7 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 /**
  * Requests Bot to send approval request to Slack.
  *
- * @param slackReceiver - Slack user or channel identifier (example: @user_name, @U6B2UE50Z or #channel_name)
+ * @param slackReceiver - Slack user or channel identifier, should be of the format `<#C12345>`, `<@U12345>`, `<@U12345|user>`, `@user`, `#channel/user` or `#channel`
  * @param yesText - Approval button text
  * @param noText - Decline button text
  * @param title - Title text
