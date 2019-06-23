@@ -102,11 +102,7 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    private createApproveText() {
-        return "Stage ${context.env.STAGE_NAME} in ${getJobName()} is waiting for your approval"
-    }
-
-    def buildApproveMessage(title, String text = 'text', String color = "#022ef2") {
+    def buildApproveMessage(title, String text = "Stage ${context.env.STAGE_NAME} in ${getJobName()} is waiting for your approval", String color = "#022ef2") {
         List<Block> blocks = new ArrayList<>()
 
         Section titleSection = new Section()
