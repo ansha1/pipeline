@@ -102,7 +102,7 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    def buildApproveMessage(title, String text = "Stage  in ${getJobName()} is waiting for your approval", String color = "#022ef2") {
+    def buildApproveMessage(title, String text = "Stage  in  is waiting for your approval", String color = "#022ef2") {
         List<Block> blocks = new ArrayList<>()
 
         Section titleSection = new Section()
