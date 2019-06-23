@@ -16,15 +16,15 @@ import static com.nextiva.SharedJobsStaticVars.*
 def getJenkinsApprove(String slackReceiver, String yesText, String noText, String title, String titleLink, String text,
                       String jenkinsInputUrl, List authorizedApprovers = []) {
 
-    log.debug("Slack receiver: " + slackReceiver)
-    log.debug("Jenkins input URL: " + jenkinsInputUrl)
-    log.debug("Message: " + text)
-
     // Old implementation with non-interactive notification
     // It's here to quickly switch to it if Jenkins Bot doesn't work.
     /*
-    approve.sendToPrivate(text, slackReceiver, authorizedApprovers)
+    return approve.sendToPrivate(text, slackReceiver, authorizedApprovers)
     */
+
+    log.debug("Slack receiver: " + slackReceiver)
+    log.debug("Jenkins input URL: " + jenkinsInputUrl)
+    log.debug("Message: " + text)
 
     def inputId = "${common.getRandomInt()}"
     def postBody = [slack_receiver: slackReceiver, yes_text: yesText, no_text: noText, title: title,

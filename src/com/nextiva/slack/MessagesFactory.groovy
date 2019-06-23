@@ -74,7 +74,10 @@ class MessagesFactory implements Serializable {
         return message
     }
 
-    def buildApproveMessage(title) {
+    def buildApproveMessage(String title,
+                            String text = "Stage ${context.env.STAGE_NAME} in ${getJobName()} is waiting for your approval",
+                            String approveButtonText = "Approve",
+                            String color = "#022ef2") {
         List<Block> blocks = new ArrayList<>()
 
         Section titleSection = new Section()
@@ -82,16 +85,16 @@ class MessagesFactory implements Serializable {
         blocks.add(titleSection)
 
         Section mainText = new Section()
-        mainText.setText(new Text(createApproveText()))
+        mainText.setText(new Text(text))
         blocks.add(mainText)
 
         Actions buttons = new Actions()
-        buttons.setElements(ImmutableList.of(createApproveButton()))
+        buttons.setElements(ImmutableList.of(createApproveButton(approveButtonText)))
         blocks.add(buttons)
 
         Attachment attachment = new Attachment()
         attachment.setBlocks(blocks)
-        attachment.setColor("#022ef2")
+        attachment.setColor(color)
 
         def message = new SlackMessage()
         message.setAttachments(ImmutableList.of(attachment))
@@ -263,10 +266,6 @@ class MessagesFactory implements Serializable {
         return "`${appName}:${version}` ${environment.toUpperCase()} deploy started by <@${triggeredBy}>"
     }
 
-    private createApproveText() {
-        return "Stage ${context.env.STAGE_NAME} in ${getJobName()} is waiting for your approval"
-    }
-
     @SuppressWarnings("GrMethodMayBeStatic")
     private createErrorMessage(errorMessage) {
         return "*Error:* ${errorMessage}"
@@ -344,8 +343,8 @@ class MessagesFactory implements Serializable {
         return createLinkButton("Test results", "${context.env.BUILD_URL}testReport")
     }
 
-    private createApproveButton() {
-        return createLinkButton("Approve", "${context.env.BUILD_URL}input")
+    private createApproveButton(String text = "Approve") {
+        return createLinkButton(text, "${context.env.BUILD_URL}input")
     }
 
     private static createLinkButton(String text, String link) {
