@@ -31,6 +31,7 @@ def call(String title = 'Should we proceed?',
             if (e instanceof FlowInterruptedException) {
                 throw e
             }
+            log.warn("Can't send request to Jenkins Bot!")
         }
     }
 
