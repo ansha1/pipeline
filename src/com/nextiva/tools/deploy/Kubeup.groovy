@@ -14,7 +14,7 @@ class Kubeup extends DeployTool {
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
-        if (!initialized){
+        if (!initialized) {
             log.error("Kubeup is not initialized, aborting...")
             throw new AbortException("Kubeup is not installed, aborting...")
         }
@@ -38,6 +38,7 @@ class Kubeup extends DeployTool {
                 script.sh "ls -la"
                 kubectlInstall()
                 kubeupInstall()
+                kubedogInstall()
                 jqInstall()
                 vaultInstall()
                 vaultLogin(VAULT_URL)
@@ -57,6 +58,19 @@ class Kubeup extends DeployTool {
             throw new AbortException("kubeup is not installed, aborting... $e")
         }
         log.debug("kubeupInstall complete")
+    }
+
+    def kubedogInstall() {
+        log.debug("kubedogInstall start")
+        try {
+            script.sh "kubedog version"
+        } catch (e) {
+            log.error("kubedog is not installed, going to install kubedog... $e")
+            script.sh """curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome
+            chmod +x $toolHome/kubedog"""
+            script.sh "kubedog version"
+        }
+        log.debug("kubedogInstall complete")
     }
 
     def kubectlInstall() {
@@ -113,16 +127,18 @@ class Kubeup extends DeployTool {
     }
 
     def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
-        script.dir(toolHome) {
-            //TODO: change this to the --dry-run=true or --dry-run=false
-            String dryRunParam = dryRun ? '--dry-run' : ''
-            String installOutput = shWithOutput(script, """
+        script.container(name) {
+            script.dir(toolHome) {
+                //TODO: change this to the --dry-run=true or --dry-run=false
+                String dryRunParam = dryRun ? '--dry-run' : ''
+                String installOutput = shWithOutput(script, """
               # fix for builds running in kubernetes, clean up predefined variables.
               for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
               BUILD_VERSION=${version}
               kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
               """)
-            validate(installOutput, namespace)
+                validate(installOutput, namespace)
+            }
         }
     }
 
