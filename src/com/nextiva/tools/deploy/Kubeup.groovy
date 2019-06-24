@@ -66,9 +66,10 @@ class Kubeup extends DeployTool {
             script.sh "kubedog version"
         } catch (e) {
             log.error("kubedog is not installed, going to install kubedog... $e")
-            script.sh """curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome
+            script.sh """curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
             chmod +x $toolHome/kubedog"""
             script.sh "kubedog version"
+            script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
         }
         log.debug("kubedogInstall complete")
     }
@@ -170,7 +171,7 @@ class Kubeup extends DeployTool {
         }
 
         objectsToValidate.entries().each { type, name ->
-            shWithOutput(script, "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name} 2>&1")
+            script.sh "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name} 2>&1"
         }
     }
 
