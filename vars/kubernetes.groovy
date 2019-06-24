@@ -92,7 +92,7 @@ def vaultLogin() {
         try {
             sh "vault login -method=ldap -no-print -address ${VAULT_URL} username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
         } catch (e) {
-            log.error("Error! Got an error trying to initiate the connect with Vault")
+            log.error("Error! Got an error trying to initiate the connect with Vault ${e}")
             error("Error! Got an error trying to initiate the connect with Vault ${VAULT_URL}")
         }
     }
