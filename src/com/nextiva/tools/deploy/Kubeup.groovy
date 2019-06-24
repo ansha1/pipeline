@@ -65,7 +65,7 @@ class Kubeup extends DeployTool {
         try {
             script.sh "kubedog version"
         } catch (e) {
-            log.warn("kubedog is not installed, going to install kubedog... $e")
+            log.warn("kubedog is not installed, going to install kubedog...")
             script.sh "curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog"
             script.sh "chmod +x $toolHome/kubedog"
             script.sh "kubedog version"
@@ -133,11 +133,10 @@ class Kubeup extends DeployTool {
                 script.dir(toolHome) {
                     //TODO: change this to the --dry-run=true or --dry-run=false
                     String dryRunParam = dryRun ? '--dry-run' : ''
-//                    String unsetEnvs = unsetEnvServiceDiscovery()
                     output = shWithOutput(script, """
-                  # fix for builds running in kubernetes, clean up predefined variables.
-                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
-
+#                  # fix for builds running in kubernetes, clean up predefined variables.
+#                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+                  ${unsetEnvServiceDiscovery()}
                   BUILD_VERSION=${version}
                   kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
                   """)
@@ -201,8 +200,8 @@ class Kubeup extends DeployTool {
     String unsetEnvServiceDiscovery() {
         String envsToUnset = ""
         String currentEnv = shWithOutput(script, "printenv")
-        currentEnv.split("\n").findAll { it ==~ /(_SERVICE_|_PORT)/ }.each {
-            envsToUnset "unset ${it.tokenize("=")[0]}"
+        currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
+            envsToUnset += "unset ${it.tokenize("=")[0]}\n"
         }
         log.debug("envsToUnset:$envsToUnset")
         return envToUnset
