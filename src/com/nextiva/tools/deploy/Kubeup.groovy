@@ -35,6 +35,7 @@ class Kubeup extends DeployTool {
         log.debug("clone complete")
         script.container(name) {
             script.dir(toolHome) {
+                script.sh "ls -la"
                 kubectlInstall()
                 kubeupInstall()
                 jqInstall()
