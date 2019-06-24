@@ -1,5 +1,6 @@
 import com.nextiva.slack.MessagesFactory
 import static com.nextiva.SharedJobsStaticVars.*
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 
 
 /**
