@@ -72,4 +72,5 @@ class SharedJobsStaticVars {
     static final VAULT_URL = 'https://vault.tooling.nextiva.io'
     static final PUBLISH_STATICASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
+    static final KUBEUP_VERSION = '0.1.0'
 }
