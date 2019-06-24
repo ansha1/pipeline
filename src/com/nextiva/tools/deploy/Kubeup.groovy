@@ -1,7 +1,5 @@
 package com.nextiva.tools.deploy
 
-import com.google.common.collect.ArrayListMultimap
-import com.google.common.collect.Multimap
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
@@ -155,38 +153,38 @@ class Kubeup extends DeployTool {
         log.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
         log.debug("==========================================================================================")
 
-        Multimap objectsToValidate = ArrayListMultimap.create()
+        List objectsToValidate = []
         installOutput.split("\n").each {
             switch (it) {
                 case { it.startsWith("deployment.apps") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("deployment", extractObject(it))
+                    objectsToValidate.add("deployment ${extractObject(it)}")
                     break
                 case { it.startsWith("javaapp.nextiva.io") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("deployment", extractObject(it))
+                    objectsToValidate.add("deployment ${extractObject(it)}")
                     break
                 case { it.startsWith("pythonapp.nextiva.io") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("deployment", extractObject(it))
+                    objectsToValidate.add("deployment ${extractObject(it)}")
                     break
                 case { it.startsWith("statefulset.apps") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("statefulset", extractObject(it))
+                    objectsToValidate.add("statefulset ${extractObject(it)}")
                     break
                 case { it.startsWith("daemonset.extentions") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("daemonset", extractObject(it))
+                    objectsToValidate.add("daemonset ${extractObject(it)}")
                     break
                 case { it.startsWith("job.batch") }:
                     log.debug("Found k8s object $it")
-                    objectsToValidate.put("job", extractObject(it))
+                    objectsToValidate.add("job ${extractObject(it)}")
                     break
             }
         }
         log.debug("Collected objectsToValidate", objectsToValidate)
-        objectsToValidate.entries().each { type, name ->
-            script.sh "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name} 2>&1"
+        objectsToValidate.each {
+            script.sh "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
         }
     }
 
