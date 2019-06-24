@@ -12,15 +12,18 @@ import static com.nextiva.SharedJobsStaticVars.*
  * @param noText - Decline button text
  * @param authorizedApprovers - List of usernames
  */
-def call(String title = 'Should we proceed?', String text = 'Jenkins is waiting for your approval',
-         String slackReceiver, String yesText = 'Approve', String noText = 'Decline',
+def call(String title = 'Should we proceed?',
+         String text = 'Jenkins is waiting for your approval',
+         String slackReceiver,
+         String yesText = 'Approve',
+         String noText = 'Decline',
          List authorizedApprovers = []) {
 
     if(JENKINS_BOT_ENABLE) {
         // Send Slack interactive message through Jenkins Bot
-        String titleLink = "${BUILD_URL}input/"
+        String inputFormLink = "${BUILD_URL}input/"
 
-        return bot.getJenkinsApprove(slackReceiver, yesText, noText, title, titleLink, text, titleLink,
+        return bot.getJenkinsApprove(slackReceiver, yesText, noText, title, inputFormLink, text, inputFormLink,
                 authorizedApprovers)
     }
     else {
