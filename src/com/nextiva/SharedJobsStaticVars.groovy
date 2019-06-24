@@ -73,7 +73,8 @@ class SharedJobsStaticVars {
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
 
     /*
-     If Jenkins Bot doesn't work then we can disable it and switch back to the non-interactive notification
+     Enable sending interactive Slack message through Jenkins Bot.
+     If Jenkins Bot doesn't work then we can disable it and switch back to the non-interactive notification.
      */
     static final JENKINS_BOT_ENABLE = true
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
