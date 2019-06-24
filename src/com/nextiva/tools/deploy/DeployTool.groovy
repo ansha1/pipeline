@@ -12,6 +12,7 @@ abstract class DeployTool implements Serializable, Tool {
 
     String repository
     String branch
+    Boolean initialized = false
 
     DeployTool(Script script, Map deployToolConfig) {
         this.script = script

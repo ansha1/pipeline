@@ -2,8 +2,9 @@ package com.nextiva.tools.deploy
 
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.Multimap
-import com.nextiva.SharedJobsStaticVars
+import hudson.AbortException
 
+import static com.nextiva.SharedJobsStaticVars.VAULT_URL
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
@@ -13,9 +14,12 @@ class Kubeup extends DeployTool {
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
+        if (!initialized){
+            log.error("Kubeup is not initialized, aborting...")
+            throw new AbortException("Kxubeup is not installed, aborting...")
+        }
         log.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
 
-        vaultLogin(SharedJobsStaticVars.VAULT_URL)
         log.info('Checking of application manifests ...')
         install(cloudApp, version, namespace, configset, true)
         log.info('Deploying application into Kubernetes ...')
@@ -25,27 +29,35 @@ class Kubeup extends DeployTool {
     }
 
     void init(String clusterDomain) {
-        log.debug("start init ${getName()} tool")
+        log.debug("start init $name tool")
         log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
         clone(script, repository, branch, toolHome)
         log.debug("clone complete")
-        script.container(getName()) {
+        script.container(name) {
             script.dir(toolHome) {
                 kubectlInstall()
                 kubeupInstall()
-                vaultInstall()
                 jqInstall()
-                kubeloginInstall()
+                vaultInstall()
+                vaultLogin(VAULT_URL)
             }
             kubeLogin(clusterDomain)
         }
         log.debug("init complete")
+        initialized = true
     }
 
-    def kubeupInstall(){
+    def kubeupInstall() {
         log.debug("kubeupInstall start")
+        try {
+            shWithOutput(script, "kubeup -version")
+        } catch (e) {
+            log.error("kubeup is not installed, aborting... $e")
+            throw new AbortException("kubeup is not installed, aborting... $e")
+        }
         log.debug("kubeupInstall complete")
     }
+
     def kubectlInstall() {
         log.debug("kubectlInstall start")
         script.kubernetes.kubectlInstall()
@@ -66,6 +78,7 @@ class Kubeup extends DeployTool {
 
     def kubeloginInstall() {
         log.debug("going to install kubelogin")
+        //TODO: add kubelogin install method
 //            script.kubernetes.kubeloginInstall()
         log.debug("kubelogin complete")
         log.debug("setting env variables")
@@ -75,11 +88,12 @@ class Kubeup extends DeployTool {
     }
 
     def kubeLogin(String clusterDomain) {
+        kubeloginInstall()
         script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
             shWithOutput(script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
-            kubectl get nodes
+            kubectl get nodes 2>&1
             """)
         }
     }
@@ -91,7 +105,7 @@ class Kubeup extends DeployTool {
                 sh "vault login -method=ldap -no-print -address ${vaultUrl} username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}"
             } catch (e) {
                 log.error("Error! Got an error trying to initiate the connect with Vault")
-                error("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
+                script.error("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
             }
         }
         log.debug("Vault login complete")
@@ -139,7 +153,7 @@ class Kubeup extends DeployTool {
         }
 
         objectsToValidate.entries().each { type, name ->
-            shWithOutput(script, "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name}")
+            shWithOutput(script, "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name} 2>&1")
         }
     }
 
