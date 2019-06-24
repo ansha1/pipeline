@@ -27,8 +27,10 @@ def call(String title = 'Should we proceed?',
         try {
             return bot.getJenkinsApprove(slackReceiver, yesText, noText, title, inputFormLink, text, inputFormLink,
                     authorizedApprovers)
-        } catch (FlowInterruptedException e) {
-            throw e
+        } catch (e) {
+            if (e instanceof FlowInterruptedException) {
+                throw e
+            }
         }
     }
 
