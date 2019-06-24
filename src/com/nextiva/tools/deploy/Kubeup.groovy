@@ -35,7 +35,7 @@ class Kubeup extends DeployTool {
         log.debug("clone complete")
         script.container(name) {
             script.dir(toolHome) {
-                script.sh "ls -la"
+                script.env.PATH = "${script.env.PATH}:${toolHome}"
                 kubectlInstall()
                 kubeupInstall()
                 kubedogInstall()
@@ -100,7 +100,6 @@ class Kubeup extends DeployTool {
         log.debug("setting env variables")
         script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
         script.env.KUBECONFIG = "${toolHome}/kubeconfig"
-        script.env.PATH = "${script.env.PATH}:${toolHome}"
     }
 
     def kubeLogin(String clusterDomain) {
