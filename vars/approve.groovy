@@ -37,8 +37,7 @@ def call(String title = 'Should we proceed?',
     slack.sendPrivatMessage(slackReceiver, slackMessage)
 
     def inputId = "${common.getRandomInt()}"
-    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","),
-            submitterParameter: 'approver')
+    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","))
 }
 
 @Deprecated
