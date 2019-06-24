@@ -102,7 +102,7 @@ class Kubeup extends DeployTool {
         log.debug("trying to login in the Vault")
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
-                shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${VAULT_RO_USER} password=${VAULT_RO_PASSWORD}")
+                shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
             } catch (e) {
                 log.error("Error! Got an error trying to initiate the connect with Vault", e)
                 throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
