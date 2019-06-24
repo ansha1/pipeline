@@ -127,48 +127,65 @@ class Kubeup extends DeployTool {
     }
 
     def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
-        script.container(name) {
-            script.dir(toolHome) {
-                //TODO: change this to the --dry-run=true or --dry-run=false
-                String dryRunParam = dryRun ? '--dry-run' : ''
-                String installOutput = shWithOutput(script, """
-              # fix for builds running in kubernetes, clean up predefined variables.
-              for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
-              BUILD_VERSION=${version}
-              kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
-              """)
-                validate(installOutput, namespace)
+        try {
+            String installOutput = ""
+            script.container(name) {
+                script.dir(toolHome) {
+                    //TODO: change this to the --dry-run=true or --dry-run=false
+                    String dryRunParam = dryRun ? '--dry-run' : ''
+                    String unsetEnvs = unsetEnvServiceDiscovery()
+                    installOutput = shWithOutput(script, """
+#                  # fix for builds running in kubernetes, clean up predefined variables.
+#                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+                  $unsetEnvs
+                  BUILD_VERSION=${version}
+                  kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
+                  """)
+                    if (!dryRun) {
+                        validate(installOutput, namespace)
+                    }
+                }
             }
+        } catch (e) {
+            log.error("kubeup install failure... installOutput: $installOutput", e)
+            throw new AbortException("kubeup install failure... installOutput: $installOutput")
         }
     }
 
     def validate(String installOutput, String namespace) {
         log.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
+        log.debug("==========================================================================================")
 
         Multimap objectsToValidate = ArrayListMultimap.create()
         installOutput.split("\n").each {
             switch (it) {
                 case it.startsWith("deployment.apps"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
                 case it.startsWith("javaapp.nextiva.io"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
                 case it.startsWith("pythonapp.nextiva.io"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
                 case it.startsWith("statefulset.apps"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("statefulset", extractObject(it))
                     break
                 case it.startsWith("daemonset.extentions"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("daemonset", extractObject(it))
                     break
                 case it.startsWith("job.batch"):
+                    log.debug("Found k8s object $it")
                     objectsToValidate.put("job", extractObject(it))
                     break
             }
         }
-
+        log.debug("Collected objectsToValidate", objectsToValidate)
         objectsToValidate.entries().each { type, name ->
             script.sh "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${type} ${name} 2>&1"
         }
@@ -179,5 +196,15 @@ class Kubeup extends DeployTool {
         String extractedObject = rawString.substring(rawString.indexOf("/"), rawString.indexOf(" "))
         log.debug("extractedObject", extractedObject)
         return extractedObject
+    }
+
+    String unsetEnvServiceDiscovery() {
+        String envsToUnset = ""
+        String currentEnv = shWithOutput(script, "printenv")
+        currentEnv.split("\n").findAll { it ==~ /(_SERVICE_|_PORT)/ }.each {
+            envsToUnset "unset ${it.tokenize("=")[0]}"
+        }
+        log.debug("envsToUnset:$envsToUnset")
+        return envToUnset
     }
 }
