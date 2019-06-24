@@ -158,27 +158,27 @@ class Kubeup extends DeployTool {
         Multimap objectsToValidate = ArrayListMultimap.create()
         installOutput.split("\n").each {
             switch (it) {
-                case it.startsWith("deployment.apps"):
+                case { it.startsWith("deployment.apps") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
-                case it.startsWith("javaapp.nextiva.io"):
+                case { it.startsWith("javaapp.nextiva.io") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
-                case it.startsWith("pythonapp.nextiva.io"):
+                case { it.startsWith("pythonapp.nextiva.io") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("deployment", extractObject(it))
                     break
-                case it.startsWith("statefulset.apps"):
+                case { it.startsWith("statefulset.apps") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("statefulset", extractObject(it))
                     break
-                case it.startsWith("daemonset.extentions"):
+                case { it.startsWith("daemonset.extentions") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("daemonset", extractObject(it))
                     break
-                case it.startsWith("job.batch"):
+                case { it.startsWith("job.batch") }:
                     log.debug("Found k8s object $it")
                     objectsToValidate.put("job", extractObject(it))
                     break
