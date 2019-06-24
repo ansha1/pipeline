@@ -204,6 +204,6 @@ class Kubeup extends DeployTool {
             envsToUnset += "unset ${it.tokenize("=")[0]}\n"
         }
         log.debug("envsToUnset:$envsToUnset")
-        return envToUnset
+        return envsToUnset
     }
 }
