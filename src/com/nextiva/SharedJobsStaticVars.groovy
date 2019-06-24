@@ -80,7 +80,7 @@ class SharedJobsStaticVars {
                                                                "resourceLimitCpu"     : "300m",
                                                                "resourceRequestMemory": "256Mi",
                                                                "resourceLimitMemory"  : "512Mi"],
-                                                   "kubeup" : ["image"                : "repository.nextiva.xyz/kubeup:0.1.0-12",
+                                                   "kubeup" : ["image"                : "repository.nextiva.xyz/kubeup:0.1.0",
                                                                "resourceRequestMemory": "64Mi",
                                                                "resourceLimitMemory"  : "256Mi",
                                                                "repository"           : "ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git",

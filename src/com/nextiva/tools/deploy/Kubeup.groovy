@@ -50,7 +50,7 @@ class Kubeup extends DeployTool {
     def kubeupInstall() {
         log.debug("kubeupInstall start")
         try {
-            shWithOutput(script, "kubeup -version")
+            shWithOutput(script, "kubeup --version")
         } catch (e) {
             log.error("kubeup is not installed, aborting... $e")
             throw new AbortException("kubeup is not installed, aborting... $e")
