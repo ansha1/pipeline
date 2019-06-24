@@ -34,5 +34,6 @@ def getJenkinsApprove(String slackReceiver, String yesText, String noText, Strin
             consoleLogResponseBody: log.isDebug(), httpMode: 'POST',
             url: JENKINS_BOT_URL + '/ask-question/', requestBody: groovy.json.JsonOutput.toJson(postBody)
 
-    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","))
+    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","),
+            submitterParameter: 'approver')
 }

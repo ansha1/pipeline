@@ -23,17 +23,21 @@ def call(String title = 'Should we proceed?',
         // Send Slack interactive message through Jenkins Bot
         String inputFormLink = "${BUILD_URL}input/"
 
-        return bot.getJenkinsApprove(slackReceiver, yesText, noText, title, inputFormLink, text, inputFormLink,
-                authorizedApprovers)
+        try {
+            return bot.getJenkinsApprove(slackReceiver, yesText, noText, title, inputFormLink, text, inputFormLink,
+                    authorizedApprovers)
+        } catch (FlowInterruptedException e) {
+            throw e
+        }
     }
-    else {
-        // Send a non-interactive message directly to Slack
-        def slackMessage = new MessagesFactory(this).buildApproveMessage(title, text)
-        slack.sendPrivatMessage(slackReceiver, slackMessage)
 
-        return input(id: 'Proceed', message: text, ok: yesText, submitter: authorizedApprovers.join(","),
-                submitterParameter: 'approver')
-    }
+    // Send a non-interactive message directly to Slack
+    def slackMessage = new MessagesFactory(this).buildApproveMessage(title, text)
+    slack.sendPrivatMessage(slackReceiver, slackMessage)
+
+    def inputId = "${common.getRandomInt()}"
+    return input(id: inputId, message: text, ok: yesText, submitter: authorizedApprovers.join(","),
+            submitterParameter: 'approver')
 }
 
 @Deprecated
