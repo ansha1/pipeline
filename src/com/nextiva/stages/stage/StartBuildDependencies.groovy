@@ -25,7 +25,7 @@ class StartBuildDependencies extends Stage {
                 //TODO: change configset
                 String configset = "aws-sandbox"
                 String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
-                script.withEnv("CLUSTER_DOMAIN=$ciClusterDomain") {
+                script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
                     kubeup.deploy(cloudApp, version, namespace, configset)
                 }
             }
