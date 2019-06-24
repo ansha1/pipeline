@@ -65,9 +65,9 @@ class Kubeup extends DeployTool {
         try {
             script.sh "kubedog version"
         } catch (e) {
-            log.error("kubedog is not installed, going to install kubedog... $e")
-            script.sh """curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
-            chmod +x $toolHome/kubedog"""
+            log.warn("kubedog is not installed, going to install kubedog... $e")
+            script.sh "curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog"
+            script.sh "chmod +x $toolHome/kubedog"
             script.sh "kubedog version"
             script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
         }
@@ -128,27 +128,27 @@ class Kubeup extends DeployTool {
 
     def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
         try {
-            String installOutput = ""
+            String output = ""
             script.container(name) {
                 script.dir(toolHome) {
                     //TODO: change this to the --dry-run=true or --dry-run=false
                     String dryRunParam = dryRun ? '--dry-run' : ''
-                    String unsetEnvs = unsetEnvServiceDiscovery()
-                    installOutput = shWithOutput(script, """
-#                  # fix for builds running in kubernetes, clean up predefined variables.
-#                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
-                  $unsetEnvs
+//                    String unsetEnvs = unsetEnvServiceDiscovery()
+                    output = shWithOutput(script, """
+                  # fix for builds running in kubernetes, clean up predefined variables.
+                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+
                   BUILD_VERSION=${version}
                   kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
                   """)
                     if (!dryRun) {
-                        validate(installOutput, namespace)
+                        validate(output, namespace)
                     }
                 }
             }
         } catch (e) {
-            log.error("kubeup install failure... installOutput: $installOutput", e)
-            throw new AbortException("kubeup install failure... installOutput: $installOutput")
+            log.error("kubeup install failure... installOutput: $output", e)
+            throw new AbortException("kubeup install failure... installOutput: $output")
         }
     }
 
