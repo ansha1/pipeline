@@ -16,7 +16,7 @@ class Kubeup extends DeployTool {
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
         if (!initialized){
             log.error("Kubeup is not initialized, aborting...")
-            throw new AbortException("Kxubeup is not installed, aborting...")
+            throw new AbortException("Kubeup is not installed, aborting...")
         }
         log.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
 
@@ -50,7 +50,7 @@ class Kubeup extends DeployTool {
     def kubeupInstall() {
         log.debug("kubeupInstall start")
         try {
-            shWithOutput(script, "kubeup --version")
+            script.sh "kubeup --version"
         } catch (e) {
             log.error("kubeup is not installed, aborting... $e")
             throw new AbortException("kubeup is not installed, aborting... $e")
@@ -90,11 +90,11 @@ class Kubeup extends DeployTool {
     def kubeLogin(String clusterDomain) {
         kubeloginInstall()
         script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            shWithOutput(script, """
+            script.sh """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
-            """)
+            """
         }
     }
 
