@@ -127,8 +127,8 @@ class Kubeup extends DeployTool {
     }
 
     def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
+        String output = ""
         try {
-            String output = ""
             script.container(name) {
                 script.dir(toolHome) {
                     //TODO: change this to the --dry-run=true or --dry-run=false
