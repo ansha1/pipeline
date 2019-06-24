@@ -100,7 +100,7 @@ def vaultLogin() {
 
 def kubectlInstall() {
     try {
-        log.info("Ensure that kubectl is nstalled")
+        log.info("Ensure that kubectl is installed")
         sh "kubectl version --client=true"
     } catch (e) {
         log.info("Going to install latest stable kubectl")
