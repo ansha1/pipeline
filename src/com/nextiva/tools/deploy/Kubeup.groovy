@@ -144,8 +144,7 @@ class Kubeup extends DeployTool {
                 }
             }
         } catch (e) {
-            log.error("kubeup install failure... installOutput: $output", e)
-            throw new AbortException("kubeup install failure... installOutput: $output")
+            throw new AbortException("kubeup install failure... installOutput: >>> \n $output \n")
         }
     }
 
