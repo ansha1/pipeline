@@ -125,15 +125,14 @@ class Kubeup extends DeployTool {
     }
 
     def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
+        log.debug("Install cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
         String output = ""
         try {
             script.container(name) {
                 script.dir(toolHome) {
-                    //TODO: change this to the --dry-run=true or --dry-run=false
-                    String dryRunParam = dryRun ? '--dry-run' : ''
-                    output = shWithOutput(script, """
-#                  # fix for builds running in kubernetes, clean up predefined variables.
-#                  for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+                  String dryRunParam = dryRun ? '--dry-run' : ''
+                  output = shWithOutput(script, """
+#                 # fix for builds running in kubernetes, clean up predefined variables.
                   ${unsetEnvServiceDiscovery()}
                   BUILD_VERSION=${version}
                   kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
