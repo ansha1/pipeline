@@ -155,7 +155,7 @@ class Kubeup extends DeployTool {
 
         List objectsToValidate = []
         installOutput.split("\n").each {
-            log.debug("parse object $it")
+            log.trace("parse object $it")
             switch (it) {
                 case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
                     log.debug("Found k8s object $it")
@@ -177,13 +177,13 @@ class Kubeup extends DeployTool {
         }
         log.debug("Collected objectsToValidate", objectsToValidate)
         objectsToValidate.each {
-            script.sh "kubedog --kube-config = ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
+            script.sh "kubedog --kube-config ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
         }
     }
 
     String extractObject(String rawString) {
         log.debug("got string", rawString)
-        String extractedObject = rawString.substring(rawString.indexOf("/"), rawString.indexOf(" "))
+        String extractedObject = rawString.substring(rawString.indexOf("/")+1, rawString.indexOf(" "))
         log.debug("extractedObject", extractedObject)
         return extractedObject
     }
