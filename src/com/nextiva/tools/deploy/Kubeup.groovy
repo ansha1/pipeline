@@ -103,11 +103,12 @@ class Kubeup extends DeployTool {
     def kubeLogin(String clusterDomain) {
         kubeloginInstall()
         script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            script.sh """
+            String output = shWithOutput(script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
-            """
+            """)
+            log.debug("Kubelogin output", output)
         }
     }
 
@@ -115,9 +116,10 @@ class Kubeup extends DeployTool {
         log.debug("trying to login in the Vault")
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
-                shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
+                String output = shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
+                log.trace("Vault login output", output)
             } catch (e) {
-                log.error("Error! Got an error trying to initiate the connect with Vault", e)
+                log.error("Error! Got an error trying to initiate the connect with Vault \n output $output", e)
                 throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
             }
         }
@@ -130,13 +132,13 @@ class Kubeup extends DeployTool {
         try {
             script.container(name) {
                 script.dir(toolHome) {
-                  String dryRunParam = dryRun ? '--dry-run' : ''
-                  output = shWithOutput(script, """
-#                 # fix for builds running in kubernetes, clean up predefined variables.
-                  ${unsetEnvServiceDiscovery()}
-                  BUILD_VERSION=${version}
-                  kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
-                  """)
+                    String dryRunParam = dryRun ? '--dry-run' : ''
+                    output = shWithOutput(script, """
+                    # fix for builds running in kubernetes, clean up predefined variables.
+                    ${unsetEnvServiceDiscovery()}
+                    BUILD_VERSION=${version}
+                    kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
+                    """)
                     if (!dryRun) {
                         validate(output, namespace)
                     }
@@ -156,19 +158,19 @@ class Kubeup extends DeployTool {
             log.trace("parse object $it")
             switch (it) {
                 case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
-                    log.debug("Found k8s object $it")
+                    log.trace("Found k8s object $it")
                     objectsToValidate.add("deployment ${extractObject(it)}")
                     break
                 case ~/^statefulset.apps.+$/:
-                    log.debug("Found k8s object $it")
+                    log.trace("Found k8s object $it")
                     objectsToValidate.add("statefulset ${extractObject(it)}")
                     break
                 case ~/^daemonset.extentions.+$/:
-                    log.debug("Found k8s object $it")
+                    log.trace("Found k8s object $it")
                     objectsToValidate.add("daemonset ${extractObject(it)}")
                     break
                 case ~/^job.batch.+$/:
-                    log.debug("Found k8s object $it")
+                    log.trace("Found k8s object $it")
                     objectsToValidate.add("job ${extractObject(it)}")
                     break
             }
@@ -181,7 +183,7 @@ class Kubeup extends DeployTool {
 
     String extractObject(String rawString) {
         log.debug("got string", rawString)
-        String extractedObject = rawString.substring(rawString.indexOf("/")+1, rawString.indexOf(" "))
+        String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
         log.debug("extractedObject", extractedObject)
         return extractedObject
     }
@@ -192,7 +194,7 @@ class Kubeup extends DeployTool {
         currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
             envsToUnset += "unset ${it.tokenize("=")[0]}\n"
         }
-        log.debug("envsToUnset:$envsToUnset")
+        log.trace("envsToUnset:\n $envsToUnset")
         return envsToUnset
     }
 }
