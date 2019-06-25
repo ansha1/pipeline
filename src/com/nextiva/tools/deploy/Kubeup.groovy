@@ -157,27 +157,19 @@ class Kubeup extends DeployTool {
         installOutput.split("\n").each {
             log.debug("parse object $it")
             switch (it) {
-                case { it.startsWith("deployment.apps") }:
+                case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
                     log.debug("Found k8s object $it")
                     objectsToValidate.add("deployment ${extractObject(it)}")
                     break
-                case { it.startsWith("javaapp.nextiva.io") }:
-                    log.debug("Found k8s object $it")
-                    objectsToValidate.add("deployment ${extractObject(it)}")
-                    break
-                case { it.startsWith("pythonapp.nextiva.io") }:
-                    log.debug("Found k8s object $it")
-                    objectsToValidate.add("deployment ${extractObject(it)}")
-                    break
-                case { it.startsWith("statefulset.apps") }:
+                case ~/^statefulset.apps.+$/:
                     log.debug("Found k8s object $it")
                     objectsToValidate.add("statefulset ${extractObject(it)}")
                     break
-                case { it.startsWith("daemonset.extentions") }:
+                case ~/^daemonset.extentions.+$/:
                     log.debug("Found k8s object $it")
                     objectsToValidate.add("daemonset ${extractObject(it)}")
                     break
-                case { it.startsWith("job.batch") }:
+                case ~/^job.batch.+$/:
                     log.debug("Found k8s object $it")
                     objectsToValidate.add("job ${extractObject(it)}")
                     break
