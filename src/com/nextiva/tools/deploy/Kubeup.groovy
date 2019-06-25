@@ -155,6 +155,7 @@ class Kubeup extends DeployTool {
 
         List objectsToValidate = []
         installOutput.split("\n").each {
+            log.debug("parse object $it")
             switch (it) {
                 case { it.startsWith("deployment.apps") }:
                     log.debug("Found k8s object $it")
