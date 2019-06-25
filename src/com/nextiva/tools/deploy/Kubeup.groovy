@@ -12,7 +12,7 @@ class Kubeup extends DeployTool {
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
-        if (!initialized) {
+        if (!isInitialized()) {
             log.error("Kubeup is not initialized, aborting...")
             throw new AbortException("Kubeup is not installed, aborting...")
         }
@@ -52,7 +52,6 @@ class Kubeup extends DeployTool {
         try {
             script.sh "kubeup --version"
         } catch (e) {
-            log.error("kubeup is not installed, aborting... $e")
             throw new AbortException("kubeup is not installed, aborting... $e")
         }
         log.debug("kubeupInstall complete")
@@ -61,12 +60,15 @@ class Kubeup extends DeployTool {
     def kubedogInstall() {
         log.debug("kubedogInstall start")
         try {
-            script.sh "kubedog version"
+            String output = shWithOutput(script, "kubedog version")
+            log.debug("$output")
         } catch (e) {
             log.warn("kubedog is not installed, going to install kubedog...")
-            script.sh "curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog"
-            script.sh "chmod +x $toolHome/kubedog"
-            script.sh "kubedog version"
+            String out = shWithOutput(script, """
+            curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
+            chmod +x $toolHome/kubedog
+            kubedog version""")
+            log.debug("$out")
             script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
         }
         log.debug("kubedogInstall complete")

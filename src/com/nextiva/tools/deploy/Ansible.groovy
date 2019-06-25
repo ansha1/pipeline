@@ -1,5 +1,7 @@
 package com.nextiva.tools.deploy
 
+import static com.nextiva.utils.GitUtils.clone
+
 class Ansible extends DeployTool {
 
     Ansible(Script script, Map configuration) {
@@ -13,12 +15,19 @@ class Ansible extends DeployTool {
 //                      "inventoryPath": 'ansible/role-based_playbooks/inventory/java-app/dev',
 //                      "playbookPath" : 'ansible/role-based_playbooks/java-app.yml',
 //                      "ansibleArgs"  : 'args']
+    void init() {
+        log.debug("start init $name tool")
+        log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
+        clone(script, repository, branch, toolHome)
+        log.debug("clone complete")
+        log.debug("init complete")
+        initialized = true
+    }
 
     Boolean deploy() {
         environments.each {
             script.stage("ansible: $it.environmentName") {
-                script.container("ansible") {
-                    def repoDir = script.prepareRepoDir(repository, branch)
+                script.container(getName()) {
                     script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
                 }
             }

@@ -14,7 +14,6 @@ import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 class ToolFactory {
     Logger log = new Logger(this)
 
-
     Tool build(Script script, Map toolConfig) {
         switch (toolConfig.get("name")) {
             case "docker":
@@ -45,6 +44,9 @@ class ToolFactory {
         String tool = toolConfig.get("name")
         log.debug("got tool $tool")
         Map defaultConfig = DEFAULT_TOOL_CONFIGURATION.get(tool)
+        if (defaultConfig = null) {
+            throw new AbortException("There is no configuration for this tool $tool, aborting...")
+        }
         log.debug("got default tool config", defaultConfig)
         Map result = defaultConfig << toolConfig
         log.debug("toolСonfig after merge", result)

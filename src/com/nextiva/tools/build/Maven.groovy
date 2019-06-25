@@ -1,10 +1,9 @@
 package com.nextiva.tools.build
 
 import com.nextiva.SharedJobsStaticVars
-import com.nextiva.utils.Logger
+import hudson.AbortException
 
 class Maven extends BuildTool {
-    Logger log = new Logger(this)
 
     Maven(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
@@ -25,7 +24,7 @@ class Maven extends BuildTool {
     }
 
     @Override
-    void setVersion(String version) {
+    Boolean setVersion(String version) {
         execute("mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false")
     }
 
@@ -35,7 +34,7 @@ class Maven extends BuildTool {
             def rootPom = script.readMavenPom file: "pom.xml"
             def version = rootPom.version
             if (script.env.BRANCH_NAME ==~ /^(dev|develop)$/ && version != null && !version.contains("SNAPSHOT")) {
-                script.error 'Java projects built from the develop/dev branch require a version number that contains SNAPSHOT'
+                throw new AbortException("Java projects built from the develop/dev branch require a version number that contains SNAPSHOT")
             }
             return version
         }

@@ -7,12 +7,12 @@ abstract class DeployTool implements Serializable, Tool {
 
     Script script
     String name
-    String toolHome
     Logger log
+    String toolHome
+    Boolean initialized = false
 
     String repository
     String branch
-    Boolean initialized = false
 
     DeployTool(Script script, Map deployToolConfig) {
         this.script = script
@@ -21,6 +21,14 @@ abstract class DeployTool implements Serializable, Tool {
         this.repository = deployToolConfig.get("repository")
         this.branch = deployToolConfig.get("branch")
         this.log = new Logger(this)
+    }
+
+    String getName(){
+        return name
+    }
+
+    Boolean isInitialized(){
+        return initialized
     }
 
     Boolean health() {

@@ -1,17 +1,14 @@
 package com.nextiva.tools.build
 
-import com.nextiva.utils.Logger
-
-class Npm extends BuildTool{
-    Logger log = new Logger(this)
+class Npm extends BuildTool {
 
     Npm(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
 
     @Override
-    void setVersion(String version) {
-
+    Boolean setVersion(String version) {
+        return true
     }
 
     @Override

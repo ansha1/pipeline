@@ -3,19 +3,18 @@ package com.nextiva.tools.build
 import com.nextiva.utils.Logger
 
 class Docker extends BuildTool{
-    Logger log = new Logger(this)
 
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
 
     @Override
-    void setVersion(String version) {
-
+    String getVersion() {
+        return null
     }
 
     @Override
-    String getVersion() {
+    Boolean setVersion(String version) {
         return null
     }
 

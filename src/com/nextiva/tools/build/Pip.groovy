@@ -1,22 +1,39 @@
 package com.nextiva.tools.build
 
-import com.nextiva.utils.Logger
+import hudson.AbortException
 
-class Pip extends BuildTool{
-    Logger log = new Logger(this)
+import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+
+class Pip extends BuildTool {
 
     Pip(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
 
     @Override
-    void setVersion(String version) {
-
+    Boolean setVersion(String version) {
+        String propsToWrite = ''
+        def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
+        buildProperties.version = version
+        buildProperties.each {
+            propsToWrite = propsToWrite + it.toString() + '\n'
+        }
+        script.writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
+        return true
     }
 
     @Override
     String getVersion() {
-        return null
+        if (script.fileExists(BUILD_PROPERTIES_FILENAME)) {
+            def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
+            if (buildProperties.version) {
+                return buildProperties.version
+            } else {
+                throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+            }
+        } else {
+            throw new AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
+        }
     }
 
     @Override
