@@ -127,24 +127,14 @@ def call(body) {
                             stage('Release build version verification') {
 
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
-
-                                    // Old implementation with non-interactive notification
-                                    // It's here to quickly switch to it if jenkins bot doesn't work.
-                                    /*
-                                    approve.sendToPrivate("Package ${jobConfig.APP_NAME} with version ${jobConfig.BUILD_VERSION} " +
-                                            "already exists in Nexus. " +
-                                            "Do you want to increase a patch version and continue the process?",
-                                            common.getCurrentUserSlackId(), jobConfig.branchPermissions)
-                                     */
-
                                     try {
                                         timeout(time: 15, unit: 'MINUTES') {
-                                            bot.getJenkinsApprove("@${common.getCurrentUserSlackId()}", "Approve", "Decline",
-                                                    "Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
+                                            approve("Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
                                                     "Package *${jobConfig.APP_NAME}* with version *${jobConfig.BUILD_VERSION}* " +
-                                                            "already exists in Nexus. \n" +
-                                                            "Do you want to increase a patch version and continue the process?"
-                                                    , "${BUILD_URL}input/", jobConfig.branchPermissions)
+                                                    "already exists in Nexus. \n" +
+                                                    "Do you want to increase a patch version and continue the process?",
+                                                    "@${common.getCurrentUserSlackId()}",
+                                                    "Approve", "Decline", jobConfig.branchPermissions)
                                         }
                                     } catch (e) {
                                         currentBuild.rawBuild.result = Result.ABORTED
