@@ -64,6 +64,7 @@ class Utils {
             startedByGivenCause = true
             echo "Found build cause ${detectedCause}"
         }
+        return startedByGivenCause
     }
 
     static String collectionToString(def collection) {

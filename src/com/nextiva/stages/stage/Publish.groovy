@@ -13,7 +13,7 @@ class Publish extends Stage {
         Map build = configuration.get("build")
         build.each { toolName, toolConfig ->
             if (toolConfig.get("publishArtifact")) {
-                withStage("${toolName} ${stageName()}") {
+                withStage("${toolName} ${stageName}") {
                     BuildTool tool = toolConfig.get("instance")
                     try {
                         tool.publish()

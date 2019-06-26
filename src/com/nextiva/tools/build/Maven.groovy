@@ -1,6 +1,6 @@
 package com.nextiva.tools.build
 
-import com.nextiva.SharedJobsStaticVars
+import static com.nextiva.SharedJobsStaticVars.SONAR_QUBE_ENV
 import hudson.AbortException
 
 class Maven extends BuildTool {
@@ -12,7 +12,7 @@ class Maven extends BuildTool {
     @Override
     void sonarScan() {
         execute {
-            script.withSonarQubeEnv(SharedJobsStaticVars.SONAR_QUBE_ENV) {
+            script.withSonarQubeEnv(SONAR_QUBE_ENV) {
                 sh 'mvn sonar:sonar'
             }
         }

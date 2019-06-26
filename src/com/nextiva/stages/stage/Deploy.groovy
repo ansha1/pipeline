@@ -13,18 +13,18 @@ class Deploy extends Stage {
     def stageBody() {
         Map deploy = configuration.get("build")
         deploy.each { toolName, toolConfig ->
-            withStage("${toolName} ${stageName()}") {
+            withStage("${toolName} ${stageName}") {
                 DeployTool tool = toolConfig.get("instance")
                 try {
                     tool.deploy()
                     def postDeployCommands = toolConfig.get("postDeployCommands")
                     if (postDeployCommands != null) {
-                        withStage("${toolName} ${stageName()} postDeploy") {
+                        withStage("${toolName} ${stageName} postDeploy") {
                             shOrClosure(script, postDeployCommands)
                         }
                     }
                 } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName()}:", e)
+                    log.error("Error when executing ${toolName} ${stageName}:", e)
                     throw e
                 }
             }

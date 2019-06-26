@@ -10,14 +10,14 @@ class Build extends Stage {
     def stageBody() {
         Map build = configuration.get("build")
         build.each {toolName, toolConfig ->
-            withStage("${toolName} ${stageName()}") {
+            withStage("${toolName} ${stageName}") {
                 BuildTool tool = toolConfig.get("instance")
                 try {
                     def buildCommands = toolConfig.get("buildCommands")
                     log.debug("executing ", buildCommands)
                     tool.execute(buildCommands)
                 } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName()}:", e)
+                    log.error("Error when executing ${toolName} ${stageName}:", e)
                     throw e
                 } finally {
                     def postBuildCommands = toolConfig.get("postBuildCommands")

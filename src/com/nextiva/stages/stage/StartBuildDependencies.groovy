@@ -30,7 +30,7 @@ class StartBuildDependencies extends Stage {
                 }
             }
         } catch (e) {
-            log.error("Error when executing ${stageName()}:", e)
+            log.error("Error when executing ${stageName}:", e)
             throw e
         }
     }

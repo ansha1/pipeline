@@ -24,15 +24,17 @@ class Pip extends BuildTool {
 
     @Override
     String getVersion() {
-        if (script.fileExists(BUILD_PROPERTIES_FILENAME)) {
-            def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
-            if (buildProperties.version) {
-                return buildProperties.version
+        execute{
+            if (script.fileExists(BUILD_PROPERTIES_FILENAME)) {
+                def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
+                if (buildProperties.version) {
+                    return buildProperties.version
+                } else {
+                    throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+                }
             } else {
-                throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
+                throw new AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
             }
-        } else {
-            throw new AbortException("File ${BUILD_PROPERTIES_FILENAME} not found.")
         }
     }
 

@@ -18,20 +18,17 @@ abstract class Stage implements Serializable {
     }
 
     def execute() {
-        withStage(){
+        withStage(stageName){
             stageBody()
         }
     }
 
     abstract def stageBody()
 
-    String stageName() {
-        return stageName
-    }
 
-    def withStage(def body){
+    def withStage(String stageName, def body){
         log.debug("Start executing $stageName stage")
-        script.stage(stageName()) {
+        script.stage(stageName) {
             body()
         }
         log.debug("Execuiton $stageName stage complete")

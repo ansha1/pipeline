@@ -12,7 +12,7 @@ class VerifyArtifactVersionInNexus extends Stage {
         Map build = configuration.get("build")
 
         build.each { toolName, toolConfig ->
-            withStage("${toolName} ${stageName()}") {
+            withStage("${toolName} ${stageName}") {
                 BuildTool tool = toolConfig.get("instance")
                 try {
                     log.debug("checking artifact availability for ${toolName}")
@@ -47,7 +47,7 @@ class VerifyArtifactVersionInNexus extends Stage {
                         log.info("Current artifact version is not exist in the Nexus, continue...")
                     }
                 } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName()}:", e)
+                    log.error("Error when executing ${toolName} ${stageName}:", e)
                     throw e
                 }
             }

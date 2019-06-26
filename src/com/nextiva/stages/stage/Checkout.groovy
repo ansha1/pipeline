@@ -18,7 +18,7 @@ class Checkout extends Stage {
                     userRemoteConfigs                : script.scm.userRemoteConfigs
             ])
         } catch (e) {
-            log.error("Error when executing ${stageName()}:", e)
+            log.error("Error when executing ${stageName}:", e)
             throw e
         }
     }
