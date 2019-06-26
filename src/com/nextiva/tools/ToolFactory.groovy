@@ -40,7 +40,7 @@ class ToolFactory {
         }
     }
 
-    Map mergeWithDefaults(Map toolConfig) {
+    void mergeWithDefaults(Map toolConfig) {
         String tool = toolConfig.get("name")
         log.debug("got tool $tool")
         Map defaultConfig = DEFAULT_TOOL_CONFIGURATION.get(tool)
@@ -48,8 +48,7 @@ class ToolFactory {
             throw new AbortException("There is no configuration for this tool $tool, aborting...")
         }
         log.debug("got default tool config", defaultConfig)
-        Map result = defaultConfig << toolConfig
-        log.debug("toolСonfig after merge", result)
-        return result
+        toolConfig << (defaultConfig + toolConfig)
+        log.debug("toolСonfig after merge", toolConfig)
     }
 }

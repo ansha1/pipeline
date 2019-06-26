@@ -147,13 +147,12 @@ class Config implements Serializable {
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
             toolConfig.put("name", tool)
-            toolConfig = toolFactory.mergeWithDefaults(toolConfig)
+            toolFactory.megeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
         }
         log.trace("Built tools after configuring:${buildTools.toString()}")
-        configuration.put("build", buildTools)
         log.debug("complete configureBuildTools()")
     }
 
@@ -173,13 +172,12 @@ class Config implements Serializable {
             deployTools.each { tool, toolConfig ->
                 log.debug("got deploy tool $tool")
                 toolConfig.put("name", tool)
-                toolConfig = toolFactory.mergeWithDefaults(toolConfig)
+                toolFactory.mergeWithDefaults(toolConfig)
                 putSlaveContainerResource(tool, toolConfig)
                 Tool instance = toolFactory.build(script, toolConfig)
                 toolConfig.put("instance", instance)
             }
             log.trace("Deploy tools after configuring:${deployTools.toString()}")
-            configuration.put("deploy", deployTools)
             configuration.put("isDeployEnabled", true)
         } else {
             log.info("Deploy tools is undefined isDeployEnabled=false")
