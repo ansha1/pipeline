@@ -147,7 +147,7 @@ class Config implements Serializable {
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
             toolConfig.put("name", tool)
-            toolFactory.megeWithDefaults(toolConfig)
+            toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
