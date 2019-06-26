@@ -7,8 +7,8 @@ import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
 class Kubeup extends DeployTool {
-    Kubeup(Script script, Map configuration) {
-        super(script, configuration)
+    Kubeup(Script script, Map deployToolConfig) {
+        super(script, deployToolConfig)
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
