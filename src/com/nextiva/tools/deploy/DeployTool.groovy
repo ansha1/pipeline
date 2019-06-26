@@ -21,6 +21,7 @@ abstract class DeployTool implements Serializable, Tool {
         this.repository = deployToolConfig.get("repository")
         this.branch = deployToolConfig.get("branch")
         this.log = new Logger(this)
+        log.debug("created tool name: ${this.name}, toolHome:${this.toolHome}, repository: ${this.repository}, branch: ${this.branch}")
     }
 
     String getName(){
