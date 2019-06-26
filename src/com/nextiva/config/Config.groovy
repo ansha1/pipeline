@@ -102,7 +102,7 @@ class Config implements Serializable {
         log.debug("start configureSlave()")
         Map containerResources = [:]
         Map jenkinsContainer = configuration.get("jenkinsContainer", ["name": "jnlp"])
-        jenkinsContainer = toolFactory.mergeWithDefaults(jenkinsContainer)
+        toolFactory.mergeWithDefaults(jenkinsContainer)
         log.debug("added jenkins container")
         containerResources.put("jnlp", jenkinsContainer)
         Map slaveConfiguration = ["containerResources": containerResources]
@@ -128,7 +128,7 @@ class Config implements Serializable {
         Boolean isJobHasDependencies = false
         if (configuration.containsKey("dependencies")) {
             Map kubeup = ["name": "kubeup"]
-            kubeup = toolFactory.mergeWithDefaults(kubeup)
+            toolFactory.mergeWithDefaults(kubeup)
             putSlaveContainerResource("kubeup", kubeup)
             isJobHasDependencies = true
         }
