@@ -22,15 +22,11 @@ abstract class BuildTool implements Serializable, Tool {
 
     Boolean execute(def command) {
         script.dir(pathToSrc) {
-            log.debug("executing command in container ${getName()}")
+            log.debug("executing command in container ${name}")
             script.container(getName()) {
                 shOrClosure(script, command)
             }
         }
-    }
-
-    String getName() {
-        return name
     }
 
 
