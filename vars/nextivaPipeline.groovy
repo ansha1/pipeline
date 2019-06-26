@@ -1,6 +1,7 @@
 import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
+import hudson.model.Result
 
 def call(body) {
     Logger.init(this, env.JOB_LOG_LEVEL)
@@ -37,7 +38,8 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
         }
     } catch (t) {
         //some error handling
-        currentBuild.result = "FAILED"
+//        currentBuild.result = "FAILED"
+        currentBuild.rawBuild.result = Result.FAILURE
         log.error("error in the pipeline execution", t)
     } finally {
         //test results collecting

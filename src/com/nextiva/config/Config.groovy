@@ -152,6 +152,8 @@ class Config implements Serializable {
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
         }
+        log.trace("Built tools after configuring:${buildTools.toString()}")
+        configuration.put("build", buildTools)
         log.debug("complete configureBuildTools()")
     }
 
@@ -176,6 +178,8 @@ class Config implements Serializable {
                 Tool instance = toolFactory.build(script, toolConfig)
                 toolConfig.put("instance", instance)
             }
+            log.trace("Deploy tools after configuring:${buildTools.toString()}")
+            configuration.put("deploy", deployTools)
             configuration.put("isDeployEnabled", true)
         } else {
             log.info("Deploy tools is undefined isDeployEnabled=false")
