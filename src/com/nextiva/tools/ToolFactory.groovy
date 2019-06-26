@@ -44,7 +44,7 @@ class ToolFactory {
         String tool = toolConfig.get("name")
         log.debug("got tool $tool")
         Map defaultConfig = DEFAULT_TOOL_CONFIGURATION.get(tool)
-        if (defaultConfig = null) {
+        if (defaultConfig == null) {
             throw new AbortException("There is no configuration for this tool $tool, aborting...")
         }
         log.debug("got default tool config", defaultConfig)
