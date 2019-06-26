@@ -11,13 +11,17 @@ class UnitTest extends Stage {
     @Override
     def stageBody() {
         Map build = configuration.get("build")
-        build.each {toolName, toolConfig ->
+        build.each { toolName, toolConfig ->
             withStage("${toolName} ${stageName}") {
                 BuildTool tool = toolConfig.get("instance")
                 try {
                     def unitTestCommands = toolConfig.get("unitTestCommands")
-                    log.debug("executing ", unitTestCommands)
-                    tool.execute(unitTestCommands)
+                    if (unitTestCommands != null) {
+                        log.debug("executing ", unitTestCommands)
+                        tool.execute(unitTestCommands)
+                    } else {
+                        log.debug("No unit test command provided for the current tool $toolName")
+                    }
                 } catch (e) {
                     log.error("Error when executing ${toolName} ${stageName}:", e)
                     throw e
