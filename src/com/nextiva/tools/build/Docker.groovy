@@ -2,7 +2,7 @@ package com.nextiva.tools.build
 
 import com.nextiva.utils.Logger
 
-class Docker extends BuildTool{
+class Docker extends BuildTool implements Build{
 
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
