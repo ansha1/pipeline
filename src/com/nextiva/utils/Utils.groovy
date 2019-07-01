@@ -1,7 +1,10 @@
 package com.nextiva.utils
 
 import com.cloudbees.groovy.cps.NonCPS
+import hudson.AbortException
 import jenkins.model.Jenkins
+
+import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 
 class Utils {
 
@@ -74,6 +77,17 @@ class Utils {
             toString += "[$k]: $v\n"
         }
         return toString
+    }
+
+    static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
+        def property = null
+        if (script.fileExists(propertyFilePath)) {
+            def buildProperties = script.readProperties file: propertyFilePath
+            property = buildProperties.get(propertyName)
+        } else {
+            throw new AbortException("File ${propertyFilePath} not found.")
+        }
+        return property
     }
 
 }

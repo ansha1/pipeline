@@ -11,18 +11,9 @@ class Publish extends Stage {
     @Override
     def stageBody() {
         Map build = configuration.get("build")
-        build.each { toolName, toolConfig ->
-            if (toolConfig.get("publishArtifact")) {
-                withStage("${toolName} ${stageName}") {
-                    BuildTool tool = toolConfig.get("instance")
-                    try {
-                        tool.publish()
-                    } catch (e) {
-                        log.error("Error when publishing with  ${toolName}:", e)
-                        throw e
-                    }
-                }
-            }
+        build.each {
+            BuildTool tool = it.get("instance")
+            tool.publish()
         }
     }
 }

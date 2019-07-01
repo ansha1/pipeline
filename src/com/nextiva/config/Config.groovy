@@ -86,10 +86,11 @@ class Config implements Serializable {
         log.debug("Job properties", props)
         configuration.put("jobProperties", props)
 
-
         log.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
         if (props.deployVersion) {
+            log.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as GLOBAL_VERSION.")
+            script.GLOBAL_VERSION = props.deployVersion
             deployOnly = true
         }
         log.debug("set deployOnly: $deployOnly")
@@ -147,6 +148,7 @@ class Config implements Serializable {
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
             toolConfig.put("name", tool)
+            toolConfig.put("appName",  configuration.get("appName"))
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)

@@ -13,12 +13,7 @@ class SonarScan extends Stage {
         Map build = configuration.get("build")
         build.each {
             BuildTool tool = it.get("instance")
-            try {
-                tool.sonarScan()
-            } catch (e) {
-                log.error("Error when executing ${name()}:", e)
-                throw e
-            }
+            tool.sonarScan()
         }
     }
 }

@@ -3,7 +3,7 @@ package com.nextiva.stages.stage
 import com.nextiva.tools.build.BuildTool
 
 
-class UnitTest extends Stage {
+class UnitTest extends BuildStage {
     UnitTest(Script script, Map configuration) {
         super(script, configuration)
     }
@@ -11,28 +11,9 @@ class UnitTest extends Stage {
     @Override
     def stageBody() {
         Map build = configuration.get("build")
-        build.each { toolName, toolConfig ->
-            withStage("${toolName} ${stageName}") {
-                BuildTool tool = toolConfig.get("instance")
-                try {
-                    def unitTestCommands = toolConfig.get("unitTestCommands")
-                    if (unitTestCommands != null) {
-                        log.debug("executing ", unitTestCommands)
-                        tool.execute(unitTestCommands)
-                    } else {
-                        log.debug("No unit test command provided for the current tool $toolName")
-                    }
-                } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName}:", e)
-                    throw e
-                } finally {
-                    def postUnitTestCommands = toolConfig.get("postUnitTestCommands")
-                    if (postUnitTestCommands != null) {
-                        log.debug("executing ", postUnitTestCommands)
-                        tool.execute(postUnitTestCommands)
-                    }
-                }
-            }
+        build.each {
+            BuildTool tool = it.get("instance")
+            tool.unitTest()
         }
     }
 }

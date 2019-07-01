@@ -20,7 +20,7 @@ abstract class Stage implements Serializable {
 
     def execute() {
         log.trace("Executing stage stageName:${stageName} with configuration ${configuration}")
-        withStage(stageName){
+        withStage(stageName) {
             stageBody()
         }
     }
@@ -28,40 +28,16 @@ abstract class Stage implements Serializable {
     abstract def stageBody()
 
 
-    def withStage(String stageName, def body){
-        log.debug("Start executing $stageName stage")
-        script.stage(stageName) {
-            body()
-        }
-        log.debug("Execuiton $stageName stage complete")
-    }
-
-    def buildToolsCommandExecutor(Stage stage, Map toolMap, String commandsKey, String postCommandsKey){
-        tooMap.each { toolName, toolConfig ->
-            def commands = toolConfig.get(commandsKey)
-            if (commands != null) {
-                withStage("${stageName}: ${toolName}") {
-                    BuildTool tool = toolConfig.get("instance")
-                    try {
-                        log.debug("executing ", commands)
-                        tool.execute(commands)
-                    } catch (e) {
-                        log.error("Error when executing ${stageName} ${toolName} : ${commands}", e)
-                        throw e
-                    } finally {
-                        def postCommands = toolConfig.get(postCommandsKey)
-                        if (postCommands != null) {
-                            try {
-                                log.debug("executing ", postCommands)
-                                tool.execute(postCommands)
-                            } catch (e) {
-                                log.error("Error when executing ${stageName} ${toolName} : ${postCommands}", e)
-                                throw e
-                            }
-                        }
-                    }
-                }
+    def withStage(String stageName, def body) {
+        try {
+            log.debug("Start executing $stageName stage")
+            script.stage(stageName) {
+                body()
             }
+            log.debug("Execuiton $stageName stage complete")
+        } catch (e) {
+            log.error("Error when executing ${stageName}:", e)
+            throw e
         }
     }
 }

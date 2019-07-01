@@ -11,16 +11,9 @@ class SecurityScan extends Stage {
     @Override
     def stageBody() {
         Map build = configuration.get("build")
-        build.each { toolName, toolConfig ->
-            withStage("${toolName} ${stageName}") {
-                BuildTool tool = toolConfig.get("instance")
-                try {
-                    tool.securityScan()
-                } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName}:", e)
-                    throw e
-                }
-            }
+        build.each {
+            BuildTool tool = it.get("instance")
+            tool.securityScan()
         }
     }
 }

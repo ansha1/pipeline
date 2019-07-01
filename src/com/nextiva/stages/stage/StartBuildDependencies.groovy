@@ -13,26 +13,21 @@ class StartBuildDependencies extends Stage {
 
     @Override
     def stageBody() {
-        try {
-            Map<String, String> dependencies = configuration.get("dependencies")
-            ToolFactory toolFactory = new ToolFactory()
-            Map toolMap = ["name": "kubeup"]
-            toolFactory.mergeWithDefaults(toolMap)
-            Kubeup kubeup = toolFactory.build(script, toolMap)
-            String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
-            kubeup.init(clusterDomain)
-            dependencies.each { cloudApp, version ->
-                String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
-                //TODO: change configset
-                String TEST_CONFIGSET = "test"
-                String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
-                script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
-                    kubeup.install(cloudApp, version, namespace, TEST_CONFIGSET, false)
-                }
+        Map<String, String> dependencies = configuration.get("dependencies")
+        ToolFactory toolFactory = new ToolFactory()
+        Map toolMap = ["name": "kubeup"]
+        toolFactory.mergeWithDefaults(toolMap)
+        Kubeup kubeup = toolFactory.build(script, toolMap)
+        String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
+        kubeup.init(clusterDomain)
+        dependencies.each { cloudApp, version ->
+            String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
+            //TODO: change configset
+            String TEST_CONFIGSET = "test"
+            String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
+            script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
+                kubeup.install(cloudApp, version, namespace, TEST_CONFIGSET, false)
             }
-        } catch (e) {
-            log.error("Error when executing ${stageName}:", e)
-            throw e
         }
     }
 }
