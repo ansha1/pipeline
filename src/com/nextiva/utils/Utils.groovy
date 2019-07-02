@@ -89,7 +89,7 @@ class Utils {
         return property
     }
 
-    static void setPropertyToFile(Script script, String propertyFilePath, String propertyName, String value){
+    static void setPropertyToFile(Script script, String propertyFilePath, String propertyName, String value) {
         String propsToWrite = ''
         if (script.fileExists(propertyFilePath)) {
             def buildProperties = script.readProperties file: propertyFilePath
@@ -103,32 +103,33 @@ class Utils {
         }
     }
 
-    static String getGlobalVersion(){
+    static String getGlobalVersion() {
         Global global = getGlobal()
-        if (global == null){
+        if (global == null) {
             throw new AbortException("Configuration is not initialized, aborting...")
         }
         return global.getGlobalVersion()
     }
 
-    static String getGlobalAppName(){
+    @NonCPS
+    static String getGlobalAppName() {
         Global global = getGlobal()
-        if (global == null){
+        if (global == null) {
             throw new AbortException("Configuration is not initialized, aborting...")
         }
         return global.getAppName()
     }
 
 
-    static void setGlobalVersion(String version){
-        Global global =getGlobal()
-        if (global == null){
+    static void setGlobalVersion(String version) {
+        Global global = getGlobal()
+        if (global == null) {
             throw new AbortException("Configuration is not initialized, aborting...")
         }
         global.setGlobalVersion(version)
     }
 
-    static Global getGlobal(){
+    static Global getGlobal() {
         return Global.instance
     }
 }
