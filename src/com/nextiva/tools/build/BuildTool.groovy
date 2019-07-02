@@ -4,6 +4,7 @@ import com.nextiva.tools.Tool
 import com.nextiva.utils.Logger
 
 import static com.nextiva.utils.Utils.shOrClosure
+import static com.nextiva.utils.Utils.getGlobalAppName
 
 abstract class BuildTool implements Serializable, Tool {
 
@@ -27,7 +28,7 @@ abstract class BuildTool implements Serializable, Tool {
         this.script = script
         //Try to get sh command or closure from configuration and replace in with default commands if exist
         this.name = buildToolConfig.get("name") ?: this.name
-        this.name = buildToolConfig.get("appName") ?: this.appName
+        this.name = getGlobalAppName()
         this.pathToSrc = buildToolConfig.get("pathToSrc") ?: this.pathToSrc
         this.buildCommands = buildToolConfig.get("buildCommands") ?: this.buildCommands
         this.postBuildCommands = buildToolConfig.get("postBuildCommands") ?: this.postBuildCommands

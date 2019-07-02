@@ -61,9 +61,11 @@ class Config implements Serializable {
 
     void setDefaults() {
         log.debug("start setDefaults()")
-        Global global = getGlobal()
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
+        Global global = getGlobal()
+        String appName = configuration.get("appName")
+        global.setAppName(appName)
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
         String branchingModel = configuration.get("branchingModel", "gitflow")
         global.setBranchingModel(branchingModel)
@@ -154,7 +156,6 @@ class Config implements Serializable {
         buildTools.each { tool, toolConfig ->
             log.debug("got build tool $tool")
             toolConfig.put("name", tool)
-            toolConfig.put("appName",  configuration.get("appName"))
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)

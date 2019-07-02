@@ -111,6 +111,15 @@ class Utils {
         return global.getGlobalVersion()
     }
 
+    static String getGlobalAppName(){
+        Global global = getGlobal()
+        if (global == null){
+            throw new AbortException("Configuration is not initialized, aborting...")
+        }
+        return global.getAppName()
+    }
+
+
     static void setGlobalVersion(String version){
         Global global =getGlobal()
         if (global == null){
