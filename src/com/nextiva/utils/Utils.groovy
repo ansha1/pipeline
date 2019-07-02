@@ -1,10 +1,9 @@
 package com.nextiva.utils
 
 import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.config.Global
 import hudson.AbortException
 import jenkins.model.Jenkins
-
-import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 
 class Utils {
 
@@ -80,7 +79,7 @@ class Utils {
     }
 
     static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
-        def property = null
+        def property
         if (script.fileExists(propertyFilePath)) {
             def buildProperties = script.readProperties file: propertyFilePath
             property = buildProperties.get(propertyName)
@@ -90,4 +89,37 @@ class Utils {
         return property
     }
 
+    static void setPropertyToFile(Script script, String propertyFilePath, String propertyName, String value){
+        String propsToWrite = ''
+        if (script.fileExists(propertyFilePath)) {
+            def buildProperties = script.readProperties file: propertyFilePath
+            buildProperties.put(propertyName) = value
+            buildProperties.each {
+                propsToWrite = propsToWrite + it.toString() + '\n'
+            }
+            script.writeFile file: propertyFilePath, text: propsToWrite
+        } else {
+            throw new AbortException("File ${propertyFilePath} not found.")
+        }
+    }
+
+    static String getGlobalVersion(){
+        Global global = getGlobal()
+        if (global == null){
+            throw new AbortException("Configuration is not initialized, aborting...")
+        }
+        return global.getGlobalVersion()
+    }
+
+    static void setGlobalVersion(String version){
+        Global global =getGlobal()
+        if (global == null){
+            throw new AbortException("Configuration is not initialized, aborting...")
+        }
+        global.setGlobalVersion(version)
+    }
+
+    static Global getGlobal(){
+        return Global.instance
+    }
 }

@@ -25,3 +25,7 @@ def call(String appName, String buildVersion, String deployEnvironment = 'docker
 
     sh "docker rmi ${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${customImage.id} ${NEXTIVA_DOCKER_REGISTRY}/${appName}:latest"
 }
+
+
+
+

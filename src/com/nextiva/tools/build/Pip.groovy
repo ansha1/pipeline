@@ -4,6 +4,7 @@ import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static com.nextiva.utils.Utils.getPropertyFromFile
+import static com.nextiva.utils.Utils.setPropertyToFile
 
 class Pip extends BuildTool {
 
@@ -21,18 +22,9 @@ class Pip extends BuildTool {
     }
 
     @Override
-    Boolean setVersion(String version) {
+    void setVersion(String version) {
         execute {
-            log.debug("Set this version:$version as GLOBAL_VERSION")
-            script.GLOBAL_VERSION = version
-            String propsToWrite = ''
-            def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
-            buildProperties.version = version
-            buildProperties.each {
-                propsToWrite = propsToWrite + it.toString() + '\n'
-            }
-            script.writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
-            return true
+            setPropertyToFile(script, BUILD_PROPERTIES_FILENAME, "version", version)
         }
     }
 
@@ -42,10 +34,6 @@ class Pip extends BuildTool {
             String version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
             if (version == null) {
                 throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
-            }
-            if (script.GLOBAL_VERSION == null) {
-                log.debug("Set this version:$version as GLOBAL_VERSION")
-                script.GLOBAL_VERSION = version
             }
             return version
         }

@@ -1,14 +1,23 @@
 package com.nextiva.tools.build
 
+import com.nextiva.config.Global
 import hudson.AbortException
 
+import java.util.regex.Pattern
+
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY
+import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
+import static com.nextiva.utils.Utils.getGlobal
 import static com.nextiva.utils.Utils.getPropertyFromFile
+import static com.nextiva.utils.Utils.getGlobalVersion
+import static com.nextiva.utils.Utils.setPropertyToFile
+import static com.nextiva.utils.Utils.shWithOutput
 
 class Docker extends BuildTool {
-
     def publishCommands = {
-        //some publish commands
+        Boolean tagLatest = isTagLatest()
+        buildPublish(script, NEXTIVA_DOCKER_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
     }
 
     Docker(Script script, Map toolConfiguration) {
@@ -21,12 +30,12 @@ class Docker extends BuildTool {
             String version = null
             try {
                 version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
-            } catch (e){
+            } catch (e) {
                 log.debug("$BUILD_PROPERTIES_FILENAME not found for the Docker build tool, e:", e)
             }
             if (version == null) {
                 log.debug("Try to get version from GLOBAL version")
-                version = script.GLOBAL_VERSION
+                version = getGlobalVersion()
             }
             if (version == null) {
                 throw new AbortException("Version for Docker is undefined, please define it in $BUILD_PROPERTIES_FILENAME or by another build tool via GLOBAL version")
@@ -35,20 +44,13 @@ class Docker extends BuildTool {
     }
 
     @Override
-    Boolean setVersion(String version) {
+    void setVersion(String version) {
         execute {
-            String propsToWrite = ''
-            if (script.fileExists(BUILD_PROPERTIES_FILENAME)) {
-                def buildProperties = script.readProperties file: BUILD_PROPERTIES_FILENAME
-                buildProperties.version = version
-                buildProperties.each {
-                    propsToWrite = propsToWrite + it.toString() + '\n'
-                }
-                script.writeFile file: BUILD_PROPERTIES_FILENAME, text: propsToWrite
-            } else {
-                log.warn("File ${BUILD_PROPERTIES_FILENAME} not found, can not set version")
+            try {
+                setPropertyToFile(script, BUILD_PROPERTIES_FILENAME, "version", version)
+            } catch (e) {
+                log.warn("File ${BUILD_PROPERTIES_FILENAME} not found, can't set version e:", e)
             }
-            return true
         }
     }
 
@@ -70,4 +72,31 @@ class Docker extends BuildTool {
             return script.nexus.isDockerPackageExists(appName, getVersion())
         }
     }
+
+    //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
+    def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath, String buildLocation, Boolean tagLatest = false) {
+        script.docker.withRegistry(registry, registryCredentials) {
+            def image = script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
+            image.push()
+            if (tagLatest) {
+                image.push("latest")
+                String out = shWithOutput(script, "docker rmi ${registry}/${appName}:latest")
+                log.debug("$out")
+            }
+            String out = shWithOutput(script, "docker rmi ${image.id} ${registry}/${appName}:${image.id}")
+            log.debug("$out")
+        }
+    }
+
+    static Boolean isTagLatest() {
+        Global global = getGlobal()
+        String branchName = global.getBranchName()
+        String branchingModel = global.getBranchingModel()
+        Map chooser = ["gitflow"   : /^(dev|develop)$/,
+                       "trunkbased": "master"]
+
+        Pattern branchPattern =Pattern.compile(chooser.get(branchingModel))
+        return branchName ==~ branchPattern
+    }
 }
+

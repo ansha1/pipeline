@@ -7,8 +7,8 @@ class Npm extends BuildTool {
     }
 
     @Override
-    Boolean setVersion(String version) {
-        return true
+    void setVersion(String version) {
+        // TODO: implement version
     }
 
     @Override

@@ -10,6 +10,9 @@ import com.nextiva.tools.ToolFactory
 import com.nextiva.utils.Logger
 import hudson.AbortException
 
+import static com.nextiva.utils.Utils.getGlobal
+import static com.nextiva.utils.Utils.setGlobalVersion
+
 class Config implements Serializable {
     // used to store all parameters passed into config
     Map configuration = [:]
@@ -58,10 +61,14 @@ class Config implements Serializable {
 
     void setDefaults() {
         log.debug("start setDefaults()")
+        Global global = getGlobal()
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
         //TODO: move branching model(gitflow and trunkbased) to the class or enum
-        configuration.get("branchingModel", "gitflow")
+        String branchingModel = configuration.get("branchingModel", "gitflow")
+        global.setBranchingModel(branchingModel)
+        configuration.put("branchName", script.env.BRANCH_NAME)
+        global.setBranchName(script.env.BRANCH_NAME)
         configuration.get("jobTimeoutMinutes", "60")
         configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
             toolConfiguration.containsKey("unitTestCommands")
@@ -72,7 +79,6 @@ class Config implements Serializable {
         configuration.get("isSecurityScanEnabled", true)
         configuration.get("isSonarAnalysisEnabled", true)
         configuration.get("isQACoreTeamTestEnabled", true)
-        configuration.put("branchName", script.env.BRANCH_NAME)
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
@@ -89,8 +95,8 @@ class Config implements Serializable {
         log.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
         if (props.deployVersion) {
-            log.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as GLOBAL_VERSION.")
-            script.GLOBAL_VERSION = props.deployVersion
+            log.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as globalVersion.")
+            setGlobalVersion(props.deployVersion)
             deployOnly = true
         }
         log.debug("set deployOnly: $deployOnly")

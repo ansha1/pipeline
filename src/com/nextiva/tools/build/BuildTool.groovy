@@ -46,7 +46,7 @@ abstract class BuildTool implements Serializable, Tool {
 
     abstract String getVersion()
 
-    abstract Boolean setVersion(String version)
+    abstract void setVersion(String version)
 
     abstract void sonarScan()
 
