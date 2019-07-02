@@ -9,6 +9,7 @@ import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
 import static com.nextiva.utils.Utils.getGlobal
+import static com.nextiva.utils.Utils.getGlobalAppName
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.getGlobalVersion
 import static com.nextiva.utils.Utils.setPropertyToFile
@@ -16,6 +17,7 @@ import static com.nextiva.utils.Utils.shWithOutput
 
 class Docker extends BuildTool {
     def publishCommands = {
+        String appName = getGlobalAppName()
         Boolean tagLatest = isTagLatest()
         buildPublish(script, NEXTIVA_DOCKER_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
     }
