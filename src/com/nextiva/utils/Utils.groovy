@@ -93,7 +93,7 @@ class Utils {
         String propsToWrite = ''
         if (script.fileExists(propertyFilePath)) {
             def buildProperties = script.readProperties file: propertyFilePath
-            buildProperties.put(propertyName) = value
+            buildProperties[propertyName] = value
             buildProperties.each {
                 propsToWrite = propsToWrite + it.toString() + '\n'
             }
