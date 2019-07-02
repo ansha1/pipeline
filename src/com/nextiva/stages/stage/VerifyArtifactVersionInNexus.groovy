@@ -11,9 +11,9 @@ class VerifyArtifactVersionInNexus extends Stage {
     def stageBody() {
         Map build = configuration.get("build")
 
-        build.each { toolName, toolConfig ->
+        build.each { toolName, toolConfiguration ->
             withStage("${toolName} ${stageName}") {
-                BuildTool tool = toolConfig.get("instance")
+                BuildTool tool = toolConfiguration.get("instance")
                 try {
                     log.debug("checking artifact availability for ${toolName}")
                     if (tool.isArtifactAvailableInRepo()) {
