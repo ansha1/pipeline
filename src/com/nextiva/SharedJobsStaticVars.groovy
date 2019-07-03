@@ -33,7 +33,7 @@ class SharedJobsStaticVars {
     static final KUBERNETES_REPO_BRANCH = 'develop'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git'
-    static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.3.0'
+    static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.4.0'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
     static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
