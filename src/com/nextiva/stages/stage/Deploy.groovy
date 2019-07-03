@@ -20,7 +20,8 @@ class Deploy extends Stage {
                     def postDeployCommands = toolConfig.get("postDeployCommands")
                     if (postDeployCommands != null) {
                         withStage("${toolName} ${stageName} postDeploy") {
-                            shOrClosure(script, postDeployCommands)
+                            def output = shOrClosure(script, postDeployCommands)
+                            log.info("$output")
                         }
                     }
                 } catch (e) {

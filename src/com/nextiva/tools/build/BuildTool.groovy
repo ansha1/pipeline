@@ -74,7 +74,8 @@ abstract class BuildTool implements Serializable, Tool {
         script.dir(pathToSrc) {
             log.debug("executing command in container ${name}")
             script.container(name) {
-                shOrClosure(script, command)
+                def output = shOrClosure(script, command)
+                log.info("$output")
             }
         }
     }
