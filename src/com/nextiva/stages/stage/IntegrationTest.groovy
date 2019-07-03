@@ -25,11 +25,12 @@ class IntegrationTest extends Stage {
         Map build = configuration.get("build")
         String appName = getGlobalAppName()
         String version = getGlobalVersion()
-        Docker docker = build.get("docker")
-        if (docker == null) {
+        Map dockerToolConfig = build.get("docker")
+        if (dockerToolConfig == null) {
             log.error("docker build tool is undefined, can't build test container image, aborting...")
             throw new AbortException("docker build tool is undefined, can't build test container image, aborting...")
         }
+        Docker docker = dockerToolConfig.get("instance")
         docker.execute {
             docker.buildPublish(script, NEXTIVA_DOCKER_TEST_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version)
         }
