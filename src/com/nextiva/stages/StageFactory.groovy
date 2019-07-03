@@ -48,7 +48,7 @@ class StageFactory {
             "IntegrationTest"             : ["deployOnly"              : false,
                                              "class"                   : IntegrationTest.class,
                                              "isIntegrationTestEnabled": true,
-                                             "branchingModel"          : ["gitflow"   : /^!(develop|dev|release\/.+|master)$/,
+                                             "branchingModel"          : ["gitflow"   : /^\b(?!(develop|dev|release\\/.+|master)\b).+$/,
                                                                           "trunkbased": /^\b(?!master\b).+$/]
             ],
             "Publish"                     : ["deployOnly"    : false,
