@@ -43,6 +43,7 @@ class VerifyArtifactVersionInNexus extends Stage {
 //                                            git push origin HEAD:${BRANCH_NAME}
 //                                        """
 //                    }
+
                     } else {
                         log.info("Current artifact version is not exist in the Nexus, continue...")
                     }
@@ -53,4 +54,17 @@ class VerifyArtifactVersionInNexus extends Stage {
             }
         }
     }
+
+
+//    def autoIncrementVersion(SemanticVersion currentVersion) {
+//        semanticVersion = currentVersion
+//        version = semanticVersion.toString()
+//        patchedBuildVersion = currentVersion.toString()
+//
+//        if (utils.verifyPackageInNexus(APP_NAME, patchedBuildVersion, DEPLOY_ENVIRONMENT)) {
+//            patchedBuildVersion = autoIncrementVersion(semanticVersion.bump(PatchLevel.PATCH))
+//        }
+//
+//        return patchedBuildVersion
+//    }
 }

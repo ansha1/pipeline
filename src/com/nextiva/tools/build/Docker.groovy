@@ -76,17 +76,17 @@ class Docker extends BuildTool {
     }
 
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
-    def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath, String buildLocation, Boolean tagLatest = false) {
+    def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
         script.docker.withRegistry(registry, registryCredentials) {
             def image = script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
             image.push()
             if (tagLatest) {
                 image.push("latest")
-                String out = shWithOutput(script, "docker rmi ${registry}/${appName}:latest")
-                log.debug("$out")
+                String output = shWithOutput(script, "docker rmi ${registry}/${appName}:latest")
+                log.debug("$output")
             }
-            String out = shWithOutput(script, "docker rmi ${image.id} ${registry}/${appName}:${image.id}")
-            log.debug("$out")
+            String output = shWithOutput(script, "docker rmi ${image.id} ${registry}/${appName}:${image.id}")
+            log.debug("$output")
         }
     }
 

@@ -265,7 +265,7 @@ class Logger implements Serializable {
                 objectName = ""
             }
             def objectString = ""
-            //TODO: make prettyPrint of Collection type objects.  Json prettyPrint throw java.lang.StackOverflowError
+            //TODO: make prettyPrint of Collection type objects.  Json prettyPrint can throw java.lang.StackOverflowError
 //            if (object instanceof Collection || object instanceof Map) {
 //                objectString = prettyPrint(toJson(object))
 //            } else {

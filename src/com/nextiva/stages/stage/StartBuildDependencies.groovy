@@ -23,10 +23,10 @@ class StartBuildDependencies extends Stage {
         dependencies.each { cloudApp, version ->
             String namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
             //TODO: change configset
-            String TEST_CONFIGSET = "test"
+            String configset = "test"
             String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
             script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
-                kubeup.install(cloudApp, version, namespace, TEST_CONFIGSET, false)
+                kubeup.install(cloudApp, version, namespace, configset, false)
             }
         }
     }
