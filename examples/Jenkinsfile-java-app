@@ -1,23 +1,29 @@
 #!groovy
 @Library('pipeline') _
 
-
 jobTemplate {
 
-    APP_NAME = 'java-app'
-    DEPLOY_ON_K8S = 'false'
-    BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/java-app'
-    PLAYBOOK_PATH = 'ansible/role-based_playbooks/java-app.yml'
-    CHANNEL_TO_NOTIFY = 'java-app'
+    APP_NAME             = 'java-app'
+    DEPLOY_ON_K8S        = true
+    publishDockerImage   = true
+    deployToSalesDemo    = true
+    publishBuildArtifact = false
+    CHANNEL_TO_NOTIFY    = 'java-app'
+    NODE_LABEL           = 'slave_java'
+    JDK_VERSION          = 'Java 11'
 
-    ansibleEnvMap = [dev       : "dev",
-                     qa        : "rc",
-                     production: "production"]
+    // Ansible disabled in kubernetes
+    // BASIC_INVENTORY_PATH = 'ansible/role-based_playbooks/inventory/java-app'
+    // PLAYBOOK_PATH = 'ansible/role-based_playbooks/java-app.yml'    
+    // ansibleEnvMap = [dev       : "dev",
+    //                  qa        : "rc",
+    //                  production: "production"]
 
     projectFlow = ['language': 'java']
 
     healthCheckMap = [dev       : ["http://0.0.0.0:8080/health"],
                       qa        : ["http://0.0.0.0:8080/health"],
+                      sales-demo: ["http://0.0.0.0:8080/health"],
                       production: ["http://0.0.0.0:8080/health"]]
 
     branchPermissionsMap = [dev       : ["authenticated"],

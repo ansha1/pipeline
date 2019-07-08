@@ -121,11 +121,11 @@ String getRepositoryProjectKeyFromUrl(String repositoryUrl) {
 
     List tokens = repositoryUrl.tokenize('/')
     if (tokens[0] == 'https:') {
-        // example: https://git.nextiva.xyz/scm/REL/k8s-platform.git
+        // example: https://git.nextiva.xyz/scm/cloud/cloud-apps.git
         return tokens[3]
     }
     else {
-        // example: ssh://git@git.nextiva.xyz:7999/REL/k8s-platform.git
+        // example: ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git
         return tokens[2]
     }
 }
@@ -135,11 +135,11 @@ String getRepositoryNameFromUrl(String repositoryUrl) {
 
     List tokens = repositoryUrl.tokenize('/')
     if (tokens[0] == 'https:') {
-        // example: https://git.nextiva.xyz/scm/REL/k8s-platform.git
+        // example: https://git.nextiva.xyz/scm/cloud/cloud-apps.git
         return tokens[4].replace('.git', '')
     }
     else {
-        // example: ssh://git@git.nextiva.xyz:7999/REL/k8s-platform.git
+        // example: ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git
         return tokens[3].replace('.git', '')
     }
 }
