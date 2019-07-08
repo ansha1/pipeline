@@ -30,7 +30,7 @@ class SharedJobsStaticVars {
     static final JS_NODE_LABEL = 'slave_node8'
     static final ANSIBLE_NODE_LABEL = 'ansible'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
-    static final KUBERNETES_REPO_BRANCH = 'develop'
+    static final KUBERNETES_REPO_BRANCH = 'master'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
     static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git'
     static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.4.0'
