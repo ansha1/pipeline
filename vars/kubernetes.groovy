@@ -157,7 +157,7 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
 
         pip3 install -U wheel
         pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
-        kubeup -h
+        kubeup -v
 
         kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
         """, false, kubeupEnv)
