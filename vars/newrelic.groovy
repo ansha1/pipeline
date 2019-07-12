@@ -17,7 +17,7 @@ import groovy.transform.Field
 def postDeployment(jobConfig) {
 
     Integer appId = 0
-    String environment = jobConfig.deployToSalesDemo ? 'demo' : jobConfig.ANSIBLE_ENV
+    String environment = jobConfig.ANSIBLE_ENV
 
     if (jobConfig.NEWRELIC_APP_ID_MAP) {
         log.warning("[DEPRECATION] Use NEW_RELIC_APP_ID instead of NEWRELIC_APP_ID_MAP")
@@ -34,7 +34,8 @@ def postDeployment(jobConfig) {
     if (appId == 0 && jobConfig.NEW_RELIC_APP_NAME) {
         appId = getAppIdByAppName(environment, jobConfig.NEW_RELIC_APP_NAME)
     }
-
+    log.info("NR post deploy environment: ${environment}")
+    log.info("NR post deploy app id: ${appID}")
     if (appId != 0 && jobConfig.BUILD_VERSION) {
         postDeploymentByAppId(environment, appId, jobConfig.BUILD_VERSION)
     }
