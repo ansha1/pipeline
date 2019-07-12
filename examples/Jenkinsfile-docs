@@ -143,7 +143,7 @@ jobTemplate {
 
     /*
     // NEW_RELIC_APP_ID - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id
-    // NEW_RELIC_APP_ID = ['production': '87818090']
+    // NEW_RELIC_APP_ID = ['production': 87818090]
     //
     // NEW_RELIC_APP_NAME - defines application name used in New Relic. If provided, the deployment information
     //  will attempt to be posted to New Relic. If an ID is specified with NEW_RELIC_APP_ID, that value will be preferred
