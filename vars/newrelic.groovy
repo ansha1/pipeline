@@ -35,7 +35,7 @@ def postDeployment(jobConfig) {
         appId = getAppIdByAppName(environment, jobConfig.NEW_RELIC_APP_NAME)
     }
     log.info("NR post deploy environment: ${environment}")
-    log.info("NR post deploy app id: ${appID}")
+    log.info("NR post deploy app id: ${appId}")
     if (appId != 0 && jobConfig.BUILD_VERSION) {
         postDeploymentByAppId(environment, appId, jobConfig.BUILD_VERSION)
     }
