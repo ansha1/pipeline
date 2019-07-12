@@ -28,7 +28,7 @@ def postDeployment(jobConfig) {
     }
 
     if (appId == 0 && jobConfig.NEW_RELIC_APP_ID && jobConfig.NEW_RELIC_APP_ID.containsKey(environment)) {
-        appId = jobConfig.NEW_RELIC_APP_ID[environment]
+        appId = jobConfig.NEW_RELIC_APP_ID[environment] as Integer
     }
 
     if (appId == 0 && jobConfig.NEW_RELIC_APP_NAME) {
