@@ -10,14 +10,14 @@ business applications we keen on to use a shared library for all builds in Nexti
 [Jenkins multibranch pipeline usage](https://confluence.nextiva.xyz/display/DP/Jenkins+multibranch+pipeline+usage)
 
 ## List of all available parameters for Nextiva Pipeline - jobTemplate
-https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-docs
+https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-docs  
 
 ## Examples of Jenkinsfile
-Java app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-app
-Java lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-lib
-Python app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-app
-Python lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-lib
-JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-js-app
+Java app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-app  
+Java lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-lib  
+Python app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-app  
+Python lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-lib  
+JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-js-app  
 
 ## Repository tree
 `````
