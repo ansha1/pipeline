@@ -265,7 +265,7 @@ def call(body) {
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
                                         jobConfig.kubernetesDeploymentsList)
 
-                                newrelic.postDeployment(jobConfig)
+                                newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
                     }
@@ -284,7 +284,7 @@ def call(body) {
                                     kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
                                             jobConfig.kubernetesDeploymentsList)
 
-                                    newrelic.postDeployment(jobConfig)
+                                    newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {
                                     log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
                                     currentBuild.result = 'UNSTABLE'
@@ -308,7 +308,7 @@ def call(body) {
                                     def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                     runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
-                                newrelic.postDeployment(jobConfig)
+                                newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
                     }
@@ -327,7 +327,7 @@ def call(body) {
                                         runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
 
-                                    newrelic.postDeployment(jobConfig)
+                                    newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {
                                     log.warning("Ansible deployment to Sales Demo failed.\n${e}")
                                     currentBuild.result = Result.UNSTABLE
