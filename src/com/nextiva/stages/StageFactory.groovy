@@ -15,62 +15,74 @@ class StageFactory {
         this.script = script
         this.configuration = configuration
     }
+
+    private static final def branchingModelRegexps = [
+            any: /.+/,
+            notMaster: /^(?!master$).+/,
+            releaseOrHotfix: /^((hotfix|release)\/)/,
+            master: /^master$/,
+            mainline: /^(dev|develop)$|(hotfix|release)\//,
+            mainlineWithMaster: /^(dev|develop|master)$|(hotfix|release)\//,
+            notMainline: /^(?!(dev|develop|master)$|(hotfix|release)\/).+/,
+            develop: /^(develop|dev)$/,
+    ]
+
     static final Map stages = [
             "Checkout"                    : ["class": Checkout.class,
             ],
             "StartBuildDependencies"      : ["deployOnly"          : false,
                                              "isJobHasDependencies": true,
                                              "class"               : StartBuildDependencies.class,
-                                             "branchingModel"      : ["gitflow"   : /^\b(?!master\b).+$/,
-                                                                      "trunkbased": /^.*$/]
+                                             "branchingModel"      : ["gitflow"   : branchingModelRegexps.notMaster,
+                                                                      "trunkbased": branchingModelRegexps.any]
             ],
             "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
-                                             "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
-                                                                "trunkbased": /^master$/]
+                                             "branchingModel": ["gitflow"   : branchingModelRegexps.releaseOrHotfix,
+                                                                "trunkbased": branchingModelRegexps.master]
             ],
             "Build"                       : ["deployOnly"    : false,
                                              "class"         : Build.class,
-                                             "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
-                                                                "trunkbased": /^master$/]
+                                             "branchingModel": ["gitflow"   : branchingModelRegexps.mainline,
+                                                                "trunkbased": branchingModelRegexps.master]
             ],
             "UnitTest"                    : ["class"            : UnitTest.class,
                                              "isUnitTestEnabled": true,
                                              "deployOnly"       : false,
-                                             "branchingModel"   : ["gitflow"   : /^\b(?!master\b).+$/,
-                                                                   "trunkbased": /^.*$/]
+                                             "branchingModel"   : ["gitflow"   : branchingModelRegexps.notMaster,
+                                                                   "trunkbased": branchingModelRegexps.any]
             ],
             "SonarScan"                   : ["class"                 : SonarScan.class,
                                              "deployOnly"            : false,
                                              "isSonarAnalysisEnabled": true,
-                                             "branchingModel"        : ["gitflow"   : /^(develop|dev)$/,
-                                                                        "trunkbased": /^master$/]
+                                             "branchingModel"        : ["gitflow"   : branchingModelRegexps.develop,
+                                                                        "trunkbased": branchingModelRegexps.master]
             ],
             "IntegrationTest"             : ["deployOnly"              : false,
                                              "class"                   : IntegrationTest.class,
                                              "isIntegrationTestEnabled": true,
-                                             "branchingModel"          : ["gitflow"   : /^\b(?!(develop|dev|release\\/.+|master)\b).+$/,
-                                                                          "trunkbased": /^\b(?!master\b).+$/]
+                                             "branchingModel"          : ["gitflow"   : branchingModelRegexps.notMainline,
+                                                                          "trunkbased": branchingModelRegexps.notMaster]
             ],
             "Publish"                     : ["deployOnly"    : false,
                                              "class"         : Publish.class,
-                                             "branchingModel": ["gitflow"   : /^(dev|develop|hotfix\/.+|release\/.+)$/,
-                                                                "trunkbased": /^master$/]
+                                             "branchingModel": ["gitflow"   : branchingModelRegexps.mainline,
+                                                                "trunkbased": branchingModelRegexps.master]
             ],
             "SecurityScan"                : ["deployOnly"           : false,
                                              "isSecurityScanEnabled": true,
                                              "class"                : SecurityScan.class,
-                                             "branchingModel"       : ["gitflow"   : /^(release|hotfix)\/.+$/,
-                                                                       "trunkbased": /^\b(?!master\b).+$/]
+                                             "branchingModel"       : ["gitflow"   : branchingModelRegexps.releaseOrHotfix,
+                                                                       "trunkbased": branchingModelRegexps.notMaster]
             ],
             "Deploy"                      : ["class"          : Deploy.class,
                                              "isDeployEnabled": true,
-                                             "branchingModel" : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                 "trunkbased": /^(master)$/]
+                                             "branchingModel" : ["gitflow"   : branchingModelRegexps.mainlineWithMaster,
+                                                                 "trunkbased": branchingModelRegexps.master]
             ],
             "QACoreTeamTest"              : ["class"                  : QACoreTeamTest.class,
                                              "isQACoreTeamTestEnabled": true,
-                                             "branchingModel"         : ["gitflow"   : /^(dev|develop|master|release\/.+|hotfix\/.+)$/,
-                                                                         "trunkbased": /^(master)$/]
+                                             "branchingModel"         : ["gitflow"   : branchingModelRegexps.mainlineWithMaster,
+                                                                         "trunkbased": branchingModelRegexps.master]
             ],
             "CollectBuildResults"         : ["class": CollectBuildResults.class,
             ],
