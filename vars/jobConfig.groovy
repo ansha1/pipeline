@@ -68,6 +68,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('develop') ?: branchPermissionsMap.get('dev')
             DEPLOY_ENVIRONMENT = 'dev'
             projectFlow['staticAssetsAddress'] = ''
+            slackStatusReportChannel = ''
             break
         case ~/^release\/.+$/:
             kubernetesCluster = kubernetesClusterMap.get('qa')
@@ -76,6 +77,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
+            slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_RC
             break
         case ~/^hotfix\/.+$/:
             kubernetesCluster = 'none'
@@ -84,6 +86,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
+            slackStatusReportChannel = ''
             break
         case 'master':
             kubernetesCluster = kubernetesClusterMap.get('production')
@@ -92,6 +95,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
+            slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_PROD
             break
         default:
             kubernetesCluster = 'none'
@@ -100,6 +104,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('dev') ?: branchPermissionsMap.get('develop')
             DEPLOY_ENVIRONMENT = ''
             projectFlow['staticAssetsAddress'] = ''
+            slackStatusReportChannel = ''
             break
     }
     utils = getUtils(projectFlow.get('language'), projectFlow.get('pathToSrc', '.'))
