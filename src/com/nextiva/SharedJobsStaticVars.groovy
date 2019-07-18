@@ -49,6 +49,7 @@ class SharedJobsStaticVars {
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     static final SLACK_STATUS_REPORT_CHANNEL_QA = 'rc-platform-support'
     static final SLACK_STATUS_REPORT_CHANNEL_PROD = 'platform-production'
+    static final DEFAULT_SLACK_CHANNEL = 'testchannel'
     static final SLACK_URL = 'https://nextivalab.slack.com'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'

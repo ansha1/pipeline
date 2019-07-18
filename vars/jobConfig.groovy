@@ -95,7 +95,11 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('production')
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
-            slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_PROD
+            if(params.deployDst ==~ /^(prod\+sales-demo|prod)$/) {
+                slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_PROD
+            } else {
+                slackStatusReportChannel = DEFAULT_SLACK_CHANNEL
+            }
             break
         default:
             kubernetesCluster = 'none'
