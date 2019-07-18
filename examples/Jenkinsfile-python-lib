@@ -1,7 +1,6 @@
 #!groovy
 @Library('pipeline') _
 
-
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.*
 
@@ -13,7 +12,7 @@ jobConfig {
                             production: ["authenticated"]]
 
     APP_NAME = "test-python-lib"
-    CHANNEL_TO_NOTIFY = "testchannel"
+    CHANNEL_TO_NOTIFY = "testchannel" //Put your Slack channel here
 }
 def securityPermissions = jobConfig.branchProperties
 

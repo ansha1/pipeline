@@ -11,7 +11,7 @@ def call(body) {
     developBranch = pipelineParams.developBranch
     projectLanguage = pipelineParams.projectLanguage
     versionPath = pipelineParams.versionPath ?: '.'
-    slackChannel = pipelineParams.slackChannel ?: 'testchannel'
+    slackChannel = pipelineParams.slackChannel ?: DEFAULT_SLACK_CHANNEL
     applicationName = pipelineParams.applicationName ?: common.getAppNameFromGitUrl(repositoryUrl.toLowerCase())
                                                               .replace('-', ' ')
                                                               .replace('_', ' ')
