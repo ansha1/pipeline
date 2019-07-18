@@ -31,6 +31,7 @@ class IntegrationTest extends Stage {
             throw new AbortException("docker build tool is undefined, can't build test container image, aborting...")
         }
         Docker docker = dockerToolConfig.get("instance")
+        // TODO add multistage builds support
         docker.execute {
             docker.buildPublish(script, NEXTIVA_DOCKER_TEST_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version)
         }
