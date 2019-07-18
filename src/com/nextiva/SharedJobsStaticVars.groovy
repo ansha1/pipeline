@@ -13,7 +13,7 @@ class SharedJobsStaticVars {
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.venv'
     static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
-    static final NEXTIVA_DOCKER_TEST_REGISTRY = 'repository.nextiva.xyz:7443'
+    static final NEXTIVA_DOCKER_TEST_REGISTRY = 'https://repository.nextiva.xyz:7443'
     static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
