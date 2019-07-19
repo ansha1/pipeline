@@ -77,7 +77,7 @@ def call(body) {
             branchPermissions = branchPermissionsMap.get('qa')
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
-            slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_RC
+            slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_QA
             break
         case ~/^hotfix\/.+$/:
             kubernetesCluster = 'none'
