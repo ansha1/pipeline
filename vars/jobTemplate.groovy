@@ -257,8 +257,8 @@ def call(body) {
                         }
                         steps {
                             script {
-                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
@@ -300,8 +300,8 @@ def call(body) {
                         }
                         steps {
                             script {
-                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
@@ -411,8 +411,8 @@ def call(body) {
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
-                    if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                     }
                 }
             }

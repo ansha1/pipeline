@@ -2,8 +2,8 @@
 import static com.nextiva.SharedJobsStaticVars.*
 import com.nextiva.slack.dto.SlackMessage
 import com.nextiva.slack.MessagesFactory
-
 import com.nextiva.*
+
 
 def call(body) {
     def pipelineParams = [:]
@@ -17,7 +17,7 @@ def call(body) {
     versionPath = pipelineParams.versionPath ?: '.'
     autoPullRequest = pipelineParams.autoPullRequest.equals(null) ? true : pipelineParams.autoPullRequest
     autoMerge = pipelineParams.autoMerge.equals(null) ? true : pipelineParams.autoMerge
-    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: 'testchannel'
+    CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY ?: DEFAULT_SLACK_CHANNEL
     APP_NAME = pipelineParams.APP_NAME ?: common.getAppNameFromGitUrl(repositoryUrl)
     jdkVersion = pipelineParams.jdkVersion ?: DEFAULT_JDK_VERSION
     mavenVersion = pipelineParams.mavenVersion ?: DEFAULT_MAVEN_VERSION

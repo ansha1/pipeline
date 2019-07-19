@@ -47,7 +47,9 @@ class SharedJobsStaticVars {
     //Slack app bot token for getting slack userID over email
     static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
-    static final SLACK_STATUS_REPORT_CHANNEL_RC = 'rc-platform-support'
+    static final SLACK_STATUS_REPORT_CHANNEL_QA = 'rc-platform-support'
+    static final SLACK_STATUS_REPORT_CHANNEL_PROD = 'platform-production'
+    static final DEFAULT_SLACK_CHANNEL = 'testchannel'
     static final SLACK_URL = 'https://nextivalab.slack.com'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
@@ -71,7 +73,7 @@ class SharedJobsStaticVars {
     static final VAULT_URL = 'https://vault.tooling.nextiva.io'
     static final PUBLISH_STATICASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
-    static final KUBEUP_VERSION = '0.2.0'
+    static final KUBEUP_VERSION = '1.0.0'
 
     /*
      Enable sending interactive Slack message through Jenkins Bot.

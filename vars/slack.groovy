@@ -114,7 +114,7 @@ def getSlackUserIdByEmail(String userMail) {
     if (responseJson.ok) {
         return responseJson.user.id
     } else {
-        log.warn("\n\nUser mail in Slack ${userMail} doesn't match the one that is defined in Jenkins (LDAP) !!!\n\n return the default channel #testchannel <C9FRGVBPB>")
+        log.warn("\n\nUser mail in Slack ${userMail} doesn't match the one that is defined in Jenkins (LDAP) !!!\n\n return the default channel #${DEFAULT_SLACK_CHANNEL} <C9FRGVBPB>")
         def defaultId = 'C9FRGVBPB'
         return defaultId
     }
