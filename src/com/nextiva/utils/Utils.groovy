@@ -111,6 +111,8 @@ class Utils {
         return global.getGlobalVersion()
     }
 
+    /* Below behaves unstable and returns  com.nextiva.config.Global@5a88b120 as a String instead of appName value
+    (e.g. "myapp")
     @NonCPS
     static String getGlobalAppName() {
         Global global = getGlobal()
@@ -119,6 +121,7 @@ class Utils {
         }
         return global.getAppName()
     }
+    */
 
 
     static void setGlobalVersion(String version) {

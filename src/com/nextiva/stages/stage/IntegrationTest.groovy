@@ -10,7 +10,7 @@ import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_TEST_REGISTRY
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
 import static com.nextiva.SharedJobsStaticVars.JENKINS_KUBERNETES_CLUSTER_DOMAIN
 import static com.nextiva.utils.Utils.buildID
-import static com.nextiva.utils.Utils.getGlobalAppName
+import static com.nextiva.utils.Utils.getGlobal
 import static com.nextiva.utils.Utils.getGlobalVersion
 
 class IntegrationTest extends Stage {
@@ -23,7 +23,7 @@ class IntegrationTest extends Stage {
         //TODO: build docker based on current code. publish in nexus and run it
         log.debug("Building docker test image ")
         Map build = configuration.get("build")
-        String appName = getGlobalAppName()
+        String appName = getGlobal().appName
         String version = getGlobalVersion()
         Map dockerToolConfig = build.get("docker")
         if (dockerToolConfig == null) {

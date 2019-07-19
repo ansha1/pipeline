@@ -4,7 +4,6 @@ import com.nextiva.tools.Tool
 import com.nextiva.utils.Logger
 
 import static com.nextiva.utils.Utils.shOrClosure
-import static com.nextiva.utils.Utils.getGlobalAppName
 
 abstract class BuildTool implements Serializable, Tool {
 

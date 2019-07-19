@@ -3,6 +3,7 @@ import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
 import hudson.model.Result
 
+
 def call(body) {
     Logger.init(this, env.JOB_LOG_LEVEL)
     Logger log = new Logger(this)
