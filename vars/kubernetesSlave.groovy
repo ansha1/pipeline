@@ -21,18 +21,19 @@ def call(Map slaveConfig, body) {
         error "ContainerResources is not defined, please define it in your slaveConfig: $slaveConfig"
     }
 
+    def rawYaml = slaveConfig.get("rawYaml", """\
+        spec:
+          tolerations:
+          - key: tooling.nextiva.io
+            operator: Equal
+            value: jenkins
+            effect: NoSchedule
+    """.stripIndent())
     withNamespace(iD) {
         podTemplate(label: iD, namespace: iD, showRawYaml: false, slaveConnectTimeout: 300,
                 nodeSelector: 'dedicatedgroup=jenkins-slave', imagePullSecrets: ['regsecret'],
                 annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
-                containers: containers(containerResources), volumes: volumes(), yaml: """
-spec:
-  tolerations:
-  - key: tooling.nextiva.io
-    operator: Equal
-    value: jenkins
-    effect: NoSchedule
-""") {
+                containers: containers(containerResources), volumes: volumes(), yaml: rawYaml) {
             node(iD) {
                 body()
             }
