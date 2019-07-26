@@ -231,7 +231,7 @@ def call(body) {
                         def languageVersion = jobConfig.projectFlow.get('languageVersion') ?: 'UNKNOWN'
                         def securityScanJob = "${common.getRepositoryNameFromUrl(env.GIT_URL)}-security-scan"
 
-                        if (jobConfig.projectFlow.get('language') == 'java' && jobExists(securityScanJob)) {
+                        if (jobExists(securityScanJob)) {
                             build job: securityScanJob, parameters: [string(name: 'Branch', value: env.BRANCH_NAME)], wait: false
                         } else {
                             build job: 'securityScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
