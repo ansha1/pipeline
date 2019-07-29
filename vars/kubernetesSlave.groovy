@@ -23,6 +23,10 @@ def call(Map slaveConfig, body) {
 
     def rawYaml = slaveConfig.get("rawYaml", """\
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
           tolerations:
           - key: tooling.nextiva.io
             operator: Equal
