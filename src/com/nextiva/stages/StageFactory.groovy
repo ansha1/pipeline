@@ -40,6 +40,11 @@ class StageFactory {
                                              "branchingModel": ["gitflow"   : branchingModelRegexps.releaseOrHotfix,
                                                                 "trunkbased": branchingModelRegexps.master]
             ],
+            "ConfigureProjectVersion"     : ["deployOnly"    : false,
+                                             "class"         : ConfigureProjectVersion.class,
+                                             "branchingModel": ["gitflow"   : branchingModelRegexps.any,
+                                                                "trunkbased": branchingModelRegexps.any]
+            ],
             "Build"                       : ["deployOnly"    : false,
                                              "class"         : Build.class,
                                              "branchingModel": ["gitflow"   : branchingModelRegexps.mainline,
