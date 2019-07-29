@@ -98,9 +98,10 @@ List processEnvVars(Map extraEnv) {
     envVars = [envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
                envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
-               envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo')]
-    extraEnv.each { e -> envVars << envVar(key: "${e.key}", value: "${e.value}")
-    }
+               envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo'),
+               envVar(key: 'MAVEN_CONFIG', value: '/home/jenkins/.m2repo'),
+               envVar(key: 'MAVEN_OPTS', value: '-Duser.home=/home/jenkins')]
+    extraEnv.each { e -> envVars << envVar(key: "${e.key}", value: "${e.value}") }
     return envVars
 }
 
