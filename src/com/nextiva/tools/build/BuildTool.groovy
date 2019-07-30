@@ -69,12 +69,13 @@ abstract class BuildTool implements Serializable, Tool {
         tryExec("publishArtifact", publishCommands, null)
     }
 
-    Boolean execute(def command) {
+    def execute(def command) {
         script.dir(pathToSrc) {
             log.debug("executing command in container ${name}")
             script.container(name) {
                 def output = shOrClosure(script, command)
                 log.info("$output")
+                return output
             }
         }
     }

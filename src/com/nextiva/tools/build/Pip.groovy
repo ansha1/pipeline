@@ -35,7 +35,7 @@ class Pip extends BuildTool {
 
     @Override
     String getVersion() {
-        execute {
+        return execute {
             String version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
             if (version == null) {
                 throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
