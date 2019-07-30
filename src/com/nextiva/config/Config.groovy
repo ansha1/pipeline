@@ -114,7 +114,15 @@ class Config implements Serializable {
         toolFactory.mergeWithDefaults(jenkinsContainer)
         log.debug("added jenkins container")
         containerResources.put("jnlp", jenkinsContainer)
-        Map slaveConfiguration = ["containerResources": containerResources]
+        Map slaveConfiguration = ["containerResources": containerResources,
+                                  "rawYaml": """\
+                                      spec:
+                                        tolerations:
+                                        - key: tooling.nextiva.io
+                                          operator: Equal
+                                          value: jenkins
+                                          effect: NoSchedule
+                                  """.stripIndent() ]
         log.debug("slave configuration:", slaveConfiguration)
         configuration.put("slaveConfiguration", slaveConfiguration)
         log.debug("complete configureSlave()")
