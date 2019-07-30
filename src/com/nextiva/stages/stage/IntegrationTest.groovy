@@ -47,7 +47,7 @@ class IntegrationTest extends Stage {
         String configset = "test"
         String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
         script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
-            kubeup.install(cloudApp, version, namespace, configset, false)
+            kubeup.install(appName, version, namespace, configset, false)
         }
 
         build.each { toolName, toolConfiguration ->

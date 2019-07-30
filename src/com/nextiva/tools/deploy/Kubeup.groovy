@@ -1,14 +1,39 @@
 package com.nextiva.tools.deploy
 
 import hudson.AbortException
+import hudson.slaves.Cloud
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
+class Repository {
+    String path
+    String repository
+    String branch
+
+    Repository(String path, String repository, String branch) {
+        this.path = path
+        this.repository = repository
+        this.branch = branch
+    }
+}
+
 class Kubeup extends DeployTool {
+
+    String kubeUpHome
+    Repository cloudApps
+    Repository cloudPlatform
+
     Kubeup(Script script, Map deployToolConfig) {
         super(script, deployToolConfig)
+        this.kubeUpHome = "$toolHome/kubeup"
+        this.cloudApps = new Repository("$toolHome/cloud-apps",
+                deployToolConfig.get("cloudAppsRepository"),
+                deployToolConfig.get("cloudAppsBranch"))
+        this.cloudPlatform = new Repository("$toolHome/cloud-platform",
+                deployToolConfig.get("cloudPlatformRepository"),
+                deployToolConfig.get("cloudPlatformBranch"))
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
@@ -28,9 +53,19 @@ class Kubeup extends DeployTool {
 
     void init(String clusterDomain) {
         log.debug("start init $name tool")
-        log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
-        clone(script, repository, branch, toolHome)
+
+        log.debug("Clonning repository $repository branch $branch into $kubeUpHome")
+        clone(script, repository, branch, kubeUpHome)
         log.debug("clone complete")
+
+        log.debug("Clonning repository $cloudApps.repository branch $cloudApps.branch into $cloudApps.path")
+        clone(script, cloudApps.repository, cloudApps.branch, cloudApps.path)
+        log.debug("clone complete")
+
+        log.debug("Clonning repository $cloudPlatform.repository branch $cloudPlatform.branch into $cloudPlatform.path")
+        clone(script, cloudPlatform.repository, cloudPlatform.branch, cloudPlatform.path)
+        log.debug("clone complete")
+
         script.container(name) {
             script.dir(toolHome) {
                 script.env.PATH = "${script.env.PATH}:${toolHome}"
@@ -128,18 +163,20 @@ class Kubeup extends DeployTool {
         log.debug("Vault login complete")
     }
 
-    def install(String cloudApp, String version, String namespace, String configset, Boolean dryRun = true) {
-        log.debug("Install cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
+    def install(String application, String version, String namespace, String configset, Boolean dryRun = true) {
+        log.debug("Install application: $application, version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
         String output = ""
         try {
             script.container(name) {
                 script.dir(toolHome) {
                     String dryRunParam = dryRun ? '--dry-run' : ''
                     output = shWithOutput(script, """
+                    cd "\$(find cloud-apps/apps/ cloud-platform/apps -maxdepth 1 -type d -name $application | head -1)/../../"
+                    [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
                     ${unsetEnvServiceDiscovery()}
-                    BUILD_VERSION=${version}
-                    kubeup --yes --no-color ${dryRunParam} --namespace ${namespace} --configset ${configset} ${cloudApp} 2>&1
+                    BUILD_VERSION=$version
+                    kubeup --yes --no-color $dryRunParam --namespace $namespace --configset $configset $application 2>&1
                     """)
                     if (!dryRun) {
                         validate(output, namespace)
