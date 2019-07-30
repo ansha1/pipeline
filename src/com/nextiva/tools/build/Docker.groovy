@@ -80,10 +80,10 @@ class Docker extends BuildTool {
             image.push()
             if (tagLatest) {
                 image.push("latest")
-                String output = shWithOutput(script, "docker rmi ${registry}/${appName}:latest")
+                String output = shWithOutput(script, "docker rmi ${registry.replaceFirst(/^https?:\/\//, '')}/${appName}:latest")
                 log.debug("$output")
             }
-            String output = shWithOutput(script, "docker rmi ${image.id} ${registry}/${appName}:${image.id}")
+            String output = shWithOutput(script, "docker rmi ${image.id} ${registry.replaceFirst(/^https?:\/\//, '')}/${image.id}")
             log.debug("$output")
         }
     }
