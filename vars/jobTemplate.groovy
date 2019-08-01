@@ -129,7 +129,7 @@ def call(body) {
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
                                     try {
                                         timeout(time: 15, unit: 'MINUTES') {
-                                            approve("Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
+                                            approve("Increase a patch version for ${jobConfig.APP_NAME}",
                                                     "Package *${jobConfig.APP_NAME}* with version *${jobConfig.BUILD_VERSION}* " +
                                                     "already exists in Nexus. \n" +
                                                     "Do you want to increase a patch version and continue the process?",
