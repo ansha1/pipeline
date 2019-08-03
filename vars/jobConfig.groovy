@@ -50,8 +50,12 @@ def call(body) {
     isSecurityScanEnabled = getBooleanDefault(pipelineParams.isSecurityScanEnabled, true)
     isSonarAnalysisEnabled = getBooleanDefault(pipelineParams.isSonarAnalysisEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
-    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []
+
+    //kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
+    if (pipelineParams.kubernetesDeploymentsList) {
+        log.deprecated('Parameter "kubernetesDeploymentsList" is deprecated. Please remove it from Jenkinsfile.')
+    }
 
     // Adding Sales Demo Env Configuration
     deployToSalesDemo = getBooleanDefault(pipelineParams.deployToSalesDemo, false)

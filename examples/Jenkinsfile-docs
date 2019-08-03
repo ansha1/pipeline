@@ -173,7 +173,8 @@ jobTemplate {
     * default: NextOS Platform (CRM)  
     */
     // veracodeApplicationScope = 'NextOS Platform (CRM)'
-    
+
+    // DEPRECATED
     /* kubernetesDeploymentsList - defines the names of Kubernetes deployments when application has more than one deployment */
     // kubernetesDeploymentsList = ['chat-orchestration-api', 'chat-status']
 

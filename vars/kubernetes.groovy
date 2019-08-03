@@ -40,22 +40,23 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
 
         sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
 
-        try {
-            kubernetesDeploymentsList.each {
-                if(!it.contains('/')) {
-                    it = "deployment/${it}"
-                }
-                sh """
-                   unset KUBERNETES_SERVICE_HOST
-                   kubectl rollout status ${it} --namespace ${nameSpace}
-                """
-            }
-        } catch (e) {
-            log.warning("kubectl rollout status is failed!")
-            log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
-            log.warning(e)
-            currentBuild.rawBuild.result = Result.UNSTABLE
-        }
+        // DEPRECATED
+        //try {
+        //    kubernetesDeploymentsList.each {
+        //        if(!it.contains('/')) {
+        //            it = "deployment/${it}"
+        //        }
+        //        sh """
+        //           unset KUBERNETES_SERVICE_HOST
+        //           kubectl rollout status ${it} --namespace ${nameSpace}
+        //        """
+        //    }
+        //} catch (e) {
+        //    log.warning("kubectl rollout status is failed!")
+        //    log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
+        //    log.warning(e)
+        //    currentBuild.rawBuild.result = Result.UNSTABLE
+        //}
     }
 }
 
