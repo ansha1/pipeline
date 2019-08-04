@@ -34,8 +34,8 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
             log.info("Deploy to the Kubernetes cluster has been completed.")
 
         } catch (e) {
-            log.warning("Deploy to the Kubernetes failed!")
-            log.warning(e)
+            log.error("Deploy to the Kubernetes failed!")
+            log.error(e)
             error("Deploy to the Kubernetes failed! $e")
         }
 
@@ -207,27 +207,29 @@ def validate(String installOutput, String namespace) {
         log.debug("parse object $it")
         switch (it) {
             case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
-                log.warn("Found k8s object $it")
+                log.yellowBold("Found k8s object: $it")
                 objectsToValidate.add("deployment ${extractObject(it)}")
                 break
             case ~/^statefulset.apps.+$/:
-                log.warn("Found k8s object $it")
+                log.yellowBold("Found k8s object: $it")
                 objectsToValidate.add("statefulset ${extractObject(it)}")
                 break
             case ~/^daemonset.extentions.+$/:
-                log.warn("Found k8s object $it")
+                log.yellowBold("Found k8s object: $it")
                 objectsToValidate.add("daemonset ${extractObject(it)}")
                 break
             case ~/^job.batch.+$/:
-                log.warn("Found k8s object $it")
+                log.yellowBold("Found k8s object: $it")
                 objectsToValidate.add("job ${extractObject(it)}")
                 break
         }
     }
     log.debug("Collected objectsToValidate - ${objectsToValidate}")
+    log.magnetaBold("=== Kubernetes logs ======================================================================")
     objectsToValidate.each {
         sh "kubedog -n ${namespace} rollout track ${it} 2>&1"
     }
+    log.magnetaBold("==========================================================================================")
 }
 
 String extractObject(String rawString) {
