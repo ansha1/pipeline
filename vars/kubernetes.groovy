@@ -39,9 +39,9 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
             error("Deploy to the Kubernetes failed! $e")
         }
 
-        sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
-
         // DEPRECATED
+        //
+        //sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
         //try {
         //    kubernetesDeploymentsList.each {
         //        if(!it.contains('/')) {
@@ -245,6 +245,6 @@ String unsetEnvServiceDiscovery() {
     currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
         envsToUnset += "unset ${it.tokenize("=")[0]}\n"
     }
-    log.debug("envsToUnset:\n $envsToUnset")
+    log.debug("envsToUnset:\n$envsToUnset")
     return envsToUnset
 }
