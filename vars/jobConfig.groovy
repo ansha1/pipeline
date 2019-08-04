@@ -35,7 +35,6 @@ def call(body) {
     FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
-    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = getBooleanDefault(pipelineParams.DEPLOY_ON_K8S, false)
     ANSIBLE_DEPLOYMENT = getBooleanDefault(pipelineParams.ANSIBLE_DEPLOYMENT, true)
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
@@ -131,7 +130,6 @@ def call(body) {
     log('============== Job config complete ==================')
     log("nodeLabel: ${nodeLabel}")
     log("APP_NAME: ${APP_NAME}")
-    log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
     log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("publishBuildArtifact: ${publishBuildArtifact}")
