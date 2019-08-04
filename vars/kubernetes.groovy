@@ -231,7 +231,7 @@ def validate(String installOutput, String namespace) {
 }
 
 String extractObject(String rawString) {
-    log.debug("got string: ${awString}")
+    log.debug("got string: ${rawString}")
     String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
     log.debug("extractedObject: ${extractedObject}")
     return extractedObject
