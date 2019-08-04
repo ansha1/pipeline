@@ -176,7 +176,7 @@ private getJobName() {
 
 String shWithOutput(String command) {
     return sh(
-            script: command + " 2>&1",
+            script: "${command} 2>&1",
             returnStdout: true
     ).trim()
 }

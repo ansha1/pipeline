@@ -152,14 +152,14 @@ def kubedogInstall() {
     log.debug("kubedogInstall start")
     try {
         String output = common.shWithOutput("kubedog version")
-        log.debug("$output")
+        log.debug(output)
     } catch (e) {
         log.warn("kubedog is not installed, going to install kubedog...")
         String out = common.shWithOutput("""
             curl -L https://dl.bintray.com/flant/kubedog/v${KUBEDOG_VERSION}/kubedog-linux-amd64-v${KUBEDOG_VERSION} -o ./kubedog
-            chmod +x ./kubedog
-            ./kubedog version""")
+            chmod +x ./kubedog""")
         log.debug("$out")
+        sh "./kubedog version"
     }
     log.debug("kubedogInstall complete")
 }
@@ -199,7 +199,7 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
 }
 
 def validate(String installOutput, String namespace) {
-    log.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
+    log.debug("find all kubernetes objects in the cloudapp in order to validate.")
     log.debug("==========================================================================================")
 
     List objectsToValidate = []
@@ -224,16 +224,16 @@ def validate(String installOutput, String namespace) {
                 break
         }
     }
-    log.debug("Collected objectsToValidate", objectsToValidate)
+    log.debug("Collected objectsToValidate - ${objectsToValidate}")
     objectsToValidate.each {
         sh "kubedog -n ${namespace} rollout track ${it} 2>&1"
     }
 }
 
 String extractObject(String rawString) {
-    log.debug("got string", rawString)
+    log.debug("got string: ${awString}")
     String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
-    log.debug("extractedObject", extractedObject)
+    log.debug("extractedObject: ${extractedObject}")
     return extractedObject
 }
 
