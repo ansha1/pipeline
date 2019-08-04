@@ -174,7 +174,7 @@ private getJobName() {
     return URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
 }
 
-static String shWithOutput(String command) {
+String shWithOutput(String command) {
     return sh(
             script: command + " 2>&1",
             returnStdout: true
