@@ -136,7 +136,6 @@ def call(body) {
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("publishBuildArtifact: ${publishBuildArtifact}")
     log("publishDockerImage: ${publishDockerImage}")
-
     log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
     healthCheckUrl.each { log("  - ${it}") }
