@@ -42,12 +42,15 @@ def call(body) {
         isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
         isSonarAnalysisEnabled = pipelineParams.isSonarAnalysisEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
-        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
         // Adding Sales Demo Env Configuration
         deployToSalesDemo = pipelineParams.deployToSalesDemo
         kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo
         inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo
+        kubernetesNamespace = pipelineParams.kubernetesNamespace
+
+        // Deprecated
+        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -262,7 +265,8 @@ def call(body) {
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster)
+                                kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
+                                        [], jobConfig.kubernetesNamespace)
                                 newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
@@ -279,7 +283,8 @@ def call(body) {
                                 try {
                                     log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                     log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
-                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo)
+                                    kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
+                                            [], jobConfig.kubernetesNamespace)
 
                                     newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {

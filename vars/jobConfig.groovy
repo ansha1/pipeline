@@ -51,6 +51,7 @@ def call(body) {
     isSonarAnalysisEnabled = getBooleanDefault(pipelineParams.isSonarAnalysisEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
     reportDirsList = pipelineParams.reportDirsList ?: []
+    kubernetesNamespace = pipelineParams.kubernetesNamespace ?: 'default'
 
     //kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     if (pipelineParams.kubernetesDeploymentsList) {

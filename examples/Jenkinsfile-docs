@@ -192,4 +192,7 @@ jobTemplate {
     The final value that is used for the full path is inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
     This value should not be used unless we grow to have multiple sales-demo env's */
     // inventoryDirectorySalesDemo = "another-sales-demo"
+
+    /* kubernetesNamespace - Defines the namespace for Kubernetes deployments */
+    // kubernetesNamespace = 'default'
 }
