@@ -75,6 +75,7 @@ class SharedJobsStaticVars {
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
     static final KUBEUP_VERSION = '1.0.0'
     static final KUBEDOG_VERSION = '0.3.3'
+    static final VAULT_CLIENT_VERSION = '1.1.0'
 
     /*
      Enable sending interactive Slack message through Jenkins Bot.

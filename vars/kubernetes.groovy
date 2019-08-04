@@ -109,7 +109,7 @@ def kubectlInstall() {
         log.info("Ensure that kubectl is nstalled")
         sh "kubectl version --client=true"
     } catch (e) {
-        log.info("Going to install latest stable kubectl")
+        log.warn("kubectl is not installed, going to install latest stable kubectl version ...")
         sh """
             curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
@@ -121,12 +121,12 @@ def kubectlInstall() {
 
 def vaultInstall() {
     try {
-        log.info("Ensure that vault is installed")
+        log.info("Ensure that vault client is installed")
         sh "command vault -v"
     } catch (e) {
-        log.info("Going to install vault client 1.1.0 version")
+        log.warn("vault client is not installed, going to install vault client ${VAULT_CLIENT_VERSION} version ...")
         sh """
-            wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
+            wget -O vault.zip https://releases.hashicorp.com/vault/${VAULT_CLIENT_VERSION}/vault_${VAULT_CLIENT_VERSION}_linux_amd64.zip
             unzip -o vault.zip
             ./vault -v
            """
@@ -138,7 +138,7 @@ def jqInstall() {
         log.info("Ensure that jq is installed")
         sh "jq --version"
     } catch (e) {
-        log.info("Going to install latest stable jq")
+        log.warn("jq is not installed, going to install latest stable jq version ...")
         sh """
             curl -LO https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
             mv jq-linux64 jq
@@ -151,10 +151,11 @@ def jqInstall() {
 def kubedogInstall() {
     log.debug("kubedogInstall start")
     try {
+        log.info("Ensure that kubedog is installed")
         String output = common.shWithOutput("kubedog version")
         log.debug(output)
     } catch (e) {
-        log.warn("kubedog is not installed, going to install kubedog...")
+        log.warn("kubedog is not installed, going to install kubedog ${KUBEDOG_VERSION} version ...")
         String out = common.shWithOutput("""
             curl -L https://dl.bintray.com/flant/kubedog/v${KUBEDOG_VERSION}/kubedog-linux-amd64-v${KUBEDOG_VERSION} -o ./kubedog
             chmod +x ./kubedog""")
