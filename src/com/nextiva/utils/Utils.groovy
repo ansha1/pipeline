@@ -133,6 +133,6 @@ class Utils {
     }
 
     static Global getGlobal() {
-        return Global.instance
+        return Global.getInstance()
     }
 }
