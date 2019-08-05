@@ -127,6 +127,7 @@ def vaultInstall() {
         log.warn("vault client is not installed, going to install vault client ${VAULT_CLIENT_VERSION} version ...")
         sh """
             wget -O vault.zip https://releases.hashicorp.com/vault/${VAULT_CLIENT_VERSION}/vault_${VAULT_CLIENT_VERSION}_linux_amd64.zip
+            echo "${VAULT_CLIENT_SHA256} ./vault.zip" | sha256sum -c -
             unzip -o vault.zip
             ./vault -v
            """
@@ -152,12 +153,12 @@ def kubedogInstall() {
     log.debug("kubedogInstall start")
     try {
         log.info("Ensure that kubedog is installed")
-        String output = common.shWithOutput("kubedog version")
-        log.debug(output)
+        sh "kubedog version"
     } catch (e) {
         log.warn("kubedog is not installed, going to install kubedog ${KUBEDOG_VERSION} version ...")
         String out = common.shWithOutput("""
             curl -L https://dl.bintray.com/flant/kubedog/v${KUBEDOG_VERSION}/kubedog-linux-amd64-v${KUBEDOG_VERSION} -o ./kubedog
+            echo "${KUBEDOG_SHA256} ./kubedog" | sha256sum -c - 
             chmod +x ./kubedog""")
         log.debug("$out")
         sh "./kubedog version"
