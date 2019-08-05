@@ -29,7 +29,10 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
                 kubeup(serviceName, configSet, nameSpace, true)
 
                 log.info('Deploying application into Kubernetes ...')
-                kubeup(serviceName, configSet, nameSpace, false)
+                String kubeupOutput = kubeup(serviceName, configSet, nameSpace, false)
+
+                sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+                validate(kubeupOutput, nameSpace)
             }
             log.info("Deploy to the Kubernetes cluster has been completed.")
 
@@ -192,12 +195,8 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
         kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1 | tee ${kubeupOutputFile}
         """, false, kubeupEnv)
 
-    def kubeupOutput = readFile kubeupOutputFile
-
-    if (!dryRun) {
-        sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
-        validate(kubeupOutput, nameSpace)
-    }
+    String kubeupOutput = readFile kubeupOutputFile
+    return kubeupOutput
 }
 
 def validate(String installOutput, String namespace) {
