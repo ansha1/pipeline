@@ -28,7 +28,6 @@ def call(body) {
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT
-        DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
@@ -42,12 +41,15 @@ def call(body) {
         isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
         isSonarAnalysisEnabled = pipelineParams.isSonarAnalysisEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
-        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
         // Adding Sales Demo Env Configuration
         deployToSalesDemo = pipelineParams.deployToSalesDemo
         kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo
         inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo
+        kubernetesNamespace = pipelineParams.kubernetesNamespace
+
+        // Deprecated
+        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -263,8 +265,7 @@ def call(body) {
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
-                                        jobConfig.kubernetesDeploymentsList)
-
+                                        [], jobConfig.kubernetesNamespace)
                                 newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
@@ -282,7 +283,7 @@ def call(body) {
                                     log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                     log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                     kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
-                                            jobConfig.kubernetesDeploymentsList)
+                                            [], jobConfig.kubernetesNamespace)
 
                                     newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {

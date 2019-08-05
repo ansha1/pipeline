@@ -35,7 +35,6 @@ def call(body) {
     FULL_INVENTORY_PATH = pipelineParams.FULL_INVENTORY_PATH
     BASIC_INVENTORY_PATH = pipelineParams.BASIC_INVENTORY_PATH
     PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
-    DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
     DEPLOY_ON_K8S = getBooleanDefault(pipelineParams.DEPLOY_ON_K8S, false)
     ANSIBLE_DEPLOYMENT = getBooleanDefault(pipelineParams.ANSIBLE_DEPLOYMENT, true)
     CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
@@ -50,8 +49,13 @@ def call(body) {
     isSecurityScanEnabled = getBooleanDefault(pipelineParams.isSecurityScanEnabled, true)
     isSonarAnalysisEnabled = getBooleanDefault(pipelineParams.isSonarAnalysisEnabled, true)
     veracodeApplicationScope = pipelineParams.veracodeApplicationScope ?: DEFAULT_VERACODE_APPLICATION_SCOPE
-    kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
     reportDirsList = pipelineParams.reportDirsList ?: []
+    kubernetesNamespace = pipelineParams.kubernetesNamespace ?: 'default'
+
+    //kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList ?: [APP_NAME]
+    if (pipelineParams.kubernetesDeploymentsList) {
+        log.deprecated('Parameter "kubernetesDeploymentsList" is deprecated. Please remove it from Jenkinsfile.')
+    }
 
     // Adding Sales Demo Env Configuration
     deployToSalesDemo = getBooleanDefault(pipelineParams.deployToSalesDemo, false)
@@ -126,23 +130,27 @@ def call(body) {
     log('============== Job config complete ==================')
     log("nodeLabel: ${nodeLabel}")
     log("APP_NAME: ${APP_NAME}")
-    log("ansibleRepo: ${ansibleRepo}")
-    log("ansibleRepoBranch: ${ansibleRepoBranch}")
-    log("INVENTORY_PATH: ${INVENTORY_PATH}")
-    log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
-    log("DEPLOY_APPROVERS: ${DEPLOY_APPROVERS}")
     log("BRANCH PERMISSIONS: ${branchPermissions}")
     log("DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}")
     log("publishBuildArtifact: ${publishBuildArtifact}")
     log("publishDockerImage: ${publishDockerImage}")
-    log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
-    log("ANSIBLE_DEPLOYMENT: ${ANSIBLE_DEPLOYMENT}")
     log("slackNotifictionScope: ${slackNotifictionScope}")
     log("healthCheckUrl:")
     healthCheckUrl.each { log("  - ${it}") }
     log("jdkVersion: ${jdkVersion}")
     log("mavenVersion: ${mavenVersion}")
     log("deployToSalesDemo: ${deployToSalesDemo}")
+    log("ANSIBLE_DEPLOYMENT: ${ANSIBLE_DEPLOYMENT}")
+    if(ANSIBLE_DEPLOYMENT) {
+        log("ansibleRepo: ${ansibleRepo}")
+        log("ansibleRepoBranch: ${ansibleRepoBranch}")
+        log("INVENTORY_PATH: ${INVENTORY_PATH}")
+        log("PLAYBOOK_PATH: ${PLAYBOOK_PATH}")
+    }
+    log("DEPLOY_ON_K8S: ${DEPLOY_ON_K8S}")
+    if(DEPLOY_ON_K8S) {
+        log("kubernetesNamespace: ${kubernetesNamespace}")
+    }
     log('=====================================================')
     log('')
 }

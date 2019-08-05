@@ -1,20 +1,22 @@
 import static com.nextiva.SharedJobsStaticVars.*
 
 
-def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList, String nameSpace = 'default') {
+def deploy(String serviceName, String buildVersion, String clusterDomain, List kubernetesDeploymentsList = [], String nameSpace = 'default') {
+    // kubernetesDeploymentsList is deprecated.
 
     def envName = "${clusterDomain.tokenize('.').get(0)}"
     def configSet = "aws-${envName}"
     log.info("Choosen configSet is ${configSet} for ${clusterDomain}")
 
-    kubectlInstall()
-    vaultInstall()
-    jqInstall()
-
     withEnv(["BUILD_VERSION=${buildVersion.replace('+', '-')}",
              "KUBELOGIN_CONFIG=${env.WORKSPACE}/.kubelogin",
              "KUBECONFIG=${env.WORKSPACE}/kubeconfig",
              "PATH=${env.PATH}:${WORKSPACE}"]) {
+
+        kubectlInstall()
+        vaultInstall()
+        jqInstall()
+        kubedogInstall()
 
         try {
             login(clusterDomain)
@@ -32,29 +34,30 @@ def deploy(String serviceName, String buildVersion, String clusterDomain, List k
             log.info("Deploy to the Kubernetes cluster has been completed.")
 
         } catch (e) {
-            log.warning("Deploy to the Kubernetes failed!")
-            log.warning(e)
+            log.error("Deploy to the Kubernetes failed!")
+            log.error(e)
             error("Deploy to the Kubernetes failed! $e")
         }
 
-        sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
-
-        try {
-            kubernetesDeploymentsList.each {
-                if(!it.contains('/')) {
-                    it = "deployment/${it}"
-                }
-                sh """
-                   unset KUBERNETES_SERVICE_HOST
-                   kubectl rollout status ${it} --namespace ${nameSpace}
-                """
-            }
-        } catch (e) {
-            log.warning("kubectl rollout status is failed!")
-            log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
-            log.warning(e)
-            currentBuild.rawBuild.result = Result.UNSTABLE
-        }
+        // DEPRECATED
+        //
+        //sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+        //try {
+        //    kubernetesDeploymentsList.each {
+        //        if(!it.contains('/')) {
+        //            it = "deployment/${it}"
+        //        }
+        //        sh """
+        //           unset KUBERNETES_SERVICE_HOST
+        //           kubectl rollout status ${it} --namespace ${nameSpace}
+        //        """
+        //    }
+        //} catch (e) {
+        //    log.warning("kubectl rollout status is failed!")
+        //    log.warning("Ensure that your APP_NAME variable in the Jenkinsfile and metadata.name in app-operator manifest are the same")
+        //    log.warning(e)
+        //    currentBuild.rawBuild.result = Result.UNSTABLE
+        //}
     }
 }
 
@@ -106,7 +109,7 @@ def kubectlInstall() {
         log.info("Ensure that kubectl is nstalled")
         sh "kubectl version --client=true"
     } catch (e) {
-        log.info("Going to install latest stable kubectl")
+        log.warn("kubectl is not installed, going to install latest stable kubectl version ...")
         sh """
             curl -LO https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
@@ -118,12 +121,13 @@ def kubectlInstall() {
 
 def vaultInstall() {
     try {
-        log.info("Ensure that vault is installed")
+        log.info("Ensure that vault client is installed")
         sh "command vault -v"
     } catch (e) {
-        log.info("Going to install vault client 1.1.0 version")
+        log.warn("vault client is not installed, going to install vault client ${VAULT_CLIENT_VERSION} version ...")
         sh """
-            wget -O vault.zip https://releases.hashicorp.com/vault/1.1.0/vault_1.1.0_linux_amd64.zip
+            wget -O vault.zip https://releases.hashicorp.com/vault/${VAULT_CLIENT_VERSION}/vault_${VAULT_CLIENT_VERSION}_linux_amd64.zip
+            echo "${VAULT_CLIENT_SHA256} ./vault.zip" | sha256sum -c -
             unzip -o vault.zip
             ./vault -v
            """
@@ -135,7 +139,7 @@ def jqInstall() {
         log.info("Ensure that jq is installed")
         sh "jq --version"
     } catch (e) {
-        log.info("Going to install latest stable jq")
+        log.warn("jq is not installed, going to install latest stable jq version ...")
         sh """
             curl -LO https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
             mv jq-linux64 jq
@@ -145,20 +149,106 @@ def jqInstall() {
     }
 }
 
+def kubedogInstall() {
+    log.debug("kubedogInstall start")
+    try {
+        log.info("Ensure that kubedog is installed")
+        sh "kubedog version"
+    } catch (e) {
+        log.warn("kubedog is not installed, going to install kubedog ${KUBEDOG_VERSION} version ...")
+        String out = common.shWithOutput("""
+            curl -L https://dl.bintray.com/flant/kubedog/v${KUBEDOG_VERSION}/kubedog-linux-amd64-v${KUBEDOG_VERSION} -o ./kubedog
+            echo "${KUBEDOG_SHA256} ./kubedog" | sha256sum -c - 
+            chmod +x ./kubedog""")
+        log.debug("$out")
+        sh "./kubedog version"
+    }
+    log.debug("kubedogInstall complete")
+}
+
 def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean dryRun = false) {
+    log.debug("Deploy application: ${serviceName}, namespace: ${nameSpace}, configset: ${configSet}, dryRun = ${dryRun}")
+
     String dryRunParam = dryRun ? '--dry-run' : ''
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
     String kubeupEnv = ".venv_kubeup_${common.getRandomInt()}"
+    String kubeupOutputFile = "kubeup_output_${common.getRandomInt()}.txt"
     pythonUtils.createVirtualEnv("python3", kubeupEnv)
+
+    // install kubeup
     pythonUtils.venvSh("""
-        # fix for builds running in kubernetes, clean up predefined variables.
-        for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done
+        ${unsetEnvServiceDiscovery()}
 
         pip3 install -U wheel
         pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
         kubeup -v
-
-        kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1
         """, false, kubeupEnv)
+
+    // deploy app
+    String output = pythonUtils.venvSh("""
+        ${unsetEnvServiceDiscovery()}
+
+        kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1 | tee ${kubeupOutputFile}
+        """, false, kubeupEnv)
+
+    def kubeupOutput = readFile kubeupOutputFile
+
+    if (!dryRun) {
+        sleep 15 // add sleep to avoid failures when deployment doesn't exist yet PIPELINE-93
+        validate(kubeupOutput, nameSpace)
+    }
+}
+
+def validate(String installOutput, String namespace) {
+    log.debug("find all kubernetes objects in the cloudapp in order to validate.")
+    log.debug("==========================================================================================")
+
+    List objectsToValidate = []
+    installOutput.split("\n").each {
+        log.debug("parse object $it")
+        switch (it) {
+            case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
+                log.yellowBold("Found k8s object: $it")
+                objectsToValidate.add("deployment ${extractObject(it)}")
+                break
+            case ~/^statefulset.apps.+$/:
+                log.yellowBold("Found k8s object: $it")
+                objectsToValidate.add("statefulset ${extractObject(it)}")
+                break
+            case ~/^daemonset.extentions.+$/:
+                log.yellowBold("Found k8s object: $it")
+                objectsToValidate.add("daemonset ${extractObject(it)}")
+                break
+            case ~/^job.batch.+$/:
+                log.yellowBold("Found k8s object: $it")
+                objectsToValidate.add("job ${extractObject(it)}")
+                break
+        }
+    }
+    log.debug("Collected objectsToValidate - ${objectsToValidate}")
+    log.magnetaBold("=== Kubernetes logs ======================================================================")
+    objectsToValidate.each {
+        sh "kubedog -n ${namespace} rollout track ${it} 2>&1"
+    }
+    log.magnetaBold("==========================================================================================")
+}
+
+String extractObject(String rawString) {
+    log.debug("got string: ${rawString}")
+    String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
+    log.debug("extractedObject: ${extractedObject}")
+    return extractedObject
+}
+
+String unsetEnvServiceDiscovery() {
+    // fix for builds running in kubernetes, clean up predefined variables.
+
+    String envsToUnset = ""
+    String currentEnv = common.shWithOutput("printenv")
+    currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
+        envsToUnset += "unset ${it.tokenize("=")[0]}\n"
+    }
+    log.debug("envsToUnset:\n$envsToUnset")
+    return envsToUnset
 }
