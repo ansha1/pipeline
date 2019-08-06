@@ -195,23 +195,25 @@ class Kubeup extends DeployTool {
         List objectsToValidate = []
         installOutput.split("\n").each {
             log.trace("parse object $it")
-            switch (it) {
-                case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
-                    log.trace("Found k8s object $it")
-                    objectsToValidate.add("deployment ${extractObject(it)}")
-                    break
-                case ~/^statefulset.apps.+$/:
-                    log.trace("Found k8s object $it")
-                    objectsToValidate.add("statefulset ${extractObject(it)}")
-                    break
-                case ~/^daemonset.extentions.+$/:
-                    log.trace("Found k8s object $it")
-                    objectsToValidate.add("daemonset ${extractObject(it)}")
-                    break
-                case ~/^job.batch.+$/:
-                    log.trace("Found k8s object $it")
-                    objectsToValidate.add("job ${extractObject(it)}")
-                    break
+            if(it.contains(' created') || it.contains(' configured')) {
+                switch (it) {
+                    case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
+                        log.trace("Found k8s object $it")
+                        objectsToValidate.add("deployment ${extractObject(it)}")
+                        break
+                    case ~/^statefulset.apps.+$/:
+                        log.trace("Found k8s object $it")
+                        objectsToValidate.add("statefulset ${extractObject(it)}")
+                        break
+                    case ~/^daemonset.extentions.+$/:
+                        log.trace("Found k8s object $it")
+                        objectsToValidate.add("daemonset ${extractObject(it)}")
+                        break
+                    case ~/^job.batch.+$/:
+                        log.trace("Found k8s object $it")
+                        objectsToValidate.add("job ${extractObject(it)}")
+                        break
+                }
             }
         }
         log.debug("Collected objectsToValidate", objectsToValidate)
@@ -228,6 +230,7 @@ class Kubeup extends DeployTool {
     }
 
     String unsetEnvServiceDiscovery() {
+/*
         String envsToUnset = ""
         String currentEnv = shWithOutput(script, "printenv")
         currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
@@ -235,5 +238,8 @@ class Kubeup extends DeployTool {
         }
         log.trace("envsToUnset:\n $envsToUnset")
         return envsToUnset
+        ^^^ seems, this realization has a bug which cause of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
+*/
+        return 'for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done'
     }
 }
