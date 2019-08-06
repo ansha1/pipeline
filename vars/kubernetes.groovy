@@ -206,23 +206,25 @@ def validate(String installOutput, String namespace) {
     List objectsToValidate = []
     installOutput.split("\n").each {
         log.debug("parse object $it")
-        switch (it) {
-            case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
-                log.yellowBold("Found k8s object: $it")
-                objectsToValidate.add("deployment ${extractObject(it)}")
-                break
-            case ~/^statefulset.apps.+$/:
-                log.yellowBold("Found k8s object: $it")
-                objectsToValidate.add("statefulset ${extractObject(it)}")
-                break
-            case ~/^daemonset.extentions.+$/:
-                log.yellowBold("Found k8s object: $it")
-                objectsToValidate.add("daemonset ${extractObject(it)}")
-                break
-            case ~/^job.batch.+$/:
-                log.yellowBold("Found k8s object: $it")
-                objectsToValidate.add("job ${extractObject(it)}")
-                break
+        if(it.contains(' created') && it.contains(' configured')) {
+            switch (it) {
+                case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
+                    log.yellowBold("Found k8s object: $it")
+                    objectsToValidate.add("deployment ${extractObject(it)}")
+                    break
+                case ~/^statefulset.apps.+$/:
+                    log.yellowBold("Found k8s object: $it")
+                    objectsToValidate.add("statefulset ${extractObject(it)}")
+                    break
+                case ~/^daemonset.extentions.+$/:
+                    log.yellowBold("Found k8s object: $it")
+                    objectsToValidate.add("daemonset ${extractObject(it)}")
+                    break
+                case ~/^job.batch.+$/:
+                    log.yellowBold("Found k8s object: $it")
+                    objectsToValidate.add("job ${extractObject(it)}")
+                    break
+            }
         }
     }
     log.debug("Collected objectsToValidate - ${objectsToValidate}")
