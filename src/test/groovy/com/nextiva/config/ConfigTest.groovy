@@ -1,13 +1,21 @@
 package com.nextiva.config
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import hudson.AbortException
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 
 import static com.nextiva.utils.Utils.getGlobal
 import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
+import static org.hamcrest.CoreMatchers.startsWith
 
 class ConfigTest extends BasePipelineTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none()
 
     private Script script
     private pipelineParams = [
@@ -17,7 +25,7 @@ class ConfigTest extends BasePipelineTest {
 
     @Before
     void setUp() {
-        scriptRoots += "src/test/groovy/jenkins"
+        scriptRoots += "test/jenkins"
         super.setUp()
         script = loadScript("jobs/nextivaPipeline")
         binding.setVariable 'env', [

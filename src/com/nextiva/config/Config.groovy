@@ -7,10 +7,11 @@ import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
 import com.nextiva.tools.Tool
 import com.nextiva.tools.ToolFactory
+import com.nextiva.tools.deploy.DeployTool
 import com.nextiva.utils.Logger
 import hudson.AbortException
 
-import static com.nextiva.utils.Utils.getGlobal
+import static com.nextiva.config.Global.instance as global
 import static com.nextiva.utils.Utils.setGlobalVersion
 
 class Config implements Serializable {
@@ -34,7 +35,7 @@ class Config implements Serializable {
         setExtraEnvVariables()
         configureDependencyProvisioning()
         configureBuildTools()
-        configureDeployTools()
+        configureDeployTool()
         configureDeployEnvironment()
         configureStages()
         log.debug("Configuration complete:", configuration)
@@ -115,14 +116,14 @@ class Config implements Serializable {
         log.debug("added jenkins container")
         containerResources.put("jnlp", jenkinsContainer)
         Map slaveConfiguration = ["containerResources": containerResources,
-                                  "rawYaml": """\
+                                  "rawYaml"           : """\
                                       spec:
                                         tolerations:
                                         - key: tooling.nextiva.io
                                           operator: Equal
                                           value: jenkins
                                           effect: NoSchedule
-                                  """.stripIndent() ]
+                                  """.stripIndent()]
         log.debug("slave configuration:", slaveConfiguration)
         configuration.put("slaveConfiguration", slaveConfiguration)
         log.debug("complete configureSlave()")
@@ -173,39 +174,33 @@ class Config implements Serializable {
         log.debug("complete configureBuildTools()")
     }
 
-    void configureDeployTools() {
+    void configureDeployTool() {
         log.debug("start configureDeployTools()")
-        String deployTool = configuration.get("deployTool")
-        if (deployTool != null) {
-            Map deploy = [:]
-            deploy.put(deployTool, [:])
-            configuration.put("deploy", deploy)
-        } else {
-            log.debug("deployTool is undefined")
-        }
 
-        Map<String, Map> deployTools = configuration.get("deploy")
-        if (deployTools != null) {
-            deployTools.each { tool, toolConfig ->
-                log.debug("got deploy tool $tool")
-                toolConfig.put("name", tool)
-                toolFactory.mergeWithDefaults(toolConfig)
-                putSlaveContainerResource(tool, toolConfig)
-                Tool instance = toolFactory.build(script, toolConfig)
-                toolConfig.put("instance", instance)
-            }
-            log.trace("Deploy tools after configuring:${deployTools.toString()}")
-            configuration.put("isDeployEnabled", true)
+        if (configuration.get("isDeployEnabled", true)) {
+            global.isDeployEnabled = true
+
+            String toolName = configuration.get("deployTool", "kubeup")
+            log.debug("Deploy tool is $toolName")
+
+            def toolConfig = ["name": toolName]
+            toolFactory.mergeWithDefaults(toolConfig)
+            putSlaveContainerResource(toolName, toolConfig)
+
+            DeployTool tool = toolFactory.build(script, toolConfig)
+            global.deployTool = tool
+
+            log.trace("Deploy tool after configuration: ${tool.toString()}")
         } else {
-            log.info("Deploy tools is undefined isDeployEnabled=false")
-            configuration.put("isDeployEnabled", false)
+            log.info("'isDeployEnabled' set to false. Deployment will be skipped.")
+            global.isDeployEnabled = false
         }
         log.debug("complete configureDeployTool()")
     }
 
     void configureDeployEnvironment() {
         log.debug("start configureDeployEnvironment()")
-        if (configuration.get("isDeployEnabled")) {
+        if (global.isDeployEnabled) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
             configuration.put("environmentsToDeploy", environmentsToDeploy)

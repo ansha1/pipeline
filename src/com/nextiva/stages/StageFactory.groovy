@@ -5,6 +5,8 @@ import com.nextiva.utils.Logger
 
 import java.util.regex.Pattern
 
+import static com.nextiva.config.Global.instance as global
+
 
 class StageFactory {
     Script script
@@ -17,14 +19,14 @@ class StageFactory {
     }
 
     private static final def branchingModelRegexps = [
-            any: /.+/,
-            notMaster: /^(?!master$).+/,
-            releaseOrHotfix: /^((hotfix|release)\/)/,
-            master: /^master$/,
-            mainline: /^(dev|develop)$|(hotfix|release)\//,
+            any               : /.+/,
+            notMaster         : /^(?!master$).+/,
+            releaseOrHotfix   : /^((hotfix|release)\/)/,
+            master            : /^master$/,
+            mainline          : /^(dev|develop)$|(hotfix|release)\//,
             mainlineWithMaster: /^(dev|develop|master)$|(hotfix|release)\//,
-            notMainline: /^(?!(dev|develop|master)$|(hotfix|release)\/).+/,
-            develop: /^(develop|dev)$/,
+            notMainline       : /^(?!(dev|develop|master)$|(hotfix|release)\/).+/,
+            develop           : /^(develop|dev)$/,
     ]
 
     static final Map stages = [
@@ -147,15 +149,22 @@ class StageFactory {
                     return result
                     break
                 default:
+                    if (global.properties.containsKey(key)) {
+                        def configurationValue = global.properties.get(key)
+                        log.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
+                        Boolean result = configurationValue == value
+                        log.debug("result: $result")
+                        return result
+                    }
+                    // TODO remove below if clause when all configuration will be moved into Global singleton
                     if (configuration.containsKey(key)) {
                         def configurationValue = configuration.get(key)
                         log.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
                         Boolean result = configurationValue == value
                         log.debug("result: $result")
                         return result
-                    } else {
-                        return true
                     }
+                    return true
                     break
             }
         }

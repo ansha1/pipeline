@@ -32,4 +32,9 @@ abstract class DeployTool implements Serializable, Tool {
         script.healthCheck.list(healthCheck)
         return true
     }
+
+    @Override
+    String toString() {
+        return "DeployTool{${this.properties}}";
+    }
 }
