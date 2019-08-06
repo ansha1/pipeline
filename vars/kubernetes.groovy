@@ -206,7 +206,7 @@ def validate(String installOutput, String namespace) {
     List objectsToValidate = []
     installOutput.split("\n").each {
         log.debug("parse object $it")
-        if(it.contains(' created') && it.contains(' configured')) {
+        if(it.contains(' created') || it.contains(' configured')) {
             switch (it) {
                 case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
                     log.yellowBold("Found k8s object: $it")
