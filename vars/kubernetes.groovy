@@ -253,5 +253,8 @@ String unsetEnvServiceDiscovery() {
     //
     // ^^^ seems, this realization has a bug which cause of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
 
-    return 'for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done'
+    return sh(
+            script: '''for i in $(set | grep '_SERVICE_\\|_PORT' | cut -f1 -d= | tr '\n' ' '); do echo unset $i; done''',
+            returnStdout: true
+    ).trim()
 }
