@@ -251,7 +251,7 @@ String unsetEnvServiceDiscovery() {
     //log.debug("envsToUnset:\n$envsToUnset")
     //return envsToUnset
     //
-    // ^^^ seems, this realization has a bug which case of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
+    // ^^^ seems, this realization has a bug which cause of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
 
     return 'for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done'
 }
