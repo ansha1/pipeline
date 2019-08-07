@@ -65,6 +65,10 @@ abstract class BuildTool implements Serializable, Tool {
         tryExec("integrationTest", integrationTestCommands, postIntegrationTestCommands)
     }
 
+    void postDeploy() {
+        tryExec("postDeploy", postDeployCommands, null)
+    }
+
     void publish() {
         tryExec("publishArtifact", publishCommands, null)
     }
