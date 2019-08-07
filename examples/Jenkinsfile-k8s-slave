@@ -1,4 +1,5 @@
 @Library('pipeline') _
+
 channelToNotify = "testchannel"  //Put your Slack channel here
 
 Map buildMap = ["image"                : "node:8.15",       //Specify the build image for your builds

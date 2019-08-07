@@ -28,7 +28,6 @@ def call(body) {
         PLAYBOOK_PATH = pipelineParams.PLAYBOOK_PATH
         DEPLOY_ON_K8S = pipelineParams.DEPLOY_ON_K8S
         ANSIBLE_DEPLOYMENT = pipelineParams.ANSIBLE_DEPLOYMENT
-        DEPLOY_APPROVERS = pipelineParams.DEPLOY_APPROVERS
         CHANNEL_TO_NOTIFY = pipelineParams.CHANNEL_TO_NOTIFY
         channelToNotifyPerBranch = pipelineParams.channelToNotifyPerBranch
         buildNumToKeepStr = pipelineParams.buildNumToKeepStr
@@ -42,12 +41,15 @@ def call(body) {
         isSecurityScanEnabled = pipelineParams.isSecurityScanEnabled
         isSonarAnalysisEnabled = pipelineParams.isSonarAnalysisEnabled
         veracodeApplicationScope = pipelineParams.veracodeApplicationScope
-        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
         reportDirsList = pipelineParams.reportDirsList
         // Adding Sales Demo Env Configuration
         deployToSalesDemo = pipelineParams.deployToSalesDemo
         kubernetesClusterSalesDemo = pipelineParams.kubernetesClusterSalesDemo
         inventoryDirectorySalesDemo = pipelineParams.inventoryDirectorySalesDemo
+        kubernetesNamespace = pipelineParams.kubernetesNamespace
+
+        // Deprecated
+        kubernetesDeploymentsList = pipelineParams.kubernetesDeploymentsList
     }
 
     def securityPermissions = jobConfig.branchProperties
@@ -129,7 +131,7 @@ def call(body) {
                                 if (utils.verifyPackageInNexus(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.DEPLOY_ENVIRONMENT)) {
                                     try {
                                         timeout(time: 15, unit: 'MINUTES') {
-                                            approve("Increase a patch version for ${jobConfig.APP_NAME}", "${BUILD_URL}input/",
+                                            approve("Increase a patch version for ${jobConfig.APP_NAME}",
                                                     "Package *${jobConfig.APP_NAME}* with version *${jobConfig.BUILD_VERSION}* " +
                                                     "already exists in Nexus. \n" +
                                                     "Do you want to increase a patch version and continue the process?",
@@ -231,7 +233,7 @@ def call(body) {
                         def languageVersion = jobConfig.projectFlow.get('languageVersion') ?: 'UNKNOWN'
                         def securityScanJob = "${common.getRepositoryNameFromUrl(env.GIT_URL)}-security-scan"
 
-                        if (jobConfig.projectFlow.get('language') == 'java' && jobExists(securityScanJob)) {
+                        if (jobExists(securityScanJob)) {
                             build job: securityScanJob, parameters: [string(name: 'Branch', value: env.BRANCH_NAME)], wait: false
                         } else {
                             build job: 'securityScan', parameters: [string(name: 'appName', value: jobConfig.APP_NAME),
@@ -257,15 +259,14 @@ def call(body) {
                         }
                         steps {
                             script {
-                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                                 }
                                 log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                 log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                 kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesCluster,
-                                        jobConfig.kubernetesDeploymentsList)
-
-                                newrelic.postDeployment(jobConfig)
+                                        [], jobConfig.kubernetesNamespace)
+                                newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
                     }
@@ -282,9 +283,9 @@ def call(body) {
                                     log.info("BUILD_VERSION: ${jobConfig.BUILD_VERSION}")
                                     log.info("$jobConfig.APP_NAME default $jobConfig.kubernetesCluster $jobConfig.BUILD_VERSION")
                                     kubernetes.deploy(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.kubernetesClusterSalesDemo,
-                                            jobConfig.kubernetesDeploymentsList)
+                                            [], jobConfig.kubernetesNamespace)
 
-                                    newrelic.postDeployment(jobConfig)
+                                    newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {
                                     log.warning("Kubernetes deployment to Sales Demo failed.\n${e}")
                                     currentBuild.result = 'UNSTABLE'
@@ -300,15 +301,15 @@ def call(body) {
                         }
                         steps {
                             script {
-                                if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                                if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                     def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                     runAnsiblePlaybook(repoDir, jobConfig.INVENTORY_PATH, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                 }
-                                newrelic.postDeployment(jobConfig)
+                                newrelic.postDeployment(jobConfig, jobConfig.ANSIBLE_ENV)
                             }
                         }
                     }
@@ -327,7 +328,7 @@ def call(body) {
                                         runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
 
-                                    newrelic.postDeployment(jobConfig)
+                                    newrelic.postDeployment(jobConfig, "demo")
                                 } catch (e) {
                                     log.warning("Ansible deployment to Sales Demo failed.\n${e}")
                                     currentBuild.result = Result.UNSTABLE
@@ -411,8 +412,8 @@ def call(body) {
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
-                    if (env.BRANCH_NAME ==~ /^(release\/.+)$/) {
-                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, SLACK_STATUS_REPORT_CHANNEL_RC)
+                    if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
+                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
                     }
                 }
             }

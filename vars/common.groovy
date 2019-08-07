@@ -173,3 +173,10 @@ String getCommitMessage() {
 private getJobName() {
     return URLDecoder.decode(env.JOB_NAME.toString(), 'UTF-8')
 }
+
+String shWithOutput(String command) {
+    return sh(
+            script: "${command} 2>&1",
+            returnStdout: true
+    ).trim()
+}

@@ -147,7 +147,9 @@ def cleanupAfterTests() {
         common.remoteSh('10.103.50.61', 'rm -rf /data/js-test/dev/*')
     }, cleanupJava: {
         common.serviceStop('10.103.50.110', 'test-java-pipeline.service')
-    }, cleanupPython: {
-        common.serviceStop('10.103.50.112', 'test-python-pipeline.uwsgi.service')
     }
+    // Python Integration test application is deploying to Kubernetes
+    //}, cleanupPython: {
+    //    common.serviceStop('10.103.50.112', 'test-python-pipeline.uwsgi.service')
+    //}
 }
