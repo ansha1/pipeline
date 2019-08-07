@@ -180,3 +180,10 @@ String shWithOutput(String command) {
             returnStdout: true
     ).trim()
 }
+
+String cmdBash(String cmd, String bashParams = "-e -o pipefail") {
+    // Prepare command to run with bash interpreter
+    return """
+        /bin/bash ${bashParams} -с "${cmd}"
+    """.stripIndent()
+}

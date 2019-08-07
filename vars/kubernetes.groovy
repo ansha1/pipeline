@@ -187,11 +187,11 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
         """, false, kubeupEnv)
 
     // deploy app
-    String output = pythonUtils.venvSh("""
+    pythonUtils.venvSh(common.cmdBash("""
         ${unsetEnvServiceDiscovery()}
 
         kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1 | tee ${kubeupOutputFile}
-        """, false, kubeupEnv)
+        """), false, kubeupEnv)
 
     String kubeupOutput = readFile kubeupOutputFile
     return kubeupOutput
