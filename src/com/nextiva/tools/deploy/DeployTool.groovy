@@ -1,5 +1,6 @@
 package com.nextiva.tools.deploy
 
+import com.nextiva.environment.Environment
 import com.nextiva.tools.Tool
 import com.nextiva.utils.Logger
 
@@ -33,8 +34,10 @@ abstract class DeployTool implements Serializable, Tool {
         return true
     }
 
+    abstract void deploy(Environment environment)
+
     @Override
     String toString() {
-        return "DeployTool{${this.properties}}";
+        return "DeployTool{${this.properties}}"
     }
 }

@@ -1,5 +1,7 @@
 package com.nextiva.tools.deploy
 
+import com.nextiva.environment.Environment
+
 import static com.nextiva.utils.GitUtils.clone
 
 class Ansible extends DeployTool {
@@ -24,16 +26,15 @@ class Ansible extends DeployTool {
         initialized = true
     }
 
-    Boolean deploy() {
-        environments.each {
-            script.stage("ansible: $it.environmentName") {
-                script.container(getName()) {
-                    script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
-                }
+    @Override
+    void deploy(Environment environment) {
+        script.stage("ansible: $it.environmentName") {
+            script.container(getName()) {
+                script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
             }
-            stage("healthcheck: $it.environmentName") {
-                health(it.healthChecks)
-            }
+        }
+        stage("healthcheck: $it.environmentName") {
+            health(it.healthChecks)
         }
     }
 

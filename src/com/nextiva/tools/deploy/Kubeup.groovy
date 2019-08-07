@@ -1,9 +1,11 @@
 package com.nextiva.tools.deploy
 
+import com.nextiva.environment.Environment
+import com.nextiva.tools.ToolFactory
 import hudson.AbortException
-import hudson.slaves.Cloud
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
+import static com.nextiva.config.Global.instance as global
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
@@ -34,6 +36,16 @@ class Kubeup extends DeployTool {
         this.cloudPlatform = new Repository("$toolHome/cloud-platform",
                 deployToolConfig.get("cloudPlatformRepository"),
                 deployToolConfig.get("cloudPlatformBranch"))
+    }
+
+    @Override
+    void deploy(Environment environment) {
+        ToolFactory toolFactory = new ToolFactory()
+        Map toolMap = ["name": "kubeup"]
+        toolFactory.mergeWithDefaults(toolMap)
+        Kubeup kubeup = toolFactory.build(script, toolMap)
+        kubeup.init(environment.kubernetesCluster)
+        kubeup.deploy(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet)
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
@@ -195,7 +207,7 @@ class Kubeup extends DeployTool {
         List objectsToValidate = []
         installOutput.split("\n").each {
             log.trace("parse object $it")
-            if(it.contains(' created') || it.contains(' configured')) {
+            if (it.contains(' created') || it.contains(' configured')) {
                 switch (it) {
                     case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
                         log.trace("Found k8s object $it")

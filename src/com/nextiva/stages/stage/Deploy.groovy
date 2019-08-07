@@ -1,8 +1,9 @@
 package com.nextiva.stages.stage
 
+import com.nextiva.tools.build.BuildTool
 import com.nextiva.tools.deploy.DeployTool
 
-import static com.nextiva.utils.Utils.shOrClosure
+import static com.nextiva.config.Global.instance as global
 
 class Deploy extends Stage {
     Deploy(Script script, Map configuration) {
@@ -11,24 +12,28 @@ class Deploy extends Stage {
 
     @Override
     def stageBody() {
-        Map deploy = configuration.get("build")
-        deploy.each { toolName, toolConfig ->
-            withStage("${toolName} ${stageName}") {
-                DeployTool tool = toolConfig.get("instance")
-                try {
-                    tool.deploy()
-                    def postDeployCommands = toolConfig.get("postDeployCommands")
-                    if (postDeployCommands != null) {
-                        withStage("${toolName} ${stageName} postDeploy") {
-                            def output = shOrClosure(script, postDeployCommands)
-                            log.info("$output")
-                        }
-                    }
-                } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName}:", e)
-                    throw e
-                }
+        for (environment in global.environmentsToDeploy) {
+            doDeploy(global.deployTool, environment)
+        }
+        doPostDeploy()
+    }
+
+    private void doDeploy(DeployTool tool, environment) {
+        withStage("$tool.name $stageName: Deploy to ${environment.name}") {
+            try {
+                tool.deploy(environment)
+            } catch (e) {
+                log.error("Error when executing $tool.name $stageName:", e)
+                throw e
             }
+        }
+    }
+
+    private void doPostDeploy() {
+        Map tools = configuration.get("build")
+        tools.each { toolName, toolConfig ->
+            BuildTool tool = toolConfig.get("instance")
+            tool.postDeploy()
         }
     }
 }
