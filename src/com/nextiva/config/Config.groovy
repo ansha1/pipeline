@@ -1,7 +1,6 @@
 package com.nextiva.config
 
 
-import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
@@ -202,8 +201,8 @@ class Config implements Serializable {
         log.debug("start configureDeployEnvironment()")
         if (global.isDeployEnabled) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
-            List<Environment> environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
-            configuration.put("environmentsToDeploy", environmentsToDeploy)
+            global.environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
+            configuration.put("environmentsToDeploy", global.environmentsToDeploy)
         }
         log.debug("complete configureDeployEnvironment()")
     }
