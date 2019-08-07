@@ -181,8 +181,6 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
 
     // install kubeup
     pythonUtils.venvSh("""
-        ${unsetEnvServiceDiscovery()}
-
         pip3 install -U wheel
         pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
         kubeup -v
@@ -245,11 +243,15 @@ String extractObject(String rawString) {
 String unsetEnvServiceDiscovery() {
     // fix for builds running in kubernetes, clean up predefined variables.
 
-    String envsToUnset = ""
-    String currentEnv = common.shWithOutput("printenv")
-    currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
-        envsToUnset += "unset ${it.tokenize("=")[0]}\n"
-    }
-    log.debug("envsToUnset:\n$envsToUnset")
-    return envsToUnset
+    //String envsToUnset = ""
+    //String currentEnv = common.shWithOutput("printenv")
+    //currentEnv.split("\n").findAll { it ==~ ~/.+(_SERVICE_|_PORT).+/ }.each {
+    //    envsToUnset += "unset ${it.tokenize("=")[0]}\n"
+    //}
+    //log.debug("envsToUnset:\n$envsToUnset")
+    //return envsToUnset
+    //
+    // ^^^ seems, this realization has a bug which case of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
+
+    return 'for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done'
 }
