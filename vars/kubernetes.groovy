@@ -187,11 +187,11 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
         """, false, kubeupEnv)
 
     // deploy app
-    String output = pythonUtils.venvSh("""
+    pythonUtils.venvSh(common.cmdBash("""
         ${unsetEnvServiceDiscovery()}
 
         kubeup --yes --no-color ${dryRunParam} ${nameSpaceParam} --configset ${configSet} ${serviceName} 2>&1 | tee ${kubeupOutputFile}
-        """, false, kubeupEnv)
+        """), false, kubeupEnv)
 
     String kubeupOutput = readFile kubeupOutputFile
     return kubeupOutput
@@ -253,5 +253,8 @@ String unsetEnvServiceDiscovery() {
     //
     // ^^^ seems, this realization has a bug which cause of error - Error java.io.NotSerializableException: org.codehaus.groovy.util.ArrayIterator
 
-    return 'for i in \$(set | grep "_SERVICE_\\|_PORT" | cut -f1 -d=); do unset \$i; done'
+    return sh(
+            script: '''for i in $(set | grep '_SERVICE_\\|_PORT' | cut -f1 -d= | tr '\n' ' '); do echo unset $i; done''',
+            returnStdout: true
+    ).trim()
 }
