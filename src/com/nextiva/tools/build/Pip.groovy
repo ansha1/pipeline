@@ -7,22 +7,25 @@ import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
 
 class Pip extends BuildTool {
-    def defaultUnitTestCommands = """\
-                                  pip install -r requirements.txt
-                                  pip install -r requirements-test.txt
-                                  python setup.py test
-                                  """.stripIndent()
-    def defaultPublishCommands = {
-        script.buildPublishPypiPackage(pathToSrc, null, 'python')
-    }
+
+    def defaultCommands = [
+            unitTest: """\
+                pip install -r requirements.txt
+                pip install -r requirements-test.txt
+                python setup.py test
+            """.stripIndent(),
+            publish : {
+                script.buildPublishPypiPackage(pathToSrc, null, 'python')
+            },
+    ]
 
     Pip(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
         if (unitTestCommands == null) {
-            unitTestCommands = defaultUnitTestCommands
+            unitTestCommands = defaultCommands.unitTest
         }
         if (publishCommands == null) {
-            publishCommands = defaultPublishCommands
+            publishCommands = defaultCommands.publish
         }
     }
 
