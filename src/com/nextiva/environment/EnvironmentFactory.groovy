@@ -51,7 +51,7 @@ class EnvironmentFactory {
         List<Environment> environments = []
         Map envs = environment.findAll { branchName ==~ it.value.branchPattern }
         envs.each {
-            environments.add(new Environment(it))
+            environments.add(new Environment(it.value))
         }
         return environments
     }
