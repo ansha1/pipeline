@@ -17,6 +17,7 @@ class Pip extends BuildTool {
             publish : {
                 script.buildPublishPypiPackage(pathToSrc, null, 'python')
             },
+            build   : 'pip install -r requirements.txt'
     ]
 
     Pip(Script script, Map toolConfiguration) {
@@ -26,6 +27,9 @@ class Pip extends BuildTool {
         }
         if (publishCommands == null) {
             publishCommands = defaultCommands.publish
+        }
+        if (buildCommands == null) {
+            buildCommands = defaultCommands.build
         }
     }
 
