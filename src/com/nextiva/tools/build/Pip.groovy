@@ -5,6 +5,7 @@ import hudson.AbortException
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
+import static com.nextiva.utils.Utils.shWithOutput
 
 class Pip extends BuildTool {
 
@@ -15,6 +16,12 @@ class Pip extends BuildTool {
                 python setup.py test
             """.stripIndent(),
             publish : {
+                script.container(name) {
+                    def command = 'pip install twine'
+                    def output = shWithOutput(script, command)
+                    log.info("$output")
+                    return output
+                }
                 script.buildPublishPypiPackage(pathToSrc, null, 'python')
             },
             build   : 'pip install -r requirements.txt'
