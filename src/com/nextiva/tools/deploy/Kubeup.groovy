@@ -49,10 +49,15 @@ class Kubeup extends DeployTool {
     }
 
     Boolean deploy(String cloudApp, String version, String namespace, String configset) {
-        if (!isInitialized()) {
-            log.error("Kubeup is not initialized, aborting...")
-            throw new AbortException("Kubeup is not installed, aborting...")
-        }
+//        TODO isInitialized() causes
+//         java.lang.StackOverflowError: Excessively nested closures/functions at
+//             com.nextiva.tools.deploy.DeployTool.isInitialized(src/com/nextiva/tools/deploy/DeployTool.groovy:29) -
+//             look for unbounded recursion - call depth: 1025
+//
+//        if (!isInitialized()) {
+//            log.error("Kubeup is not initialized, aborting...")
+//            throw new AbortException("Kubeup is not installed, aborting...")
+//        }
         log.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
 
         log.info('Checking of application manifests ...')
