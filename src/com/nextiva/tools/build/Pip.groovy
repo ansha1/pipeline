@@ -13,7 +13,7 @@ class Pip extends BuildTool {
                                   python setup.py test
                                   """.stripIndent()
     def defaultPublishCommands = {
-        script.buildPublishPypiPackage(pathToSrc)
+        script.buildPublishPypiPackage(pathToSrc, null, 'python')
     }
 
     Pip(Script script, Map toolConfiguration) {
