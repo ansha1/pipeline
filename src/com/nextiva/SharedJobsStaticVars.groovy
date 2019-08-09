@@ -83,6 +83,6 @@ class SharedJobsStaticVars {
      Enable sending interactive Slack message through Jenkins Bot.
      If Jenkins Bot doesn't work then we can disable it and switch back to the non-interactive notification.
      */
-    static final JENKINS_BOT_ENABLE = true
+    static final JENKINS_BOT_ENABLE = false
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
 }
