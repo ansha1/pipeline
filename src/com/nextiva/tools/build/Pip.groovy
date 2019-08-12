@@ -19,7 +19,7 @@ class Pip extends BuildTool {
                 script.container(name) {
                     def command = 'pip install twine'
                     def output = shWithOutput(script, command)
-                    log.info("$output")
+                    logger.info("$output")
                     return output
                 }
                 script.buildPublishPypiPackage(pathToSrc, null, 'python')
@@ -62,7 +62,7 @@ class Pip extends BuildTool {
     void sonarScan() {
         execute {
             //TODO: add sonar implementation
-            log.info("this step should be implemented")
+            logger.info("this step should be implemented")
         }
     }
 
@@ -70,7 +70,7 @@ class Pip extends BuildTool {
     void securityScan() {
         execute {
             //TODO: add securityScan implementation
-            log.info("this step should be implemented")
+            logger.info("this step should be implemented")
         }
     }
 

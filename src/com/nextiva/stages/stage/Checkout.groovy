@@ -1,7 +1,5 @@
 package com.nextiva.stages.stage
 
-import com.nextiva.utils.Logger
-
 class Checkout extends Stage {
     Checkout(Script script, Map configuration) {
         super(script, configuration)
@@ -18,7 +16,7 @@ class Checkout extends Stage {
                     userRemoteConfigs                : script.scm.userRemoteConfigs
             ])
         } catch (e) {
-            log.error("Error when executing ${stageName}:", e)
+            logger.error("Error when executing ${stageName}:", e)
             throw e
         }
     }

@@ -12,7 +12,7 @@ import hudson.AbortException
 import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 
 class ToolFactory {
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
 
     Tool build(Script script, Map toolConfig) {
         switch (toolConfig.get("name")) {
@@ -35,20 +35,20 @@ class ToolFactory {
                 return new Kubeup(script, toolConfig)
                 break
             default:
-                log.error("Can't create tool from", toolConfig)
+                logger.error("Can't create tool from", toolConfig)
                 throw new AbortException("Can't create deployment class from $toolConfig")
         }
     }
 
     void mergeWithDefaults(Map toolConfig) {
         String tool = toolConfig.get("name")
-        log.debug("got tool $tool")
+        logger.debug("got tool $tool")
         Map defaultConfig = DEFAULT_TOOL_CONFIGURATION.get(tool)
         if (defaultConfig == null) {
             throw new AbortException("There is no configuration for this tool $tool, aborting...")
         }
-        log.debug("got default tool config", defaultConfig)
+        logger.debug("got default tool config", defaultConfig)
         toolConfig << (defaultConfig + toolConfig)
-        log.debug("toolСonfig after merge", toolConfig)
+        logger.debug("toolСonfig after merge", toolConfig)
     }
 }

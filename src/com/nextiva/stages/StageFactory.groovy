@@ -11,7 +11,7 @@ import static com.nextiva.config.Global.instance as global
 class StageFactory {
     Script script
     Map configuration
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
 
     StageFactory(Script script, Map configuration) {
         this.script = script
@@ -111,18 +111,18 @@ class StageFactory {
     }
 
     List<Stage> getStagesFromConfiguration() {
-        log.debug("Check what steps are allowed to perform with this configuration")
+        logger.debug("Check what steps are allowed to perform with this configuration")
         List<Stage> flow = []
         stages.each { k, v ->
-            log.debug("Trying to create stage: $k  with definition: \n $v \n")
+            logger.debug("Trying to create stage: $k  with definition: \n $v \n")
             Boolean executing = checkForExecuting(v, configuration)
-            log.debug("Stage $k add: $executing")
+            logger.debug("Stage $k add: $executing")
             if (executing) {
                 flow.add(createStage(v.get("class")))
             }
         }
-        log.debug("======================================================================================")
-        log.debug("Current flow: $flow ")
+        logger.debug("======================================================================================")
+        logger.debug("Current flow: $flow ")
         return flow
     }
 
@@ -133,7 +133,7 @@ class StageFactory {
         Boolean executing = false
 
         executing = stageDefinition.every { key, value ->
-            log.debug("Checking key $key")
+            logger.debug("Checking key $key")
             switch (key) {
                 case "class":
                     return true
@@ -142,26 +142,26 @@ class StageFactory {
                     String branchingModel = configuration.get("branchingModel")
                     Pattern branchPattern = Pattern.compile(value.get(branchingModel))
                     String branchName = configuration.get("branchName")
-                    log.debug("Branching model from configuration: $branchingModel")
-                    log.debug("Comparing branch pattern $branchPattern with branch $branchName")
+                    logger.debug("Branching model from configuration: $branchingModel")
+                    logger.debug("Comparing branch pattern $branchPattern with branch $branchName")
                     Boolean result = branchName ==~ branchPattern
-                    log.debug("result: $result")
+                    logger.debug("result: $result")
                     return result
                     break
                 default:
                     if (global.properties.containsKey(key)) {
                         def configurationValue = global.properties.get(key)
-                        log.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
+                        logger.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
                         Boolean result = configurationValue == value
-                        log.debug("result: $result")
+                        logger.debug("result: $result")
                         return result
                     }
                     // TODO remove below if clause when all configuration will be moved into Global singleton
                     if (configuration.containsKey(key)) {
                         def configurationValue = configuration.get(key)
-                        log.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
+                        logger.debug("comparing configuration value: $configurationValue and definition value: $value for this key: $key")
                         Boolean result = configurationValue == value
-                        log.debug("result: $result")
+                        logger.debug("result: $result")
                         return result
                     }
                     return true

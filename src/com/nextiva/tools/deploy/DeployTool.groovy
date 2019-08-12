@@ -8,7 +8,7 @@ abstract class DeployTool implements Serializable, Tool {
 
     Script script
     String name
-    Logger log
+    Logger logger
     String toolHome
     Boolean initialized = false
 
@@ -21,8 +21,8 @@ abstract class DeployTool implements Serializable, Tool {
         this.toolHome = "${script.env.WORKSPACE}/deploy/${name}"
         this.repository = deployToolConfig.get("repository")
         this.branch = deployToolConfig.get("branch")
-        this.log = new Logger(this)
-        log.debug("created tool - name: ${this.name}, toolHome:${this.toolHome}, repository: ${this.repository}, branch: ${this.branch}")
+        this.logger = new Logger(this)
+        logger.debug("created tool - name: ${this.name}, toolHome:${this.toolHome}, repository: ${this.repository}, branch: ${this.branch}")
     }
 
     Boolean isInitialized(){

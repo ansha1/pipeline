@@ -19,17 +19,17 @@ class ConfigureProjectVersion extends Stage {
 
         Map build = configuration.get("build")
         build.find { toolName, toolConfiguration ->
-            log.debug("Getting version from $toolName")
+            logger.debug("Getting version from $toolName")
             BuildTool tool = toolConfiguration.get("instance")
             version = tool.getVersion()
-            log.debug("Found verison is $version")
+            logger.debug("Found verison is $version")
             return isValidVersion(version)
         }
 
         if (!isValidVersion(version)) {
             throw new AbortException('Unable to determine application version with the build tools you have defined.')
         }
-        log.debug("Setting global version to $version")
+        logger.debug("Setting global version to $version")
         setGlobalVersion(version)
     }
 

@@ -6,7 +6,7 @@ import hudson.model.Result
 
 def call(body) {
     Logger.init(this, env.JOB_LOG_LEVEL)
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
@@ -14,7 +14,7 @@ def call(body) {
             body.resolveStrategy = Closure.DELEGATE_FIRST
             body.delegate = pipelineParams
             body()
-            log.info("Starting Nextiva Pipeline")
+            logger.info("Starting Nextiva Pipeline")
             Config config = new Config(this, pipelineParams)
             config.configure()
             kubernetesSlave(config.getSlaveConfiguration()) {
@@ -25,7 +25,7 @@ def call(body) {
 }
 
 void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
     //exclude steps than should be executed in the finally block
     Stage notify = stages.pop()
     Stage resultsCollector = stages.pop()
@@ -33,7 +33,7 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
     try {
         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
             stages.each {
-                log.debug("executing stage", it)
+                logger.debug("executing stage", it)
                 it.execute()
             }
         }
@@ -41,7 +41,7 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
         //some error handling
         currentBuild.result = "FAILED"
         currentBuild.rawBuild.result = Result.FAILURE
-        log.error("error in the pipeline execution", t)
+        logger.error("error in the pipeline execution", t)
     } finally {
         //test results collecting
         resultsCollector.execute()

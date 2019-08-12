@@ -18,11 +18,11 @@ class Ansible extends DeployTool {
 //                      "playbookPath" : 'ansible/role-based_playbooks/java-app.yml',
 //                      "ansibleArgs"  : 'args']
     void init() {
-        log.debug("start init $name tool")
-        log.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
+        logger.debug("start init $name tool")
+        logger.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
         clone(script, repository, branch, toolHome)
-        log.debug("clone complete")
-        log.debug("init complete")
+        logger.debug("clone complete")
+        logger.debug("init complete")
         initialized = true
     }
 

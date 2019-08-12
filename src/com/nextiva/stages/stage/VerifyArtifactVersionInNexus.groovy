@@ -15,9 +15,9 @@ class VerifyArtifactVersionInNexus extends Stage {
             withStage("${toolName} ${stageName}") {
                 BuildTool tool = toolConfiguration.get("instance")
                 try {
-                    log.debug("checking artifact availability for ${toolName}")
+                    logger.debug("checking artifact availability for ${toolName}")
                     if (tool.isArtifactAvailableInRepo()) {
-                        log.info("the artifact is already exist")
+                        logger.info("the artifact is already exist")
 //                        TODO: add jenkins approve step for autoincrement
 //                        try {
 //                            timeout(time: 15, unit: 'MINUTES') {
@@ -45,10 +45,10 @@ class VerifyArtifactVersionInNexus extends Stage {
 //                    }
 
                     } else {
-                        log.info("Current artifact version is not exist in the Nexus, continue...")
+                        logger.info("Current artifact version is not exist in the Nexus, continue...")
                     }
                 } catch (e) {
-                    log.error("Error when executing ${toolName} ${stageName}:", e)
+                    logger.error("Error when executing ${toolName} ${stageName}:", e)
                     throw e
                 }
             }

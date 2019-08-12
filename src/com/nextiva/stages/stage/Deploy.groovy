@@ -23,7 +23,7 @@ class Deploy extends Stage {
             try {
                 tool.deploy(environment)
             } catch (e) {
-                log.error("Error when executing $tool.name $stageName:", e)
+                logger.error("Error when executing $tool.name $stageName:", e)
                 throw e
             }
         }

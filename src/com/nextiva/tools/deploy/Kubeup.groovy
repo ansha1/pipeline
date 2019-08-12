@@ -58,30 +58,30 @@ class Kubeup extends DeployTool {
 //            log.error("Kubeup is not initialized, aborting...")
 //            throw new AbortException("Kubeup is not installed, aborting...")
 //        }
-        log.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
+        logger.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
 
-        log.info('Checking of application manifests ...')
+        logger.info('Checking of application manifests ...')
         install(cloudApp, version, namespace, configset, true)
-        log.info('Deploying application into Kubernetes ...')
+        logger.info('Deploying application into Kubernetes ...')
         install(cloudApp, version, namespace, configset, false)
         println("this is kubernetes deployment" + toString())
         return true
     }
 
     void init(String clusterDomain) {
-        log.debug("start init $name tool")
+        logger.debug("start init $name tool")
 
-        log.debug("Clonning repository $repository branch $branch into $kubeUpHome")
+        logger.debug("Clonning repository $repository branch $branch into $kubeUpHome")
         clone(script, repository, branch, kubeUpHome)
-        log.debug("clone complete")
+        logger.debug("clone complete")
 
-        log.debug("Clonning repository $cloudApps.repository branch $cloudApps.branch into $cloudApps.path")
+        logger.debug("Clonning repository $cloudApps.repository branch $cloudApps.branch into $cloudApps.path")
         clone(script, cloudApps.repository, cloudApps.branch, cloudApps.path)
-        log.debug("clone complete")
+        logger.debug("clone complete")
 
-        log.debug("Clonning repository $cloudPlatform.repository branch $cloudPlatform.branch into $cloudPlatform.path")
+        logger.debug("Clonning repository $cloudPlatform.repository branch $cloudPlatform.branch into $cloudPlatform.path")
         clone(script, cloudPlatform.repository, cloudPlatform.branch, cloudPlatform.path)
-        log.debug("clone complete")
+        logger.debug("clone complete")
 
         script.container(name) {
             script.dir(toolHome) {
@@ -95,61 +95,61 @@ class Kubeup extends DeployTool {
             }
             kubeLogin(clusterDomain)
         }
-        log.debug("init complete")
+        logger.debug("init complete")
         initialized = true
     }
 
     def kubeupInstall() {
-        log.debug("kubeupInstall start")
+        logger.debug("kubeupInstall start")
         try {
             script.sh "kubeup --version"
         } catch (e) {
             throw new AbortException("kubeup is not installed, aborting... $e")
         }
-        log.debug("kubeupInstall complete")
+        logger.debug("kubeupInstall complete")
     }
 
     def kubedogInstall() {
-        log.debug("kubedogInstall start")
+        logger.debug("kubedogInstall start")
         try {
             String output = shWithOutput(script, "kubedog version")
-            log.debug("$output")
+            logger.debug("$output")
         } catch (e) {
-            log.warn("kubedog is not installed, going to install kubedog...")
+            logger.warn("kubedog is not installed, going to install kubedog...")
             String out = shWithOutput(script, """
             curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
             chmod +x $toolHome/kubedog
             kubedog version""")
-            log.debug("$out")
+            logger.debug("$out")
             script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
         }
-        log.debug("kubedogInstall complete")
+        logger.debug("kubedogInstall complete")
     }
 
     def kubectlInstall() {
-        log.debug("kubectlInstall start")
+        logger.debug("kubectlInstall start")
         script.kubernetes.kubectlInstall()
-        log.debug("kubectlInstall complete")
+        logger.debug("kubectlInstall complete")
     }
 
     def vaultInstall() {
-        log.debug("vaultInstall start")
+        logger.debug("vaultInstall start")
         script.kubernetes.vaultInstall()
-        log.debug("vaultInstall complete")
+        logger.debug("vaultInstall complete")
     }
 
     def jqInstall() {
-        log.debug("jqInstall start")
+        logger.debug("jqInstall start")
         script.kubernetes.jqInstall()
-        log.debug("jqInstall complete")
+        logger.debug("jqInstall complete")
     }
 
     def kubeloginInstall() {
-        log.debug("going to install kubelogin")
+        logger.debug("going to install kubelogin")
         //TODO: add kubelogin install method
 //            script.kubernetes.kubeloginInstall()
-        log.debug("kubelogin complete")
-        log.debug("setting env variables")
+        logger.debug("kubelogin complete")
+        logger.debug("setting env variables")
         script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
         script.env.KUBECONFIG = "${toolHome}/kubeconfig"
     }
@@ -162,26 +162,26 @@ class Kubeup extends DeployTool {
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
             """)
-            log.debug("Kubelogin output", output)
+            logger.debug("Kubelogin output", output)
         }
     }
 
     def vaultLogin(String vaultUrl) {
-        log.debug("trying to login in the Vault")
+        logger.debug("trying to login in the Vault")
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
                 String output = shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
-                log.trace("Vault login output", output)
+                logger.trace("Vault login output", output)
             } catch (e) {
-                log.error("Error! Got an error trying to initiate the connect with Vault \n output $output", e)
+                logger.error("Error! Got an error trying to initiate the connect with Vault \n output $output", e)
                 throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
             }
         }
-        log.debug("Vault login complete")
+        logger.debug("Vault login complete")
     }
 
     def install(String application, String version, String namespace, String configset, Boolean dryRun = true) {
-        log.debug("Install application: $application, version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
+        logger.debug("Install application: $application, version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
         String output = ""
         try {
             script.container(name) {
@@ -206,43 +206,43 @@ class Kubeup extends DeployTool {
     }
 
     def validate(String installOutput, String namespace) {
-        log.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
-        log.debug("==========================================================================================")
+        logger.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
+        logger.debug("==========================================================================================")
 
         List objectsToValidate = []
         installOutput.split("\n").each {
-            log.trace("parse object $it")
+            logger.trace("parse object $it")
             if (it.contains(' created') || it.contains(' configured')) {
                 switch (it) {
                     case ~/^(deployment.apps|javaapp.nextiva.io|pythonapp.nextiva.io).+$/:
-                        log.trace("Found k8s object $it")
+                        logger.trace("Found k8s object $it")
                         objectsToValidate.add("deployment ${extractObject(it)}")
                         break
                     case ~/^statefulset.apps.+$/:
-                        log.trace("Found k8s object $it")
+                        logger.trace("Found k8s object $it")
                         objectsToValidate.add("statefulset ${extractObject(it)}")
                         break
                     case ~/^daemonset.extentions.+$/:
-                        log.trace("Found k8s object $it")
+                        logger.trace("Found k8s object $it")
                         objectsToValidate.add("daemonset ${extractObject(it)}")
                         break
                     case ~/^job.batch.+$/:
-                        log.trace("Found k8s object $it")
+                        logger.trace("Found k8s object $it")
                         objectsToValidate.add("job ${extractObject(it)}")
                         break
                 }
             }
         }
-        log.debug("Collected objectsToValidate", objectsToValidate)
+        logger.debug("Collected objectsToValidate", objectsToValidate)
         objectsToValidate.each {
             script.sh "kubedog --kube-config ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
         }
     }
 
     String extractObject(String rawString) {
-        log.debug("got string", rawString)
+        logger.debug("got string", rawString)
         String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
-        log.debug("extractedObject", extractedObject)
+        logger.debug("extractedObject", extractedObject)
         return extractedObject
     }
 

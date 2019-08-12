@@ -21,13 +21,13 @@ class IntegrationTest extends Stage {
     @Override
     def stageBody() {
         //TODO: build docker based on current code. publish in nexus and run it
-        log.debug("Building docker test image ")
+        logger.debug("Building docker test image ")
         Map build = configuration.get("build")
         String appName = getGlobal().appName
         String version = getGlobalVersion()
         Map dockerToolConfig = build.get("docker")
         if (dockerToolConfig == null) {
-            log.error("docker build tool is undefined, can't build test container image, aborting...")
+            logger.error("docker build tool is undefined, can't build test container image, aborting...")
             throw new AbortException("docker build tool is undefined, can't build test container image, aborting...")
         }
         Docker docker = dockerToolConfig.get("instance")
@@ -35,7 +35,7 @@ class IntegrationTest extends Stage {
         docker.execute {
             docker.buildPublish(script, NEXTIVA_DOCKER_TEST_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version)
         }
-        log.debug("Build and publish success")
+        logger.debug("Build and publish success")
 
         ToolFactory toolFactory = new ToolFactory()
         Map toolMap = ["name": "kubeup"]

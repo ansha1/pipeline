@@ -8,17 +8,17 @@ abstract class Stage implements Serializable {
     Script script
     String stageName
     Map configuration
-    Logger log
+    Logger logger
 
     protected Stage(Script script, Map configuration) {
         this.script = script
         this.configuration = configuration
         this.stageName = this.getClass().getSimpleName()
-        this.log = new Logger(this)
+        this.logger = new Logger(this)
     }
 
     def execute() {
-        log.trace("Executing stage stageName:${stageName} with configuration ${configuration}")
+        logger.trace("Executing stage stageName:${stageName} with configuration ${configuration}")
         withStage(stageName) {
             stageBody()
         }
@@ -29,13 +29,13 @@ abstract class Stage implements Serializable {
 
     def withStage(String stageName, def body) {
         try {
-            log.debug("Start executing $stageName stage")
+            logger.debug("Start executing $stageName stage")
             script.stage(stageName) {
                 body()
             }
-            log.debug("Execuiton $stageName stage complete")
+            logger.debug("Execuiton $stageName stage complete")
         } catch (e) {
-            log.error("Error when executing ${stageName}:", e)
+            logger.error("Error when executing ${stageName}:", e)
             throw e
         }
     }

@@ -10,7 +10,7 @@ abstract class BuildTool implements Serializable, Tool {
     Script script
     String name
     String appName
-    Logger log
+    Logger logger
 
     String pathToSrc = "."
     def buildCommands
@@ -39,7 +39,7 @@ abstract class BuildTool implements Serializable, Tool {
         if (buildToolConfig.get("publishArtifact") != null) {
             this.publishArtifact = buildToolConfig.get("publishArtifact")
         }
-        this.log = new Logger(this)
+        this.logger = new Logger(this)
 
     }
 
@@ -75,10 +75,10 @@ abstract class BuildTool implements Serializable, Tool {
 
     def execute(def command) {
         script.dir(pathToSrc) {
-            log.debug("executing command in container ${name}")
+            logger.debug("executing command in container ${name}")
             script.container(name) {
                 def output = shOrClosure(script, command)
-                log.info("$output")
+                logger.info("$output")
                 return output
             }
         }
@@ -88,18 +88,18 @@ abstract class BuildTool implements Serializable, Tool {
         if (commands != null) {
             script.stage("${name}: ${action}") {
                 try {
-                    log.debug("executing ", commands)
+                    logger.debug("executing ", commands)
                     execute(commands)
                 } catch (e) {
-                    log.error("Error when executing ${name} ${action}: ${commands}", e)
+                    logger.error("Error when executing ${name} ${action}: ${commands}", e)
                     throw e
                 } finally {
                     if (postCommands != null) {
                         try {
-                            log.debug("executing ", postCommands)
+                            logger.debug("executing ", postCommands)
                             execute(postCommands)
                         } catch (e) {
-                            log.error("Error when executing ${name} ${action}: ${postCommands}", e)
+                            logger.error("Error when executing ${name} ${action}: ${postCommands}", e)
                             throw e
                         }
                     }

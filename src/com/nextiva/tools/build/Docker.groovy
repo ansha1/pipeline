@@ -31,10 +31,10 @@ class Docker extends BuildTool {
             try {
                 version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
             } catch (e) {
-                log.debug("$BUILD_PROPERTIES_FILENAME not found for the Docker build tool, e:", e)
+                logger.debug("$BUILD_PROPERTIES_FILENAME not found for the Docker build tool, e:", e)
             }
             if (version == null) {
-                log.debug("Try to get version from GLOBAL version")
+                logger.debug("Try to get version from GLOBAL version")
                 version = getGlobalVersion()
             }
             if (version == null) {
@@ -49,26 +49,26 @@ class Docker extends BuildTool {
             try {
                 setPropertyToFile(script, BUILD_PROPERTIES_FILENAME, "version", version)
             } catch (e) {
-                log.warn("File ${BUILD_PROPERTIES_FILENAME} not found, can't set version e:", e)
+                logger.warn("File ${BUILD_PROPERTIES_FILENAME} not found, can't set version e:", e)
             }
         }
     }
 
     @Override
     void sonarScan() {
-        log.debug("sonarScan is not exist for this type of Build tool")
+        logger.debug("sonarScan is not exist for this type of Build tool")
     }
 
     @Override
     void securityScan() {
         //TODO: we should implement security scan for docker containers
-        log.warn("we should implement security scan for docker containers")
+        logger.warn("we should implement security scan for docker containers")
     }
 
     @Override
     Boolean isArtifactAvailableInRepo() {
         execute {
-            log.debug("try to find the docker image ${appName} with version:${getVersion()} in the Nexus registry")
+            logger.debug("try to find the docker image ${appName} with version:${getVersion()} in the Nexus registry")
             return script.nexus.isDockerPackageExists(appName, getVersion())
         }
     }
@@ -81,10 +81,10 @@ class Docker extends BuildTool {
             if (tagLatest) {
                 image.push("latest")
                 String output = shWithOutput(script, "docker rmi ${registry.replaceFirst(/^https?:\/\//, '')}/${appName}:latest")
-                log.debug("$output")
+                logger.debug("$output")
             }
             String output = shWithOutput(script, "docker rmi ${image.id} ${registry.replaceFirst(/^https?:\/\//, '')}/${image.id}")
-            log.debug("$output")
+            logger.debug("$output")
         }
     }
 

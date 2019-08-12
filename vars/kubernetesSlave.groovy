@@ -9,8 +9,8 @@ import static com.nextiva.SharedJobsStaticVars.LIST_OF_BOOKED_NAMESPACES
 import static com.nextiva.utils.Utils.buildID
 
 def call(Map slaveConfig, body) {
-    Logger log = new Logger(this)
-    log.debug("Got slaveConfig", slaveConfig)
+    Logger logger = new Logger(this)
+    logger.debug("Got slaveConfig", slaveConfig)
 
     String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
 
@@ -114,17 +114,17 @@ List processEnvVars(Map extraEnv) {
  * @param body Closure which will be executed
  * */
 def withNamespace(String namespaceName, body) {
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
     try {
         def ns = createNamespace(namespaceName)
-        log.trace("Created namespace ${ns}")
+        logger.trace("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
         currentBuild.result = "FAILED"
-        log.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
+        logger.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)
-        log.trace("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
+        logger.trace("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
     }
 }
 
@@ -135,31 +135,31 @@ KubernetesClient getKubernetesClient() {
 }
 
 def createNamespace(String namespaceName) {
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
-        log.info("Running build in the already created namespace")
+        logger.info("Running build in the already created namespace")
         return true
     }
     KubernetesClient kubernetesClient = getKubernetesClient()
     //Create namespace
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
-    log.trace("created namespace: $namespace")
+    logger.trace("created namespace: $namespace")
     //Create mandatory secrets in the namespace
     def mvnSecret = createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
-    log.trace("created resource  $mvnSecret")
+    logger.trace("created resource  $mvnSecret")
     def regSecret = createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
-    log.trace("created resource $regSecret")
+    logger.trace("created resource $regSecret")
 
     kubernetesClient = null
     return namespace
 }
 
 Boolean deleteNamespace(String namespaceName) {
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
-        log.info("Namespace ${namespaceName} can't be deleted because it is persistent")
+        logger.info("Namespace ${namespaceName} can't be deleted because it is persistent")
         return false
     }
     KubernetesClient kubernetesClient = getKubernetesClient()
@@ -169,10 +169,10 @@ Boolean deleteNamespace(String namespaceName) {
 }
 
 def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
-    Logger log = new Logger(this)
-    log.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
+    Logger logger = new Logger(this)
+    logger.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
     String libraryResource = libraryResource resourcePath
-    log.trace("libraryResource:$libraryResource")
+    logger.trace("libraryResource:$libraryResource")
     KubernetesClient kubernetesClient = getKubernetesClient()
     switch (kind) {
         case "Secret":
@@ -180,7 +180,7 @@ def createResourceFromLibrary(String resourcePath, String kind, String namespace
             secret.metadata.namespace = namespaceName
             def result = kubernetesClient.secrets().inNamespace(namespaceName).create(secret)
             kubernetesClient = null
-            log.trace("created resource $result")
+            logger.trace("created resource $result")
             return result
             break
         default:

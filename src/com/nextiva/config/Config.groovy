@@ -18,7 +18,7 @@ class Config implements Serializable {
     Map configuration = [:]
     Script script
     ToolFactory toolFactory = new ToolFactory()
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
 
     Config(Script script, Map pipelineParams) {
         this.script = script
@@ -26,7 +26,7 @@ class Config implements Serializable {
     }
 
     void configure() {
-        log.debug("start job configuration")
+        logger.debug("start job configuration")
         validate()
         setDefaults()
         setJobParameters()
@@ -37,11 +37,11 @@ class Config implements Serializable {
         configureDeployTool()
         configureDeployEnvironment()
         configureStages()
-        log.debug("Configuration complete:", configuration)
+        logger.debug("Configuration complete:", configuration)
     }
 
     void validate() {
-        log.debug("start validate()")
+        logger.debug("start validate()")
         // Checking mandatory variables
         List<String> configurationErrors = []
 
@@ -53,14 +53,14 @@ class Config implements Serializable {
             configurationErrors.add("Slack notification channel is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
         if (!configurationErrors.isEmpty()) {
-            log.error("Found error(s) in the configuration:", configurationErrors)
+            logger.error("Found error(s) in the configuration:", configurationErrors)
             throw new AbortException("errors in the configuration")
         }
-        log.debug("complete validate()")
+        logger.debug("complete validate()")
     }
 
     void setDefaults() {
-        log.debug("start setDefaults()")
+        logger.debug("start setDefaults()")
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
         Global global = getGlobal()
@@ -84,35 +84,35 @@ class Config implements Serializable {
 
         //TODO: use new newrelic method
         //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
-        log.debug("complete setDefaults()")
+        logger.debug("complete setDefaults()")
     }
 
     void setJobParameters() {
-        log.debug("start setJobParameters()")
+        logger.debug("start setJobParameters()")
         JobProperties jobProperties = new JobProperties(script, configuration)
         def props = jobProperties.getParams()
-        log.debug("Job properties", props)
+        logger.debug("Job properties", props)
         configuration.put("jobProperties", props)
 
-        log.debug("Chosen deploy version", props.deployVersion)
+        logger.debug("Chosen deploy version", props.deployVersion)
         def deployOnly = false
         if (props.deployVersion) {
-            log.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as globalVersion.")
-            setGlobalVersion(props.deployVersion)
+            logger.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as globalVersion.")
+            global.globalVersion = props.deployVersion
             deployOnly = true
         }
-        log.debug("set deployOnly: $deployOnly")
+        logger.debug("set deployOnly: $deployOnly")
         configuration.put("deployOnly", deployOnly)
 
-        log.debug("complete setJobParameters()")
+        logger.debug("complete setJobParameters()")
     }
 
     void configureSlave() {
-        log.debug("start configureSlave()")
+        logger.debug("start configureSlave()")
         Map containerResources = [:]
         Map jenkinsContainer = configuration.get("jenkinsContainer", ["name": "jnlp"])
         toolFactory.mergeWithDefaults(jenkinsContainer)
-        log.debug("added jenkins container")
+        logger.debug("added jenkins container")
         containerResources.put("jnlp", jenkinsContainer)
         Map slaveConfiguration = ["containerResources": containerResources,
                                   "rawYaml"           : """\
@@ -123,25 +123,25 @@ class Config implements Serializable {
                                           value: jenkins
                                           effect: NoSchedule
                                   """.stripIndent()]
-        log.debug("slave configuration:", slaveConfiguration)
+        logger.debug("slave configuration:", slaveConfiguration)
         configuration.put("slaveConfiguration", slaveConfiguration)
-        log.debug("complete configureSlave()")
+        logger.debug("complete configureSlave()")
     }
 
     void setExtraEnvVariables() {
-        log.debug("start setExtraEnvVariables() complete")
+        logger.debug("start setExtraEnvVariables() complete")
         Map extraEnvs = configuration.get("extraEnvs")
         if (extraEnvs != null) {
             extraEnvs.each { k, v ->
-                log.debug("[$k]=$v")
+                logger.debug("[$k]=$v")
                 script.env[k] = v
             }
         }
-        log.debug("complete setExtraEnvVariables() complete")
+        logger.debug("complete setExtraEnvVariables() complete")
     }
 
     void configureDependencyProvisioning() {
-        log.debug("start configuring build dependency provisioning")
+        logger.debug("start configuring build dependency provisioning")
         Boolean isJobHasDependencies = false
         if (configuration.containsKey("dependencies")) {
             Map kubeup = ["name": "kubeup"]
@@ -150,37 +150,37 @@ class Config implements Serializable {
             isJobHasDependencies = true
         }
         configuration.put("isJobHasDependencies", isJobHasDependencies)
-        log.debug("complete configuring build dependency provisioning")
+        logger.debug("complete configuring build dependency provisioning")
     }
 
     void configureBuildTools() {
-        log.debug("start configureBuildTools()")
+        logger.debug("start configureBuildTools()")
         Map<String, Map> buildTools = configuration.get("build")
         if (buildTools == null) {
-            log.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
+            logger.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
             throw new AbortException("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
 
         buildTools.each { tool, toolConfig ->
-            log.debug("got build tool $tool")
+            logger.debug("got build tool $tool")
             toolConfig.put("name", tool)
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
             Tool instance = toolFactory.build(script, toolConfig)
             toolConfig.put("instance", instance)
         }
-        log.trace("Built tools after configuring:${buildTools.toString()}")
-        log.debug("complete configureBuildTools()")
+        logger.trace("Built tools after configuring:${buildTools.toString()}")
+        logger.debug("complete configureBuildTools()")
     }
 
     void configureDeployTool() {
-        log.debug("start configureDeployTools()")
+        logger.debug("start configureDeployTools()")
 
         if (configuration.get("isDeployEnabled", true)) {
             global.isDeployEnabled = true
 
             String toolName = configuration.get("deployTool", "kubeup")
-            log.debug("Deploy tool is $toolName")
+            logger.debug("Deploy tool is $toolName")
 
             def toolConfig = ["name": toolName]
             toolFactory.mergeWithDefaults(toolConfig)
@@ -189,42 +189,42 @@ class Config implements Serializable {
             DeployTool tool = toolFactory.build(script, toolConfig)
             global.deployTool = tool
 
-            log.trace("Deploy tool after configuration: ${tool.toString()}")
+            logger.trace("Deploy tool after configuration: ${tool.toString()}")
         } else {
-            log.info("'isDeployEnabled' set to false. Deployment will be skipped.")
+            logger.info("'isDeployEnabled' set to false. Deployment will be skipped.")
             global.isDeployEnabled = false
         }
-        log.debug("complete configureDeployTool()")
+        logger.debug("complete configureDeployTool()")
     }
 
     void configureDeployEnvironment() {
-        log.debug("start configureDeployEnvironment()")
+        logger.debug("start configureDeployEnvironment()")
         if (global.isDeployEnabled) {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             global.environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(configuration.get("branchName"))
             configuration.put("environmentsToDeploy", global.environmentsToDeploy)
         }
-        log.debug("complete configureDeployEnvironment()")
+        logger.debug("complete configureDeployEnvironment()")
     }
 
     void configureStages() {
-        log.debug("start configureStages()")
+        logger.debug("start configureStages()")
         StageFactory stageFactory = new StageFactory(script, configuration)
         List<Stage> stages = stageFactory.getStagesFromConfiguration()
-        log.debug("Selected stages:", stages)
+        logger.debug("Selected stages:", stages)
         configuration.put("stages", stages)
-        log.debug("complete configureStages()")
+        logger.debug("complete configureStages()")
     }
 
 
     Map getConfiguration() {
-        log.debug("returning configuration ", configuration)
+        logger.debug("returning configuration ", configuration)
         return configuration
     }
 
     Map getSlaveConfiguration() {
         Map slaveConfiguration = configuration.get("slaveConfiguration")
-        log.debug("returning slave configuration ", slaveConfiguration)
+        logger.debug("returning slave configuration ", slaveConfiguration)
         return slaveConfiguration
     }
 
@@ -238,7 +238,7 @@ class Config implements Serializable {
 
     List<Stage> getStages() {
         List stages = configuration.get("stages")
-        log.debug("Pipeline stages: \n", stages)
+        logger.debug("Pipeline stages: \n", stages)
         return stages
     }
 }

@@ -6,10 +6,10 @@ class CollectBuildResults extends Stage {
     }
 
     def stageBody() {
-       log.info("Collecting logs from containers")
+       logger.info("Collecting logs from containers")
         //code
-       log.info("Collecting JUnit results")
+       logger.info("Collecting JUnit results")
         //code
-       log.info("Publish to S3")
+       logger.info("Publish to S3")
     }
 }

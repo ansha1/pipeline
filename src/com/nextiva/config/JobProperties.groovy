@@ -15,7 +15,7 @@ class JobProperties {
     List paramlist
     Map auth
 
-    Logger log = new Logger(this)
+    Logger logger = new Logger(this)
 
     JobProperties(Script script, Map configuration) {
         this.script = script

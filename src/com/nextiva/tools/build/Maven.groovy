@@ -17,7 +17,7 @@ class Maven extends BuildTool {
     void sonarScan() {
         execute {
             //TODO: add sonar implementation
-            log.info("this step should be implemented")
+            logger.info("this step should be implemented")
 //            script.withSonarQubeEnv(SONAR_QUBE_ENV) {
 //                sh 'mvn sonar:sonar'
 //            }
@@ -27,7 +27,7 @@ class Maven extends BuildTool {
     @Override
     void securityScan() {
         //TODO: add securityScan implementation
-        log.info("this step should be implemented")
+        logger.info("this step should be implemented")
     }
 
     @Override
