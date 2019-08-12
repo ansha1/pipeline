@@ -2,9 +2,11 @@ import com.cloudbees.groovy.cps.NonCPS
 import com.nextiva.utils.Logger
 import io.fabric8.kubernetes.api.model.Secret
 import io.fabric8.kubernetes.client.KubernetesClient
-import static com.nextiva.SharedJobsStaticVars.*
+import jenkins.model.Jenkins
+import org.csanchez.jenkins.plugins.kubernetes.KubernetesClientProvider
+
+import static com.nextiva.SharedJobsStaticVars.LIST_OF_BOOKED_NAMESPACES
 import static com.nextiva.utils.Utils.buildID
-import org.csanchez.jenkins.plugins.kubernetes.*
 
 def call(Map slaveConfig, body) {
     Logger log = new Logger(this)
@@ -129,7 +131,7 @@ def withNamespace(String namespaceName, body) {
 
 @NonCPS
 KubernetesClient getKubernetesClient() {
-    return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
+    return KubernetesClientProvider.createClient(Jenkins.get().clouds.get(0))
 }
 
 def createNamespace(String namespaceName) {
