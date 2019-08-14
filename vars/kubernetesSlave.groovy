@@ -120,7 +120,7 @@ def withNamespace(String namespaceName, body) {
         logger.trace("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
-        currentBuild.result = "FAILED"
+        currentBuild.result = "FAILURE"
         logger.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)

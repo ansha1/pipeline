@@ -39,7 +39,7 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
         }
     } catch (t) {
         //some error handling
-        currentBuild.result = "FAILED"
+        currentBuild.result = "FAILURE"
         currentBuild.rawBuild.result = Result.FAILURE
         logger.error("error in the pipeline execution", t)
     } finally {

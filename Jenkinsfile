@@ -50,7 +50,7 @@ lock(lockableResource) {
                 }
             }
         } catch (e) {
-            currentBuild.result = "FAILED"
+            currentBuild.result = "FAILURE"
             throw e
         } finally {
             publishHTML([allowMissing         : true,
