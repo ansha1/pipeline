@@ -18,10 +18,12 @@ abstract class Stage implements Serializable {
     }
 
     def execute() {
-        logger.trace("Executing stage stageName:${stageName} with configuration ${configuration}")
+        logger.info("Stage $stageName started.")
+        logger.trace("Executing stage stageName: ${stageName} with configuration ${configuration}")
         withStage(stageName) {
             stageBody()
         }
+        logger.info("Stage $stageName completed.")
     }
 
     abstract def stageBody()
