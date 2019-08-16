@@ -175,7 +175,7 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
     String dryRunParam = dryRun ? '--dry-run' : ''
     String nameSpaceParam = nameSpace == '' ? '' : "--namespace ${nameSpace}"
 
-    String kubeupEnv = ".venv_kubeup_${common.getRandomInt()}"
+    String kubeupEnv = ".venv_kubeup"
     String kubeupOutputFile = "kubeup_output_${common.getRandomInt()}.txt"
     pythonUtils.createVirtualEnv("python3", kubeupEnv)
 
