@@ -21,12 +21,12 @@ class StageFactory {
     private static final def branchingModelRegexps = [
             any               : /.+/,
             notMaster         : /^(?!master$).+/,
-            releaseOrHotfix   : /^((hotfix|release)\/)/,
+            releaseOrHotfix   : /^((hotfix|release)\/.+)/,
             master            : /^master$/,
-            mainline          : /^(dev|develop)$|(hotfix|release)\//,
-            mainlineWithMaster: /^(dev|develop|master)$|(hotfix|release)\//,
+            mainline          : /^((dev|develop)$|((hotfix|release)\/.+))/,
+            mainlineWithMaster: /^((dev|develop|master)$|(hotfix|release)\/.+)/,
             notMainline       : /^(?!(dev|develop|master)$|(hotfix|release)\/).+/,
-            develop           : /^(develop|dev)$/,
+            develop           : /^(develop|dev)$/
     ]
 
     static final Map stages = [
