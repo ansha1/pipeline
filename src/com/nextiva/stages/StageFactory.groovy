@@ -39,6 +39,7 @@ class StageFactory {
                                                                       "trunkbased": branchingModelRegexps.any]
             ],
             "VerifyArtifactVersionInNexus": ["deployOnly"    : false,
+                                             "class"         : VerifyArtifactVersionInNexus.class,
                                              "branchingModel": ["gitflow"   : branchingModelRegexps.releaseOrHotfix,
                                                                 "trunkbased": branchingModelRegexps.master]
             ],
@@ -49,7 +50,7 @@ class StageFactory {
             ],
             "Build"                       : ["deployOnly"    : false,
                                              "class"         : Build.class,
-                                             "branchingModel": ["gitflow"   : branchingModelRegexps.mainline,
+                                             "branchingModel": ["gitflow"   : branchingModelRegexps.notMaster,
                                                                 "trunkbased": branchingModelRegexps.master]
             ],
             "UnitTest"                    : ["class"            : UnitTest.class,
@@ -67,8 +68,8 @@ class StageFactory {
             "IntegrationTest"             : ["deployOnly"              : false,
                                              "class"                   : IntegrationTest.class,
                                              "isIntegrationTestEnabled": true,
-                                             "branchingModel"          : ["gitflow"   : branchingModelRegexps.notMainline,
-                                                                          "trunkbased": branchingModelRegexps.notMaster]
+                                             "branchingModel"          : ["gitflow"   : branchingModelRegexps.any,
+                                                                          "trunkbased": branchingModelRegexps.any]
             ],
             "Publish"                     : ["deployOnly"    : false,
                                              "class"         : Publish.class,
