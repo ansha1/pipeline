@@ -88,7 +88,7 @@ abstract class BuildTool implements Serializable, Tool {
         if (commands != null) {
             script.stage("${name}: ${action}") {
                 try {
-                    logger.debug("executing ", commands)
+                    logger.debug("Executing ", commands)
                     execute(commands)
                 } catch (e) {
                     logger.error("Error when executing ${name} ${action}: ${commands}", e)
@@ -96,7 +96,7 @@ abstract class BuildTool implements Serializable, Tool {
                 } finally {
                     if (postCommands != null) {
                         try {
-                            logger.debug("executing ", postCommands)
+                            logger.debug("Executing post commands", postCommands)
                             execute(postCommands)
                         } catch (e) {
                             logger.error("Error when executing ${name} ${action}: ${postCommands}", e)

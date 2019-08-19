@@ -17,7 +17,7 @@ class VerifyArtifactVersionInNexus extends Stage {
                 try {
                     logger.debug("checking artifact availability for ${toolName}")
                     if (tool.isArtifactAvailableInRepo()) {
-                        logger.info("the artifact is already exist")
+                        logger.info("The artifact already exists in Nexus")
 //                        TODO: add jenkins approve step for autoincrement
 //                        try {
 //                            timeout(time: 15, unit: 'MINUTES') {
@@ -45,7 +45,7 @@ class VerifyArtifactVersionInNexus extends Stage {
 //                    }
 
                     } else {
-                        logger.info("Current artifact version is not exist in the Nexus, continue...")
+                        logger.info("Current artifact version does not exist in Nexus, continue...")
                     }
                 } catch (e) {
                     logger.error("Error when executing ${toolName} ${stageName}:", e)

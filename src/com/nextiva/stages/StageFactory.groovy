@@ -137,6 +137,7 @@ class StageFactory {
             logger.debug("Checking key $key")
             switch (key) {
                 case "class":
+                    logger.debug("Key 'class' is not a subject for a check. Skipping...")
                     return true
                     break
                 case "branchingModel":
