@@ -245,6 +245,31 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
         ).describedAs("Closure was expected to be in buildCommands").isTrue()
     }
 
+    @Test
+    void closure_that_uses_internal_vars() {
+        helper.registerAllowedMethod 'fileExists', [String], { s ->
+            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+        }
+        script.call {
+            appName = "foo"
+            channelToNotify = "testchannel"
+            build = [
+                    "pip"   : [
+                            "integrationTestCommands"    : """pwd""",
+                            "postIntegrationTestCommands": {
+                                // this refers to instance of NextivaPipelineTest, while we need an instance of this script
+                                def branch = this.script.env.BRANCH_NAME
+                                this.script.build job: "/bar/$branch", parameters: [
+                                        this.script.string(name: "version", value: getGlobalVersion()),
+                                        this.script.string(name: "appName", value: getGlobal().appName)]
+                            }
+                    ],
+                    "docker": ["publishArtifact": true,]
+            ]
+        }
+        assertJobStatusSuccess()
+    }
+
     @Override
     BasePipelineTest getBasePipelineTest() {
         return this
