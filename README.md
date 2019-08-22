@@ -24,3 +24,46 @@ business applications we keen on to use shared library for the all builds in Nex
 +- jobs                    # custom jobs for Jenkins
 
 `````
+
+# Nextiva Pipeline v2
+## Additional features
+### Closure as a build step
+In some rare cases just running shell commands might be not enough and some additional logic on the Jenkins side is required.
+Instead bloating pipeline's library with additional code for every situation, this can be done by using [Groovy closure](http://www.groovy-lang.org/closures.html)
+instead of shell command string.
+
+To provide access to some pipeline internals and helper methods, closure's [delegate](http://www.groovy-lang.org/closures.html#_delegate_of_a_closure)
+will be set to _com.nextiva.utils.Utils_ class
+and to make it more convenient to use, closure's resolveStrategy is set to Closure.DELEGATE_FIRST.
+This means that you can call _com.nextiva.utils.Utils_ methods directly from your code, as it shown in example below.
+
+#### Example
+Let's assume the situation such situation:
+* you have your application **foo**
+* upon **foo** integration tests completion you need to trigger another Jenkins job in **bar** project
+* the second job name has to be based on **foo** build's branch name, e.g. _/bar/branch_name_
+* some additional parameters has to be passed to **bar**: _application name_ and _version number_
+* _version number_ should be extracted from **foo's** build.properties file
+
+Here is how this can be achieved with the use of closure and its delegate property:
+```groovy
+// Our custom closure. Notice that delegate points to com.nextiva.utils.Utils
+def triggerBar = {
+    def branch = this.env.BRANCH_NAME
+    this.build job: "/bar/$branch", parameters: [
+        this.string(name: "version", value: getGlobalVersion()), // will call com.nextiva.utils.Utils.getGlobalVersion()
+        this.string(name: "appName", value: getGlobal().appName) // will call com.nextiva.utils.Utils.getGlobal().appName
+    ]
+}
+
+nextivaPipeline {
+    appName = "foo" // your application name
+    channelToNotify = "testchannel"
+    build = [
+            "pip"   : [
+                    "integrationTestCommands"    : "curl http://foo.local", // a string to be executed by Jenkins 'sh' step
+                    "postIntegrationTestCommands": triggerBar // a closure that will be called as is after integration tests 
+            ]
+    ]
+}
+```
