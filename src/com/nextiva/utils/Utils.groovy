@@ -17,6 +17,7 @@ class Utils {
     static def shOrClosure(script, def command) {
         def result
         if (command instanceof Closure) {
+            command.delegate = this
             result = command()
         } else {
             result = shWithOutput(script, command)
