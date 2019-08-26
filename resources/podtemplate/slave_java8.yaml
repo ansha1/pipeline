@@ -23,7 +23,7 @@ spec:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-java:0.0.6
+    image: docker.nextiva.xyz/jenkins-slave-java:0.0.6
     lifecycle:
       postStart:
         exec:
