@@ -2,6 +2,7 @@ import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
 import hudson.model.Result
+import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException
 
 
 def call(body) {
@@ -42,7 +43,15 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
         currentBuild.result = "FAILURE"
         currentBuild.rawBuild.result = Result.FAILURE
         logger.error("error in the pipeline execution", t)
-    } finally {
+        if (t instanceof RejectedAccessException) {
+            //test results collecting
+            resultsCollector.execute()
+            //slack notification
+            notify.execute()
+            throw t
+        }
+    }
+    finally {
         //test results collecting
         resultsCollector.execute()
         //slack notification
