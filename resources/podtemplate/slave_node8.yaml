@@ -23,7 +23,7 @@ spec:
     effect: NoSchedule
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/jenkins-slave-node8:1.0.4
+    image: docker.nextiva.xyz/jenkins-slave-node8:1.0.4
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
