@@ -1,0 +1,41 @@
+// @Library('pipeline@feature/dockerTemplate') _
+
+nextivaPipeline {
+    appName = "myapp"                       //mandatory
+    channelToNotify = "testchannel"         //mandatory
+
+    build = ["pip"   : ["buildCommands"              : """pwd""",
+                        "postBuildCommands"          : """pwd""",
+                        "unitTestCommands"           : """cat file.txt""",
+                        "postUnitTestCommands"       : """pwd""",
+                        "integrationTestCommands"    : """pwd""",
+                        "postIntegrationTestCommands": """pwd""",
+                        "postDeployCommands"         : """pwd""",
+                        "image"                      : "maven:3.6.1-jdk-8",
+                        "resourceRequestCpu"         : "1",
+                        "resourceLimitCpu"           : "1",
+                        "buildDocker"                : true,
+                        "resourceRequestMemory"      : "1Gi",
+                        "resourceLimitMemory"        : "1Gi",],
+             "docker": ["publishArtifact": true,]]
+
+    deployTool = "kubeup"
+//    dependencies = ["postgres"                  : "latest",]
+//    dependencies = ["postgres"                  : "latest",
+//                    "rabbitmq-ha"               : "latest",
+//                    "redis-ha"                  : "latest",
+//                    "rules-engine-core"         : "latest",
+//                    "rules-engine-orchestration": "latest",]
+
+
+    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
+                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
+                                  "ansibleInventory": "rc"],
+                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
+                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+                                  "branchPattern": /^master$/,]
+    ]
+
+    branchPermissions = [:]
+
+}
