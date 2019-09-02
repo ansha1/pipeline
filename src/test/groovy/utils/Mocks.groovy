@@ -22,12 +22,13 @@ trait Mocks implements BasePipelineAccessor {
      */
     void mockEnv() {
         basePipelineTest.binding.setVariable 'env', [
-                JOB_NAME   : 'Job name',
-                BUILD_ID   : 'Build Id',
-                BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
-                BRANCH_NAME: 'dev',
-                NODE_NAME  : 'Debian Slave 3',
-                GIT_URL    : 'ssh://git@git.nextiva.xyz:7999/KEY/repository.git'
+                JOB_NAME    : 'Job name',
+                BUILD_ID    : 'Build Id',
+                BUILD_URL   : 'https://jenkins.nextiva.xyz/jenkins/',
+                BRANCH_NAME : 'dev',
+                NODE_NAME   : 'Debian Slave 3',
+                GIT_URL     : 'ssh://git@git.nextiva.xyz:7999/KEY/repository.git',
+                BUILD_NUMBER: '3'
         ]
     }
 
