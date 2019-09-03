@@ -23,7 +23,7 @@ spec:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: repository.nextiva.xyz/slave:ansible2.7-alpine-0.0.6
+    image: docker.nextiva.xyz/slave:ansible2.7-alpine-0.0.6
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume

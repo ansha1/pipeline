@@ -12,9 +12,12 @@ class SharedJobsStaticVars {
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.venv'
-    static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
-    static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
+    static final NEXTIVA_DOCKER_REGISTRY = 'docker.nextiva.xyz'
+    static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
+    static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://docker.nextiva.xyz'
+    static final TENABLE_DOCKER_REGISTRY_URL = 'https://registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
+    static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
     static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
     static final PIP_EXTRA_INDEX_URL = 'http://repository.nextiva.xyz/repository/pypi-'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '-group/simple'
@@ -83,6 +86,6 @@ class SharedJobsStaticVars {
      Enable sending interactive Slack message through Jenkins Bot.
      If Jenkins Bot doesn't work then we can disable it and switch back to the non-interactive notification.
      */
-    static final JENKINS_BOT_ENABLE = true
+    static final JENKINS_BOT_ENABLE = false
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
 }
