@@ -15,7 +15,7 @@ class StartBuildDependencies extends Stage {
     def stageBody() {
         Map<String, String> dependencies = configuration.get("dependencies")
         ToolFactory toolFactory = new ToolFactory()
-        Map toolMap = ["name": "kubeup"]
+        Map toolMap = ["name": "kubeup"] + configuration.get("kubeupConfig", [:])
         toolFactory.mergeWithDefaults(toolMap)
         Kubeup kubeup = toolFactory.build(script, toolMap)
         String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
