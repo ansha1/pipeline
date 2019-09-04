@@ -7,6 +7,13 @@ import jenkins.model.Jenkins
 
 class Utils {
 
+    /**
+     * Executes command in a
+     * <a href="https://jenkins.io/doc/pipeline/steps/workflow-durable-task-step/#sh-shell-script">Jenkins sh</a> step
+     * @param script Jenkins script
+     * @param command shell script to execute
+     * @return command output
+     */
     static String shWithOutput(script, String command) {
         return script.sh(
                 script: command + " 2>&1",
@@ -14,6 +21,12 @@ class Utils {
         ).trim()
     }
 
+    /**
+     * Depending on command type, either run it as a shell command or as a Closure
+     * @param script Jenkins script
+     * @param command command closure to execute
+     * @return shell or closure output
+     */
     static def shOrClosure(script, def command) {
         def result
         if (command instanceof Closure) {
@@ -79,6 +92,13 @@ class Utils {
         return toString
     }
 
+    /**
+     * Gets a single property value from a property file
+     * @param script Jenkins script
+     * @param propertyFilePath path to the property file
+     * @param propertyName name of the property to retrieve
+     * @return property value
+     */
     static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
         def property
         if (script.fileExists(propertyFilePath)) {
@@ -90,6 +110,13 @@ class Utils {
         return property
     }
 
+    /**
+     * Stores a single property value into a property file. Overwrites existing property.
+     * @param script Jenkins script
+     * @param propertyFilePath path to the property file
+     * @param propertyName name of the property to retrieve
+     * @param value property value to store
+     */
     static void setPropertyToFile(Script script, String propertyFilePath, String propertyName, String value) {
         String propsToWrite = ''
         if (script.fileExists(propertyFilePath)) {
@@ -104,6 +131,10 @@ class Utils {
         }
     }
 
+    /**
+     * Gets application version from Global singleton
+     * @return application version
+     */
     static String getGlobalVersion() {
         Global global = getGlobal()
         if (global == null) {
@@ -125,6 +156,10 @@ class Utils {
     */
 
 
+    /**
+     * Stores application version in Global singleton
+     * @param version version to save
+     */
     static void setGlobalVersion(String version) {
         Global global = getGlobal()
         if (global == null) {
@@ -133,6 +168,10 @@ class Utils {
         global.setGlobalVersion(version)
     }
 
+    /**
+     * Gets Global singleton
+     * @return Global singleton
+     */
     static Global getGlobal() {
         return Global.getInstance()
     }
