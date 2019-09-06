@@ -32,6 +32,8 @@ dependencies {
     implementation group: 'org.eclipse.hudson', name: 'hudson-core', version: '3.3.0', {
         exclude group: 'org.eclipse.hudson', module: 'hudson-remoting'
     }
+    implementation group: 'org.jenkins-ci.plugins.workflow', name: 'workflow-step-api', version: '2.19'
+    implementation group: 'org.jenkins-ci.plugins.workflow', name: 'workflow-step-api', version: '2.19', ext: 'jar'
     implementation group: 'org.jenkins-ci.plugins', name: 'pipeline-utility-steps', version: '2.2.0'
     implementation group: 'org.jenkins-ci.plugins', name: 'pipeline-utility-steps', version: '2.2.0', ext: 'jar'
     implementation group: 'org.jenkins-ci.plugins', name: 'mailer', version: '1.23'
