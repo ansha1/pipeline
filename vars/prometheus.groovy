@@ -26,28 +26,30 @@ def sendSummary(String metricName, def metricValue, Map metricLabels = [:], Stri
 def sendMetric(String instance, String jobName, String metricName, def metricValue, String metricType,
                Map metricLabels = [:], String metricHelpMessage = '') {
 
-    String labels = mapToLabelsStr(metricLabels)
-    String encodedJobName = urlEncode(jobName)
-    String encodedInstance = urlEncode(instance)
-    String pushgatewayUrl = "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}"
+// TODO: send metrics to InfluxDB (influxdb.tooling.nextiva.io)
 
-    String requestBody = """
-        # HELP ${metricName} ${metricHelpMessage}
-        # TYPE ${metricName} ${metricType}
-        ${metricName}{${labels}} ${metricValue}
-    """
-
-    log.debug("Sending metrics to Prometheus - ${pushgatewayUrl}")
-    log.debug(requestBody)
-
-    timeout(time: 10, unit: 'SECONDS') {
-        try {
-            httpRequest httpMode: 'POST', quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
-                    requestBody: requestBody, url: pushgatewayUrl, contentType: 'APPLICATION_FORM'
-        } catch (e) {
-            log.warning("Can't send metrics to Prometheus! ${e}")
-        }
-    }
+//    String labels = mapToLabelsStr(metricLabels)
+//    String encodedJobName = urlEncode(jobName)
+//    String encodedInstance = urlEncode(instance)
+//    String pushgatewayUrl = "${PROMETHEUS_PUSHGATEWAY_URL}/job/${encodedJobName}/instance/${encodedInstance}"
+//
+//    String requestBody = """
+//        # HELP ${metricName} ${metricHelpMessage}
+//        # TYPE ${metricName} ${metricType}
+//        ${metricName}{${labels}} ${metricValue}
+//    """
+//
+//    log.debug("Sending metrics to Prometheus - ${pushgatewayUrl}")
+//    log.debug(requestBody)
+//
+//    timeout(time: 10, unit: 'SECONDS') {
+//        try {
+//            httpRequest httpMode: 'POST', quiet: !log.isDebug(), consoleLogResponseBody: log.isDebug(),
+//                    requestBody: requestBody, url: pushgatewayUrl, contentType: 'APPLICATION_FORM'
+//        } catch (e) {
+//            log.warning("Can't send metrics to Prometheus! ${e}")
+//        }
+//    }
 }
 
 def mapToLabelsStr(Map labelsMap) {

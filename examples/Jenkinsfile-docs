@@ -143,7 +143,7 @@ jobTemplate {
 
     /*
     // NEW_RELIC_APP_ID - defines the application id from NewRelic per environment https://docs.newrelic.com/docs/browser/new-relic-browser/configuration/copy-browser-monitoring-license-key-app-id
-    // NEW_RELIC_APP_ID = ['production': '87818090']
+    // NEW_RELIC_APP_ID = ['production': 87818090]
     //
     // NEW_RELIC_APP_NAME - defines application name used in New Relic. If provided, the deployment information
     //  will attempt to be posted to New Relic. If an ID is specified with NEW_RELIC_APP_ID, that value will be preferred
@@ -173,7 +173,8 @@ jobTemplate {
     * default: NextOS Platform (CRM)  
     */
     // veracodeApplicationScope = 'NextOS Platform (CRM)'
-    
+
+    // DEPRECATED
     /* kubernetesDeploymentsList - defines the names of Kubernetes deployments when application has more than one deployment */
     // kubernetesDeploymentsList = ['chat-orchestration-api', 'chat-status']
 
@@ -191,4 +192,7 @@ jobTemplate {
     The final value that is used for the full path is inventoryPathSalesDemo = "${BASIC_INVENTORY_PATH}${inventoryDirectorySalesDemo}"
     This value should not be used unless we grow to have multiple sales-demo env's */
     // inventoryDirectorySalesDemo = "another-sales-demo"
+
+    /* kubernetesNamespace - Defines the namespace for Kubernetes deployments */
+    // kubernetesNamespace = 'default'
 }

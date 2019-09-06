@@ -12,10 +12,14 @@ class SharedJobsStaticVars {
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.venv'
-    static final NEXTIVA_DOCKER_REGISTRY = 'repository.nextiva.xyz'
-    static final NEXTIVA_DOCKER_TEST_REGISTRY = 'https://repository.nextiva.xyz'
-    static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://repository.nextiva.xyz'
+    static final NEXTIVA_DOCKER_REGISTRY = 'docker.nextiva.xyz'
+    static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
+    static final NEXTIVA_DOCKER_TEST_REGISTRY = 'nexus.nextiva.xyz'
+    static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://docker.nextiva.xyz'
+    static final TENABLE_DOCKER_REGISTRY_URL = 'https://registry.cloud.tenable.com'
+    static final NEXTIVA_DOCKER_TEST_REGISTRY_URL = 'https://nexus.nextiva.xyz/repository/docker-hosted-nextiva-test'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
+    static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
     static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
     static final PIP_EXTRA_INDEX_URL = 'http://repository.nextiva.xyz/repository/pypi-'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '-group/simple'
@@ -31,10 +35,10 @@ class SharedJobsStaticVars {
     static final JS_NODE_LABEL = 'slave_node8'
     static final ANSIBLE_NODE_LABEL = 'ansible'
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
-    static final KUBERNETES_REPO_BRANCH = 'develop'
+    static final KUBERNETES_REPO_BRANCH = 'master'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
-    static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/k8s-platform.git'
-    static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.3.0'
+    static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git'
+    static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.4.0'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
     static final JOB_TIMEOUT_MINUTES_DEFAULT = 30
@@ -48,7 +52,9 @@ class SharedJobsStaticVars {
     //Slack app bot token for getting slack userID over email
     static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
-    static final SLACK_STATUS_REPORT_CHANNEL_RC = 'rc-platform-support'
+    static final SLACK_STATUS_REPORT_CHANNEL_QA = 'rc-platform-support'
+    static final SLACK_STATUS_REPORT_CHANNEL_PROD = 'platform-production'
+    static final DEFAULT_SLACK_CHANNEL = 'testchannel'
     static final SLACK_URL = 'https://nextivalab.slack.com'
     static final DEFAULT_JDK_VERSION = 'Java 8 Install automatically'
     static final DEFAULT_MAVEN_VERSION = 'Maven 3.3.3 Install automatically'
@@ -59,7 +65,6 @@ class SharedJobsStaticVars {
     static final PROMETHEUS_BUILD_RUNNING_METRIC = 10
     static final PROMETHEUS_BUILD_FINISHED_METRIC = 0
     static final DEFAULT_VERACODE_APPLICATION_SCOPE = 'Nextiva Services'
-    static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
     static final S3_PUBLIC_BUCKET_NAME = 'public-static-assets.nextiva.io'
     static final S3_PRIVATE_BUCKET_NAME = 'private-static-assets.nextiva.io'
     static final AWS_REGION = 'us-west-2'
@@ -73,6 +78,18 @@ class SharedJobsStaticVars {
     static final PUBLISH_STATIC_ASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
     static final VAULT_URL = "https://vault.tooling.nextiva.io"
+    static final KUBEUP_VERSION = '1.0.0'
+    static final KUBEDOG_VERSION = '0.3.3'
+    static final VAULT_CLIENT_VERSION = '1.1.0'
+    static final KUBEDOG_SHA256 = '203d520790c711f8da85a8edfd6e71b2db52928774fc36a642d081c5e467bc2b'
+    static final VAULT_CLIENT_SHA256 = '65d665ee7ba08fb41a7113a2ae3c1d5fd7e0b530b59644ed7dc8a01870b2d73f'
+
+    /*
+     Enable sending interactive Slack message through Jenkins Bot.
+     If Jenkins Bot doesn't work then we can disable it and switch back to the non-interactive notification.
+     */
+    static final JENKINS_BOT_ENABLE = false
+    static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
     static final JENKINS_KUBERNETES_CLUSTER_DOMAIN = "tooling.nextiva.io"
 
     static final Map DEFAULT_TOOL_CONFIGURATION = ["jnlp"   : ["image"                : "jenkins/jnlp-slave:3.29-1-alpine",
@@ -113,5 +130,4 @@ class SharedJobsStaticVars {
                                                                "resourceRequestMemory": "1Gi",
                                                                "resourceLimitMemory"  : "2Gi"],
     ]
-
 }
