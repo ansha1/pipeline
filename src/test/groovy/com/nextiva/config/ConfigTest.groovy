@@ -25,7 +25,7 @@ class ConfigTest extends BasePipelineTest {
 
     @Before
     void setUp() {
-        scriptRoots += "test/jenkins"
+        scriptRoots += "src/test/jenkins"
         super.setUp()
         script = loadScript("jobs/nextivaPipeline")
         binding.setVariable 'env', [
