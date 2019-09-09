@@ -84,7 +84,7 @@ def login(String clusterDomain) {
         pythonUtils.createVirtualEnv("python3", k8sEnv)
         pythonUtils.venvSh("""
             pip3 install -U wheel
-            pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
+            pip3 install https://nexus.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubelogin/${kubelogin_version}/nextiva-kubelogin-${kubelogin_version}.tar.gz
         """, false, k8sEnv)
 
         pythonUtils.venvSh("""
@@ -182,7 +182,7 @@ def kubeup(String serviceName, String configSet, String nameSpace = '', Boolean 
     // install kubeup
     pythonUtils.venvSh("""
         pip3 install -U wheel
-        pip3 install http://repository.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
+        pip3 install https://nexus.nextiva.xyz/repository/pypi-dev/packages/nextiva-kubeup/${KUBEUP_VERSION}/nextiva-kubeup-${KUBEUP_VERSION}.tar.gz
         kubeup -v
         """, false, kubeupEnv)
 
