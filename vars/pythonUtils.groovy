@@ -24,7 +24,6 @@ def getVirtualEnv(String venvDir = VENV_DIR) {
             "VIRTUAL_ENV=${absoluteVenvDir}",
             "PYTHONDONTWRITEBYTECODE=1",
             "PATH=${absoluteVenvDir}/bin:${env.PATH}",
-            "PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}",
             "PIP_INDEX_URL=${PIP_EXTRA_INDEX_URL}${pipRepo}${PIP_EXTRA_INDEX_URL_SUFFIX}",
     ]
 }

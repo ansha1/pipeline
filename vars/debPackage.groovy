@@ -44,7 +44,6 @@ def build(String packageName, String version, String deployEnvironment, String e
 
         def generateDebBuildString = """
             {
-                export PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
                 export PIP_INDEX_URL=${PIP_EXTRA_INDEX_URL}${deployEnvironment}${PIP_EXTRA_INDEX_URL_SUFFIX}
                 cd ${buildLocation} && rm -vf ../${packageName}*.deb ../${packageName}*.dsc ../${packageName}*.changes ../${packageName}*.tar.gz ../${packageName}*.buildinfo
                 dch --check-dirname-level=0 -b -v ${version}~${deployEnvironment} -M ${setPackageMessage}
