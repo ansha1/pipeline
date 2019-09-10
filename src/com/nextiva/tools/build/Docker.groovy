@@ -40,6 +40,7 @@ class Docker extends BuildTool {
             if (version == null) {
                 throw new AbortException("Version for Docker is undefined, please define it in $BUILD_PROPERTIES_FILENAME or by another build tool via GLOBAL version")
             }
+            return version
         }
     }
 
