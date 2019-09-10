@@ -1,0 +1,16 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "nextiva-openjdk"
+    channelToNotify = "cloud-engineering"
+    branchingModel = "gitflow"
+    isSonarEnabled = false
+    isDeployEnabled = false
+
+    build = ["docker": ["publishArtifact": true,
+                        "buildcommands": "docker build ."]]
+
+    branchPermissions = [:]
+}

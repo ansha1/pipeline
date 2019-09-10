@@ -3,19 +3,22 @@ package com.nextiva.tools.build
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import org.junit.Before
 import org.junit.Test
+import utils.JenkinsScriptsHelper
 
 import static org.junit.Assert.assertEquals
 
-class PipTest extends BasePipelineTest {
+class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
 
     private Script script
 
     @Override
     @Before
     void setUp() {
-        scriptRoots += "src/test/jenkins"
+        scriptRoots += "src/test/jenkins/jobs/nextivaPipeline"
         super.setUp()
-        script = loadScript("jobs/nextivaPipeline")
+
+        prepareSharedLib()
+        script = loadScript("simple_python_app.jenkins")
     }
 
     @Test

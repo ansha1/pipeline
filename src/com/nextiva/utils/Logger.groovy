@@ -364,8 +364,8 @@ class Logger implements Serializable {
         // try to retrieve as much information as possible about the class
         try {
             Class objectClass = object.getClass()
-            objectName = objectClass.getName().toString()
-            objectName = objectClass.getCanonicalName().toString()
+            objectName = objectClass.name.toString()
+            objectName = objectClass.canonicalName.toString()
         } catch (RejectedAccessException e) {
             // do nothing
         }

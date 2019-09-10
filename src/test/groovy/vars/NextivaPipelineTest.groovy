@@ -7,88 +7,15 @@ import com.nextiva.utils.LogLevel
 import org.junit.Before
 import org.junit.Test
 import utils.BranchNames
+import utils.JenkinsScriptsHelper
 import utils.Mocks
 import utils.Validator
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static org.assertj.core.api.Assertions.assertThat
 
-
-class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
-    def PYTHON_APP = {
-        appName = "myapp"
-        channelToNotify = "testchannel"
-
-        build = ["pip"   : ["buildCommands"              : "build commands",
-                            "postBuildCommands"          : "post Build command",
-                            "unitTestCommands"           : "unit test commands",
-                            "postUnitTestCommands"       : "post unit test command",
-                            "integrationTestCommands"    : "integration test command",
-                            "postIntegrationTestCommands": "post integration test commands",
-                            "postDeployCommands"         : "post deploy commands",
-                            "image"                      : "maven:3.6.1-jdk-8",
-                            "resourceRequestCpu"         : "1",
-                            "resourceLimitCpu"           : "1",
-                            "buildDocker"                : true,
-                            "resourceRequestMemory"      : "1Gi",
-                            "resourceLimitMemory"        : "1Gi",],
-//                TODO docker definition should be optional
-                 "docker": ["publishArtifact": true,]]
-
-        deployTool = "kubeup"
-        dependencies = ["postgres"                  : "latest",
-                        "rabbitmq-ha"               : "latest",
-                        "redis-ha"                  : "latest",
-                        "rules-engine-core"         : "latest",
-                        "rules-engine-orchestration": "latest",]
-
-        environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                       "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                      "ansibleInventory": "rc"],
-                       "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                       "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                      "branchPattern": /^master$/,]
-        ]
-
-        branchPermissions = [:]
-    }
-
-    def PYTHON_APP_NO_DEPENDENCIES = {
-        def sample_closure = {
-            this.script.stage("foobar") { this.script.echo((new Exception().stackTrace.join('\n'))) }
-        }
-        appName = "myapp"
-        channelToNotify = "testchannel"
-
-        build = ["pip"   : ["buildCommands"              : sample_closure,
-                            "postBuildCommands"          : """pwd""",
-                            "unitTestCommands"           : """cat file.txt""",
-                            "postUnitTestCommands"       : """pwd""",
-                            "integrationTestCommands"    : """pwd""",
-                            "postIntegrationTestCommands": """pwd""",
-                            "postDeployCommands"         : """pwd""",
-                            "image"                      : "maven:3.6.1-jdk-8",
-                            "resourceRequestCpu"         : "1",
-                            "resourceLimitCpu"           : "1",
-                            "buildDocker"                : true,
-                            "resourceRequestMemory"      : "1Gi",
-                            "resourceLimitMemory"        : "1Gi",],
-                 "docker": ["publishArtifact": true,]]
-
-        deployTool = "kubeup"
-
-        environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                       "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                      "ansibleInventory": "rc"],
-                       "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                       "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                      "branchPattern": /^master$/,]
-        ]
-
-        branchPermissions = [:]
-    }
-
-    def script
+class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, JenkinsScriptsHelper {
 
     private void branchStepsValidator(Set<String> branchNames, Set<String> requiredSteps) {
         helper.registerAllowedMethod 'fileExists', [String], { s ->
@@ -100,8 +27,9 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
         branchNames.each { branchName ->
             helper.callStack = []
             binding.setVariable 'BRANCH_NAME', branchName
+            Script script = loadScriptHelper("simple_python_app.jenkins")
             script.env.BRANCH_NAME = branchName
-            script.call PYTHON_APP
+            runScript(script)
             assertJobStatusSuccess()
             assertThat(helper.callStack.findAll {
                 call -> call.methodName == "stage"
@@ -114,11 +42,12 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
     @Override
     @Before
     void setUp() {
-        scriptRoots += "test/jenkins"
+        scriptRoots += "src/test/jenkins/jobs/nextivaPipeline"
         super.setUp()
-        binding.setVariable 'currentBuild', [rawBuild: mockObjects.job]
-        binding.setVariable 'User', mockObjects.user
-        binding.setVariable 'NODE_NAME', 'Debian Slave 3'
+
+        binding.setVariable 'currentBuild', [result: "SUCCESS", rawBuild: mockObjects.job]
+//        binding.setVariable 'User', mockObjects.user
+//        binding.setVariable 'NODE_NAME', 'Debian Slave 3'
         binding.setVariable 'WORKSPACE', '/opt/jenkins/workspace/some-workspace'
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
@@ -127,54 +56,17 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
                 stack         : 'a'
         ]
 
-        mockMapClosure 'kubernetesSlave'
-        attachScript 'jobWithProperties', 'kubernetes', 'log', 'nexus'
-
-        helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
-        helper.registerAllowedMethod 'readMavenPom', [Map], { ['version': '1.0.1'] }
-        helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
-        helper.registerAllowedMethod "ansiColor", [String, Closure.class], { s, c ->
-            Map env = binding.getVariable('env')
-            env.put('TERM', s)
-            binding.setVariable('env', env)
-            c.call()
-        }
-
-        helper.registerAllowedMethod "echo", [String], { println it }
-        helper.registerAllowedMethod 'readProperties', [Map], { return ["version": "1.0.1"] }
-
-        mockEnv()
-        mockDocker()
-        mockSlack()
-
-        mockClosure 'pipeline', 'agent', 'tools', 'options', 'stages', 'steps', 'script',
-                'when', 'expression', 'parallel', 'post', 'always', 'timestamps'
-        mockString 'label', 'jdk', 'maven', 'sh', 'tool', 'ansiColor'
-        mockStringStringString 'buildPublishDockerImage', 'buildPublishPypiPackage'
-        mockNoArgs 'timestamps', 'nonInheriting'
-        mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
-                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile'
-        mockStringClosure 'dir', 'withSonarQubeEnv', 'lock', 'ansicolor', 'container'
-        mockStringStringClosure 'withRegistry'
-        mockList 'parameters'
-        mockListClosure 'withEnv'
-        mockMapClosure 'sshagent', 'withAWS'
-
-        script = loadScript("vars/nextivaPipeline.groovy")
-        script.scm = [branches: '', doGenerateSubmoduleConfigurations: '', extensions: '', userRemoteConfigs: '']
-        script.binding.getVariable('currentBuild').result = 'SUCCESS'
-//        script.env.JOB_LOG_LEVEL = LogLevel.TRACE
-        script.env.JOB_LOG_LEVEL = LogLevel.NONE
-//        script.env.JOB_LOG_LEVEL = LogLevel.INFO
-//        script.env.JOB_LOG_LEVEL = LogLevel.ERROR
+        prepareSharedLib()
     }
+
 
     @Test
     void should_execute_without_errors() throws Exception {
+        Script script = loadScriptHelper("simple_python_app.jenkins")
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        script.call PYTHON_APP
+        runScript(script)
 //        printCallStack()
         assertJobStatusSuccess()
     }
@@ -201,21 +93,23 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void fail_if_build_properties_does_not_exists() throws Exception {
+        Script script = loadScriptHelper("simple_python_app.jenkins")
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             if (s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME)
                 return false
             return false
         }
-        script.call PYTHON_APP
+        runScript(script)
         assertJobStatusFailure()
     }
 
     @Test
     void skip_dependencies_setup_if_empty() throws Exception {
+        Script script = loadScriptHelper("no_depenencies.jenkins")
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        script.call PYTHON_APP_NO_DEPENDENCIES
+        runScript(script)
 
         assertThat(helper.callStack.findAll { call ->
             call.methodName == "stage"
@@ -227,10 +121,12 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
 
     @Test
     void can_run_closure_as_build_step() {
+        Script script = loadScriptHelper("with_closure.jenkins")
+        script.env.BRANCH_NAME = "develop"
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        script.call PYTHON_APP_NO_DEPENDENCIES
+        runScript(script)
 
         def closureSignature = { MethodCall it ->
             it.methodName == "stage" && it.argsToString() == "foobar, groovy.lang.Closure"
@@ -240,39 +136,37 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks {
         assertThat(foobarStages).describedAs("Closure step not found").isNotEmpty()
         assertThat(foobarStages).describedAs("Closure step was executed multiple times").hasSize(1)
         assertThat(helper.callStack.get(
-                helper.callStack.findIndexOf(closureSignature) + 1)
-                .argsToString().contains("com.nextiva.tools.build.BuildTool.build")
+                helper.callStack.findIndexOf(closureSignature) - 3).args[0] == "pip: build"
         ).describedAs("Closure was expected to be in buildCommands").isTrue()
     }
 
     @Test
     void closure_that_uses_internal_vars() {
+        Script script = loadScriptHelper("with_closure.jenkins")
+        script.env.BRANCH_NAME = "develop"
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        script.call {
-            appName = "foo"
-            channelToNotify = "testchannel"
-            build = [
-                    "pip"   : [
-                            "integrationTestCommands"    : """pwd""",
-                            "postIntegrationTestCommands": {
-                                // this refers to instance of NextivaPipelineTest, while we need an instance of this script
-                                def branch = this.script.env.BRANCH_NAME
-                                this.script.build job: "/bar/$branch", parameters: [
-                                        this.script.string(name: "version", value: getGlobalVersion()),
-                                        this.script.string(name: "appName", value: getGlobal().appName)]
-                            }
-                    ],
-                    "docker": ["publishArtifact": true,]
-            ]
+        runScript(script)
+        assertJobStatusSuccess()
+        printCallStack()
+    }
+
+    @Test
+    void docker_only_build() {
+        Script script = loadScriptHelper("docker_build_only.jenkins")
+        helper.registerAllowedMethod 'fileExists', [String], { s ->
+            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
+        helper.registerAllowedMethod 'readProperties', [Map], { Map m ->
+            if (m.containsKey("file") && m.get("file") == BUILD_PROPERTIES_FILENAME)
+                return ["version": "1.0.1"]
+            else
+                return null
+        }
+        runScript(script)
+
+        printCallStack()
         assertJobStatusSuccess()
     }
-
-    @Override
-    BasePipelineTest getBasePipelineTest() {
-        return this
-    }
-
 }

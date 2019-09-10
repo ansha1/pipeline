@@ -1,8 +1,10 @@
-// @Library('pipeline@feature/dockerTemplate') _
+#!groovy
+@Library('pipeline') _
 
+//noinspection GroovyAssignabilityCheck
 nextivaPipeline {
-    appName = "myapp"                       //mandatory
-    channelToNotify = "testchannel"         //mandatory
+    appName = "myapp"
+    channelToNotify = "testchannel"
 
     build = ["pip"   : ["buildCommands"              : """pwd""",
                         "postBuildCommands"          : """pwd""",
@@ -20,13 +22,6 @@ nextivaPipeline {
              "docker": ["publishArtifact": true,]]
 
     deployTool = "kubeup"
-//    dependencies = ["postgres"                  : "latest",]
-//    dependencies = ["postgres"                  : "latest",
-//                    "rabbitmq-ha"               : "latest",
-//                    "redis-ha"                  : "latest",
-//                    "rules-engine-core"         : "latest",
-//                    "rules-engine-orchestration": "latest",]
-
 
     environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
                    "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
@@ -37,5 +32,4 @@ nextivaPipeline {
     ]
 
     branchPermissions = [:]
-
 }

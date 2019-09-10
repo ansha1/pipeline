@@ -1,0 +1,47 @@
+#!groovy
+@Library('pipeline') _
+
+
+def sample_closure = {
+    stage("foobar") {
+        echo("Hello world: " + GroovySystem.version)
+        return "Returned from foobar"
+    }
+}
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "myapp"
+    channelToNotify = "testchannel"
+
+    build = ["pip"   : ["buildCommands"              : sample_closure,
+                        "postBuildCommands"          : """pwd""",
+                        "unitTestCommands"           : """cat file.txt""",
+                        "postUnitTestCommands"       : """pwd""",
+                        "integrationTestCommands"    : """pwd""",
+                        "postIntegrationTestCommands": {
+                            build job: "/bar/${getGlobal().branchName}", parameters: [
+                                    string(name: "version", value: getGlobalVersion()),
+                                    string(name: "appName", value: getGlobal().appName)]
+                        },
+                        "postDeployCommands"         : """pwd""",
+                        "image"                      : "maven:3.6.1-jdk-8",
+                        "resourceRequestCpu"         : "1",
+                        "resourceLimitCpu"           : "1",
+                        "buildDocker"                : true,
+                        "resourceRequestMemory"      : "1Gi",
+                        "resourceLimitMemory"        : "1Gi",],
+             "docker": ["publishArtifact": true,]]
+
+    deployTool = "kubeup"
+
+    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
+                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
+                                  "ansibleInventory": "rc"],
+                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
+                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+                                  "branchPattern": /^master$/,]
+    ]
+
+    branchPermissions = [:]
+}

@@ -2,17 +2,22 @@ package com.nextiva.config
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import hudson.AbortException
+import org.apache.commons.io.FileUtils
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
+import org.junit.rules.TemporaryFolder
+import utils.JenkinsScriptsHelper
 
+import static com.lesfurets.jenkins.unit.global.lib.LibraryConfiguration.library
+import static com.lesfurets.jenkins.unit.global.lib.LocalSource.localSource
 import static com.nextiva.utils.Utils.getGlobal
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 import static org.hamcrest.CoreMatchers.startsWith
 
-class ConfigTest extends BasePipelineTest {
+class ConfigTest extends BasePipelineTest implements JenkinsScriptsHelper {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none()
@@ -25,9 +30,10 @@ class ConfigTest extends BasePipelineTest {
 
     @Before
     void setUp() {
-        scriptRoots += "src/test/jenkins"
+        scriptRoots += "src/test/jenkins/jobs/nextivaPipeline"
         super.setUp()
-        script = loadScript("jobs/nextivaPipeline")
+        prepareSharedLib()
+        script = loadScript("simple_python_app.jenkins")
         binding.setVariable 'env', [
                 BRANCH_NAME: 'feature/foo'
         ]
