@@ -51,7 +51,7 @@ class StageFactory {
             "Build"                       : ["deployOnly"    : false,
                                              "class"         : Build.class,
                                              "branchingModel": ["gitflow"   : branchingModelRegexps.notMaster,
-                                                                "trunkbased": branchingModelRegexps.master]
+                                                                "trunkbased": branchingModelRegexps.any]
             ],
             "UnitTest"                    : ["class"            : UnitTest.class,
                                              "isUnitTestEnabled": true,
