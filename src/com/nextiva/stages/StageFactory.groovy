@@ -80,7 +80,7 @@ class StageFactory {
                                              "isSecurityScanEnabled": true,
                                              "class"                : SecurityScan.class,
                                              "branchingModel"       : ["gitflow"   : branchingModelRegexps.releaseOrHotfix,
-                                                                       "trunkbased": branchingModelRegexps.notMaster]
+                                                                       "trunkbased": branchingModelRegexps.master]
             ],
             "Deploy"                      : ["class"          : Deploy.class,
                                              "isDeployEnabled": true,
