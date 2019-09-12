@@ -5,10 +5,11 @@ class SharedJobsStaticVars {
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa', 'tooling', 'sales-demo']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final LIST_OF_BOOKED_NAMESPACES = ['bot', 'default', 'jenkins', 'kube-public', 'kube-system', 'monitoring', 'selenoid-moon', 'utils']
-    static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
-    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
-    static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
-    static final NEXUS_3_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
+    static final NEXUS_STATIC_ASSETS_REPO_URL = 'https://nexus.nextiva.xyz/repository/raw-hosted-static-assets-'
+    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'https://nexus.nextiva.xyz/repository/raw-hosted-static-assets-android/'
+    static final NEXUS_DEB_PKG_REPO_URL = 'https://nexus.nextiva.xyz/repository/apt-hosted-nextiva-'
+    static final NEXUS_3_REST_API = 'https://nexus.nextiva.xyz/service/rest/v1/search?repository='
+    static final NEXUS_3_LEGACY_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
     static final ASSETS_PACKAGE_EXTENSION = 'bzip'
     static final VENV_DIR = '.venv'
@@ -18,9 +19,8 @@ class SharedJobsStaticVars {
     static final TENABLE_DOCKER_REGISTRY_URL = 'https://registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
-    static final PIP_TRUSTED_HOST = 'repository.nextiva.xyz'
-    static final PIP_EXTRA_INDEX_URL = 'http://repository.nextiva.xyz/repository/pypi-'
-    static final PIP_EXTRA_INDEX_URL_SUFFIX = '-group/simple'
+    static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
+    static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'

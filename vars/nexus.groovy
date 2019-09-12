@@ -1,8 +1,7 @@
 import static com.nextiva.SharedJobsStaticVars.*
-import java.io.FileNotFoundException;
 
 Boolean isDebPackageExists(String packageName, String packageVersion, String deployEnvironment) {
-    // example of url: http://repository.nextiva.xyz/repository/apt-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
+    // example of url: https://nexus.nextiva.xyz/repository/apt-hosted-nextiva-dev/pool/d/data-migration/data-migration_0.0.1704~dev_all.deb
 
     def index_char = packageName.substring(0, 1)
     def nexusDebPackageUrl = "${NEXUS_DEB_PKG_REPO_URL}${deployEnvironment}/pool/${index_char}/${packageName}/${packageName}_${packageVersion}~${deployEnvironment}_all.deb"
@@ -30,8 +29,13 @@ def getApiNexusCall(String apiUrl) {
     return result
 }
 
+Boolean checkLegacyNexus3Package(String repo, String format, String packageName, String packageVersion) {
+    def searchNexusQuery = "${NEXUS_3_LEGACY_REST_API}${repo}&format=${format}&name=${packageName}-${packageVersion}"
+    checkStatusNexus3(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
+}
+
 Boolean checkNexus3Package(String repo, String format, String packageName, String packageVersion) {
-    def searchNexusQuery = NEXUS_3_REST_API + repo + "&format=" + format + "&name=" + packageName + "-" + packageVersion
+    def searchNexusQuery = "${NEXUS_3_REST_API}${repo}&format=${format}&name=${packageName}-${packageVersion}"
     checkStatusNexus3(getApiNexusCall(searchNexusQuery), packageName, packageVersion)
 }
 
@@ -62,17 +66,17 @@ Boolean checkStatusNexus2(Map searchQueryResult, String packageName, String pack
     }
 }
 
-// example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=static-assets-production&format=raw&name=agent-0.1.21
-Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo = 'static-assets-production', String format = 'raw') {
+// example of url: https://nexus.nextiva.xyz/service/rest/v1/search?repository=raw-hosted-static-assets-production&format=raw&name=agent-0.1.21
+Boolean isAssetsPackageExists(String packageName, String packageVersion, String repo = 'raw-hosted-static-assets-production', String format = 'raw') {
     checkNexus3Package(repo, format, packageName, packageVersion)
 }
 
-// example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=pypi-dev&format=pypi&name=crm-models&version=0.1.1
+// example of url: https://nexus.nextiva.xyz/service/rest/v1/search?repository=pypi-dev&format=pypi&name=crm-models&version=0.1.1
 Boolean isPypiPackageExists(String packageName, String packageVersion, String repo, String format = 'pypi') {
     checkNexus3Package(repo, format, packageName, packageVersion)
 }
 
-// example of url: http://repository.nextiva.xyz/service/rest/beta/search?repository=docker&format=docker&name=analytics&version=0.1.504
+// example of url: https://nexus.nextiva.xyz/service/rest/v1/search?repository=docker&format=docker&name=analytics&version=0.1.504
 Boolean isDockerPackageExists(String packageName, String packageVersion, String repo = 'docker', String format = 'docker') {
     checkNexus3Package(repo, format, packageName, packageVersion)
 }
