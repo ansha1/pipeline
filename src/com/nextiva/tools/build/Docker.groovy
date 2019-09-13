@@ -24,6 +24,10 @@ class Docker extends BuildTool {
      */
     @Override
     void publish() {
+        if (publishArtifact == false) {
+            logger.info("Skipping publish, because publishArtifact is set to false")
+            return
+        }
         logger.debug("Checking if image should be tagged by 'latest'")
         Boolean tagLatest = isTagLatest()
         logger.debug("Tag image with 'latest'? $tagLatest")

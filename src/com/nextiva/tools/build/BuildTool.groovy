@@ -70,6 +70,10 @@ abstract class BuildTool implements Serializable, Tool {
     }
 
     void publish() {
+        if (publishArtifact == false) {
+            logger.info("Skipping publish, because publishArtifact is set to false")
+            return
+        }
         tryExec("publishArtifact", publishCommands, null)
     }
 
