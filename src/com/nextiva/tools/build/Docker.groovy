@@ -26,7 +26,6 @@ class Docker extends BuildTool {
     void publish() {
         logger.debug("Checking if image should be tagged by 'latest'")
         Boolean tagLatest = isTagLatest()
-        super.publish()
         logger.debug("Tag image with 'latest'? $tagLatest")
         logger.debug("Going to run buildPublish")
         buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
