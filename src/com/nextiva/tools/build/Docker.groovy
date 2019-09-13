@@ -1,6 +1,5 @@
 package com.nextiva.tools.build
 
-import com.nextiva.config.Global
 import hudson.AbortException
 
 import java.util.regex.Pattern
@@ -8,20 +7,30 @@ import java.util.regex.Pattern
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
-import static com.nextiva.utils.Utils.getGlobal
+import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_URL
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.getGlobalVersion
 import static com.nextiva.utils.Utils.setPropertyToFile
 import static com.nextiva.utils.Utils.shWithOutput
+import static com.nextiva.config.Global.instance as global
 
 class Docker extends BuildTool {
-    def publishCommands = {
-        Boolean tagLatest = isTagLatest()
-        buildPublish(script, NEXTIVA_DOCKER_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
-    }
-
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
+    }
+
+    /**
+     * Running the same as a closure passed to publishCommand fails because of numerous CPS issues
+     */
+    @Override
+    void publish() {
+        logger.debug("Checking if image should be tagged by 'latest'")
+        Boolean tagLatest = isTagLatest()
+        super.publish()
+        logger.debug("Tag image with 'latest'? $tagLatest")
+        logger.debug("Going to run buildPublish")
+        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
+        logger.debug("buildPublish completed")
     }
 
     @Override
@@ -77,27 +86,41 @@ class Docker extends BuildTool {
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
     def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
         script.docker.withRegistry(registry, registryCredentials) {
+            logger.debug("Building image ")
             def image = script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
+            logger.debug("Pushing image $version")
             image.push()
             if (tagLatest) {
+                logger.debug("Pushing image with 'latest' tag")
                 image.push("latest")
+                logger.debug("Removing image with 'latest'")
                 String output = shWithOutput(script, "docker rmi ${registry.replaceFirst(/^https?:\/\//, '')}/${appName}:latest")
                 logger.debug("$output")
             }
+            logger.debug("Removing image $version")
             String output = shWithOutput(script, "docker rmi ${image.id} ${registry.replaceFirst(/^https?:\/\//, '')}/${image.id}")
             logger.debug("$output")
         }
     }
 
-    static Boolean isTagLatest() {
-        Global global = getGlobal()
+    Boolean isTagLatest() {
+        logger.trace("Getting branch name from Global")
         String branchName = global.getBranchName()
+        logger.trace("branchName: $branchName")
+        logger.trace("Getting branching model from Global")
         String branchingModel = global.getBranchingModel()
+        logger.trace("branchModel:  $branchingModel")
         Map chooser = ["gitflow"   : /^(dev|develop)$/,
-                       "trunkbased": "master"]
+                       "trunkbased": /^master$/]
+        logger.trace("chooser: $chooser")
 
-        Pattern branchPattern =Pattern.compile(chooser.get(branchingModel))
-        return branchName ==~ branchPattern
+        logger.trace("Compiling regex pattern: ${chooser.get(branchingModel)}")
+        Pattern branchPattern = Pattern.compile(chooser.get(branchingModel))
+
+        logger.trace("$branchName ==~ $branchPattern: ")
+        Boolean result = branchName ==~ branchPattern
+        logger.trace("Result is $result")
+        return result
     }
 }
 
