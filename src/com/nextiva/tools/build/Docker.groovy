@@ -11,6 +11,7 @@ import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIA
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_URL
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
+import static com.nextiva.utils.Utils.shOrClosure
 import static com.nextiva.utils.Utils.shWithOutput
 import static com.nextiva.config.Global.instance as global
 
@@ -51,7 +52,7 @@ class Docker extends BuildTool {
 
     @Override
     String getVersion() {
-        execute {
+        script.dir(pathToSrc) {
             String version = null
             try {
                 version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")

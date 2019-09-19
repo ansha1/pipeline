@@ -101,7 +101,6 @@ class Utils {
      */
     static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
         def property
-        script.echo "before file exits"
         if (script.fileExists(propertyFilePath)) {
             script.echo "inside if"
             def buildProperties = script.readProperties file: propertyFilePath
