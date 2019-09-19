@@ -10,7 +10,6 @@ import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_URL
 import static com.nextiva.utils.Utils.getPropertyFromFile
-import static com.nextiva.utils.Utils.getGlobalVersion
 import static com.nextiva.utils.Utils.setPropertyToFile
 import static com.nextiva.utils.Utils.shWithOutput
 import static com.nextiva.config.Global.instance as global
@@ -61,7 +60,7 @@ class Docker extends BuildTool {
             }
             if (version == null) {
                 logger.debug("Try to get version from GLOBAL version")
-                version = getGlobalVersion()
+                version = global.globalVersion
             }
             if (version == null) {
                 throw new AbortException("Version for Docker is undefined, please define it in $BUILD_PROPERTIES_FILENAME or by another build tool via GLOBAL version")
@@ -101,7 +100,6 @@ class Docker extends BuildTool {
     }
 
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
-    @NonCPS
     def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
         script.docker.withRegistry(registry, registryCredentials) {
             logger.debug("Building image ")
