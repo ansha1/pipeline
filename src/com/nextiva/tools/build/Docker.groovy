@@ -103,10 +103,6 @@ class Docker extends BuildTool {
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
     @NonCPS
     def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
-        script.sh """
-                printenv
-                docker ps
-                """
         script.docker.withRegistry(registry, registryCredentials) {
             logger.debug("Building image ")
             def image = script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
