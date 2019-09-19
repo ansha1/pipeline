@@ -5,9 +5,9 @@ class SharedJobsStaticVars {
     static final LIST_OF_ENVS = ['dev', 'staging', 'rc', 'production', 'test', 'qa', 'tooling', 'sales-demo']
     static final LIST_OF_DEFAULT_BRANCH_PATTERNS = ['dev', 'develop', 'hotfix/.+', 'release/.+', 'master']
     static final LIST_OF_BOOKED_NAMESPACES = ['bot', 'default', 'jenkins', 'kube-public', 'kube-system', 'monitoring', 'selenoid-moon', 'utils']
-    static final NEXUS_STATIC_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/static-assets-'
-    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'http://repository.nextiva.xyz/repository/android-assets/'
-    static final NEXUS_DEB_PKG_REPO_URL = 'http://repository.nextiva.xyz/repository/apt-'
+    static final NEXUS_STATIC_ASSETS_REPO_URL = 'https://nexus.nextiva.xyz/repository/raw-hosted-static-assets-'
+    static final NEXUS_ANDROID_ASSETS_REPO_URL = 'https://nexus.nextiva.xyz/repository/raw-hosted-static-assets-android/'
+    static final NEXUS_DEB_PKG_REPO_URL = 'https://nexus.nextiva.xyz/repository/apt-hosted-nextiva-'
     static final NEXUS_3_REST_API = 'https://nexus.nextiva.xyz/service/rest/v1/search?repository='
     static final NEXUS_3_LEGACY_REST_API = 'http://repository.nextiva.xyz/service/rest/beta/search?repository='
     static final NEXUS_2_REST_API = 'http://repository.nextiva.xyz:8081/nexus/service/local/artifact/maven/resolve'
@@ -50,7 +50,7 @@ class SharedJobsStaticVars {
             If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
     //Slack app bot token for getting slack userID over email
-    static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-YQyMyph5fBi64WFw9rRGTgIl'
+    static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-zHdrn7VCcvfrk5DrYupmI2of'
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     static final SLACK_STATUS_REPORT_CHANNEL_QA = 'rc-platform-support'
     static final SLACK_STATUS_REPORT_CHANNEL_PROD = 'platform-production'
