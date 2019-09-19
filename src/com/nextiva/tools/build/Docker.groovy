@@ -1,5 +1,6 @@
 package com.nextiva.tools.build
 
+import com.cloudbees.groovy.cps.NonCPS
 import hudson.AbortException
 
 import java.util.regex.Pattern
@@ -96,6 +97,7 @@ class Docker extends BuildTool {
     }
 
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
+    @NonCPS
     def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
         script.docker.withRegistry(registry, registryCredentials) {
             logger.debug("Building image ")
