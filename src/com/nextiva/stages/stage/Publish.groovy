@@ -11,7 +11,8 @@ class Publish extends Stage {
     @Override
     def stageBody() {
         Map build = configuration.get("build")
-        build.each { toolName, toolConfiguration ->
+        for (entry in build) {
+            Map toolConfiguration = entry.value
             BuildTool tool = toolConfiguration.get("instance")
             tool.publish()
         }
