@@ -17,11 +17,11 @@ import static com.nextiva.config.Global.instance as global
 class Docker extends BuildTool {
     def publishCommands = {
         logger.debug("Checking if image should be tagged by 'latest'")
-        Boolean tagLatest = false
-        tagLatest = isTagLatest()
-        logger.debug("Tag image with 'latest'? $tagLatest")
-        logger.debug("Going to run buildPublish")
-        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
+//        Boolean tagLatest = false
+//        tagLatest = isTagLatest()
+//        logger.debug("Tag image with 'latest'? $tagLatest")
+//        logger.debug("Going to run buildPublish")
+        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", isTagLatest())
         logger.debug("buildPublish completed")
     }
     Docker(Script script, Map toolConfiguration) {
