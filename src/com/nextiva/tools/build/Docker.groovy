@@ -44,7 +44,9 @@ class Docker extends BuildTool {
         logger.debug("Going to run buildPublish")
         String version = getVersion()
         logger.debug("Got version:$version")
-        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version, "Dockerfile", ".", tagLatest)
+        execute {
+            buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version, "Dockerfile", ".", tagLatest)
+        }
         logger.debug("buildPublish completed")
     }
 
