@@ -16,35 +16,35 @@ import static com.nextiva.utils.Utils.shWithOutput
 import static com.nextiva.config.Global.instance as global
 
 class Docker extends BuildTool {
-    def publishCommands = {
-        logger.debug("Checking if image should be tagged by 'latest'")
-//        Boolean tagLatest = false
-//        tagLatest = isTagLatest()
-//        logger.debug("Tag image with 'latest'? $tagLatest")
-//        logger.debug("Going to run buildPublish")
-        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", isTagLatest())
-        logger.debug("buildPublish completed")
-    }
+//    def publishCommands = {
+//        logger.debug("Checking if image should be tagged by 'latest'")
+////        Boolean tagLatest = false
+////        tagLatest = isTagLatest()
+////        logger.debug("Tag image with 'latest'? $tagLatest")
+////        logger.debug("Going to run buildPublish")
+//        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", isTagLatest())
+//        logger.debug("buildPublish completed")
+//    }
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
 
-//    /**
-//     * Running the same as a closure passed to publishCommand fails because of numerous CPS issues
-//     */
-//    @Override
-//    void publish() {
-//        if (publishArtifact == false) {
-//            logger.info("Skipping publish, because publishArtifact is set to false")
-//            return
-//        }
-//        logger.debug("Checking if image should be tagged by 'latest'")
-//        Boolean tagLatest = isTagLatest()
-//        logger.debug("Tag image with 'latest'? $tagLatest")
-//        logger.debug("Going to run buildPublish")
-//        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
-//        logger.debug("buildPublish completed")
-//    }
+    /**
+     * Running the same as a closure passed to publishCommand fails because of numerous CPS issues
+     */
+    @Override
+    void publish() {
+        if (publishArtifact == false) {
+            logger.info("Skipping publish, because publishArtifact is set to false")
+            return
+        }
+        logger.debug("Checking if image should be tagged by 'latest'")
+        Boolean tagLatest = isTagLatest()
+        logger.debug("Tag image with 'latest'? $tagLatest")
+        logger.debug("Going to run buildPublish")
+        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", tagLatest)
+        logger.debug("buildPublish completed")
+    }
 
     @Override
     String getVersion() {
