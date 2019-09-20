@@ -99,6 +99,7 @@ class Utils {
      * @param propertyName name of the property to retrieve
      * @return property value
      */
+    @NonCPS
     static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
         def property
         if (script.fileExists(propertyFilePath)) {
