@@ -10,7 +10,7 @@ import static com.nextiva.config.Global.instance as global
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
-class Repository {
+class Repository implements Serializable {
     String path
     String repository
     String branch
@@ -22,7 +22,7 @@ class Repository {
     }
 }
 
-class Kubeup extends DeployTool {
+class Kubeup extends DeployTool implements Serializable {
 
     String kubeUpHome
     Repository cloudApps
