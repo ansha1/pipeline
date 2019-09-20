@@ -33,13 +33,12 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
 
     try {
         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
-            stage.each{ stage ->
+            stages.each { stage ->
                 logger.debug("executing stage", stage)
                 stage.execute()
             }
         }
     } catch (t) {
-        //some error handling
         currentBuild.result = "FAILURE"
         currentBuild.rawBuild.result = Result.FAILURE
         logger.error("error in the pipeline execution", t)
