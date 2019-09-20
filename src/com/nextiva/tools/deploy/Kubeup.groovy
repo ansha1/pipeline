@@ -28,6 +28,15 @@ class Kubeup extends DeployTool implements Serializable {
     Repository cloudApps
     Repository cloudPlatform
 
+    Script script
+    String name
+    Logger logger
+    String toolHome
+    Boolean initialized = false
+
+    String repository
+    String branch
+
     Kubeup(Script script, Map deployToolConfig) {
         super(script, deployToolConfig)
         this.script = script
