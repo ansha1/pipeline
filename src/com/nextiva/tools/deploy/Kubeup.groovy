@@ -36,6 +36,7 @@ class Kubeup extends DeployTool {
         this.cloudPlatform = new Repository("$toolHome/cloud-platform",
                 deployToolConfig.get("cloudPlatformRepository"),
                 deployToolConfig.get("cloudPlatformBranch"))
+        logger.debug("Kubeup has been initialized")
     }
 
     @Override
