@@ -164,7 +164,7 @@ class Kubeup extends DeployTool implements Serializable {
             kubectl get nodes 2>&1
             """)
         }
-        logger.debug("Kubelogin output", output)
+        this.logger.debug("Kubelogin output", output)
     }
 
     def vaultLogin(String vaultUrl) {
