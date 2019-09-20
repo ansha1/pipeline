@@ -33,9 +33,9 @@ void pipelineExecution(List<Stage> stages, String jobTimeoutMinutes) {
 
     try {
         timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
-            stages.each {
-                logger.debug("executing stage", it)
-                it.execute()
+            for (Stage stage in stages) {
+                logger.debug("executing stage", stage)
+                stage.execute()
             }
         }
     } catch (t) {
