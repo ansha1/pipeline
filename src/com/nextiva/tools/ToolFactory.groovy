@@ -29,10 +29,14 @@ class ToolFactory {
                 return new Pip(script, toolConfig)
                 break
             case "ansible":
-                return new Ansible(script, toolConfig)
+                Ansible ansible = new Ansible(script, toolConfig)
+                logger.trace("Created tool Kubeup", kubeup)
+                return ansible
                 break
             case "kubeup":
-                return new Kubeup(script, toolConfig)
+                Kubeup kubeup = new Kubeup(script, toolConfig)
+                logger.trace("Created tool Kubeup", kubeup)
+                return kubeup
                 break
             default:
                 logger.error("Can't create tool from", toolConfig)
