@@ -2,6 +2,7 @@ package com.nextiva.tools.deploy
 
 import com.nextiva.environment.Environment
 import com.nextiva.tools.ToolFactory
+import com.nextiva.utils.Logger
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
@@ -29,6 +30,13 @@ class Kubeup extends DeployTool {
 
     Kubeup(Script script, Map deployToolConfig) {
         super(script, deployToolConfig)
+        this.script = script
+        this.name = deployToolConfig.get("name")
+        this.toolHome = "deploy/${name}"
+        this.repository = deployToolConfig.get("repository")
+        this.branch = deployToolConfig.get("branch")
+        this.logger = new Logger(this)
+        logger.debug("created tool - name: ${this.name}, toolHome:${this.toolHome}, repository: ${this.repository}, branch: ${this.branch}")
         this.kubeUpHome = "$toolHome/kubeup"
         this.cloudApps = new Repository("$toolHome/cloud-apps",
                 deployToolConfig.get("cloudAppsRepository"),
