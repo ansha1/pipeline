@@ -40,32 +40,15 @@ class Kubeup extends DeployTool {
 
     @Override
     void deploy(Environment environment) {
-        ToolFactory toolFactory = new ToolFactory()
-        Map toolMap = ["name": "kubeup"]
-        toolFactory.mergeWithDefaults(toolMap)
-        Kubeup kubeup = toolFactory.build(script, toolMap)
-        kubeup.init(environment.kubernetesCluster)
-        kubeup.deploy(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet)
-    }
-
-    Boolean deploy(String cloudApp, String version, String namespace, String configset) {
-//        TODO isInitialized() causes
-//         java.lang.StackOverflowError: Excessively nested closures/functions at
-//             com.nextiva.tools.deploy.DeployTool.isInitialized(src/com/nextiva/tools/deploy/DeployTool.groovy:29) -
-//             look for unbounded recursion - call depth: 1025
-//
-//        if (!isInitialized()) {
-//            log.error("Kubeup is not initialized, aborting...")
-//            throw new AbortException("Kubeup is not installed, aborting...")
-//        }
-        logger.info("Start deploy cloudApp: $cloudApp , version: $version, namespace: $namespace, configset: $configset")
+        init(environment.kubernetesCluster)
+        deploy(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet)
+        logger.info("Start deploy cloudApp: ${global.appName} , version: ${global.globalVersion}, namespace: ${environment.kubernetesNamespace}, configset: ${environment.kubernetesConfigSet}")
 
         logger.info('Checking of application manifests ...')
-        install(cloudApp, version, namespace, configset, true)
+        install(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet, true)
         logger.info('Deploying application into Kubernetes ...')
-        install(cloudApp, version, namespace, configset, false)
+        install(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet, false)
         println("this is kubernetes deployment" + toString())
-        return true
     }
 
     void init(String clusterDomain) {
