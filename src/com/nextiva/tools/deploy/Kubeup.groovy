@@ -116,6 +116,7 @@ class Kubeup extends DeployTool implements Serializable {
         } catch (e) {
             logger.warn("kubedog is not installed, going to install kubedog...")
             String out = shWithOutput(script, """
+            mkdir -p ${toolHome}
             curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
             chmod +x $toolHome/kubedog
             kubedog version""")
