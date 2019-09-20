@@ -64,6 +64,7 @@ class Config implements Serializable {
         //Set flags
         //Use default value, this also creates the key/value pair in the map.
         Global global = getGlobal()
+        global.script = script
         String appName = configuration.get("appName")
         global.setAppName(appName)
         //TODO: move branching model(gitflow and trunkbased) to the class or enum

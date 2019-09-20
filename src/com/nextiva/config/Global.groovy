@@ -2,9 +2,11 @@ package com.nextiva.config
 
 import com.nextiva.environment.Environment
 import com.nextiva.tools.deploy.DeployTool
+import sun.font.Script
 
 // For unknown reason @Singleton annotation did not work well when running on Jenkins
 class Global implements Serializable {
+    Script script
     String appName
     String globalVersion
     String branchName
