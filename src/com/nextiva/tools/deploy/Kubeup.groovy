@@ -158,7 +158,7 @@ class Kubeup extends DeployTool implements Serializable {
         kubeloginInstall()
         String output
         script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            output = shWithOutput(script, """
+            output = shWithOutput(global.script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
@@ -184,12 +184,15 @@ class Kubeup extends DeployTool implements Serializable {
     def install(String application, String version, String namespace, String configset, Boolean dryRun = true) {
         logger.debug("Install application: $application, version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
         String output = ""
+        def home = toolHome
+        def cloudAppsPath = "./cloud-apps/apps/"
+        def cloudPlatformPath = "./cloud-platform/apps"
         try {
             script.container(name) {
-                script.dir(toolHome) {
+                global.script.dir(home) {
                     String dryRunParam = dryRun ? '--dry-run' : ''
-                    output = shWithOutput(script, """
-                    cd "\$(find ${cloudApps.path}/apps/ ${cloudPlatform.path}/apps -maxdepth 1 -type d -name $application | head -1)/../../"
+                    output = shWithOutput(global.script, """
+                    cd "\$(find $cloudAppsPath $cloudPlatformPath -maxdepth 1 -type d -name $application | head -1)/../../"
                     [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
                     ${unsetEnvServiceDiscovery()}
@@ -202,7 +205,7 @@ class Kubeup extends DeployTool implements Serializable {
                 }
             }
         } catch (e) {
-            throw new AbortException("kubeup install failure... installOutput: >>> \n $output \n")
+            throw new AbortException("kubeup install failure... e: $e\ninstallOutput: >>> \n $output")
         }
     }
 
