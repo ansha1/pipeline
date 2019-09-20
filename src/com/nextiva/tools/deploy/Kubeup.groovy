@@ -156,14 +156,15 @@ class Kubeup extends DeployTool implements Serializable {
 
     def kubeLogin(String clusterDomain) {
         kubeloginInstall()
+        String output
         script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            String output = shWithOutput(script, """
+            output = shWithOutput(script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
             """)
-            logger.debug("Kubelogin output", output)
         }
+        logger.debug("Kubelogin output", output)
     }
 
     def vaultLogin(String vaultUrl) {
