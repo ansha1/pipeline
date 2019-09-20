@@ -190,7 +190,7 @@ class Kubeup extends DeployTool implements Serializable {
                 script.dir(toolHome) {
                     String dryRunParam = dryRun ? '--dry-run' : ''
                     output = shWithOutput(script, """
-                    cd "\$(find cloud-apps/apps/ cloud-platform/apps -maxdepth 1 -type d -name $application | head -1)/../../"
+                    cd "\$(find ${cloudApps.path}/apps/ ${cloudPlatform.path}/apps -maxdepth 1 -type d -name $application | head -1)/../../"
                     [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
                     ${unsetEnvServiceDiscovery()}
