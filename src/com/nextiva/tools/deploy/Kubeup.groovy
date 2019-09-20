@@ -1,5 +1,6 @@
 package com.nextiva.tools.deploy
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.nextiva.environment.Environment
 import com.nextiva.tools.ToolFactory
 import com.nextiva.utils.Logger
@@ -68,6 +69,7 @@ class Kubeup extends DeployTool implements Serializable {
         println("this is kubernetes deployment" + toString())
     }
 
+    @NonCPS
     void init(String clusterDomain) {
         script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
         logger.debug("start init $name tool")
