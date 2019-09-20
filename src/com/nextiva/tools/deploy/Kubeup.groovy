@@ -84,7 +84,7 @@ class Kubeup extends DeployTool implements Serializable {
         def home = toolHome
         script.container(name) {
             global.script.dir(home) {
-                global.script.env.PATH = "${script.env.PATH}:${home}"
+                global.script.env.PATH = "${global.script.env.PATH}:${home}"
                 kubectlInstall()
                 kubeupInstall()
                 kubedogInstall()
