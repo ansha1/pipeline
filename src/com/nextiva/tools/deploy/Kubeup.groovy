@@ -52,6 +52,7 @@ class Kubeup extends DeployTool {
     }
 
     void init(String clusterDomain) {
+        script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
         logger.debug("start init $name tool")
 
         logger.debug("Clonning repository $repository branch $branch into $kubeUpHome")
