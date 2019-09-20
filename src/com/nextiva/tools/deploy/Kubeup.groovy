@@ -164,20 +164,20 @@ class Kubeup extends DeployTool implements Serializable {
             kubectl get nodes 2>&1
             """)
         }
-        this.logger.debug("Kubelogin output", output)
+        logger.debug("Kubelogin output", output)
     }
 
     def vaultLogin(String vaultUrl) {
         logger.debug("trying to login in the Vault")
+        String output
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
-                String output = shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
-                logger.trace("Vault login output", output)
+                output = shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
             } catch (e) {
-                logger.error("Error! Got an error trying to initiate the connect with Vault \n output $output", e)
-                throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}")
+                throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}, output: $output")
             }
         }
+        logger.trace("Vault login output", output)
         logger.debug("Vault login complete")
     }
 
