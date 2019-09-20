@@ -81,10 +81,10 @@ class Kubeup extends DeployTool implements Serializable {
         logger.debug("Clonning repository $cloudPlatform.repository branch $cloudPlatform.branch into $cloudPlatform.path")
         clone(script, cloudPlatform.repository, cloudPlatform.branch, cloudPlatform.path)
         logger.debug("clone complete")
-
+        def home = toolHome
         script.container(name) {
-            global.script.dir(toolHome) {
-                global.script.env.PATH = "${script.env.PATH}:${toolHome}"
+            global.script.dir(home) {
+                global.script.env.PATH = "${script.env.PATH}:${home}"
                 kubectlInstall()
                 kubeupInstall()
                 kubedogInstall()
