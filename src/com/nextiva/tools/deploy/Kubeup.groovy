@@ -172,9 +172,9 @@ class Kubeup extends DeployTool implements Serializable {
         String output
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
-                output = shWithOutput(script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${script.env.VAULT_RO_USER} password=${script.env.VAULT_RO_PASSWORD}")
+                output = shWithOutput(global.script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${global.script.env.VAULT_RO_USER} password=${global.script.env.VAULT_RO_PASSWORD}")
             } catch (e) {
-                throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}, output: $output")
+                throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}; output: $output; e: $e")
             }
         }
         logger.trace("Vault login output", output)
