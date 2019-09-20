@@ -72,6 +72,7 @@ class Kubeup extends DeployTool implements Serializable {
     void init(String clusterDomain) {
         script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
         logger.debug("start init $name tool")
+        logger.debug(this.toString())
 
         logger.debug("Clonning repository $cloudApps.repository branch $cloudApps.branch into $cloudApps.path")
         clone(script, cloudApps.repository, cloudApps.branch, cloudApps.path)
