@@ -1,5 +1,6 @@
 package com.nextiva.stages.stage
 
+import com.nextiva.environment.Environment
 import com.nextiva.tools.build.BuildTool
 import com.nextiva.tools.deploy.DeployTool
 
@@ -18,7 +19,7 @@ class Deploy extends Stage {
         doPostDeploy()
     }
 
-    private void doDeploy(DeployTool tool, environment) {
+    private void doDeploy(DeployTool tool, Environment environment) {
         withStage("$tool.name $stageName: Deploy to ${environment.name}") {
             try {
                 tool.deploy(environment)

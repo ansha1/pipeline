@@ -18,7 +18,7 @@ abstract class DeployTool implements Serializable, Tool {
     DeployTool(Script script, Map deployToolConfig) {
         this.script = script
         this.name = deployToolConfig.get("name")
-        this.toolHome = "${script.env.WORKSPACE}/deploy/${name}"
+        this.toolHome = "deploy/${name}"
         this.repository = deployToolConfig.get("repository")
         this.branch = deployToolConfig.get("branch")
         this.logger = new Logger(this)

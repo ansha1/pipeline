@@ -41,7 +41,6 @@ class Kubeup extends DeployTool {
     @Override
     void deploy(Environment environment) {
         init(environment.kubernetesCluster)
-        deploy(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet)
         logger.info("Start deploy cloudApp: ${global.appName} , version: ${global.globalVersion}, namespace: ${environment.kubernetesNamespace}, configset: ${environment.kubernetesConfigSet}")
 
         logger.info('Checking of application manifests ...')
