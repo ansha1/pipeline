@@ -13,8 +13,8 @@ class Deploy extends Stage {
 
     @Override
     def stageBody() {
-        for (environment in global.environmentsToDeploy) {
-            doDeploy(global.deployTool, environment)
+        global.environmentsToDeploy.each {
+            doDeploy(global.deployTool, it)
         }
         doPostDeploy()
     }
