@@ -101,12 +101,18 @@ class Utils {
      */
     static def getPropertyFromFile(Script script, String propertyFilePath, String propertyName) {
         def property
-        if (script.fileExists(propertyFilePath)) {
+        script.echo 'file exists?'
+        Boolean exists = script.fileExists(propertyFilePath)
+        script.echo 'before if'
+        if (exists) {
+            script.echo 'inside if'
             def buildProperties = script.readProperties file: propertyFilePath
             property = buildProperties.get(propertyName)
         } else {
+            script.echo 'inside else'
             throw new AbortException("File ${propertyFilePath} not found.")
         }
+        script.echo 'returning'
         return property
     }
 
