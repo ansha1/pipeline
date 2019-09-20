@@ -68,7 +68,7 @@ class Kubeup extends DeployTool implements Serializable {
         install(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet, false)
         println("this is kubernetes deployment" + toString())
     }
-
+    @NonCPS
     void init(String clusterDomain) {
         script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
         logger.debug("start init $name tool")
@@ -97,7 +97,7 @@ class Kubeup extends DeployTool implements Serializable {
         logger.debug("init complete")
         initialized = true
     }
-
+    @NonCPS
     def kubeupInstall() {
         logger.debug("kubeupInstall start")
         try {
@@ -107,7 +107,7 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("kubeupInstall complete")
     }
-
+    @NonCPS
     def kubedogInstall() {
         logger.debug("kubedogInstall start")
         try {
@@ -125,25 +125,25 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("kubedogInstall complete")
     }
-
+    @NonCPS
     def kubectlInstall() {
         logger.debug("kubectlInstall start")
         script.kubernetes.kubectlInstall()
         logger.debug("kubectlInstall complete")
     }
-
+    @NonCPS
     def vaultInstall() {
         logger.debug("vaultInstall start")
         script.kubernetes.vaultInstall()
         logger.debug("vaultInstall complete")
     }
-
+    @NonCPS
     def jqInstall() {
         logger.debug("jqInstall start")
         script.kubernetes.jqInstall()
         logger.debug("jqInstall complete")
     }
-
+    @NonCPS
     def kubeloginInstall() {
         logger.debug("going to install kubelogin")
         //TODO: add kubelogin install method
@@ -154,6 +154,7 @@ class Kubeup extends DeployTool implements Serializable {
         script.env.KUBECONFIG = "${toolHome}/kubeconfig"
     }
 
+    @NonCPS
     def kubeLogin(String clusterDomain) {
         kubeloginInstall()
         String output
@@ -166,7 +167,7 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("Kubelogin output", output)
     }
-
+    @NonCPS
     def vaultLogin(String vaultUrl) {
         logger.debug("trying to login in the Vault")
         script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
@@ -180,7 +181,7 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("Vault login complete")
     }
-
+    @NonCPS
     def install(String application, String version, String namespace, String configset, Boolean dryRun = true) {
         logger.debug("Install application: $application, version: $version, namespace: $namespace, configset: $configset, dryRun = $dryRun")
         String output = ""
@@ -205,7 +206,7 @@ class Kubeup extends DeployTool implements Serializable {
             throw new AbortException("kubeup install failure... installOutput: >>> \n $output \n")
         }
     }
-
+    @NonCPS
     def validate(String installOutput, String namespace) {
         logger.debug("find all kubernetes objects in the cloudapp in order to validate", installOutput)
         logger.debug("==========================================================================================")
@@ -239,14 +240,14 @@ class Kubeup extends DeployTool implements Serializable {
             script.sh "kubedog --kube-config ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
         }
     }
-
+    @NonCPS
     String extractObject(String rawString) {
         logger.debug("got string", rawString)
         String extractedObject = rawString.substring(rawString.indexOf("/") + 1, rawString.indexOf(" "))
         logger.debug("extractedObject", extractedObject)
         return extractedObject
     }
-
+    @NonCPS
     String unsetEnvServiceDiscovery() {
 /*
         String envsToUnset = ""
