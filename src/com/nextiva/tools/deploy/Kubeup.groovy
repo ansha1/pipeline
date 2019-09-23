@@ -241,7 +241,7 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("Collected objectsToValidate", objectsToValidate)
         objectsToValidate.each {
-            script.sh "kubedog --kube-config ${toolHome}/kubeconfig -n ${namespace} rollout track ${it} 2>&1"
+            script.sh "kubedog --kube-config \$KUBECONFIG -n ${namespace} rollout track ${it} 2>&1"
         }
     }
 
