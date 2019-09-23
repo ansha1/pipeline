@@ -206,7 +206,6 @@ class Kubeup extends DeployTool implements Serializable {
                 }
             }
         } catch (e) {
-            script.input(message: "Paused...")
             throw new AbortException("kubeup install failure... e: $e\ninstallOutput: >>> \n $output")
         }
     }
