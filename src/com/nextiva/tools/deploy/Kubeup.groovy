@@ -1,8 +1,7 @@
 package com.nextiva.tools.deploy
 
-import com.cloudbees.groovy.cps.NonCPS
+
 import com.nextiva.environment.Environment
-import com.nextiva.tools.ToolFactory
 import com.nextiva.utils.Logger
 import hudson.AbortException
 
@@ -190,6 +189,8 @@ class Kubeup extends DeployTool implements Serializable {
         try {
             script.container(name) {
                 global.script.dir(home) {
+                    global.script.env.KUBELOGIN_CONFIG="${global.script.env.WORKSPACE}/$home/.kubelogin"
+                    global.script.env.KUBECONFIG="${global.script.env.WORKSPACE}/$home/kubeconfig"
                     String dryRunParam = dryRun ? '--dry-run' : ''
                     output = shWithOutput(global.script, """
                     cd "\$(find $cloudAppsPath $cloudPlatformPath -maxdepth 1 -type d -name $application | head -1)/../../"
