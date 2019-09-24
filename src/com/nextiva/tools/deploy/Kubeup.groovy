@@ -2,7 +2,6 @@ package com.nextiva.tools.deploy
 
 
 import com.nextiva.environment.Environment
-import com.nextiva.utils.Logger
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
