@@ -3,20 +3,14 @@
 
 //noinspection GroovyAssignabilityCheck
 nextivaPipeline {
-    appName = "test-app"
-    channelToNotify = "testchannel"
+    appName = "nextiva-openjdk"
+    channelToNotify = "cloud-engineering"
+    branchingModel = "gitflow"
+    isSonarEnabled = false
+    isDeployEnabled = false
 
-    build = ["pip"   : ["buildCommands"        : """
-                                                  pwd
-                                                  """,
-//                        "image"                : "docker.nextiva.xyz/chat-ejabberd-ci:1.0.0",
-                        "resourceRequestCpu"   : "1",
-                        "resourceLimitCpu"     : "1",
-                        "publishArtifact"      : false,
-                        "resourceRequestMemory": "1Gi",
-                        "resourceLimitMemory"  : "1Gi",],
-             "docker": ["publishArtifact": true,]]
+    build = ["docker": ["publishArtifact": true,
+                        "buildCommands": "docker build ."]]
 
-    deployTool = "kubeup"
-
+    branchPermissions = [:]
 }
