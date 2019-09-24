@@ -30,7 +30,6 @@ class Kubeup extends DeployTool implements Serializable {
 
     Script script
     String name
-    Logger logger
     String toolHome
     Boolean initialized = false
 
@@ -44,8 +43,6 @@ class Kubeup extends DeployTool implements Serializable {
         this.toolHome = "deploy/${name}"
         this.repository = deployToolConfig.get("repository")
         this.branch = deployToolConfig.get("branch")
-        this.logger = new Logger(this)
-        logger.debug("created tool - name: ${this.name}, toolHome:${this.toolHome}, repository: ${this.repository}, branch: ${this.branch}")
         this.kubeUpHome = "$toolHome/kubeup"
         this.cloudApps = new Repository("$toolHome/cloud-apps",
                 deployToolConfig.get("cloudAppsRepository"),
