@@ -1,6 +1,5 @@
 package com.nextiva.tools.build
 
-import com.cloudbees.groovy.cps.NonCPS
 import hudson.AbortException
 
 import java.util.regex.Pattern
@@ -11,20 +10,10 @@ import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIA
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_URL
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
-import static com.nextiva.utils.Utils.shOrClosure
 import static com.nextiva.utils.Utils.shWithOutput
 import static com.nextiva.config.Global.instance as global
 
 class Docker extends BuildTool {
-//    def publishCommands = {
-//        logger.debug("Checking if image should be tagged by 'latest'")
-////        Boolean tagLatest = false
-////        tagLatest = isTagLatest()
-////        logger.debug("Tag image with 'latest'? $tagLatest")
-////        logger.debug("Going to run buildPublish")
-//        buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, getVersion(), "Dockerfile", ".", isTagLatest())
-//        logger.debug("buildPublish completed")
-//    }
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
     }
