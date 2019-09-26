@@ -1,0 +1,45 @@
+#!groovy
+@Library('pipeline') _
+
+env.BRANCH_NAME = 'feature/dockerTemplate'
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "myapp"
+    channelToNotify = "testchannel"
+
+    build = ["pip"   : ["buildCommands"              : "build commands",
+                        "postBuildCommands"          : "post Build command",
+                        "unitTestCommands"           : "unit test commands",
+                        "postUnitTestCommands"       : "post unit test command",
+                        "integrationTestCommands"    : "integration test command",
+                        "postIntegrationTestCommands": "post integration test commands",
+                        "postDeployCommands"         : "post deploy commands",
+                        "image"                      : "maven:3.6.1-jdk-8",
+                        "resourceRequestCpu"         : "1",
+                        "resourceLimitCpu"           : "1",
+                        "buildDocker"                : true,
+                        "resourceRequestMemory"      : "1Gi",
+                        "resourceLimitMemory"        : "1Gi",],
+             "docker": ["publishArtifact": true,]]
+
+    deployTool = "kubeup"
+    dependencies = ["postgres"                  : "latest",
+                    "rabbitmq-ha"               : "latest",
+                    "redis-ha"                  : "latest",
+                    "rules-engine-core"         : "latest",
+                    "rules-engine-orchestration": "latest",]
+
+    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
+                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
+                                  "ansibleInventory": "rc"],
+                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
+                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+                                  "branchPattern": /^master$/],
+                   "sandbox"   : ["name"             : "sandbox",
+                                  "branchPattern"    : '^feature/dockerTemplate$',
+                                  "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"]
+    ]
+
+    branchPermissions = [:]
+}

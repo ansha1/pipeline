@@ -124,4 +124,21 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
         printCallStack()
         assertJobStatusSuccess()
     }
+
+    @Test
+    void deployToSandbox() {
+        Script script = loadScriptHelper("deploy_to_sandbox.jenkins")
+        helper.registerAllowedMethod 'fileExists', [String], { s ->
+            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+        }
+        runScript(script)
+        assertJobStatusSuccess()
+
+        printCallStack()
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Check if it is possible to deploy to sandbox").contains("kubeup Deploy: Deploy to sandbox")
+    }
 }
