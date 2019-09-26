@@ -48,6 +48,7 @@ dependencies {
 sourceSets {
     main {
         groovy {
+            // Do not add 'vars' to srcDirs or unit tests would fail (https://github.com/jenkinsci/JenkinsPipelineUnit/issues/51#issuecomment-443361269)
             srcDirs = ['src/']
         }
     }
