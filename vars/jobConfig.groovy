@@ -75,6 +75,7 @@ def call(body) {
             slackStatusReportChannel = ''
             break
         case ~/^release\/.+$/:
+        case ~/^hotfix\/.+$/:
             kubernetesCluster = kubernetesClusterMap.get('qa')
             ANSIBLE_ENV = ansibleEnvMap.get('qa')
             healthCheckUrl = healthCheckMap.get('qa')
@@ -82,15 +83,6 @@ def call(body) {
             DEPLOY_ENVIRONMENT = 'production'
             projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
             slackStatusReportChannel = SLACK_STATUS_REPORT_CHANNEL_QA
-            break
-        case ~/^hotfix\/.+$/:
-            kubernetesCluster = 'none'
-            ANSIBLE_ENV = ansibleEnvMap.get('qa')
-            healthCheckUrl = healthCheckMap.get('qa')
-            branchPermissions = branchPermissionsMap.get('qa')
-            DEPLOY_ENVIRONMENT = 'production'
-            projectFlow['staticAssetsAddress'] = PUBLIC_STATIC_ASSETS_ADDRESS
-            slackStatusReportChannel = ''
             break
         case 'master':
             kubernetesCluster = kubernetesClusterMap.get('production')
