@@ -21,7 +21,7 @@ abstract class BuildTool implements Serializable, Tool {
     def postIntegrationTestCommands
     def postDeployCommands
     def publishCommands
-    Boolean publishArtifact = false
+    Boolean publishArtifact = true
 
     BuildTool(Script script, Map buildToolConfig) {
         this.script = script
