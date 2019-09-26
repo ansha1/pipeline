@@ -84,12 +84,10 @@ class StageFactory {
             ],
             "Deploy"                      : ["class"          : Deploy.class,
                                              "isDeployEnabled": true,
-                                             "branchingModel" : ["gitflow"   : branchingModelRegexps.mainlineWithMaster,
-                                                                 "trunkbased": branchingModelRegexps.master]
             ],
             "QACoreTeamTest"              : ["class"                  : QACoreTeamTest.class,
                                              "isQACoreTeamTestEnabled": true,
-                                             "isDeployEnabled": true,
+                                             "isDeployEnabled"        : true,
                                              "branchingModel"         : ["gitflow"   : branchingModelRegexps.mainlineWithMaster,
                                                                          "trunkbased": branchingModelRegexps.master]
             ],
