@@ -36,8 +36,7 @@ nextivaPipeline {
                    "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
                    "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
                                   "branchPattern": /^master$/],
-                   "sandbox"   : ["name"             : "sandbox",
-                                  "branchPattern"    : '^feature/dockerTemplate$',
+                   "sandbox"   : ["branchPattern"    : '^feature/dockerTemplate$',
                                   "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"]
     ]
 

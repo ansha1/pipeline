@@ -204,7 +204,9 @@ class Config implements Serializable {
             EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
             global.environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(global.branchName, global.branchingModel)
             configuration.put("environmentsToDeploy", global.environmentsToDeploy)
+            logger.trace("Environments to deploy:", global.environmentsToDeploy)
             if (global.environmentsToDeploy.isEmpty()) {
+                logger.debug("environmentsToDeploy is empty. Deployment stage be skipped.")
                 global.isDeployEnabled = false
             }
         }
