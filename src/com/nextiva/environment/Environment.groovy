@@ -4,6 +4,8 @@ class Environment {
 
     String name
     String branchPattern
+    String branchPattern_gitflow
+    String branchPattern_trunkbased
     String appName
     String buildVersion
 

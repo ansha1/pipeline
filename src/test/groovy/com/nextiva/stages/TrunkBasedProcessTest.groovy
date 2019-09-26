@@ -29,16 +29,15 @@ class TrunkBasedProcessTest extends BasePipelineTest implements Validator, Mocks
     static Collection<Object[]> data() {
         return [
                 ["not master", (BranchNames.feature + BranchNames.release + BranchNames.develop).toList(),
-                 ["Checkout", "StartBuildDependencies", "ConfigureProjectVersion", "Build",
-                  "docker: build", "UnitTest", "docker: unitTest", "IntegrationTest", "docker: integrationTest",
-                  "CollectBuildResults", "SendNotifications"]],
+                 ["Checkout", "StartBuildDependencies", "ConfigureProjectVersion", "Build", "docker: build", "UnitTest",
+                  "docker: unitTest", "IntegrationTest", "docker: integrationTest", "CollectBuildResults",
+                  "SendNotifications"]],
                 ["master", BranchNames.master.toList(),
                  ["Checkout", "StartBuildDependencies", "VerifyArtifactVersionInNexus",
-                  "docker VerifyArtifactVersionInNexus", "docker VerifyArtifactVersionInNexus", "ConfigureProjectVersion",
-                  "Build", "docker: build", "UnitTest", "docker: unitTest", "IntegrationTest", "docker: integrationTest",
-                  "Publish", "SecurityScan", "Deploy", "kubeup Deploy: Deploy to qa",
-                  "docker: postDeploy", "QACoreTeamTest", "QA Core Team Tests", "CollectBuildResults",
-                  "SendNotifications"]],
+                  "docker VerifyArtifactVersionInNexus", "ConfigureProjectVersion", "Build", "docker: build",
+                  "UnitTest", "docker: unitTest", "SonarScan", "IntegrationTest", "docker: integrationTest", "Publish",
+                  "SecurityScan", "Deploy", "kubeup Deploy: Deploy to dev", "docker: postDeploy", "QACoreTeamTest",
+                  "QA Core Team Tests", "CollectBuildResults", "SendNotifications"]],
 
         ].collect { it as Object[] }
     }

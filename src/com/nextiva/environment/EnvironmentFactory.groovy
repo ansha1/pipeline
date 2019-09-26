@@ -4,27 +4,28 @@ import com.cloudbees.groovy.cps.NonCPS
 
 class EnvironmentFactory {
 
-    private Map environment = ["dev"       : ["name"               : "dev",
-                                              "branchPattern"      : /^(develop|dev)$/,
-                                              "kubernetesCluster"  : "dev.nextiva.io",
-                                              "kubernetesConfigSet": "aws-dev",
-                                              "kubernetesNamespace": "default",
-                                              "ansibleInventory"   : "dev",
-                                              "healthChecks"       : []],
-                               "qa"        : ["name"               : "qa",
-                                              "branchPattern"      : /^(release|hotfix)\/.+$/,
-                                              "kubernetesCluster"  : "qa.nextiva.io",
-                                              "kubernetesConfigSet": "aws-qa",
-                                              "kubernetesNamespace": "default",
-                                              "ansibleInventory"   : "qa",
-                                              "healthChecks"       : []],
-                               "production": ["name"               : "prod",
-                                              "branchPattern"      : /^master$/,
-                                              "kubernetesCluster"  : "prod.nextiva.io",
-                                              "kubernetesConfigSet": "aws-prod",
-                                              "kubernetesNamespace": "default",
-                                              "ansibleInventory"   : "production",
-                                              "healthChecks"       : []],
+    private Map environment = ["dev"       : ["name"                    : "dev",
+                                              "branchPattern_gitflow"   : /^(develop|dev)$/,
+                                              "branchPattern_trunkbased": /^master$/,
+                                              "kubernetesCluster"       : "dev.nextiva.io",
+                                              "kubernetesConfigSet"     : "aws-dev",
+                                              "kubernetesNamespace"     : "default",
+                                              "ansibleInventory"        : "dev",
+                                              "healthChecks"            : []],
+                               "qa"        : ["name"                 : "qa",
+                                              "branchPattern_gitflow": /^(release|hotfix)\/.+$/,
+                                              "kubernetesCluster"    : "qa.nextiva.io",
+                                              "kubernetesConfigSet"  : "aws-qa",
+                                              "kubernetesNamespace"  : "default",
+                                              "ansibleInventory"     : "qa",
+                                              "healthChecks"         : []],
+                               "production": ["name"                 : "prod",
+                                              "branchPattern_gitflow": /^master$/,
+                                              "kubernetesCluster"    : "prod.nextiva.io",
+                                              "kubernetesConfigSet"  : "aws-prod",
+                                              "kubernetesNamespace"  : "default",
+                                              "ansibleInventory"     : "production",
+                                              "healthChecks"         : []],
                                "sales-demo": ["name"               : "sales-demo",
                                               "kubernetesCluster"  : "sales-demo.nextiva.io",
                                               "kubernetesConfigSet": "aws-sales-demo",
@@ -34,6 +35,10 @@ class EnvironmentFactory {
                                "tooling"   : ["name"               : "tooling",
                                               "kubernetesCluster"  : "tooling.nextiva.io",
                                               "kubernetesConfigSet": "aws-tooling",
+                                              "kubernetesNamespace": "default",
+                                              "healthChecks"       : []],
+                               "sandbox"   : ["name"               : "sandbox",
+                                              "kubernetesConfigSet": "test",
                                               "kubernetesNamespace": "default",
                                               "healthChecks"       : []],
     ]
@@ -46,9 +51,15 @@ class EnvironmentFactory {
             v << environmentFromJenkinsfile.get(k, [:])
         }
     }
+
     @NonCPS
-    public List<Environment> getAvailableEnvironmentsForBranch(String branchName) {
+    public List<Environment> getAvailableEnvironmentsForBranch(String branchName, String branchingModel) {
         List<Environment> environments = []
+        for (env in environment) {
+            if (env.value.containsKey("branchPattern_$branchingModel".toString())) {
+                env.value.branchPattern = env.value."branchPattern_$branchingModel"
+            }
+        }
         Map envs = environment.findAll { branchName ==~ it.value.branchPattern }
         envs.each {
             environments.add(new Environment(it.value))
