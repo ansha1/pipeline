@@ -6,7 +6,7 @@ import com.nextiva.tools.build.Docker
 import com.nextiva.tools.deploy.Kubeup
 import hudson.AbortException
 
-import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_TEST_REGISTRY
+import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_TEST_REGISTRY_URL
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
 import static com.nextiva.SharedJobsStaticVars.JENKINS_KUBERNETES_CLUSTER_DOMAIN
 import static com.nextiva.utils.Utils.buildID
@@ -33,7 +33,7 @@ class IntegrationTest extends Stage {
         Docker docker = dockerToolConfig.get("instance")
         // TODO add multistage builds support
         docker.execute {
-            docker.buildPublish(script, NEXTIVA_DOCKER_TEST_REGISTRY, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version)
+            docker.buildPublish(script, NEXTIVA_DOCKER_TEST_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, appName, version)
         }
         logger.debug("Build and publish success")
 
