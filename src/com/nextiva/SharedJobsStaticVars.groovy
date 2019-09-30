@@ -48,7 +48,7 @@ class SharedJobsStaticVars {
             If you can't reach out anyone from the defined list, you can join slack channel #rcjobslock and make a request there
             """
     //Slack app bot token for getting slack userID over email
-    static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-zHdrn7VCcvfrk5DrYupmI2of'
+    static final SLACK_BOT_TOKEN = 'xoxb-17176588338-387685736801-L1RZAkD5QtpE5H54QfvDJgiB'
     static final SLACK_NOTIFY_COLORS = ['SUCCESS': '#00FF00', 'FAILURE': '#FF0000', 'UNSTABLE': '#FF0000']
     static final SLACK_STATUS_REPORT_CHANNEL_QA = 'rc-platform-support'
     static final SLACK_STATUS_REPORT_CHANNEL_PROD = 'platform-production'
