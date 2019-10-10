@@ -11,6 +11,4 @@ nextivaPipeline {
 
     build = ["docker": ["publishArtifact": true,
                         "buildCommands": "docker build ."]]
-
-    branchPermissions = [:]
 }

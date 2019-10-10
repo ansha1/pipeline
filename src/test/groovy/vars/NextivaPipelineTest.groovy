@@ -141,4 +141,42 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
             it.args.first().toString()
         }).describedAs("Check if it is possible to deploy to sandbox").contains("kubeup Deploy: Deploy to sandbox")
     }
+
+    @Test
+    void minimumViableBuild() {
+//        TODO check that it uses twine, kubeup and docker correctly
+        Script script = loadScriptHelper("minimal_python_build.jenkins")
+        helper.registerAllowedMethod 'fileExists', [String], { s ->
+            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+        }
+        helper.registerAllowedMethod 'readProperties', [Map], { Map m ->
+            if (m.containsKey("file") && m.get("file") == BUILD_PROPERTIES_FILENAME)
+                return ["version": "1.0.1"]
+            else
+                return null
+        }
+        runScript(script)
+
+        assertJobStatusSuccess()
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Check that minimum viable Jenkinsfile generates correct steps")
+                .containsExactlyElementsOf(["Checkout",
+                                            "ConfigureProjectVersion",
+                                            "Build",
+                                            "pip: build",
+                                            "SonarScan",
+                                            "Publish",
+                                            "pip: publishArtifact",
+                                            "Deploy",
+                                            "kubeup Deploy: Deploy to dev",
+                                            "QACoreTeamTest",
+                                            "QA Core Team Tests",
+                                            "CollectBuildResults",
+                                            "SendNotifications"]
+                )
+    }
 }

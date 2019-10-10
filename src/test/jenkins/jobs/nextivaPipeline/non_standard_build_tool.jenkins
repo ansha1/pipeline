@@ -1,0 +1,27 @@
+#!groovy
+@Library('pipeline@feature/dockerTemplate') _
+
+nextivaPipeline {
+    appName = "chat-ejabberd"
+    channelToNotify = "chat_alerts"
+
+    build = ["pip"   : ["buildCommands"        : """
+                                                    mix local.hex --force
+                                                    modulesToCompile="ejabberd_auth_nextiva mod_provisioning_nextiva"
+                                                    
+                                                    for module in \${modulesToCompile} ; do
+                                                      cd \${module}
+                                                      rebar3 compile
+                                                      cd ..
+                                                    done
+                                                  """,
+                        "image"                : "docker.nextiva.xyz/chat-ejabberd-ci:1.0.0",
+                        "resourceRequestCpu"   : "1",
+                        "resourceLimitCpu"     : "1",
+                        "publishArtifact"      : false,
+                        "resourceRequestMemory": "1Gi",
+                        "resourceLimitMemory"  : "1Gi",],
+             "docker": ["publishArtifact": true,]]
+
+    deployTool = "kubeup"
+}

@@ -6,23 +6,26 @@ nextivaPipeline {
     appName = "myapp"
     channelToNotify = "testchannel"
 
-    build = ["pip"   : ["buildCommands"              : "build commands",
-                        "postBuildCommands"          : "post Build command",
-                        "unitTestCommands"           : "unit test commands",
-                        "postUnitTestCommands"       : "post unit test command",
-                        "integrationTestCommands"    : "integration test command",
-                        "postIntegrationTestCommands": "post integration test commands",
-                        "postDeployCommands"         : "post deploy commands",
-                        "image"                      : "maven:3.6.1-jdk-8",
-                        "resourceRequestCpu"         : "1",
-                        "resourceLimitCpu"           : "1",
-                        "buildDocker"                : true,
-                        "resourceRequestMemory"      : "1Gi",
-                        "resourceLimitMemory"        : "1Gi",],
-//            TODO docker definition should be optional
-             "docker": ["publishArtifact": true,]]
+    build = [
+            "pip"   : [
+                    "buildCommands"              : "build commands",
+                    "postBuildCommands"          : "post Build command",
+                    "unitTestCommands"           : "unit test commands",
+                    "postUnitTestCommands"       : "post unit test command",
+                    "integrationTestCommands"    : "integration test command",
+                    "postIntegrationTestCommands": "post integration test commands",
+                    "postDeployCommands"         : "post deploy commands",
+                    "image"                      : "python:3.6",
+                    "resourceRequestCpu"         : "1",
+                    "resourceLimitCpu"           : "1",
+                    "buildDocker"                : true,
+                    "resourceRequestMemory"      : "1Gi",
+                    "resourceLimitMemory"        : "1Gi",
+            ],
+            "docker": ["publishArtifact": true,]]
 
     deployTool = "kubeup"
+
     dependencies = ["postgres"                  : "latest",
                     "rabbitmq-ha"               : "latest",
                     "redis-ha"                  : "latest",

@@ -1,0 +1,11 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "myapp"
+    channelToNotify = "mychannel"
+
+    build = ["pip"   : ["image": "python:3.6"],
+             "docker": ["publishArtifact": true,]]
+}

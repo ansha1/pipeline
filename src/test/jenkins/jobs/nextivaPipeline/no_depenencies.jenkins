@@ -30,6 +30,4 @@ nextivaPipeline {
                    "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
                                   "branchPattern": /^master$/,]
     ]
-
-    branchPermissions = [:]
 }
