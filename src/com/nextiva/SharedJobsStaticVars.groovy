@@ -28,6 +28,7 @@ class SharedJobsStaticVars {
     static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'
     static final RELEASE_MANAGEMENT_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/release-management.git'
     static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
+    static final MAVEN_RELEASE_REPO = "maven-hosted-nextiva-release"
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final DEFAULT_NODE_LABEL = 'debian'

@@ -1,16 +1,31 @@
 package com.nextiva.tools.build
 
+import com.nextiva.config.Global
+
+import static com.nextiva.SharedJobsStaticVars.MAVEN_RELEASE_REPO
 import static com.nextiva.SharedJobsStaticVars.SONAR_QUBE_ENV
-import static com.nextiva.utils.Utils.getGlobalVersion
-import static com.nextiva.utils.Utils.setGlobalVersion
 import hudson.AbortException
 
 class Maven extends BuildTool {
 
-    def publishCommands = "mvn deploy -U --batch-mode -DskipTests"
+
+    def defaultCommands = [
+            build   : "mvn clean compile -U --batch-mode",
+            unitTest: "mvn test verify --batch-mode",
+            publish : "mvn deploy --batch-mode -DskipTests"
+    ]
 
     Maven(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
+        if (buildCommands == null) {
+            buildCommands = defaultCommands.build
+        }
+        if (unitTestCommands == null) {
+            unitTestCommands = defaultCommands.unitTest
+        }
+        if (publishCommands == null) {
+            publishCommands = defaultCommands.publish
+        }
     }
 
     @Override
@@ -40,7 +55,7 @@ class Maven extends BuildTool {
         execute {
             def rootPom = script.readMavenPom file: "pom.xml"
             String version = rootPom.version
-            if (configuration.get("branch") ==~ /^(dev|develop)$/ && version != null && !version.contains("SNAPSHOT")) {
+            if (Global.instance.branchName ==~ /^(dev|develop)$/ && version != null && !version.contains("SNAPSHOT")) {
                 throw new AbortException("Java projects built from the develop/dev branch require a version number that contains SNAPSHOT")
             }
             return version
@@ -49,6 +64,6 @@ class Maven extends BuildTool {
 
     @Override
     Boolean isArtifactAvailableInRepo() {
-        return null
+        return script.nexus.isJavaPackageExists(appName, Global.instance.globalVersion, MAVEN_RELEASE_REPO)
     }
 }
