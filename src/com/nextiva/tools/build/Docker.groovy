@@ -14,8 +14,13 @@ import static com.nextiva.utils.Utils.shWithOutput
 import static com.nextiva.config.Global.instance as global
 
 class Docker extends BuildTool {
+    String dockerfileName
+    String buildLocation
+
     Docker(Script script, Map toolConfiguration) {
         super(script, toolConfiguration)
+        this.dockerfileName = toolConfiguration.get("dockerfileName")
+        this.buildLocation = toolConfiguration.get("buildLocation")
     }
 
     /**
@@ -34,7 +39,8 @@ class Docker extends BuildTool {
         String version = getVersion()
         logger.debug("Got version: $version")
         execute {
-            buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, global.appName, version, "Dockerfile", ".", tagLatest)
+            buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, global.appName,
+                    version, dockerfileName, buildLocation, tagLatest)
         }
         logger.debug("buildPublish completed")
     }
