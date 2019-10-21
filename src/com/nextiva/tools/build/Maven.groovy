@@ -10,9 +10,9 @@ class Maven extends BuildTool {
 
 
     def defaultCommands = [
-            build   : "mvn clean compile -U --batch-mode",
-            unitTest: "mvn test verify --batch-mode",
-            publish : "mvn deploy --batch-mode -DskipTests"
+            build   : "mvn clean package -U --batch-mode",
+            unitTest: "",
+            publish : "mvn deploy --batch-mode -DskipTests=true -Dmaven.test.skip=true"
     ]
 
     Maven(Script script, Map toolConfiguration) {
