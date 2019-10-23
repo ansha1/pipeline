@@ -20,6 +20,8 @@ class SharedJobsStaticVars {
     static final NEXTIVA_DOCKER_TEST_REGISTRY_URL = 'https://docker.nextiva.xyz'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
+    static final NPM_NEXTIVA_REGISTRY = "https://nexus.nextiva.xyz/repository/npm/"
+    static final NPM_NEXTIVA_PRIVATE_REGISTRY = "https://nexus.nextiva.xyz/repository/npm-hosted-nextiva-release/"
     static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
