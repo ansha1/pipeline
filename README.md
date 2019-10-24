@@ -436,8 +436,9 @@ tool in `build` block.
   - If `unitTestCommands` is omitted, a default value for build tool
     will be used.
 
-  - If `unitTestCommands` is set to empty string, whole UnitTest stage
-    for that tool will be skipped.
+  - To skip Unit Test stage for all build tools, add `isUnitTestEnabled = false` inside `nextivaPipeline` block.
+
+  - To skip Unit Test stage for a single build tool, set `unitTestCommands` to empty string.
 
   - `postUnitTestCommands` is optional.
 
@@ -459,6 +460,22 @@ Two build tools
                 // All steps are executed with their default npm
                 // implementations
                 "image": "node:10-alpine",
+            ],
+        // ...
+    }
+    
+Disable Unit Tests for all build tools
+
+    nextivaPipeline {
+        // ...
+        isUnitTestEnabled = false
+        
+        build = [
+            "pip": [
+              // ...
+            ],
+            "npm": [
+              // ...
             ],
         // ...
     }

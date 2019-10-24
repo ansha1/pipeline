@@ -73,9 +73,7 @@ class Config implements Serializable {
         configuration.put("branchName", script.env.BRANCH_NAME)
         global.setBranchName(script.env.BRANCH_NAME)
         configuration.get("jobTimeoutMinutes", "60")
-        configuration.put("isUnitTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
-            toolConfiguration.containsKey("unitTestCommands")
-        })
+        configuration.get("isUnitTestEnabled", true)
         configuration.put("isIntegrationTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
             toolConfiguration.containsKey("integrationTestCommands")
         })
