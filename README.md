@@ -197,6 +197,12 @@ Default buildCommands
 
   - [Registry details](https://confluence.nextiva.xyz/display/DP/Nexus+Maven+Repositories)
 
+Default buildCommands
+
+    mvn clean package -U --batch-mode
+
+Because unit testing is part of maven build, Jenkins Unit Test stage is skipped.
+
 ## Other Tools
 
 Even nextivaPipeline does not have direct build tool implementation for

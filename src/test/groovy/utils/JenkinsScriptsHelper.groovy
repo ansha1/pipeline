@@ -33,7 +33,6 @@ trait JenkinsScriptsHelper implements BasePipelineAccessor, Mocks {
         attachScript 'jobWithProperties', 'kubernetes', 'log', 'nexus'
 
         basePipelineTest.helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
-        basePipelineTest.helper.registerAllowedMethod 'readMavenPom', [Map], { ['version': '1.0.1'] }
         basePipelineTest.helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
         basePipelineTest.helper.registerAllowedMethod "ansiColor", [String, Closure.class], { s, c ->
             Map env = basePipelineTest.binding.getVariable('env')

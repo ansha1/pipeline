@@ -181,4 +181,42 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
                                             "SendNotifications"]
                 )
     }
+
+    @Test
+    void mavenBuild() {
+        Script script = loadScriptHelper("maven_build.jenkins")
+        helper.registerAllowedMethod 'readMavenPom', [Map], { ['version': '1.0.1-SNAPSHOT'] }
+        helper.registerAllowedMethod "string", [Map], null
+        helper.registerAllowedMethod "withCredentials", [List, Object], { l, c ->
+            helper.callClosure(c)
+        }
+        binding.setVariable 'NODE_NAME', ANSIBLE_NODE_LABEL
+        runScript(script)
+
+        assertJobStatusSuccess()
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Check that minimum viable Jenkinsfile generates correct steps")
+                .containsExactlyElementsOf(["Checkout",
+                                            "ConfigureProjectVersion",
+                                            "Build",
+                                            "maven: build",
+                                            "UnitTest",
+                                            "maven: unitTest",
+                                            "SonarScan",
+                                            "IntegrationTest",
+                                            "maven: integrationTest",
+                                            "Publish",
+                                            "maven: publishArtifact",
+                                            "Deploy",
+                                            "kubeup Deploy: Deploy to dev",
+                                            "QACoreTeamTest",
+                                            "QA Core Team Tests",
+                                            "CollectBuildResults",
+                                            "SendNotifications"]
+                )
+    }
 }
