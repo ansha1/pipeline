@@ -175,12 +175,19 @@ Default unitTestCommands
 ## NPM
 
   - Nodejs build tool.
+  
+  - Deployed as a static asset by Ansible playbook into Nginx
 
   - [Registry details](https://confluence.nextiva.xyz/display/DP/Nexus+NPM+Repositories)
 
 Default buildCommands
 
     npm ci
+
+Default unitTestCommands
+
+    npm run test
+    npm run lint
 
 <a name="docker"></a>
 ## Docker

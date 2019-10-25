@@ -12,7 +12,8 @@ class Npm extends BuildTool {
                 npm run lint
             """.stripIndent(),
             publish : {
-                script.withCredentials([string(credentialsId: 'jenkins-npm-auth', variable: 'NPM_CONFIG__AUTH')]) {
+                script.withCredentials([script.string(credentialsId: 'jenkins-npm-auth', variable: 'NPM_CONFIG__AUTH')
+                ]) {
                     script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
                 }
             },

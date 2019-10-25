@@ -6,6 +6,7 @@ import com.nextiva.tools.build.Npm
 import com.nextiva.tools.build.Pip
 import com.nextiva.tools.deploy.Ansible
 import com.nextiva.tools.deploy.Kubeup
+import com.nextiva.tools.deploy.StaticDeploy
 import com.nextiva.utils.Logger
 import hudson.AbortException
 
@@ -37,6 +38,11 @@ class ToolFactory {
                 Kubeup kubeup = new Kubeup(script, toolConfig)
                 logger.trace("Created tool Kubeup", kubeup)
                 return kubeup
+                break
+            case "static":
+                StaticDeploy staticDeploy = new StaticDeploy(script, toolConfig)
+                logger.trace("Created tool StaticDeploy", staticDeploy)
+                return staticDeploy
                 break
             default:
                 logger.error("Can't create tool from", toolConfig)

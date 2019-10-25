@@ -10,6 +10,7 @@ import utils.Mocks
 import utils.Validator
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
+import static com.nextiva.SharedJobsStaticVars.ANSIBLE_NODE_LABEL
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -213,6 +214,48 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
                                             "maven: publishArtifact",
                                             "Deploy",
                                             "kubeup Deploy: Deploy to dev",
+                                            "QACoreTeamTest",
+                                            "QA Core Team Tests",
+                                            "CollectBuildResults",
+                                            "SendNotifications"]
+                )
+    }
+
+    @Test
+    void nodejsStaticBuild() {
+        Script script = loadScriptHelper("nodejs_static.jenkins")
+        helper.registerAllowedMethod 'readJSON', [Map], { Map m ->
+            if (m.containsKey("file") && m.get("file") == "package.json")
+                return ["version": "1.0.1"]
+            else
+                return null
+        }
+        helper.registerAllowedMethod "string", [Map], null
+        helper.registerAllowedMethod "withCredentials", [List, Object], { l, c ->
+            helper.callClosure(c)
+        }
+        binding.setVariable 'NODE_NAME', ANSIBLE_NODE_LABEL
+        runScript(script)
+
+        assertJobStatusSuccess()
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Check that minimum viable Jenkinsfile generates correct steps")
+                .containsExactlyElementsOf(["Checkout",
+                                            "ConfigureProjectVersion",
+                                            "Build",
+                                            "npm: build",
+                                            "UnitTest",
+                                            "npm: unitTest",
+                                            "SonarScan",
+                                            "Publish",
+                                            "npm: publishArtifact",
+                                            "Deploy",
+                                            "static Deploy: Deploy to dev",
+                                            "Run ansible playbook ansible/role-based_playbooks/static-deploy.yml",
                                             "QACoreTeamTest",
                                             "QA Core Team Tests",
                                             "CollectBuildResults",

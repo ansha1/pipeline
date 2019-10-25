@@ -1,0 +1,11 @@
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "test-js-pipeline"
+    channelToNotify = "testchannel"
+
+    build = ["npm": ["image": "node:lts-alpine"]]
+
+    deployTool = "static"
+}
