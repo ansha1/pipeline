@@ -31,7 +31,7 @@ class ToolFactory {
                 break
             case "ansible":
                 Ansible ansible = new Ansible(script, toolConfig)
-                logger.trace("Created tool Kubeup", kubeup)
+                logger.trace("Created tool Ansible", ansible)
                 return ansible
                 break
             case "kubeup":
