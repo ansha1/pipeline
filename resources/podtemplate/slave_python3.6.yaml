@@ -23,7 +23,7 @@ spec:
             - jenkins-slave
   containers:
   - name: jnlp
-    image: docker.nextiva.xyz/jenkins-slave-python3.6.5:1.0.1
+    image: docker.nextiva.xyz/jenkins-slave-python3.6.5:1.0.5
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock-volume
