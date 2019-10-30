@@ -22,7 +22,7 @@ def postDeployment(jobConfig, String environment) {
         log.warning("[DEPRECATION] Use NEW_RELIC_APP_ID instead of NEWRELIC_APP_ID_MAP")
 
         if (jobConfig.NEWRELIC_APP_ID_MAP.containsKey(environment)) {
-            appId = jobConfig.NEWRELIC_APP_ID_MAP[environment]
+            appId = jobConfig.NEWRELIC_APP_ID_MAP[environment] as Integer
         }
     }
 
