@@ -12,9 +12,10 @@ class Npm extends BuildTool {
                 npm run lint
             """.stripIndent(),
             publish : {
-                script.withCredentials([script.string(credentialsId: 'jenkins-npm-auth', variable: 'NPM_CONFIG__AUTH')
+                Global.instance.script.withCredentials([Global.instance.script.string(credentialsId: 'jenkins-npm-auth', variable:
+                        'NPM_CONFIG__AUTH')
                 ]) {
-                    script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
+                    Global.instance.script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
                 }
             },
             build   : "npm ci --registry='$NPM_NEXTIVA_REGISTRY'"
