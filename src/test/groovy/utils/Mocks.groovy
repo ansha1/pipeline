@@ -39,6 +39,7 @@ trait Mocks implements BasePipelineAccessor {
         mockEnv()
         attachScript 'slack'
         basePipelineTest.helper.registerAllowedMethod 'slackSend', [Map], { println 'Slack message mock' }
+        basePipelineTest.helper.registerAllowedMethod 'deployStart', [String.class, String.class, String.class,String.class], { println 'Slack message mock' }
         basePipelineTest.helper.registerAllowedMethod 'getSlackUserIdByEmail', [String], { return 'testuser' }
         basePipelineTest.helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git config remote.origin.url') {
