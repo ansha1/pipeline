@@ -302,7 +302,11 @@ def call(body) {
                         steps {
                             script {
                                 if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
-                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
+                                   deployEnv = jobConfig.ANSIBLE_ENV
+                                    if (params.stack == "a") {
+                                        deployEnv = "STAGING"
+                                    }
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, deployEnv, jobConfig.slackStatusReportChannel)
                                 }
 
                                 sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
@@ -321,14 +325,16 @@ def call(body) {
                         }
                         steps {
                             script {
-
+                                
                                 try {
+                                    slack.deployStart(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, "SALES-DEMO", jobConfig.slackStatusReportChannel)
                                     sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
                                         def repoDir = prepareRepoDir(jobConfig.ansibleRepo, jobConfig.ansibleRepoBranch)
                                         runAnsiblePlaybook(repoDir, jobConfig.inventoryPathSalesDemo, jobConfig.PLAYBOOK_PATH, jobConfig.getAnsibleExtraVars())
                                     }
 
                                     newrelic.postDeployment(jobConfig, "demo")
+                                    slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, "SALES-DEMO", jobConfig.slackStatusReportChannel)
                                 } catch (e) {
                                     log.warning("Ansible deployment to Sales Demo failed.\n${e}")
                                     currentBuild.result = Result.UNSTABLE
@@ -413,7 +419,13 @@ def call(body) {
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
                     }
                     if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
-                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, jobConfig.ANSIBLE_ENV, jobConfig.slackStatusReportChannel)
+                        deployEnv = jobConfig.ANSIBLE_ENV
+                        if (params.stack == "a") {
+                            deployEnv = "STAGING"
+                        } else if(params.deployDst == "sales-demo") {
+                            deployEnv = "SALES-DEMO"
+                        }
+                        slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, deployEnv, jobConfig.slackStatusReportChannel)
                     }
                 }
             }

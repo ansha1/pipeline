@@ -23,6 +23,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         branchPermissionsMap = [dev       : ["authenticated"],
                                 qa        : ["first_user", "second_user"],
                                 production: ["first_user", "second_user"]]
+        
     }
 
     static final def JENKINS_FILE_JS = {
