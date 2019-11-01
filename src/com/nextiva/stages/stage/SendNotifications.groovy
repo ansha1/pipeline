@@ -1,20 +1,19 @@
 package com.nextiva.stages.stage
 
-import static com.nextiva.SharedJobsStaticVars.SLACK_STATUS_REPORT_CHANNEL_RC
+import static com.nextiva.config.Config.instance as config
 
 class SendNotifications extends Stage {
-    SendNotifications(Script script, Map configuration) {
-        super(script, configuration)
+    SendNotifications() {
+        super()
     }
 
     @Override
     def stageBody() {
-        script.container("jnlp") {
+        config.script.container("jnlp") {
             //TODO: refactor for the native class usage
-            script.slack.sendBuildStatus(configuration.get("channelToNotify"))
-            String branchName = configuration.get("branchName")
-            if (branchName ==~ /^(PR.+)$/) {
-                script.slack.prOwnerPrivateMessage(script.env.CHANGE_URL)
+            config.script.slack.sendBuildStatus(config.channelToNotify)
+            if (config.branchName ==~ /^(PR.+)$/) {
+                config.script.slack.prOwnerPrivateMessage(config.script.env.CHANGE_URL)
             }
 //            if (branchName ==~ /^(release\/.+)$/) {
 //                String appName = configuration.get("appName")

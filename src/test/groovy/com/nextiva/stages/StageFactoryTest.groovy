@@ -1,18 +1,16 @@
 package com.nextiva.stages
 
+import com.nextiva.config.BranchingModelRegexps
 import org.junit.Test
 import utils.BranchNames
 
 import java.util.regex.Pattern
 
-import static com.nextiva.stages.StageFactory.branchingModelRegexps
 import static org.assertj.core.api.Assertions.assertThat
 
 class StageFactoryTest extends GroovyTestCase {
 
-    private void regexpTester(String regexp, Set<String> branchNamesMatch, Set<String> branchNamesNotMatch) {
-        def pattern = Pattern.compile(regexp)
-
+    private void regexpTester(Pattern pattern, Set<String> branchNamesMatch, Set<String> branchNamesNotMatch) {
         branchNamesMatch.forEach { branchName ->
             assertThat(branchName).describedAs("Checking $pattern").matches(pattern)
         }
@@ -22,9 +20,13 @@ class StageFactoryTest extends GroovyTestCase {
         }
     }
 
+    private void regexpTester(String regexp, Set<String> branchNamesMatch, Set<String> branchNamesNotMatch) {
+        regexpTester(Pattern.compile(regexp), branchNamesMatch, branchNamesNotMatch)
+    }
+
     @Test
     void testRegexpsAny() {
-        def regexp = branchingModelRegexps.any
+        def regexp = BranchingModelRegexps.any
         def branchNamesMatch = BranchNames.feature + BranchNames.release + BranchNames.develop + BranchNames.master
         Set<String> branchNamesNotMatch = []
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -32,7 +34,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsNotMaster() {
-        def regexp = branchingModelRegexps.notMaster
+        def regexp = BranchingModelRegexps.notMaster
         def branchNamesMatch = BranchNames.feature + BranchNames.release + BranchNames.develop
         def branchNamesNotMatch = BranchNames.master
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -40,7 +42,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsReleaseOrHotfix() {
-        def regexp = branchingModelRegexps.releaseOrHotfix
+        def regexp = BranchingModelRegexps.releaseOrHotfix
         def branchNamesMatch = BranchNames.release
         def branchNamesNotMatch = BranchNames.feature + BranchNames.develop + BranchNames.master
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -48,7 +50,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsMaster() {
-        def regexp = branchingModelRegexps.master
+        def regexp = BranchingModelRegexps.master
         def branchNamesMatch = BranchNames.master
         def branchNamesNotMatch = BranchNames.feature + BranchNames.release + BranchNames.develop
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -56,7 +58,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsMainline() {
-        def regexp = branchingModelRegexps.mainline
+        def regexp = BranchingModelRegexps.mainline
         def branchNamesMatch = BranchNames.release + BranchNames.develop
         def branchNamesNotMatch = BranchNames.feature + BranchNames.master
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -64,7 +66,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsMainlineWithMaster() {
-        def regexp = branchingModelRegexps.mainlineWithMaster
+        def regexp = BranchingModelRegexps.mainlineWithMaster
         def branchNamesMatch = BranchNames.release + BranchNames.develop + BranchNames.master
         def branchNamesNotMatch = BranchNames.feature
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -72,7 +74,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsNotMainline() {
-        def regexp = branchingModelRegexps.notMainline
+        def regexp = BranchingModelRegexps.notMainline
         def branchNamesMatch = BranchNames.feature
         def branchNamesNotMatch = BranchNames.release + BranchNames.develop + BranchNames.master
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)
@@ -80,7 +82,7 @@ class StageFactoryTest extends GroovyTestCase {
 
     @Test
     void testRegexpsDevelop() {
-        def regexp = branchingModelRegexps.develop
+        def regexp = BranchingModelRegexps.develop
         def branchNamesMatch = BranchNames.develop
         def branchNamesNotMatch = BranchNames.feature + BranchNames.release + BranchNames.master
         regexpTester(regexp, branchNamesMatch, branchNamesNotMatch)

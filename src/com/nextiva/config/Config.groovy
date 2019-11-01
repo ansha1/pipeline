@@ -1,6 +1,7 @@
 package com.nextiva.config
 
-
+import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.environment.Environment
 import com.nextiva.environment.EnvironmentFactory
 import com.nextiva.stages.StageFactory
 import com.nextiva.stages.stage.Stage
@@ -8,25 +9,73 @@ import com.nextiva.tools.Tool
 import com.nextiva.tools.ToolFactory
 import com.nextiva.tools.deploy.DeployTool
 import com.nextiva.utils.Logger
+import groovy.transform.PackageScope
 import hudson.AbortException
 
-import static com.nextiva.config.Global.instance as global
-import static com.nextiva.utils.Utils.setGlobalVersion
 
+/**
+ * <p>Globally accessible pipeline configuration singleton.</p>
+ *
+ * <p>Most properties are copied from {@link com.nextiva.config.PipelineConfig} as a delegate in nexivaPipeline.</p>
+ *
+ * <p>P.S. For unknown reason {@link Singleton} annotation did not work well when running on Jenkins.</p>
+ *
+ * @see com.nextiva.config.PipelineConfig
+ */
 class Config implements Serializable {
-    // used to store all parameters passed into config
-    Map configuration = [:]
-    Script script
-    ToolFactory toolFactory = new ToolFactory()
-    Logger logger = new Logger(this)
+    private Script script
+    private String appName //TODO: add default appName generation based on the repository name
+    private String channelToNotify
+    String version
+    private String branchName
+    private BranchingModel branchingModel
+    private String deployToolName
+    private Tool deployTool
+    private Boolean isDeployEnabled = true
+    List<Environment> environmentsToDeploy
+    private String jobTimeoutMinutes
+    private Boolean isUnitTestEnabled = true
+    private Boolean isSecurityScanEnabled = true
+    private Boolean isSonarAnalysisEnabled = true
+    private Boolean isQACoreTeamTestEnabled = true
+    private Boolean isIntegrationTestEnabled = false
+    Map<String, Map> build
+    private List jobTriggers
+    private String buildDaysToKeep
+    private String buildNumToKeep
+    private String buildArtifactDaysToKeep
+    private String buildArtifactNumToKeep
+    private Map auth
+    private Map jobProperties
+    private Boolean deployOnly
+    Map jenkinsContainer
+    Map slaveConfiguration
+    Map<String, String> extraEnvs
+    Boolean isJobHasDependencies
+    Map<String, String> dependencies
+    Map<String, String> kubeupConfig
+    List<Environment> environments
 
-    Config(Script script, Map pipelineParams) {
-        this.script = script
-        this.configuration = pipelineParams
+    private ToolFactory toolFactory = new ToolFactory()
+    private Logger logger = new Logger(this)
+    private List<Stage> stages
+
+    // ===== Singleton Details ========================================================================================
+    private static Config singleInstance = null
+
+    private Config() {}
+
+    static Config getInstance() {
+        if (singleInstance == null) {
+            singleInstance = new Config()
+        }
+        return singleInstance
     }
+    // ================================================================================================================
 
-    void configure() {
+    void configure(PipelineConfig pipelineConfig) {
         logger.debug("start job configuration")
+        copyProperties(pipelineConfig)
         validate()
         setDefaults()
         setJobParameters()
@@ -37,79 +86,110 @@ class Config implements Serializable {
         configureDeployTool()
         configureDeployEnvironment()
         configureStages()
-        logger.debug("Configuration complete:", configuration)
+        this.logger.debug("Configuration complete:", this.toString())
     }
 
+
+    void copyProperties(PipelineConfig pipelineConfig) {
+        this.@script = pipelineConfig.script
+        this.@appName = pipelineConfig.appName
+        this.@channelToNotify = pipelineConfig.channelToNotify
+        this.@version = pipelineConfig.version
+        this.@branchName = pipelineConfig.branchName
+        this.setBranchingModel(pipelineConfig.branchingModel)
+        this.@logger.trace("Branching model is ${this.@branchingModel.class.simpleName}")
+        this.@isDeployEnabled = pipelineConfig.isDeployEnabled
+        this.@deployToolName = pipelineConfig.deployTool
+        this.@jobTimeoutMinutes = pipelineConfig.jobTimeoutMinutes
+        this.@isUnitTestEnabled = pipelineConfig.isUnitTestEnabled
+        this.@isSecurityScanEnabled = pipelineConfig.isSecurityScanEnabled
+        this.@isSonarAnalysisEnabled = pipelineConfig.isSonarAnalysisEnabled
+        this.@isQACoreTeamTestEnabled = pipelineConfig.isQACoreTeamTestEnabled
+        this.@isIntegrationTestEnabled = pipelineConfig.isIntegrationTestEnabled
+        this.@build = pipelineConfig.build
+        this.@jobTriggers = pipelineConfig.jobTriggers
+        this.@buildDaysToKeep = pipelineConfig.buildDaysToKeep
+        this.@buildNumToKeep = pipelineConfig.buildNumToKeep
+        this.@buildArtifactDaysToKeep = pipelineConfig.buildArtifactDaysToKeep
+        this.@buildArtifactNumToKeep = pipelineConfig.buildArtifactNumToKeep
+        this.@auth = pipelineConfig.auth
+        this.@jobProperties = pipelineConfig.jobProperties
+        this.@deployOnly = pipelineConfig.deployOnly
+        this.@jenkinsContainer = pipelineConfig.jenkinsContainer
+        this.@slaveConfiguration = pipelineConfig.slaveConfiguration
+        this.@extraEnvs = pipelineConfig.extraEnvs
+        this.@isJobHasDependencies = pipelineConfig.isJobHasDependencies
+        this.@dependencies = pipelineConfig.dependencies
+        this.@kubeupConfig = pipelineConfig.kubeupConfig
+        environments = pipelineConfig.environments.collect { it as Environment }
+    }
+
+    /**
+     * Checking mandatory variables
+     */
+    @PackageScope
     void validate() {
         logger.debug("start validate()")
-        // Checking mandatory variables
         List<String> configurationErrors = []
 
-        //TODO: add default appName generation based on the repository name
-        if (!configuration.containsKey("appName")) {
+        if (!appName) {
             configurationErrors.add("Application Name is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
-        if (!configuration.containsKey("channelToNotify")) {
+        if (!channelToNotify) {
             configurationErrors.add("Slack notification channel is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
         }
+        if (!build) {
+            logger.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
+            throw new AbortException("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
+        }
+
         if (!configurationErrors.isEmpty()) {
             logger.error("Found error(s) in the configuration:", configurationErrors)
             throw new AbortException("errors in the configuration")
         }
+
         logger.debug("complete validate()")
     }
 
+    /**
+     * Set some fields to their default values
+     */
+    @PackageScope
     void setDefaults() {
         logger.debug("start setDefaults()")
-        //Set flags
-        //Use default value, this also creates the key/value pair in the map.
-        Global global = getGlobal()
-        global.script = script
-        String appName = configuration.get("appName")
-        global.setAppName(appName)
-        //TODO: move branching model(gitflow and trunkbased) to the class or enum
-        String branchingModel = configuration.get("branchingModel", "gitflow")
-        global.setBranchingModel(branchingModel)
-        configuration.put("branchName", script.env.BRANCH_NAME)
-        global.setBranchName(script.env.BRANCH_NAME)
-        configuration.get("jobTimeoutMinutes", "60")
-        configuration.get("isUnitTestEnabled", true)
-        configuration.put("isIntegrationTestEnabled", configuration.build.any { buildTool, toolConfiguration ->
+        branchName = script.env.BRANCH_NAME
+
+        isIntegrationTestEnabled = build.any { buildTool, toolConfiguration ->
             toolConfiguration.containsKey("integrationTestCommands")
-        })
-        configuration.get("isSecurityScanEnabled", true)
-        configuration.get("isSonarAnalysisEnabled", true)
-        configuration.get("isQACoreTeamTestEnabled", true)
+        }
 
         //TODO: use new newrelic method
-        //        this.newRelicId = config.get("newRelicIdMap").get(branchName)
+        // this.newRelicId = config.get("newRelicIdMap").get(branchName)
         logger.debug("complete setDefaults()")
     }
 
+    @PackageScope
     void setJobParameters() {
         logger.debug("start setJobParameters()")
-        JobProperties jobProperties = new JobProperties(script, configuration)
+        JobProperties jobProperties = new JobProperties(this)
         def props = jobProperties.getParams()
         logger.debug("Job properties", props)
-        configuration.put("jobProperties", props)
+        this.jobProperties = props
 
         logger.debug("Chosen deploy version", props.deployVersion)
-        def deployOnly = false
         if (props.deployVersion) {
             logger.info("Deploy version ${props.deployVersion} has been setted by job parameters \n set it as globalVersion.")
-            global.globalVersion = props.deployVersion
+            version = props.deployVersion
             deployOnly = true
         }
         logger.debug("set deployOnly: $deployOnly")
-        configuration.put("deployOnly", deployOnly)
-
         logger.debug("complete setJobParameters()")
     }
 
+    @PackageScope
     void configureSlave() {
         logger.debug("start configureSlave()")
         Map containerResources = [:]
-        Map jenkinsContainer = configuration.get("jenkinsContainer", ["name": "jnlp"])
         toolFactory.mergeWithDefaults(jenkinsContainer)
         logger.debug("added jenkins container")
         containerResources.put("jnlp", jenkinsContainer)
@@ -123,14 +203,15 @@ class Config implements Serializable {
                                           effect: NoSchedule
                                   """.stripIndent()]
         logger.debug("slave configuration:", slaveConfiguration)
-        configuration.put("slaveConfiguration", slaveConfiguration)
+        this.slaveConfiguration = slaveConfiguration
         logger.debug("complete configureSlave()")
     }
 
+    @PackageScope
     void setExtraEnvVariables() {
         logger.debug("start setExtraEnvVariables() complete")
-        Map extraEnvs = configuration.get("extraEnvs")
-        if (extraEnvs != null) {
+        if (extraEnvs) {
+            logger.debug("Adding extra envVars")
             extraEnvs.each { k, v ->
                 logger.debug("[$k]=$v")
                 script.env[k] = v
@@ -139,112 +220,255 @@ class Config implements Serializable {
         logger.debug("complete setExtraEnvVariables() complete")
     }
 
+    @PackageScope
     void configureDependencyProvisioning() {
         logger.debug("start configuring build dependency provisioning")
-        Boolean isJobHasDependencies = false
-        if (configuration.containsKey("dependencies")) {
+        if (dependencies) {
+            logger.debug("Job has dependencies, configuraitng kubeup")
             Map kubeup = ["name": "kubeup"]
             toolFactory.mergeWithDefaults(kubeup)
+            //TODO get rid of map put
             putSlaveContainerResource("kubeup", kubeup)
             isJobHasDependencies = true
         }
-        configuration.put("isJobHasDependencies", isJobHasDependencies)
         logger.debug("complete configuring build dependency provisioning")
     }
 
+    @PackageScope
     void configureBuildTools() {
         logger.debug("start configureBuildTools()")
-        Map<String, Map> buildTools = configuration.get("build")
-        if (buildTools == null) {
-            logger.error("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
-            throw new AbortException("Build is undefined. You have to add it in the pipeline  <<LINK_ON_CONFLUENCE>>")
-        }
-
-        buildTools.each { tool, toolConfig ->
+        build.each { tool, toolConfig ->
             logger.debug("got build tool $tool")
             toolConfig.put("name", tool)
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(tool, toolConfig)
-            Tool instance = toolFactory.build(script, toolConfig)
+            Tool instance = toolFactory.build(toolConfig)
+            // TODO get rid of map put
             toolConfig.put("instance", instance)
         }
-        logger.trace("Built tools after configuring:${buildTools.toString()}")
+        logger.trace("Built tools after configuring: ${build.toString()}")
         logger.debug("complete configureBuildTools()")
     }
 
+    @PackageScope
     void configureDeployTool() {
         logger.debug("start configureDeployTools()")
 
-        if (configuration.get("isDeployEnabled", true)) {
-            global.isDeployEnabled = true
+        if (isDeployEnabled) {
+            logger.debug("Deploy tool is $deployToolName")
 
-            String toolName = configuration.get("deployTool", "kubeup")
-            logger.debug("Deploy tool is $toolName")
-
-            def toolConfig = ["name": toolName]
+            def toolConfig = ["name": deployToolName]
             toolFactory.mergeWithDefaults(toolConfig)
-            putSlaveContainerResource(toolName, toolConfig)
+            putSlaveContainerResource(deployToolName, toolConfig)
 
-            DeployTool tool = toolFactory.build(script, toolConfig)
-            global.deployTool = tool
+            deployTool = toolFactory.build(toolConfig)
 
-            logger.trace("Deploy tool after configuration: ${tool.toString()}")
+            logger.trace("Deploy tool after configuration: ${deployTool.toString()}")
         } else {
             logger.info("'isDeployEnabled' set to false. Deployment will be skipped.")
-            global.isDeployEnabled = false
         }
         logger.debug("complete configureDeployTool()")
     }
 
+    @PackageScope
     void configureDeployEnvironment() {
         logger.debug("start configureDeployEnvironment()")
-        if (global.isDeployEnabled) {
-            EnvironmentFactory environmentFactory = new EnvironmentFactory(configuration)
-            global.environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(global.branchName, global.branchingModel)
-            configuration.put("environmentsToDeploy", global.environmentsToDeploy)
-            logger.trace("Environments to deploy:", global.environmentsToDeploy)
-            if (global.environmentsToDeploy.isEmpty()) {
-                logger.debug("environmentsToDeploy is empty. Deployment stage be skipped.")
-                global.isDeployEnabled = false
+        if (isDeployEnabled) {
+            logger.trace("Getting EnvironmentFactory($branchingModel, $environments)")
+            EnvironmentFactory environmentFactory = new EnvironmentFactory(environments)
+            logger.trace("Starting environmentFactory.getAvailableEnvironmentsForBranch($branchingModel, $branchName)")
+            environmentsToDeploy = environmentFactory.getAvailableEnvironmentsForBranch(branchingModel, branchName)
+            logger.trace("Environments to deploy: ", environmentsToDeploy.collect { it.name })
+            if (!environmentsToDeploy) {
+                logger.info("No environments to deploy. Deployment stage will be skipped.")
+                isDeployEnabled = false
             }
         }
         logger.debug("complete configureDeployEnvironment()")
     }
 
+    @PackageScope
     void configureStages() {
         logger.debug("start configureStages()")
-        StageFactory stageFactory = new StageFactory(script, configuration)
-        List<Stage> stages = stageFactory.getStagesFromConfiguration()
-        logger.debug("Selected stages:", stages)
-        configuration.put("stages", stages)
+        StageFactory stageFactory = new StageFactory()
+        stages = stageFactory.getStagesFromConfiguration()
         logger.debug("complete configureStages()")
     }
 
-
-    Map getConfiguration() {
-        logger.debug("returning configuration ", configuration)
-        return configuration
+    private Boolean putSlaveContainerResource(String name, Map containerResource) {
+        return slaveConfiguration.containerResources.put(name, containerResource)
     }
 
-    Map getSlaveConfiguration() {
-        Map slaveConfiguration = configuration.get("slaveConfiguration")
-        logger.debug("returning slave configuration ", slaveConfiguration)
-        return slaveConfiguration
+    // ===== Getters and setters =======================================================================================
+    @NonCPS
+    BranchingModel getBranchingModel() {
+        return this.@branchingModel
     }
 
+    @NonCPS
+    private void setBranchingModel(String branchingModelName) {
+        try {
+            BranchingModel model
+            switch (branchingModelName.toLowerCase().replaceAll("\\s", "")) {
+                case "gitflow":
+                    model = new GitFlow()
+                    break
+                case "trunkbased":
+                    model = new TrunkBased()
+                    break
+                default:
+                    throw new AbortException("Supported branching models: 'GitFlow' and 'TrunkBased'. " +
+                            "Yours is '$branchingModelName'")
+            }
+            this.@branchingModel = model
+        } catch (Exception e) {
+            logger.error(e.message)
+            throw e
+        }
+    }
+
+    @NonCPS
+    Tool getDeployTool() {
+        return this.@deployTool
+    }
+
+    @NonCPS
+    Script getScript() {
+        return this.@script
+    }
+
+    @NonCPS
+    String getAppName() {
+        return this.@appName
+    }
+
+    @NonCPS
+    String getChannelToNotify() {
+        return this.@channelToNotify
+    }
+
+    @NonCPS
+    String getBranchName() {
+        return this.@branchName
+    }
+
+    @NonCPS
+    Boolean getIsDeployEnabled() {
+        return this.@isDeployEnabled
+    }
+
+    @NonCPS
+    List<Environment> getEnvironmentsToDeploy() {
+        return this.@environmentsToDeploy
+    }
+
+    @NonCPS
     String getJobTimeoutMinutes() {
-        return configuration.get("jobTimeoutMinutes")
+        return this.@jobTimeoutMinutes
     }
 
-    Boolean putSlaveContainerResource(String name, Map containerResource) {
-        return configuration.slaveConfiguration.containerResources.put(name, containerResource)
+    @NonCPS
+    Boolean getIsUnitTestEnabled() {
+        return this.@isUnitTestEnabled
     }
 
+    @NonCPS
+    Boolean getIsSecurityScanEnabled() {
+        return this.@isSecurityScanEnabled
+    }
+
+    @NonCPS
+    Boolean getIsSonarAnalysisEnabled() {
+        return this.@isSonarAnalysisEnabled
+    }
+
+    @NonCPS
+    Boolean getIsQACoreTeamTestEnabled() {
+        return this.@isQACoreTeamTestEnabled
+    }
+
+    @NonCPS
+    Boolean getIsIntegrationTestEnabled() {
+        return this.@isIntegrationTestEnabled
+    }
+
+    @NonCPS
+    Map<String, Map> getBuild() {
+        return this.@build
+    }
+
+    @NonCPS
+    List getJobTriggers() {
+        return this.@jobTriggers
+    }
+
+    @NonCPS
+    String getBuildDaysToKeep() {
+        return this.@buildDaysToKeep
+    }
+
+    @NonCPS
+    String getBuildNumToKeep() {
+        return this.@buildNumToKeep
+    }
+
+    @NonCPS
+    String getBuildArtifactDaysToKeep() {
+        return this.@buildArtifactDaysToKeep
+    }
+
+    @NonCPS
+    String getBuildArtifactNumToKeep() {
+        return this.@buildArtifactNumToKeep
+    }
+
+    @NonCPS
+    Map getAuth() {
+        return this.@auth
+    }
+
+    @NonCPS
+    Map getJobProperties() {
+        return this.@jobProperties
+    }
+
+    @NonCPS
+    Boolean getDeployOnly() {
+        return this.@deployOnly
+    }
+
+    @NonCPS
+    Map getJenkinsContainer() {
+        return this.jenkinsContainer
+    }
+
+    @NonCPS
+    Map getSlaveConfiguration() {
+        return this.@slaveConfiguration
+    }
+
+    @NonCPS
+    Map<String, String> getExtraEnvs() {
+        return this.@extraEnvs
+    }
+
+    @NonCPS
+    Boolean getIsJobHasDependencies() {
+        return this.@isJobHasDependencies
+    }
+
+    @NonCPS
+    Map<String, String> getDependencies() {
+        return this.@dependencies
+    }
+
+    @NonCPS
     List<Stage> getStages() {
-        List stages = configuration.get("stages")
-        logger.debug("Pipeline stages: \n", stages)
-        return stages
+        return this.@stages
+    }
+
+    @NonCPS
+    Map<String, String> getKubeupConfig() {
+        return this.@kubeupConfig
     }
 }
-
-

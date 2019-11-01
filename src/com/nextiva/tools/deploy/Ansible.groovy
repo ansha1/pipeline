@@ -2,12 +2,13 @@ package com.nextiva.tools.deploy
 
 import com.nextiva.environment.Environment
 
+import static com.nextiva.config.Config.instance as config
 import static com.nextiva.utils.GitUtils.clone
 
 class Ansible extends DeployTool {
 
-    Ansible(Script script, Map configuration) {
-        super(script, configuration)
+    Ansible(Map configuration) {
+        super(configuration)
     }
 
 //    Map deployment = ["name"         : "Ansible",
@@ -20,7 +21,7 @@ class Ansible extends DeployTool {
     void init() {
         logger.debug("start init $name tool")
         logger.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
-        clone(script, repository, branch, toolHome)
+        clone(config.script, repository, branch, toolHome)
         logger.debug("clone complete")
         logger.debug("init complete")
         initialized = true
@@ -28,12 +29,12 @@ class Ansible extends DeployTool {
 
     @Override
     void deploy(Environment environment) {
-        script.stage("ansible: $it.environmentName") {
-            script.container(getName()) {
-                script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
+        config.script.stage("ansible: $it.environmentName") {
+            config.script.container(getName()) {
+                config.script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
             }
         }
-        stage("healthcheck: $it.environmentName") {
+        config.script.stage("healthcheck: $it.environmentName") {
             health(it.healthChecks)
         }
     }

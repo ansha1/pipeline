@@ -1,15 +1,16 @@
 package com.nextiva.stages.stage
 
 import com.nextiva.tools.build.BuildTool
+import static com.nextiva.config.Config.instance as config
 
 
 class VerifyArtifactVersionInNexus extends Stage {
-    VerifyArtifactVersionInNexus(Script script, Map configuration) {
-        super(script, configuration)
+    VerifyArtifactVersionInNexus() {
+        super()
     }
 
     def stageBody() {
-        Map build = configuration.get("build")
+        Map build = config.build
 
         build.each { toolName, toolConfiguration ->
             withStage("${toolName} ${stageName}") {

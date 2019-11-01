@@ -5,7 +5,7 @@ import com.nextiva.environment.Environment
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.VAULT_URL
-import static com.nextiva.config.Global.instance as global
+import static com.nextiva.config.Config.instance as config
 import static com.nextiva.utils.GitUtils.clone
 import static com.nextiva.utils.Utils.shWithOutput
 
@@ -27,7 +27,6 @@ class Kubeup extends DeployTool implements Serializable {
     Repository cloudApps
     Repository cloudPlatform
 
-    Script script
     String name
     String toolHome
     Boolean initialized = false
@@ -35,9 +34,8 @@ class Kubeup extends DeployTool implements Serializable {
     String repository
     String branch
 
-    Kubeup(Script script, Map deployToolConfig) {
-        super(script, deployToolConfig)
-        this.script = script
+    Kubeup(Map deployToolConfig) {
+        super(deployToolConfig)
         this.name = deployToolConfig.get("name")
         this.toolHome = "deploy/${name}"
         this.repository = deployToolConfig.get("repository")
@@ -55,31 +53,32 @@ class Kubeup extends DeployTool implements Serializable {
     @Override
     void deploy(Environment environment) {
         init(environment.kubernetesCluster)
-        logger.info("Start deploy cloudApp: ${global.appName} , version: ${global.globalVersion}, namespace: ${environment.kubernetesNamespace}, configset: ${environment.kubernetesConfigSet}")
+        logger.info("Start deploy cloudApp: ${config.appName} , version: ${config.version}, namespace: " +
+                "${environment.kubernetesNamespace}, configset: ${environment.kubernetesConfigSet}")
 
         logger.info('Checking of application manifests ...')
-        install(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet, true)
+        install(config.appName, config.version, environment.kubernetesNamespace, environment.kubernetesConfigSet, true)
         logger.info('Deploying application into Kubernetes ...')
-        install(global.appName, global.globalVersion, environment.kubernetesNamespace, environment.kubernetesConfigSet, false)
+        install(config.appName, config.version, environment.kubernetesNamespace, environment.kubernetesConfigSet, false)
         println("this is kubernetes deployment" + toString())
     }
 
     void init(String clusterDomain) {
-        script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
+        config.script.echo "\n\n\n\n\nkubeup init \n\n\n\n\n"
         logger.debug("start init $name tool")
         logger.debug(this.toString())
 
         logger.debug("Clonning repository $cloudApps.repository branch $cloudApps.branch into $cloudApps.path")
-        clone(script, cloudApps.repository, cloudApps.branch, cloudApps.path)
+        clone(config.script, cloudApps.repository, cloudApps.branch, cloudApps.path)
         logger.debug("clone complete")
 
         logger.debug("Clonning repository $cloudPlatform.repository branch $cloudPlatform.branch into $cloudPlatform.path")
-        clone(script, cloudPlatform.repository, cloudPlatform.branch, cloudPlatform.path)
+        clone(config.script, cloudPlatform.repository, cloudPlatform.branch, cloudPlatform.path)
         logger.debug("clone complete")
         def home = toolHome
-        script.container(name) {
-            global.script.dir(home) {
-                global.script.env.PATH = "${global.script.env.PATH}:${home}"
+        config.script.container(name) {
+            config.script.dir(home) {
+                config.script.env.PATH = "${config.script.env.PATH}:${home}"
                 kubectlInstall()
                 kubeupInstall()
                 kubedogInstall()
@@ -96,7 +95,7 @@ class Kubeup extends DeployTool implements Serializable {
     def kubeupInstall() {
         logger.debug("kubeupInstall start")
         try {
-            script.sh "kubeup --version"
+            config.script.sh "kubeup --version"
         } catch (e) {
             throw new AbortException("kubeup is not installed, aborting... $e")
         }
@@ -106,36 +105,36 @@ class Kubeup extends DeployTool implements Serializable {
     def kubedogInstall() {
         logger.debug("kubedogInstall start")
         try {
-            String output = shWithOutput(script, "kubedog version")
+            String output = shWithOutput(config.script, "kubedog version")
             logger.debug("$output")
         } catch (e) {
             logger.warn("kubedog is not installed, going to install kubedog...")
-            String out = shWithOutput(script, """
+            String out = shWithOutput(config.script, """
             mkdir -p ${toolHome}
             curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
             chmod +x $toolHome/kubedog
             kubedog version""")
             logger.debug("$out")
-            script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
+            config.script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
         }
         logger.debug("kubedogInstall complete")
     }
 
     def kubectlInstall() {
         logger.debug("kubectlInstall start")
-        script.kubernetes.kubectlInstall()
+        config.script.kubernetes.kubectlInstall()
         logger.debug("kubectlInstall complete")
     }
 
     def vaultInstall() {
         logger.debug("vaultInstall start")
-        script.kubernetes.vaultInstall()
+        config.script.kubernetes.vaultInstall()
         logger.debug("vaultInstall complete")
     }
 
     def jqInstall() {
         logger.debug("jqInstall start")
-        script.kubernetes.jqInstall()
+        config.script.kubernetes.jqInstall()
         logger.debug("jqInstall complete")
     }
 
@@ -145,15 +144,15 @@ class Kubeup extends DeployTool implements Serializable {
 //            script.kubernetes.kubeloginInstall()
         logger.debug("kubelogin complete")
         logger.debug("setting env variables")
-        script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
-        script.env.KUBECONFIG = "${toolHome}/kubeconfig"
+        config.script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
+        config.script.env.KUBECONFIG = "${toolHome}/kubeconfig"
     }
 
     def kubeLogin(String clusterDomain) {
         kubeloginInstall()
         String output
-        script.withCredentials([script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
-            output = shWithOutput(global.script, """
+        config.script.withCredentials([config.script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
+            output = shWithOutput(config.script, """
             unset KUBERNETES_SERVICE_HOST
             kubelogin -s login.${clusterDomain} 2>&1
             kubectl get nodes 2>&1
@@ -165,9 +164,9 @@ class Kubeup extends DeployTool implements Serializable {
     def vaultLogin(String vaultUrl) {
         logger.debug("trying to login in the Vault")
         String output
-        script.withCredentials([script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
+        config.script.withCredentials([config.script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
-                output = shWithOutput(global.script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${global.script.env.VAULT_RO_USER} password=${global.script.env.VAULT_RO_PASSWORD}")
+                output = shWithOutput(config.script, "vault login -method=ldap -no-print -address ${vaultUrl} username=${config.script.env.VAULT_RO_USER} password=${config.script.env.VAULT_RO_PASSWORD}")
             } catch (e) {
                 throw new AbortException("Error! Got an error trying to initiate the connect with Vault ${vaultUrl}; output: $output; e: $e")
             }
@@ -183,12 +182,12 @@ class Kubeup extends DeployTool implements Serializable {
         def cloudAppsPath = "./cloud-apps/apps/"
         def cloudPlatformPath = "./cloud-platform/apps"
         try {
-            script.container(name) {
-                global.script.dir(home) {
-                    global.script.env.KUBELOGIN_CONFIG="${global.script.env.WORKSPACE}/$home/.kubelogin"
-                    global.script.env.KUBECONFIG="${global.script.env.WORKSPACE}/$home/kubeconfig"
+            config.script.container(name) {
+                config.script.dir(home) {
+                    config.script.env.KUBELOGIN_CONFIG = "${config.script.env.WORKSPACE}/$home/.kubelogin"
+                    config.script.env.KUBECONFIG = "${config.script.env.WORKSPACE}/$home/kubeconfig"
                     String dryRunParam = dryRun ? '--dry-run' : ''
-                    output = shWithOutput(global.script, """
+                    output = shWithOutput(config.script, """
                     cd "\$(find $cloudAppsPath $cloudPlatformPath -maxdepth 1 -type d -name $application | head -1)/../../"
                     [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
@@ -236,7 +235,7 @@ class Kubeup extends DeployTool implements Serializable {
         }
         logger.debug("Collected objectsToValidate", objectsToValidate)
         objectsToValidate.each {
-            script.sh "kubedog --kube-config \$KUBECONFIG -n ${namespace} rollout track ${it} 2>&1"
+            config.script.sh "kubedog --kube-config \$KUBECONFIG -n ${namespace} rollout track ${it} 2>&1"
         }
     }
 

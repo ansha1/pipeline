@@ -1,6 +1,6 @@
 package com.nextiva.tools.build
 
-import com.nextiva.config.Global
+import static com.nextiva.config.Config.instance as config
 import static com.nextiva.SharedJobsStaticVars.NPM_NEXTIVA_REGISTRY
 import static com.nextiva.SharedJobsStaticVars.NPM_NEXTIVA_PRIVATE_REGISTRY
 
@@ -12,17 +12,17 @@ class Npm extends BuildTool {
                 npm run lint
             """.stripIndent(),
             publish : {
-                Global.instance.script.withCredentials([Global.instance.script.string(credentialsId: 'jenkins-npm-auth', variable:
-                        'NPM_CONFIG__AUTH')
+                config.script.withCredentials([config.script.string(credentialsId: 'jenkins-npm-auth',
+                        variable: 'NPM_CONFIG__AUTH')
                 ]) {
-                    Global.instance.script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
+                    config.script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
                 }
             },
             build   : "npm ci --registry='$NPM_NEXTIVA_REGISTRY'"
     ]
 
-    Npm(Script script, Map toolConfiguration) {
-        super(script, toolConfiguration)
+    Npm(Map toolConfiguration) {
+        super(toolConfiguration)
         if (unitTestCommands == null) {
             unitTestCommands = defaultCommands.unitTest
         }
@@ -42,7 +42,7 @@ class Npm extends BuildTool {
     @Override
     String getVersion() {
         execute {
-            def packageJson = script.readJSON file: "package.json"
+            def packageJson = config.script.readJSON file: "package.json"
             return packageJson.version
         }
     }
@@ -59,6 +59,6 @@ class Npm extends BuildTool {
 
     @Override
     Boolean isArtifactAvailableInRepo() {
-        script.nexus.isAssetsPackageExists(appName, Global.instance.globalVersion)
+        config.script.nexus.isAssetsPackageExists(appName, config.version)
     }
 }

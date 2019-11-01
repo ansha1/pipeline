@@ -2,7 +2,6 @@ package vars
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import com.lesfurets.jenkins.unit.MethodCall
-import com.nextiva.SharedJobsStaticVars
 import org.junit.Before
 import org.junit.Test
 import utils.JenkinsScriptsHelper
@@ -11,7 +10,6 @@ import utils.Validator
 
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.nextiva.SharedJobsStaticVars.ANSIBLE_NODE_LABEL
-import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import static org.assertj.core.api.Assertions.assertThat
 
 class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, JenkinsScriptsHelper {
@@ -38,9 +36,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     @Test
     void should_execute_without_errors() throws Exception {
         Script script = loadScriptHelper("simple_python_app.jenkins")
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
         runScript(script)
 //        printCallStack()
         assertJobStatusSuccess()
@@ -51,8 +46,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     void fail_if_build_properties_does_not_exists() throws Exception {
         Script script = loadScriptHelper("simple_python_app.jenkins")
         helper.registerAllowedMethod 'fileExists', [String], { s ->
-            if (s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME)
-                return false
             return false
         }
         runScript(script)
@@ -62,9 +55,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     @Test
     void skip_dependencies_setup_if_empty() throws Exception {
         Script script = loadScriptHelper("no_depenencies.jenkins")
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
         runScript(script)
 
         assertThat(helper.callStack.findAll { call ->
@@ -79,9 +69,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     void can_run_closure_as_build_step() {
         Script script = loadScriptHelper("with_closure.jenkins")
         script.env.BRANCH_NAME = "develop"
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
         runScript(script)
 
         def closureSignature = { MethodCall it ->
@@ -100,9 +87,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     void closure_that_uses_internal_vars() {
         Script script = loadScriptHelper("with_closure.jenkins")
         script.env.BRANCH_NAME = "develop"
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
         runScript(script)
         assertJobStatusSuccess()
         printCallStack()
@@ -111,15 +95,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     @Test
     void docker_only_build() {
         Script script = loadScriptHelper("docker_build_only.jenkins")
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
-        helper.registerAllowedMethod 'readProperties', [Map], { Map m ->
-            if (m.containsKey("file") && m.get("file") == BUILD_PROPERTIES_FILENAME)
-                return ["version": "1.0.1"]
-            else
-                return null
-        }
         runScript(script)
 
         printCallStack()
@@ -129,9 +104,8 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     @Test
     void deployToSandbox() {
         Script script = loadScriptHelper("deploy_to_sandbox.jenkins")
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
+        script.env.BRANCH_NAME = 'feature/dockerTemplate'
+
         runScript(script)
         assertJobStatusSuccess()
 
@@ -147,15 +121,6 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     void minimumViableBuild() {
 //        TODO check that it uses twine, kubeup and docker correctly
         Script script = loadScriptHelper("minimal_python_build.jenkins")
-        helper.registerAllowedMethod 'fileExists', [String], { s ->
-            return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
-        }
-        helper.registerAllowedMethod 'readProperties', [Map], { Map m ->
-            if (m.containsKey("file") && m.get("file") == BUILD_PROPERTIES_FILENAME)
-                return ["version": "1.0.1"]
-            else
-                return null
-        }
         runScript(script)
 
         assertJobStatusSuccess()

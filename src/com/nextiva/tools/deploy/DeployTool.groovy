@@ -4,9 +4,10 @@ import com.nextiva.environment.Environment
 import com.nextiva.tools.Tool
 import com.nextiva.utils.Logger
 
+import static com.nextiva.config.Config.instance as config
+
 abstract class DeployTool implements Serializable, Tool {
 
-    Script script
     String name
     Logger logger
     String toolHome
@@ -15,8 +16,7 @@ abstract class DeployTool implements Serializable, Tool {
     String repository
     String branch
 
-    DeployTool(Script script, Map deployToolConfig) {
-        this.script = script
+    DeployTool(Map deployToolConfig) {
         this.name = deployToolConfig.get("name")
         this.toolHome = "deploy/${name}"
         this.repository = deployToolConfig.get("repository")
@@ -30,7 +30,7 @@ abstract class DeployTool implements Serializable, Tool {
     }
 
     Boolean health() {
-        script.healthCheck.list(healthCheck)
+        config.script.healthCheck.list(healthCheck)
         return true
     }
 

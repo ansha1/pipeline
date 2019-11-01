@@ -15,38 +15,38 @@ import static com.nextiva.SharedJobsStaticVars.DEFAULT_TOOL_CONFIGURATION
 class ToolFactory {
     Logger logger = new Logger(this)
 
-    Tool build(Script script, Map toolConfig) {
+    Tool build(Map toolConfig) {
         switch (toolConfig.get("name")) {
             case "docker":
-                return new Docker(script, toolConfig)
+                return new Docker(toolConfig)
                 break
             case "maven":
-                return new Maven(script, toolConfig)
+                return new Maven(toolConfig)
                 break
             case "npm":
-                return new Npm(script, toolConfig)
+                return new Npm(toolConfig)
                 break
             case "pip":
-                return new Pip(script, toolConfig)
+                return new Pip(toolConfig)
                 break
             case "ansible":
-                Ansible ansible = new Ansible(script, toolConfig)
+                Ansible ansible = new Ansible(toolConfig)
                 logger.trace("Created tool Ansible", ansible)
                 return ansible
                 break
             case "kubeup":
-                Kubeup kubeup = new Kubeup(script, toolConfig)
+                Kubeup kubeup = new Kubeup(toolConfig)
                 logger.trace("Created tool Kubeup", kubeup)
                 return kubeup
                 break
             case "static":
-                StaticDeploy staticDeploy = new StaticDeploy(script, toolConfig)
+                StaticDeploy staticDeploy = new StaticDeploy(toolConfig)
                 logger.trace("Created tool StaticDeploy", staticDeploy)
                 return staticDeploy
                 break
             default:
                 logger.error("Can't create tool from", toolConfig)
-                throw new AbortException("Can't create deployment class from $toolConfig")
+                throw new AbortException("Can't create tool from $toolConfig")
         }
     }
 

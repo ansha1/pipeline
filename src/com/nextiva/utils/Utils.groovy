@@ -1,9 +1,8 @@
 package com.nextiva.utils
 
 import com.cloudbees.groovy.cps.NonCPS
-import com.nextiva.config.Global
+import com.nextiva.config.Config
 import hudson.AbortException
-import jenkins.model.Jenkins
 
 class Utils {
 
@@ -133,47 +132,10 @@ class Utils {
     }
 
     /**
-     * Gets application version from Global singleton
-     * @return application version
-     */
-    static String getGlobalVersion() {
-        Global global = getGlobal()
-        if (global == null) {
-            throw new AbortException("Configuration is not initialized, aborting...")
-        }
-        return global.getGlobalVersion()
-    }
-
-    /* Below behaves unstable and returns  com.nextiva.config.Global@5a88b120 as a String instead of appName value
-    (e.g. "myapp")
-    @NonCPS
-    static String getGlobalAppName() {
-        Global global = getGlobal()
-        if (global == null) {
-            throw new AbortException("Configuration is not initialized, aborting...")
-        }
-        return global.getAppName()
-    }
-    */
-
-
-    /**
-     * Stores application version in Global singleton
-     * @param version version to save
-     */
-    static void setGlobalVersion(String version) {
-        Global global = getGlobal()
-        if (global == null) {
-            throw new AbortException("Configuration is not initialized, aborting...")
-        }
-        global.setGlobalVersion(version)
-    }
-
-    /**
      * Gets Global singleton
      * @return Global singleton
      */
-    static Global getGlobal() {
-        return Global.getInstance()
+    static Config getConfig() {
+        return Config.getInstance()
     }
 }

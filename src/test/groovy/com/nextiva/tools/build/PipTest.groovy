@@ -1,9 +1,12 @@
 package com.nextiva.tools.build
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import com.nextiva.config.PipelineConfig
 import org.junit.Before
 import org.junit.Test
 import utils.JenkinsScriptsHelper
+
+import com.nextiva.config.Config
 
 import static org.junit.Assert.assertEquals
 
@@ -19,6 +22,10 @@ class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
 
         prepareSharedLib()
         script = loadScript("simple_python_app.jenkins")
+        PipelineConfig pipelineConfig = new PipelineConfig()
+        pipelineConfig.script = script
+        Config config = Config.getInstance()
+        config.copyProperties(pipelineConfig)
     }
 
     @Test
@@ -35,7 +42,8 @@ class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
                 [{ 123 }.call(), 123]
         ]
         testData.each { input, result ->
-            def pip = new Pip(script, ["unitTestCommands": input])
+
+            def pip = new Pip(["unitTestCommands": input])
             assertEquals(pip.unitTestCommands, result)
         }
     }

@@ -1,69 +1,86 @@
 package com.nextiva.environment
 
 import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.config.BranchingModel
+import com.nextiva.config.GitFlow
+import com.nextiva.config.TrunkBased
+import com.nextiva.utils.Logger
+import groovy.json.JsonOutput
 
 class EnvironmentFactory {
 
-    private Map environment = ["dev"       : ["name"                    : "dev",
-                                              "branchPattern_gitflow"   : /^(develop|dev)$/,
-                                              "branchPattern_trunkbased": /^master$/,
-                                              "kubernetesCluster"       : "dev.nextiva.io",
-                                              "kubernetesConfigSet"     : "aws-dev",
-                                              "kubernetesNamespace"     : "default",
-                                              "ansibleInventory"        : "dev",
-                                              "healthChecks"            : []],
-                               "qa"        : ["name"                 : "qa",
-                                              "branchPattern_gitflow": /^(release|hotfix)\/.+$/,
-                                              "kubernetesCluster"    : "qa.nextiva.io",
-                                              "kubernetesConfigSet"  : "aws-qa",
-                                              "kubernetesNamespace"  : "default",
-                                              "ansibleInventory"     : "qa",
-                                              "healthChecks"         : []],
-                               "production": ["name"                 : "prod",
-                                              "branchPattern_gitflow": /^master$/,
-                                              "kubernetesCluster"    : "prod.nextiva.io",
-                                              "kubernetesConfigSet"  : "aws-prod",
-                                              "kubernetesNamespace"  : "default",
-                                              "ansibleInventory"     : "production",
-                                              "healthChecks"         : []],
-                               "sales-demo": ["name"               : "sales-demo",
-                                              "kubernetesCluster"  : "sales-demo.nextiva.io",
-                                              "kubernetesConfigSet": "aws-sales-demo",
-                                              "kubernetesNamespace": "default",
-                                              "ansibleInventory"   : "sales-demo",
-                                              "healthChecks"       : []],
-                               "tooling"   : ["name"               : "tooling",
-                                              "kubernetesCluster"  : "tooling.nextiva.io",
-                                              "kubernetesConfigSet": "aws-tooling",
-                                              "kubernetesNamespace": "default",
-                                              "healthChecks"       : []],
-                               "sandbox"   : ["name"               : "sandbox",
-                                              "kubernetesConfigSet": "test",
-                                              "kubernetesNamespace": "default",
-                                              "healthChecks"       : []],
+    private List<Environment> environments = [
+            new Environment(
+                    name: "dev",
+                    branchGitflow: GitFlow.develop,
+                    branchTrunkbased: TrunkBased.trunk,
+                    kubernetesCluster: "dev.nextiva.io",
+                    kubernetesConfigSet: "aws-dev",
+                    ansibleInventory: "dev"
+            ),
+            new Environment(
+                    name: "qa",
+                    branchGitflow: GitFlow.releaseOrHotfix,
+                    kubernetesCluster: "qa.nextiva.io",
+                    kubernetesConfigSet: "aws-qa",
+                    ansibleInventory: "qa"
+            ),
+            new Environment(
+                    name: "production",
+                    branchGitflow: GitFlow.master,
+                    kubernetesCluster: "prod.nextiva.io",
+                    kubernetesConfigSet: "aws-prod",
+                    ansibleInventory: "production"
+            ),
+            new Environment(
+                    name: "sales-demo",
+                    kubernetesCluster: "sales-demo.nextiva.io",
+                    kubernetesConfigSet: "aws-sales-demo",
+                    ansibleInventory: "sales-demo"
+            ),
+            new Environment(
+                    name: "tooling",
+                    kubernetesCluster: "tooling.nextiva.io",
+                    kubernetesConfigSet: "aws-tooling",
+            ),
+            new Environment(
+                    name: "sandbox",
+                    kubernetesConfigSet: "test",
+            ),
     ]
 
-    EnvironmentFactory(Map configuration) {
-        Map deployConfiguration = configuration.subMap(["appName", "buildVersion", "kubernetesDeploymentsList", "ansiblePlaybookPath", "ansibleInventoryPath"])
-        Map environmentFromJenkinsfile = configuration.get("environment", [:])
-        environment.each { k, v ->
-            v << deployConfiguration
-            v << environmentFromJenkinsfile.get(k, [:])
-        }
+    private Logger logger = new Logger(this)
+
+    EnvironmentFactory(List<Environment> environmentsFromPipeline = []) {
+        logger.trace("Merging environments from pipeline with defaults")
+        mergeEnvironments(environmentsFromPipeline)
+        logger.trace("Merged environments:", JsonOutput.toJson(environments))
+        logger.trace("${this.class.simpleName} created")
     }
 
     @NonCPS
-    public List<Environment> getAvailableEnvironmentsForBranch(String branchName, String branchingModel) {
-        List<Environment> environments = []
-        for (env in environment) {
-            if (env.value.containsKey("branchPattern_$branchingModel".toString())) {
-                env.value.branchPattern = env.value."branchPattern_$branchingModel"
+    void mergeEnvironments(List<Environment> environmentsFromPipeline) {
+        Map<String, Environment> environmentsMap = environments.collectEntries { [(it.name): it] }
+
+        environmentsFromPipeline.each { environment ->
+            Environment env = environmentsMap.get(environment.name, null)
+            if (env != null) {
+                env = (env.properties.findAll { k, v -> v } + environment.properties.findAll { k, v -> v })
+                        .findAll { k, v -> k != 'class' }
+            } else {
+                env = environment
             }
+            environmentsMap.put(environment.name, env)
         }
-        Map envs = environment.findAll { branchName ==~ it.value.branchPattern }
-        envs.each {
-            environments.add(new Environment(it.value))
+
+        this.environments = environmentsMap.collect { it.value }
+    }
+
+    @NonCPS
+    List<Environment> getAvailableEnvironmentsForBranch(BranchingModel branchingModel, String branchName) {
+        List<Environment> deployEnvironments = environments.findAll {
+            it.getBranchPattern(branchingModel)?.matcher(branchName)?.matches()
         }
-        return environments
+        return deployEnvironments
     }
 }

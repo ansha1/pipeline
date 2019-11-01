@@ -1,22 +1,24 @@
 package com.nextiva.stages.stage
 
+import static com.nextiva.config.Config.instance as config
+
 class Checkout extends Stage {
-    Checkout(Script script, Map configuration) {
-        super(script, configuration)
+    Checkout() {
+        super()
     }
 
     @Override
     def stageBody() {
         try {
-            script.checkout([
+            config.script.checkout([
                     $class                           : 'GitSCM',
-                    branches                         : script.scm.branches,
-                    doGenerateSubmoduleConfigurations: script.scm.doGenerateSubmoduleConfigurations,
-                    extensions                       : script.scm.extensions,
-                    userRemoteConfigs                : script.scm.userRemoteConfigs
+                    branches                         : config.script.scm.branches,
+                    doGenerateSubmoduleConfigurations: config.script.scm.doGenerateSubmoduleConfigurations,
+                    extensions                       : config.script.scm.extensions,
+                    userRemoteConfigs                : config.script.scm.userRemoteConfigs
             ])
         } catch (e) {
-            logger.error("Error when executing ${stageName}:", e)
+            logger.error("Error when executing ${stageName}: ", e)
             throw e
         }
     }

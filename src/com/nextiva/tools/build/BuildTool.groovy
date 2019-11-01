@@ -3,11 +3,11 @@ package com.nextiva.tools.build
 import com.nextiva.tools.Tool
 import com.nextiva.utils.Logger
 
+import static com.nextiva.config.Config.instance as config
 import static com.nextiva.utils.Utils.shOrClosure
 
 abstract class BuildTool implements Serializable, Tool {
 
-    Script script
     String name
     String appName
     Logger logger
@@ -23,8 +23,7 @@ abstract class BuildTool implements Serializable, Tool {
     def publishCommands
     Boolean publishArtifact = true
 
-    BuildTool(Script script, Map buildToolConfig) {
-        this.script = script
+    BuildTool(Map buildToolConfig) {
         //Try to get sh command or closure from configuration and replace in with default commands if exist
         this.name = buildToolConfig.get("name") ?: this.name
         this.pathToSrc = buildToolConfig.get("pathToSrc") ?: this.pathToSrc
@@ -78,10 +77,10 @@ abstract class BuildTool implements Serializable, Tool {
     }
 
     def execute(def command) {
-        script.dir(pathToSrc) {
+        config.script.dir(pathToSrc) {
             logger.debug("executing command in container ${name}")
-            script.container(name) {
-                def output = shOrClosure(script, command)
+            config.script.container(name) {
+                def output = shOrClosure(config.script, command)
                 logger.info("Command output: $output")
                 return output
             }
@@ -90,7 +89,7 @@ abstract class BuildTool implements Serializable, Tool {
 
     def tryExec(String action, def commands, def postCommands) {
         if (commands != null) {
-            script.stage("${name}: ${action}") {
+            config.script.stage("${name}: ${action}") {
                 try {
                     logger.debug("Executing ", commands)
                     execute(commands)

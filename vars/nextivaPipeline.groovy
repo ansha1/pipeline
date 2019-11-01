@@ -1,3 +1,4 @@
+import com.nextiva.config.PipelineConfig
 import com.nextiva.config.Config
 import com.nextiva.stages.stage.Stage
 import com.nextiva.utils.Logger
@@ -11,13 +12,15 @@ def call(body) {
     timestamps {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
-            def pipelineParams = [:]
-            body.resolveStrategy = Closure.DELEGATE_FIRST
-            body.delegate = pipelineParams
+            PipelineConfig pipelineConfig = new PipelineConfig()
+            body.resolveStrategy = Closure.DELEGATE_ONLY
+            body.delegate = pipelineConfig
             body()
             logger.info("Starting Nextiva Pipeline")
-            Config config = new Config(this, pipelineParams)
-            config.configure()
+            pipelineConfig.script = this
+
+            Config config = new Config().getInstance()
+            config.configure(pipelineConfig)
             kubernetesSlave(config.getSlaveConfiguration()) {
                 pipelineExecution(config.getStages(), config.getJobTimeoutMinutes())
             }

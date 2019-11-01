@@ -20,9 +20,9 @@ nextivaPipeline {
                         "postUnitTestCommands"       : """pwd""",
                         "integrationTestCommands"    : """pwd""",
                         "postIntegrationTestCommands": {
-                            build job: "/bar/${getGlobal().branchName}", parameters: [
-                                    string(name: "version", value: getGlobalVersion()),
-                                    string(name: "appName", value: getGlobal().appName)]
+                            build job: "/bar/${getConfig().branchName}", parameters: [
+                                    string(name: "version", value: getConfig().version),
+                                    string(name: "appName", value: getConfig().appName)]
                         },
                         "postDeployCommands"         : """pwd""",
                         "image"                      : "maven:3.6.1-jdk-8",

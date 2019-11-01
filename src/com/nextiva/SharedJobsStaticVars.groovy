@@ -100,7 +100,7 @@ class SharedJobsStaticVars {
                                                                "resourceLimitCpu"     : "300m",
                                                                "resourceRequestMemory": "256Mi",
                                                                "resourceLimitMemory"  : "512Mi"],
-                                                   "kubeup" : ["image"                  : "repository.nextiva.xyz/kubeup:latest",
+                                                   "kubeup" : ["image"                  : "docker.nextiva.xyz/kubeup:latest",
                                                                "resourceRequestMemory"  : "64Mi",
                                                                "resourceLimitMemory"    : "256Mi",
                                                                "resourceRequestCpu"     : "100m",

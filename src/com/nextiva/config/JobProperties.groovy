@@ -8,55 +8,57 @@ import java.util.regex.Pattern
 class JobProperties {
     Script script
     List jobTriggers
-    String buildDaysToKeepStr
-    String buildNumToKeepStr
-    String buildArtifactDaysToKeepStr
-    String buildArtifactNumToKeepStr
+    String buildDaysToKeep
+    String buildNumToKeep
+    String buildArtifactDaysToKeep
+    String buildArtifactNumToKeep
     List paramlist
     Map auth
 
-    Logger logger = new Logger(this)
 
-    JobProperties(Script script, Map configuration) {
-        this.script = script
-        this.jobTriggers = configuration.get("jobTriggers", [])
-        this.buildDaysToKeepStr = configuration.get("buildDaysToKeepStr", "30")
-        this.buildNumToKeepStr = configuration.get("buildNumToKeepStr", "50")
-        this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
-        this.buildArtifactDaysToKeepStr = configuration.get("buildArtifactDaysToKeepStr", "10")
-        this.auth = configuration.get("auth", [:])
-        this.paramlist = generateParamList(script, configuration)
+    JobProperties(Config configuration) {
+        this.script = configuration.script
+        this.jobTriggers = configuration.jobTriggers
+        this.buildDaysToKeep = configuration.buildDaysToKeep
+        this.buildNumToKeep = configuration.buildNumToKeep
+        this.buildArtifactDaysToKeep = configuration.buildArtifactDaysToKeep
+        this.buildArtifactNumToKeep = configuration.buildArtifactNumToKeep
+        this.auth = configuration.auth
+        this.paramlist = generateParamList(this.script, configuration.branchName, configuration.branchingModel,
+                configuration.environmentsToDeploy.collect { return it.name })
     }
 
     @NonCPS
-    private List generateParamList(Script script, Map configuration) {
+    private List generateParamList(Script script, String branchName, BranchingModel branchingModel, List<String> environmentsToDeploy) {
         List paramlist = []
-        String branchName = configuration.get("branchName")
-        String branchingModel = configuration.get("branchingModel")
-        List<String> environmentsToDeploy = configuration.get("environmentsToDeploy", [[:]]).collect {
-            return it.get("name", "")
-        }
+
+        // TODO environmentsToDeploy is always empty here, becasue it is set later inside Config.configure()
         if (branchName ==~ /^(hotfix\/.+)$/) {
             //workaround to avoid deployment on qa env from hotfix branch on the first execution
             environmentsToDeploy.add(0, "")
         }
 
-        List jobParameters = [["parameter"     : script.string(name: 'deployVersion', defaultValue: '', description: 'Set artifact version for skip all steps and deploy only or leave empty for start full build'),
-                               "branchingModel": ["gitflow"   : /^(dev|develop|master|release\/.+)$/,
-                                                  "trunkbased": /^master$/],
-                              ],
-                              ["parameter"     : script.choice(choices: environmentsToDeploy, description: 'Where deploy?', name: 'deployDst'),
-                               "branchingModel": ["gitflow"   : /^((hotfix|release)\/.+)$/,
-                                                  "trunkbased": /^master$/],
-                              ],
-                              ["parameter"     : script.choice(choices: ["DEBUG","INFO", "DEBUG", "TRACE", "ALL"], description: 'Pipeline Log level', name: 'JOB_LOG_LEVEL'),
-                               "branchingModel": ["gitflow"   : /^.*$/,
-                                                  "trunkbased": /^.*$/],
-                              ]]
+        List jobParameters = [
+                ["parameter"     : script.string(name: 'deployVersion', defaultValue: '',
+                        description: 'If set, skip build stages and deploy specified artifact version'),
+                 "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.mainlineWithMaster,
+                                    (TrunkBased.class): BranchingModelRegexps.master],
+                ],
+                ["parameter"     : script.choice(choices: environmentsToDeploy, description: 'Deployment destination',
+                        name: 'deployDst'),
+                 "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.releaseOrHotfix,
+                                    (TrunkBased.class): BranchingModelRegexps.master],
+                ],
+                ["parameter"     : script.choice(choices: ["DEBUG", "INFO", "DEBUG", "TRACE", "ALL"],
+                        description: 'Pipeline Log level', name: 'JOB_LOG_LEVEL'),
+                 "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.any,
+                                    (TrunkBased.class): BranchingModelRegexps.any]
+                ]
+        ]
 
         jobParameters.each {
-            Pattern branchPattern = Pattern.compile(it.get("branchingModel").get(branchingModel))
-            if (branchName ==~ branchPattern) {
+            Pattern branchPattern = it.get("branchingModel").get(branchingModel.class)
+            if (branchPattern.matcher(branchName).matches()) {
                 paramlist.add(it.get("parameter"))
             }
         }
@@ -68,10 +70,10 @@ class JobProperties {
     Map toMap() {
         Map result = [:]
         result.put("jobTriggers", jobTriggers)
-        result.put("buildDaysToKeepStr", buildDaysToKeepStr)
-        result.put("buildNumToKeepStr", buildNumToKeepStr)
-        result.put("buildArtifactDaysToKeepStr", buildArtifactDaysToKeepStr)
-        result.put("buildArtifactNumToKeepStr", buildArtifactNumToKeepStr)
+        result.put("buildDaysToKeepStr", buildDaysToKeep)
+        result.put("buildNumToKeepStr", buildNumToKeep)
+        result.put("buildArtifactDaysToKeepStr", buildArtifactDaysToKeep)
+        result.put("buildArtifactNumToKeepStr", buildArtifactNumToKeep)
         result.put("paramlist", paramlist)
         result.put("auth", auth)
 

@@ -1,5 +1,4 @@
 plugins {
-    id "kr.motd.sphinx" version "2.6.1"
     id "application"
     id 'groovy'
     id 'maven'
@@ -43,21 +42,22 @@ dependencies {
 }
 
 sourceSets {
-    main {
-        groovy {
-            // Do not add 'vars' to srcDirs or unit tests would fail (https://github.com/jenkinsci/JenkinsPipelineUnit/issues/51#issuecomment-443361269)
-            srcDirs = ['src/']
-        }
-    }
-
-    test {
-        groovy {
-            srcDirs = ['src/test/groovy']
-        }
-    }
+    // Do not add 'vars' to main.groovy.srcDirs or unit tests would fail
+    // (https://github//.com/jenkinsci/JenkinsPipelineUnit/issues/51#issuecomment-443361269)
+    main.groovy.srcDirs = ['src']
+    test.groovy.srcDirs = ['src/test/groovy']
 }
 
 defaultTasks 'test'
+
+task initLibraries(type: Exec) {
+    commandLine 'sh', '-c', 'rm -rf build/classes/groovy/test/pipeline@master && ' +
+            'mkdir -p build/classes/groovy/test/pipeline@master && ' +
+            'ln -s $PWD/src build/classes/groovy/test/pipeline@master && ' +
+            'ln -s $PWD/vars build/classes/groovy/test/pipeline@master'
+}
+
+test.dependsOn initLibraries
 
 jacocoTestReport {
     reports {

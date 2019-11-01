@@ -1,8 +1,10 @@
 package com.nextiva.stages.stage
 
+import static com.nextiva.config.Config.instance as config
+
 class CollectBuildResults extends Stage {
-    CollectBuildResults(Script script, Map configuration) {
-        super(script, configuration)
+    CollectBuildResults() {
+        super()
     }
 
     def stageBody() {

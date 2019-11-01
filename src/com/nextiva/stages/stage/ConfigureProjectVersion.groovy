@@ -3,21 +3,21 @@ package com.nextiva.stages.stage
 import com.nextiva.tools.build.BuildTool
 import hudson.AbortException
 
-import static com.nextiva.utils.Utils.setGlobalVersion
+import static com.nextiva.config.Config.instance as config
 
 /**
  * Sets up global project version value based on the first non-empty version value from the project's build tool
  */
 class ConfigureProjectVersion extends Stage {
-    ConfigureProjectVersion(Script script, Map configuration) {
-        super(script, configuration)
+    ConfigureProjectVersion() {
+        super()
     }
 
     @Override
     def stageBody() {
         String version = ''
 
-        Map build = configuration.get("build")
+        Map build = config.build
         build.find { toolName, toolConfiguration ->
             logger.debug("Getting version from $toolName")
             BuildTool tool = toolConfiguration.get("instance")
@@ -26,11 +26,12 @@ class ConfigureProjectVersion extends Stage {
             return isValidVersion(version)
         }
 
+        // TODO check that 'if (!version)' would work
         if (!isValidVersion(version)) {
             throw new AbortException('Unable to determine application version with the build tools you have defined.')
         }
         logger.debug("Setting global version to $version")
-        setGlobalVersion(version)
+        config.version = version
     }
 
     static boolean isValidVersion(String version) {

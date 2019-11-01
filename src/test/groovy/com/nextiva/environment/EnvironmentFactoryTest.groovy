@@ -1,6 +1,9 @@
 package com.nextiva.environment
 
-
+import com.nextiva.config.Branch
+import com.nextiva.config.BranchingModel
+import com.nextiva.config.GitFlow
+import com.nextiva.config.TrunkBased
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -12,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat
 @RunWith(Parameterized.class)
 class EnvironmentFactoryTest {
     @Parameterized.Parameter(0)
-    public String branchingModel
+    public String branchingModelName
 
     @Parameterized.Parameter(1)
     public String branchType
@@ -24,48 +27,81 @@ class EnvironmentFactoryTest {
     public List<String> expectedResult
 
     @Parameterized.Parameter(4)
-    public Map customConfiguration
+    public List<Environment> customConfiguration
 
-    static Map cfg1 = [
-            "environment": ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                            "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                           "ansibleInventory": "rc"],
-                            "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                            "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                           "branchPattern": /^master$/,]
-            ]
-    ]
+    static List<Environment> cfg1 = [
+            ["name"        : "dev",
+             "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name"            : "qa",
+             "healthChecks"    : ["https://myapp.qa.nextiva.io"],
+             "ansibleInventory": "rc"],
+            ["name"        : "production",
+             "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name"         : "sales-demo",
+             "branchPattern": /^master$/,
+             "healthChecks" : ["https://myapp.sales-demo.nextiva.io"]]
+    ].collect { it as Environment }
+
+    static List<Environment> cfg2 = [
+            ["name"        : "dev",
+             "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name"            : "qa",
+             "healthChecks"    : ["https://myapp.qa.nextiva.io"],
+             "ansibleInventory": "rc"],
+            ["name"        : "production",
+             "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name"         : "sales-demo",
+             "branchPattern": ~/^master$/,
+             "healthChecks" : ["https://myapp.sales-demo.nextiva.io"]],
+            ["name"             : "nextiva-pipeline-sandbox",
+             "branchPattern"    : '^feature/dockerTemplate$',
+             "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"],
+    ].collect { it as Environment }
 
     @Parameterized.Parameters(name = "{0} - {1} - {2}")
     static Collection<Object[]> data() {
         return [
-                BranchNames.feature.collect { ["gitflow", "feature", it, [], [:]] },
-                BranchNames.develop.collect { ["gitflow", "develop", it, ["dev"], [:]] },
-                BranchNames.release.collect { ["gitflow", "release", it, ["qa"], [:]] },
-                BranchNames.master.collect { ["gitflow", "master", it, ["prod"], [:]] },
+                BranchNames.feature.collect { ["gitflow", "feature", it, [], []] },
+                BranchNames.develop.collect { ["gitflow", "develop", it, ["dev"], []] },
+                BranchNames.release.collect { ["gitflow", "release", it, ["qa"], []] },
+                BranchNames.master.collect { ["gitflow", "master", it, ["production"], []] },
                 (BranchNames.feature + BranchNames.release + BranchNames.develop).collect {
-                    ["trunkbased", "not master", it, [], [:]]
+                    ["trunkbased", "not master", it, [], []]
                 },
-                BranchNames.master.collect { ["trunkbased", "master", it, ["dev"], [:]] },
+                BranchNames.master.collect { ["trunkbased", "master", it, ["dev"], []] },
                 BranchNames.feature.collect { ["gitflow", "feature", it, [], cfg1] },
                 BranchNames.develop.collect { ["gitflow", "develop", it, ["dev"], cfg1] },
                 BranchNames.release.collect { ["gitflow", "release", it, ["qa"], cfg1] },
-                BranchNames.master.collect { ["gitflow", "master", it, ["prod", "sales-demo"], cfg1] },
+                BranchNames.master.collect { ["gitflow", "master", it, ["production", "sales-demo"], cfg1] },
                 (BranchNames.feature + BranchNames.release + BranchNames.develop).collect {
                     ["trunkbased", "not master", it, [], cfg1]
                 },
                 BranchNames.master.collect { ["trunkbased", "master", it, ["dev", "sales-demo"], cfg1] },
+
+                BranchNames.feature.collect { ["gitflow", "feature", it, [], cfg2] },
+                BranchNames.develop.collect { ["gitflow", "develop", it, ["dev"], cfg2] },
+                BranchNames.release.collect { ["gitflow", "release", it, ["qa"], cfg2] },
+                BranchNames.master.collect { ["gitflow", "master", it, ["production", "sales-demo"], cfg2] },
+                (BranchNames.feature + BranchNames.release + BranchNames.develop).collect {
+                    ["trunkbased", "not master", it, [], cfg2]
+                },
+                BranchNames.master.collect { ["trunkbased", "master", it, ["dev", "sales-demo"], cfg2] },
+                [["gitflow", "feature/dockerTemplate", "feature/dockerTemplate", ["nextiva-pipeline-sandbox"], cfg2],
+                 ["trunkbased", "feature/dockerTemplate", "feature/dockerTemplate", ["nextiva-pipeline-sandbox"], cfg2]],
         ].collectMany { it }.collect { it as Object[] }
     }
 
-    List testDataGenerator(String branchingModel, String branchType, Set branchNames, List expectedResult, Map pipelineConfiguration) {
-        return branchNames.collect { [branchingModel, branchType, it, expectedResult, pipelineConfiguration] }
-    }
-
     @Test
-    void test_getAvailableEnvironmentsForBranch() {
+    void testGetAvailableEnvironmentsForBranch() {
+        BranchingModel branchingModel
+        if (branchingModelName == "gitflow") {
+            branchingModel = new GitFlow()
+        } else if (branchingModelName == "trunkbased") {
+            branchingModel = new TrunkBased()
+        }
+
         EnvironmentFactory environmentFactory = new EnvironmentFactory(customConfiguration)
-        def envs = environmentFactory.getAvailableEnvironmentsForBranch(branchName, branchingModel)
+        def envs = environmentFactory.getAvailableEnvironmentsForBranch(branchingModel, branchName)
         assertThat(envs.collect { it.name })
                 .describedAs("Checking $branchType branch pattern of $branchingModel strategy")
                 .containsOnlyElementsOf(expectedResult)

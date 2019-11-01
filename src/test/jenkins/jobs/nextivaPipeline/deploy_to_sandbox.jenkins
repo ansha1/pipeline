@@ -30,14 +30,21 @@ nextivaPipeline {
                     "rules-engine-core"         : "latest",
                     "rules-engine-orchestration": "latest",]
 
-    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                  "ansibleInventory": "rc"],
-                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                  "branchPattern": /^master$/],
-                   "sandbox"   : ["branchPattern"    : '^feature/dockerTemplate$',
-                                  "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"]
+    environments = [
+            ["name"        : "dev",
+             "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name"            : "qa",
+             "healthChecks"    : ["https://myapp.qa.nextiva.io"],
+             "ansibleInventory": "rc",
+             "branchPattern"   : /^foobar_123$/],
+            ["name"        : "production",
+             "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name"         : "sales-demo",
+             "healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+             "branchPattern": ~/^master$/],
+            ["name"             : "sandbox",
+             "branchPattern"    : '^feature/dockerTemplate$',
+             "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"]
     ]
 
     branchPermissions = [:]

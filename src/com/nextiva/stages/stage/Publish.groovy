@@ -1,16 +1,16 @@
 package com.nextiva.stages.stage
 
 import com.nextiva.tools.build.BuildTool
-
+import static com.nextiva.config.Config.instance as config
 
 class Publish extends Stage {
-    Publish(Script script, Map configuration) {
-        super(script, configuration)
+    Publish() {
+        super()
     }
 
     @Override
     def stageBody() {
-        Map build = configuration.get("build")
+        Map build = config.build
         for (entry in build) {
             Map toolConfiguration = entry.value
             BuildTool tool = toolConfiguration.get("instance")

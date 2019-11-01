@@ -3,6 +3,7 @@ package com.nextiva.tools.build
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
+import static com.nextiva.config.Config.instance as config
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
 import static com.nextiva.utils.Utils.shWithOutput
@@ -16,19 +17,19 @@ class Pip extends BuildTool {
                 python setup.py test
             """.stripIndent(),
             publish : {
-                script.container(name) {
+                config.script.container(name) {
                     def command = 'pip install twine'
-                    def output = shWithOutput(script, command)
+                    def output = shWithOutput(config.script, command)
                     logger.info("$output")
                     return output
                 }
-                script.buildPublishPypiPackage(pathToSrc, null, 'python')
+                config.script.buildPublishPypiPackage(pathToSrc, null, 'python')
             },
             build   : 'pip install -r requirements.txt'
     ]
 
-    Pip(Script script, Map toolConfiguration) {
-        super(script, toolConfiguration)
+    Pip(Map toolConfiguration) {
+        super(toolConfiguration)
         if (unitTestCommands == null) {
             unitTestCommands = defaultCommands.unitTest
         }
@@ -43,14 +44,14 @@ class Pip extends BuildTool {
     @Override
     void setVersion(String version) {
         execute {
-            setPropertyToFile(script, BUILD_PROPERTIES_FILENAME, "version", version)
+            setPropertyToFile(config.script, BUILD_PROPERTIES_FILENAME, "version", version)
         }
     }
 
     @Override
     String getVersion() {
         return execute {
-            String version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
+            String version = getPropertyFromFile(config.script, BUILD_PROPERTIES_FILENAME, "version")
             if (version == null) {
                 throw new AbortException("Version is not specified in ${BUILD_PROPERTIES_FILENAME}.")
             }
@@ -77,7 +78,7 @@ class Pip extends BuildTool {
     @Override
     Boolean isArtifactAvailableInRepo() {
         execute {
-            return script.nexus.isPypiPackageExists(appName, getVersion(), "pypi-production")
+            return config.script.nexus.isPypiPackageExists(appName, getVersion(), "pypi-production")
         }
     }
 }

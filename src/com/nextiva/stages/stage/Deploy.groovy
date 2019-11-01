@@ -4,17 +4,17 @@ import com.nextiva.environment.Environment
 import com.nextiva.tools.build.BuildTool
 import com.nextiva.tools.deploy.DeployTool
 
-import static com.nextiva.config.Global.instance as global
+import static com.nextiva.config.Config.instance as config
 
 class Deploy extends Stage {
-    Deploy(Script script, Map configuration) {
-        super(script, configuration)
+    Deploy() {
+        super()
     }
 
     @Override
     def stageBody() {
-        global.environmentsToDeploy.each {
-            doDeploy(global.deployTool, it)
+        config.environmentsToDeploy.each {
+            doDeploy(config.deployTool, it)
         }
         doPostDeploy()
     }
@@ -31,7 +31,7 @@ class Deploy extends Stage {
     }
 
     private void doPostDeploy() {
-        Map tools = configuration.get("build")
+        Map tools = config.build
         tools.each { toolName, toolConfig ->
             BuildTool tool = toolConfig.get("instance")
             tool.postDeploy()

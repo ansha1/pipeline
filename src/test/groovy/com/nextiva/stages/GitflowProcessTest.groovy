@@ -39,10 +39,8 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
                   "kubeup Deploy: Deploy to dev", "pip: postDeploy", "QACoreTeamTest",
                   "QA Core Team Tests", "CollectBuildResults", "SendNotifications"]],
                 ["master", BranchNames.master.toList(),
-                 ["Checkout", "ConfigureProjectVersion", "IntegrationTest", "pip: integrationTest",
-                  "Deploy", "kubeup Deploy: Deploy to prod", "kubeup Deploy: Deploy to sales-demo",
-                  "pip: postDeploy", "QACoreTeamTest", "QA Core Team Tests", "CollectBuildResults",
-                  "SendNotifications"]],
+                 ["Checkout", "Deploy", "kubeup Deploy: Deploy to production", "pip: postDeploy", "QACoreTeamTest",
+                  "QA Core Team Tests", "CollectBuildResults", "SendNotifications"]],
                 ["release", BranchNames.release.toList(),
                  ["Checkout", "StartBuildDependencies", "VerifyArtifactVersionInNexus",
                   "pip VerifyArtifactVersionInNexus", "docker VerifyArtifactVersionInNexus", "ConfigureProjectVersion",
@@ -64,8 +62,8 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
         binding.setVariable 'BRANCH_NAME', 'dev'
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
-                deploy_version: '1.0',
-                stack         : 'a'
+                deployVersion: '1.0',
+                stack        : 'a'
         ]
 
         prepareSharedLib()

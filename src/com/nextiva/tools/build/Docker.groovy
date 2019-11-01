@@ -1,5 +1,8 @@
 package com.nextiva.tools.build
 
+import com.nextiva.config.Config
+import com.nextiva.config.GitFlow
+import com.nextiva.config.TrunkBased
 import hudson.AbortException
 
 import java.util.regex.Pattern
@@ -11,14 +14,14 @@ import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_URL
 import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
 import static com.nextiva.utils.Utils.shWithOutput
-import static com.nextiva.config.Global.instance as global
+import static com.nextiva.config.Config.instance as config
 
 class Docker extends BuildTool {
     String dockerfileName
     String buildLocation
 
-    Docker(Script script, Map toolConfiguration) {
-        super(script, toolConfiguration)
+    Docker(Map toolConfiguration) {
+        super(toolConfiguration)
         this.dockerfileName = toolConfiguration.get("dockerfileName")
         this.buildLocation = toolConfiguration.get("buildLocation")
     }
@@ -39,7 +42,7 @@ class Docker extends BuildTool {
         String version = getVersion()
         logger.debug("Got version: $version")
         execute {
-            buildPublish(script, NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, global.appName,
+            buildPublish(NEXTIVA_DOCKER_REGISTRY_URL, NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID, config.appName,
                     version, dockerfileName, buildLocation, tagLatest)
         }
         logger.debug("buildPublish completed")
@@ -47,16 +50,16 @@ class Docker extends BuildTool {
 
     @Override
     String getVersion() {
-        script.dir(pathToSrc) {
+        config.script.dir(pathToSrc) {
             String version = null
             try {
-                version = getPropertyFromFile(script, BUILD_PROPERTIES_FILENAME, "version")
+                version = getPropertyFromFile(config.script, BUILD_PROPERTIES_FILENAME, "version")
             } catch (e) {
                 logger.debug("$BUILD_PROPERTIES_FILENAME not found for the Docker build tool, e:", e)
             }
             if (version == null) {
                 logger.debug("Try to get version from GLOBAL version")
-                version = global.globalVersion
+                version = config.version
             }
             if (version == null) {
                 throw new AbortException("Version for Docker is undefined, please define it in $BUILD_PROPERTIES_FILENAME or by another build tool via GLOBAL version")
@@ -69,7 +72,7 @@ class Docker extends BuildTool {
     void setVersion(String version) {
         execute {
             try {
-                setPropertyToFile(script, BUILD_PROPERTIES_FILENAME, "version", version)
+                setPropertyToFile(config.script, BUILD_PROPERTIES_FILENAME, "version", version)
             } catch (e) {
                 logger.warn("File ${BUILD_PROPERTIES_FILENAME} not found, can't set version e:", e)
             }
@@ -91,46 +94,42 @@ class Docker extends BuildTool {
     Boolean isArtifactAvailableInRepo() {
         execute {
             logger.debug("try to find the docker image ${appName} with version:${getVersion()} in the Nexus registry")
-            return script.nexus.isDockerPackageExists(appName, getVersion())
+            return config.script.nexus.isDockerPackageExists(appName, getVersion())
         }
     }
 
     //For more info see https://jenkins.nextiva.xyz/jenkins/pipeline-syntax/globals#docker
-    def buildPublish(Script script, String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
-        script.docker.withRegistry(registry, registryCredentials) {
+    def buildPublish(String registry, String registryCredentials, String appName, String version, String dockerFilePath = "Dockerfile", String buildLocation = ".", Boolean tagLatest = false) {
+        config.script.docker.withRegistry(registry, registryCredentials) {
             logger.debug("Building image ")
-            def image = script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
+            def image = config.script.docker.build("$appName:$version", "-f $dockerFilePath --build-arg build_version=${version} ${buildLocation}")
             logger.debug("Pushing image $version")
             image.push()
             if (tagLatest) {
                 logger.debug("Pushing image with 'latest' tag")
                 image.push("latest")
                 logger.debug("Removing image with 'latest'")
-                String output = shWithOutput(script, "docker rmi ${registry.replaceFirst(/^https?:\/\//, '')}/${appName}:latest")
+                String output = shWithOutput(config.script, "docker rmi ${registry.replaceFirst(/^https?:\/\//, '')}/${appName}:latest")
                 logger.debug("$output")
             }
             logger.debug("Removing image $version")
-            String output = shWithOutput(script, "docker rmi ${image.id} ${registry.replaceFirst(/^https?:\/\//, '')}/${image.id}")
+            String output = shWithOutput(config.script, "docker rmi ${image.id} ${registry.replaceFirst(/^https?:\/\//, '')}/${image.id}")
             logger.debug("$output")
         }
     }
 
     Boolean isTagLatest() {
         logger.trace("Getting branch name from Global")
-        String branchName = global.getBranchName()
-        logger.trace("branchName: $branchName")
+        logger.trace("branchName: $config.branchName")
         logger.trace("Getting branching model from Global")
-        String branchingModel = global.getBranchingModel()
-        logger.trace("branchModel:  $branchingModel")
-        Map chooser = ["gitflow"   : /^(dev|develop)$/,
-                       "trunkbased": /^master$/]
+        logger.trace("branchModel:  $config.branchingModel")
+        Map chooser = [(GitFlow.class)   : /^(dev|develop)$/,
+                       (TrunkBased.class): /^master$/]
         logger.trace("chooser: $chooser")
 
-        logger.trace("Compiling regex pattern: ${chooser.get(branchingModel)}")
-        Pattern branchPattern = Pattern.compile(chooser.get(branchingModel))
-
-        logger.trace("$branchName ==~ $branchPattern: ")
-        Boolean result = branchName ==~ branchPattern
+        Pattern branchPattern = Pattern.compile(chooser.get(config.branchingModel.class))
+        logger.trace("$config.branchName ==~ $branchPattern: ")
+        Boolean result = config.branchName ==~ branchPattern
         logger.trace("Result is $result")
         return result
     }
