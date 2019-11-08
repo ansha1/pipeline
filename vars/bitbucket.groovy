@@ -1,193 +1,103 @@
 #!groovy
-import static com.nextiva.SharedJobsStaticVars.*
-import groovy.json.JsonOutput
+import com.nextiva.bitbucket.Bitbucket
+import com.nextiva.bitbucket.BitbucketCloud
+import com.nextiva.bitbucket.BitbucketServer
 
+Bitbucket getClientForUrl(String url) {
+    Bitbucket client = url.contains('bitbucket.org')
+            ? new BitbucketCloud(this)
+            : new BitbucketServer(this)
+
+    String name = client.getClass().getSimpleName()
+    log.info("Created Client: ${name}")
+    return client
+}
 
 String getTitleFromPr(String url) {
-
-    def props = getPrFromUrl(url)
-    def prTitle = props.title.trim()
-    log.info("PR title: ${prTitle}")
-    return prTitle
+    Bitbucket client = getClientForUrl(url)
+    Map pr = client.getPullRequestFromUrl(url)
+    return client.getPullRequestTitle(pr)
 }
 
 String getSourceBranchFromPr(String url) {
-
-    def props = getPrFromUrl(url)
-    def sourceBranch = props.fromRef.displayId.trim()
-    log.info("SourceBranch: ${sourceBranch}")
-    return sourceBranch
+    Bitbucket client = getClientForUrl(url)
+    Map pr = client.getPullRequestFromUrl(url)
+    return client.getPullRequestSourceBranch(pr)
 }
 
 String getDestinationBranchFromPr(String url) {
-
-    def props = getPrFromUrl(url)
-    def destinationBranch = props.toRef.displayId.trim()
-    log.info("DestinationBranch: ${destinationBranch}")
-    return destinationBranch
+    Bitbucket client = getClientForUrl(url)
+    Map pr = client.getPullRequestFromUrl(url)
+    return client.getPullRequestDestinationBranch(pr)
 }
 
-def prOwnerEmail(String url) {
-    def pr = getPrFromUrl(url)
-    return pr.author.user.emailAddress
+String prOwnerEmail(String url) {
+    Bitbucket client = getClientForUrl(url)
+    Map pr = client.getPullRequestFromUrl(url)
+    return client.getPullRequestAuthorEmail(pr)
 }
 
-def getPrFromUrl(String url) {
+Map getPrFromUrl(String url) {
+    Bitbucket client = getClientForUrl(url)
+    return client.getPullRequestFromUrl(url)
+}
 
-    log.info("Received PR url: ${url}")
-    prUrl = url.replaceAll("${BITBUCKET_URL}/projects", "${BITBUCKET_URL}/rest/api/1.0/projects") - "/overview"
-    log.info("Transform Url for access via rest api: ${prUrl}")
+String getProjectKeyFromUrl(String repositoryUrl) {
+    Bitbucket client = getClientForUrl(repositoryUrl)
+    return client.getProjectKeyFromUrl(repositoryUrl)
+}
 
-    def prResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
-            consoleLogResponseBody: log.isDebug()
-    def returnBody = readJSON text: prResponce.content
-    return returnBody
+String getRepositoryNameFromUrl(String repositoryUrl) {
+    Bitbucket client = getClientForUrl(repositoryUrl)
+    return client.getRepositoryNameFromUrl(repositoryUrl)
 }
 
 def createPr(String repositoryUrl, String sourceBranch, String destinationBranch, String title, String description) {
-
-    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
-    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
-    log.info('projectKey: ' + projectKey)
-    log.info('repositorySlug: ' + repositorySlug)
-
-    String reviewersUrl = "${BITBUCKET_URL}/rest/default-reviewers/1.0/projects/${projectKey}/repos/${repositorySlug}/conditions"
-    String createPrUrl = "${BITBUCKET_URL}/rest/api/1.0/projects/${projectKey}/repos/${repositorySlug}/pull-requests"
-
-    //Getting default reviewers list from target repo
-    def reviewersResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: reviewersUrl,
-            consoleLogResponseBody: log.isDebug()
-    def props = readJSON text: reviewersResponce.content
-    def revs = props[0].reviewers
-    log.info("Get reviewers")
-    def revsList = []
-    revs.each { revsList.add(['user': ['name': it.name]]) }
-    def reviewers = JsonOutput.toJson(revsList)
-
-    //Creating pull request via Bitbucket API
-    def requestBody = """{
-                    "title": "${title}",
-                    "description": "${description}",
-                    "state": "OPEN",
-                    "open": true,
-                    "closed": false,
-                    "fromRef": {
-                        "id": "${sourceBranch}"
-                    },
-                    "toRef": {
-                        "id": "${destinationBranch}"
-                    },
-                    "locked": false,
-                    "reviewers": ${reviewers},
-                    "links": {
-                        "self": [
-                                null
-                        ]
-                    }
-                }"""
-    def pullRequestResponce = httpRequest authentication: BITBUCKET_JENKINS_AUTH, contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: requestBody, url: createPrUrl,
-            consoleLogResponseBody: log.isDebug()
-    def responceJson = readJSON text: pullRequestResponce.content
-    String pullRequestLink = responceJson.links.self[0].get('href')
-    log.info("PULL REQUEST WAS CREATED ${pullRequestLink}")
-    return pullRequestLink
+    Bitbucket client = getClientForUrl(repositoryUrl)
+    String repository = client.getRepositoryNameFromUrl(repositoryUrl)
+    String project = client.getProjectKeyFromUrl(repositoryUrl)
+    client.createPullRequest(repository, sourceBranch, destinationBranch, title, description, project)
 }
 
 List<String> getChangesFromPr(String repositoryUrl, String prID, String startPage = 0, String limit = 1000) {
-
-    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
-    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
-
-    String getChangesUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}" +
-            "/pull-requests/${prID}/changes?start=${startPage}&limit=${limit}"
-
-    def changesResponse = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: getChangesUrl,
-            consoleLogResponseBody: log.isDebug()
-    def changesResponseJson = readJSON text: changesResponse.content
-
-    def changedFiles = []
-
-    changesResponseJson.values.each {
-        changedFiles << it.path.toString
-        it?.srcPath?.toString && changedFiles << it.srcPath.toString.trim()
-    }
-
-    return changedFiles
+    Bitbucket client = getClientForUrl(repositoryUrl)
+    String repository = client.getRepositoryNameFromUrl(repositoryUrl)
+    String project = client.getProjectKeyFromUrl(repositoryUrl)
+    int pullRequest = prID.toInteger()
+    Map pr = client.getPullRequest(repository, pullRequest, project)
+    return client.getPullRequestChangedFiles(pr)
 }
 
 def updatePrDescriptionSection(String repositoryUrl, String prID, String sectionTag, String sectionBody) {
+    int pullRequest = prID.toInteger()
+    String shortbody = sectionBody.length() > 20
+            ? "${sectionBody.take(10)}...${sectionBody[-10..-1]}"
+            : sectionBody
 
-    String projectKey = common.getRepositoryProjectKeyFromUrl(repositoryUrl)
-    String repositorySlug = common.getRepositoryNameFromUrl(repositoryUrl)
+    log.info("Update Pull Request Description Section")
+    log.info("REPOSITORY URL: ${repositoryUrl}")
+    log.info("PULL REQUEST: ${pullRequest}")
+    log.info("SECTION: ${sectionTag}")
+    log.info("BODY: ${shortbody}")
 
-    String prUrl = "${BITBUCKET_URL}/rest/api/latest/projects/${projectKey}/repos/${repositorySlug}/pull-requests/${prID}"
+    Bitbucket client = getClientForUrl(repositoryUrl)
+    String repository = client.getRepositoryNameFromUrl(repositoryUrl)
+    String project = client.getProjectKeyFromUrl(repositoryUrl)
 
-    def response = httpRequest authentication: BITBUCKET_JENKINS_AUTH, httpMode: 'GET', url: prUrl,
-            consoleLogResponseBody: log.isDebug()
-    def originalPr = readJSON text: response.content
+    log.info("REPOSITORY SLUG: ${repository}")
+    log.info("PROJECT KEY: ${project}")
 
-    def originalDescription = parseDescription(originalPr.description as String)
+    Map pr = client.getPullRequest(repository, pullRequest, project)
+    log.info("Found Pull Request Data")
 
-    originalDescription.put(sectionTag, sectionBody)
-
-    def updatedDescription = descriptionToString(originalDescription)
-
-    def updatedPr = [:]
-    updatedPr.description = updatedDescription
-    updatedPr.version = originalPr.version
-    updatedPr.reviewers = originalPr.reviewers
-
-    httpRequest authentication: BITBUCKET_JENKINS_AUTH,
-            contentType: 'APPLICATION_JSON',
-            quiet: !log.isDebug(),
-            consoleLogResponseBody: log.isDebug(),
-            httpMode: 'PUT',
-            url: prUrl,
-            requestBody: JsonOutput.toJson(updatedPr)
+    client.updatePullRequestDescriptionSection(pr, sectionTag, sectionBody)
+    log.info("Description Updated")
 }
 
-static Map<String, String> parseDescription(String description) {
-
-    HashMap<String, String> descriptionSections = new LinkedHashMap<>()
-
-    if (description == null) {
-        return descriptionSections
-    }
-
-    List<String> lines = description.split('\n')
-
-    def currentSection = ''
-
-    lines.each { String line ->
-        if (line.startsWith(BITBUCKET_SECTION_MARKER)) {
-            currentSection = line.replace(BITBUCKET_SECTION_MARKER, '').replace('\n', '')
-        } else {
-            if (descriptionSections.containsKey(currentSection)) {
-                descriptionSections.put(currentSection, descriptionSections.get(currentSection) + '\n' + line)
-            } else {
-                descriptionSections.put(currentSection, line)
-            }
-        }
-    }
-
-    return descriptionSections
+Map parseDescription(String description) {
+    return Bitbucket.parseDescription(description)
 }
 
-static String descriptionToString(Map<String, String> description) {
-
-    String convertedDescription = ''
-
-    description.entrySet().each { Map.Entry<String, String> entry ->
-        if (entry.getKey() == '') {
-            convertedDescription += entry.getValue()
-            if (description.size() > 1) {
-                convertedDescription += '\n'
-            }
-        } else {
-            convertedDescription += BITBUCKET_SECTION_MARKER + entry.getKey() + '\n' + entry.getValue() + '\n'
-        }
-    }
-
-    // PIPELINE-160 - The maximum number of chars in PR description is 32767
-    return convertedDescription.take(32767)
+String descriptionToString(Map<String, String> description) {
+    return Bitbucket.descriptionToString(description)
 }
