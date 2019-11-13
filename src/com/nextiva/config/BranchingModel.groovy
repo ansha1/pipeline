@@ -6,6 +6,7 @@ import java.util.regex.Pattern
 
 
 interface BranchingModel {
+    Branch getBranchType(String branchName)
 }
 
 

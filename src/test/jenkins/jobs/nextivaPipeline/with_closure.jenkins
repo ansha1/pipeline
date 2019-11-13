@@ -14,33 +14,33 @@ nextivaPipeline {
     appName = "myapp"
     channelToNotify = "testchannel"
 
-    build = ["pip"   : ["buildCommands"              : sample_closure,
-                        "postBuildCommands"          : """pwd""",
-                        "unitTestCommands"           : """cat file.txt""",
-                        "postUnitTestCommands"       : """pwd""",
-                        "integrationTestCommands"    : """pwd""",
-                        "postIntegrationTestCommands": {
-                            build job: "/bar/${getConfig().branchName}", parameters: [
-                                    string(name: "version", value: getConfig().version),
-                                    string(name: "appName", value: getConfig().appName)]
-                        },
-                        "postDeployCommands"         : """pwd""",
-                        "image"                      : "maven:3.6.1-jdk-8",
-                        "resourceRequestCpu"         : "1",
-                        "resourceLimitCpu"           : "1",
-                        "buildDocker"                : true,
-                        "resourceRequestMemory"      : "1Gi",
-                        "resourceLimitMemory"        : "1Gi",],
-             "docker": ["publishArtifact": true,]]
+    build = [["name"                       : "python",
+              "buildCommands"              : sample_closure,
+              "postBuildCommands"          : """pwd""",
+              "unitTestCommands"           : """cat file.txt""",
+              "postUnitTestCommands"       : """pwd""",
+              "integrationTestCommands"    : """pwd""",
+              "postIntegrationTestCommands": {
+                  script.build job: "/bar/${getConfig().branchName}", parameters: [
+                          script.string(name: "version", value: getConfig().version),
+                          script.string(name: "appName", value: getConfig().appName)]
+              },
+              "postDeployCommands"         : """pwd""",
+              "image"                      : "maven:3.6.1-jdk-8",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "buildDocker"                : true,
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",],
+             ["name": "docker", "publishArtifact": true,]]
 
     deployTool = "kubeup"
 
-    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                  "ansibleInventory": "rc"],
-                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                  "branchPattern": /^master$/,]
+    environments = [
+            ["name": "dev", "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name": "qa", "healthChecks": ["https://myapp.qa.nextiva.io"], "ansibleInventory": "rc"],
+            ["name": "production", "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name": "sales-demo", "healthChecks": ["https://myapp.sales-demo.nextiva.io"], "branchPattern": /^master$/]
     ]
 
     branchPermissions = [:]

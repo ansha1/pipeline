@@ -6,9 +6,9 @@ nextivaPipeline {
     appName = "nextiva-openjdk"
     channelToNotify = "cloud-engineering"
     branchingModel = "gitflow"
-    isSonarEnabled = false
+    isSonarAnalysisEnabled = false
     isDeployEnabled = false
 
-    build = ["docker": ["publishArtifact": true,
-                        "buildCommands": "docker build ."]]
+    build = [["name"         : "docker", "publishArtifact": true,
+              "buildCommands": "docker build ."]]
 }

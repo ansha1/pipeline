@@ -11,8 +11,8 @@ class SonarScan extends Stage {
 
     @Override
     def stageBody() {
-        Map build = config.build
-        build.each { toolName, toolConfiguration ->
+        List build = config.build
+        build.each { toolConfiguration ->
             BuildTool tool = toolConfiguration.get("instance")
             tool.sonarScan()
         }

@@ -6,23 +6,22 @@ nextivaPipeline {
     appName = "myapp"
     channelToNotify = "testchannel"
 
-    build = [
-            "pip"   : [
-                    "buildCommands"              : "build commands",
-                    "postBuildCommands"          : "post Build command",
-                    "unitTestCommands"           : "unit test commands",
-                    "postUnitTestCommands"       : "post unit test command",
-                    "integrationTestCommands"    : "integration test command",
-                    "postIntegrationTestCommands": "post integration test commands",
-                    "postDeployCommands"         : "post deploy commands",
-                    "image"                      : "python:3.6",
-                    "resourceRequestCpu"         : "1",
-                    "resourceLimitCpu"           : "1",
-                    "buildDocker"                : true,
-                    "resourceRequestMemory"      : "1Gi",
-                    "resourceLimitMemory"        : "1Gi",
-            ],
-            "docker": ["publishArtifact": true,]]
+    build = [["name"                       : "python",
+              "buildCommands"              : "build commands",
+              "postBuildCommands"          : "post Build command",
+              "unitTestCommands"           : "unit test commands",
+              "postUnitTestCommands"       : "post unit test command",
+              "integrationTestCommands"    : "integration test command",
+              "postIntegrationTestCommands": "post integration test commands",
+              "postDeployCommands"         : "post deploy commands",
+              "image"                      : "python:3.6",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "buildDocker"                : true,
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",
+             ],
+             ["name": "docker", "publishArtifact": true,]]
 
     deployTool = "kubeup"
 
@@ -32,12 +31,11 @@ nextivaPipeline {
                     "rules-engine-core"         : "latest",
                     "rules-engine-orchestration": "latest",]
 
-    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                  "ansibleInventory": "rc"],
-                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                  "branchPattern": /^master$/,]
+    environments = [
+            ["name": "dev", "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name": "qa", "healthChecks": ["https://myapp.qa.nextiva.io"], "ansibleInventory": "rc"],
+            ["name": "production", "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name": "sales-demo", "healthChecks": ["https://myapp.sales-demo.nextiva.io"], "branchPattern": /^master$/]
     ]
 
     branchPermissions = [:]

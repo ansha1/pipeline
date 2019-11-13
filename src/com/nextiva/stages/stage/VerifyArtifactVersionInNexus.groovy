@@ -10,13 +10,13 @@ class VerifyArtifactVersionInNexus extends Stage {
     }
 
     def stageBody() {
-        Map build = config.build
+        List build = config.build
 
-        build.each { toolName, toolConfiguration ->
-            withStage("${toolName} ${stageName}") {
+        build.each { toolConfiguration ->
+            withStage("${toolConfiguration.name} ${stageName}") {
                 BuildTool tool = toolConfiguration.get("instance")
                 try {
-                    logger.debug("checking artifact availability for ${toolName}")
+                    logger.debug("checking artifact availability for ${toolConfiguration.name}")
                     if (tool.isArtifactAvailableInRepo()) {
                         logger.info("The artifact already exists in Nexus")
 //                        TODO: add jenkins approve step for autoincrement

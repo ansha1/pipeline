@@ -2,6 +2,8 @@ package vars
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
 import com.lesfurets.jenkins.unit.MethodCall
+import com.nextiva.config.Config
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import utils.JenkinsScriptsHelper
@@ -11,6 +13,8 @@ import utils.Validator
 import static com.lesfurets.jenkins.unit.MethodCall.callArgsToString
 import static com.nextiva.SharedJobsStaticVars.ANSIBLE_NODE_LABEL
 import static org.assertj.core.api.Assertions.assertThat
+
+
 
 class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, JenkinsScriptsHelper {
 
@@ -32,6 +36,10 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
         prepareSharedLib()
     }
 
+    @After
+    void tearDown() {
+        Config.instance.singleInstance = null
+    }
 
     @Test
     void should_execute_without_errors() throws Exception {
@@ -79,7 +87,7 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
         assertThat(foobarStages).describedAs("Closure step not found").isNotEmpty()
         assertThat(foobarStages).describedAs("Closure step was executed multiple times").hasSize(1)
         assertThat(helper.callStack.get(
-                helper.callStack.findIndexOf(closureSignature) - 3).args[0] == "pip: build"
+                helper.callStack.findIndexOf(closureSignature) - 3).args[0] == "python: build"
         ).describedAs("Closure was expected to be in buildCommands").isTrue()
     }
 
@@ -133,12 +141,12 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
                 .containsExactlyElementsOf(["Checkout",
                                             "ConfigureProjectVersion",
                                             "Build",
-                                            "pip: build",
+                                            "python: build",
                                             "UnitTest",
-                                            "pip: unitTest",
+                                            "python: unitTest",
                                             "SonarScan",
                                             "Publish",
-                                            "pip: publishArtifact",
+                                            "python: publishArtifact",
                                             "Deploy",
                                             "kubeup Deploy: Deploy to dev",
                                             "QACoreTeamTest",

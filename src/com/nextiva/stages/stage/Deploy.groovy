@@ -31,8 +31,8 @@ class Deploy extends Stage {
     }
 
     private void doPostDeploy() {
-        Map tools = config.build
-        tools.each { toolName, toolConfig ->
+        List tools = config.build
+        tools.each { toolConfig ->
             BuildTool tool = toolConfig.get("instance")
             tool.postDeploy()
         }

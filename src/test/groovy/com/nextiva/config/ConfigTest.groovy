@@ -22,24 +22,22 @@ class ConfigTest extends BasePipelineTest implements JenkinsScriptsHelper {
             appName        : "myapp",
             channelToNotify: "testchannel",
             build          : [
-                    "pip"   : [
-                            "buildCommands"              : "build commands",
-                            "postBuildCommands"          : "post Build command",
-                            "unitTestCommands"           : "unit test commands",
-                            "postUnitTestCommands"       : "post unit test command",
-                            "integrationTestCommands"    : "integration test command",
-                            "postIntegrationTestCommands": "post integration test commands",
-                            "postDeployCommands"         : "post deploy commands",
-                            "image"                      : "python:3.6",
-                            "resourceRequestCpu"         : "1",
-                            "resourceLimitCpu"           : "1",
-                            "buildDocker"                : true,
-                            "resourceRequestMemory"      : "1Gi",
-                            "resourceLimitMemory"        : "1Gi",
+                    ["name"                       : "pip",
+                     "buildCommands"              : "build commands",
+                     "postBuildCommands"          : "post Build command",
+                     "unitTestCommands"           : "unit test commands",
+                     "postUnitTestCommands"       : "post unit test command",
+                     "integrationTestCommands"    : "integration test command",
+                     "postIntegrationTestCommands": "post integration test commands",
+                     "postDeployCommands"         : "post deploy commands",
+                     "image"                      : "python:3.6",
+                     "resourceRequestCpu"         : "1",
+                     "resourceLimitCpu"           : "1",
+                     "buildDocker"                : true,
+                     "resourceRequestMemory"      : "1Gi",
+                     "resourceLimitMemory"        : "1Gi",
                     ],
-                    "docker": [
-                            "publishArtifact": true
-                    ]
+                    ["name": "docker", "publishArtifact": true]
             ]
     ] as PipelineConfig
 

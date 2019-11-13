@@ -17,9 +17,9 @@ class ConfigureProjectVersion extends Stage {
     def stageBody() {
         String version = ''
 
-        Map build = config.build
-        build.find { toolName, toolConfiguration ->
-            logger.debug("Getting version from $toolName")
+        List build = config.build
+        build.find { toolConfiguration ->
+            logger.debug("Getting version from ${toolConfiguration.name}")
             BuildTool tool = toolConfiguration.get("instance")
             version = tool.getVersion()
             logger.debug("Found verison is $version")

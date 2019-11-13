@@ -10,7 +10,7 @@ import com.nextiva.config.Config
 
 import static org.junit.Assert.assertEquals
 
-class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
+class PythonTest extends BasePipelineTest implements JenkinsScriptsHelper {
 
     private Script script
 
@@ -31,6 +31,7 @@ class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
     @Test
     void testGetUnitTestCommands() {
         def defaultUnitTestCommands = """\
+                                      export PIP_INDEX="null"
                                       pip install -r requirements.txt
                                       pip install -r requirements-test.txt
                                       python setup.py test
@@ -43,7 +44,7 @@ class PipTest extends BasePipelineTest implements JenkinsScriptsHelper {
         ]
         testData.each { input, result ->
 
-            def pip = new Pip(["unitTestCommands": input])
+            def pip = new Python(["unitTestCommands": input])
             assertEquals(pip.unitTestCommands, result)
         }
     }

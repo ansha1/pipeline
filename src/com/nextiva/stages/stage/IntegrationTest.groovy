@@ -21,8 +21,8 @@ class IntegrationTest extends Stage {
     def stageBody() {
         //TODO: build docker based on current code. publish in nexus and run it
         logger.debug("Building docker test image ")
-        Map build = config.build
-        Map dockerToolConfig = build.get("docker")
+        List build = config.build
+        Map dockerToolConfig = build.find { it.name == "docker" }
         if (dockerToolConfig == null) {
             logger.error("docker build tool is undefined, can't build test container image, aborting...")
             throw new AbortException("docker build tool is undefined, can't build test container image, aborting...")
@@ -48,7 +48,7 @@ class IntegrationTest extends Stage {
             kubeup.install(config.appName, config.version, namespace, configset, false)
         }
 
-        build.each { toolName, toolConfiguration ->
+        build.each { toolConfiguration ->
             BuildTool tool = toolConfiguration.get("instance")
             tool.integrationTest()
         }

@@ -23,6 +23,8 @@ class SharedJobsStaticVars {
     static final NPM_NEXTIVA_REGISTRY = "https://nexus.nextiva.xyz/repository/npm/"
     static final NPM_NEXTIVA_PRIVATE_REGISTRY = "https://nexus.nextiva.xyz/repository/npm-hosted-nextiva-release/"
     static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
+    static final PIP_EXTRA_INDEX_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-dev/pypi'
+    static final PIP_EXTRA_INDEX_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-production/pypi'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
@@ -116,7 +118,7 @@ class SharedJobsStaticVars {
                                                                "resourceLimitMemory"  : "512Mi",
                                                                "repository"           : "ssh://git@git.nextiva.xyz:7999/rel/release-management.git",
                                                                "branch"               : "dev",],
-                                                   "static": ["image"                : "ansible/ansible-runner:1.3.4",
+                                                   "static" : ["image"                : "ansible/ansible-runner:1.3.4",
                                                                "resourceRequestMemory": "128Mi",
                                                                "resourceLimitMemory"  : "512Mi",
                                                                "repository"           : "ssh://git@git.nextiva.xyz:7999/rel/release-management.git",
@@ -130,7 +132,7 @@ class SharedJobsStaticVars {
                                                                "resourceRequestCpu"   : "500m",
                                                                "resourceRequestMemory": "1Gi",
                                                                "resourceLimitMemory"  : "2Gi"],
-                                                   "pip"    : ["image"                : "python:3.7-alpine",
+                                                   "python" : ["image"                : "python:3.7-alpine",
                                                                "resourceRequestCpu"   : "500m",
                                                                "resourceRequestMemory": "1Gi",
                                                                "resourceLimitMemory"  : "2Gi"],

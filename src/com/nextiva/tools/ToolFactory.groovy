@@ -3,7 +3,7 @@ package com.nextiva.tools
 import com.nextiva.tools.build.Docker
 import com.nextiva.tools.build.Maven
 import com.nextiva.tools.build.Npm
-import com.nextiva.tools.build.Pip
+import com.nextiva.tools.build.Python
 import com.nextiva.tools.deploy.Ansible
 import com.nextiva.tools.deploy.Kubeup
 import com.nextiva.tools.deploy.StaticDeploy
@@ -26,8 +26,8 @@ class ToolFactory {
             case "npm":
                 return new Npm(toolConfig)
                 break
-            case "pip":
-                return new Pip(toolConfig)
+            case "python":
+                return new Python(toolConfig)
                 break
             case "ansible":
                 Ansible ansible = new Ansible(toolConfig)

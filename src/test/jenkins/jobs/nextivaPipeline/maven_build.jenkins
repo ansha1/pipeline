@@ -7,7 +7,7 @@ nextivaPipeline {
 
     channelToNotify = "testchannel"
 
-    build = ["maven"   : ["integrationTestCommands": "curl http://test-java-pipeline:8080/health"],
-             "docker":   ["publishArtifact": true]]
+    build = [["name": "maven", "integrationTestCommands": "curl http://test-java-pipeline:8080/health"],
+             ["name": "docker", "publishArtifact": true]]
 }
 

@@ -1,5 +1,6 @@
 package com.nextiva.stages.stage
 
+import com.google.common.base.Throwables
 import com.nextiva.utils.Logger
 import static com.nextiva.config.Config.instance as config
 
@@ -35,6 +36,7 @@ abstract class Stage implements Serializable {
             logger.debug("Execuiton $stageName stage complete")
         } catch (e) {
             logger.error("Error when executing ${stageName}:", e)
+            logger.error(Throwables.getStackTraceAsString(e))
             throw e
         }
     }

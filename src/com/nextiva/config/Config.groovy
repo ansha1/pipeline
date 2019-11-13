@@ -12,6 +12,9 @@ import com.nextiva.utils.Logger
 import groovy.transform.PackageScope
 import hudson.AbortException
 
+import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_DEV
+import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_PROD
+
 
 /**
  * <p>Globally accessible pipeline configuration singleton.</p>
@@ -39,7 +42,7 @@ class Config implements Serializable {
     private Boolean isSonarAnalysisEnabled = true
     private Boolean isQACoreTeamTestEnabled = true
     private Boolean isIntegrationTestEnabled = false
-    Map<String, Map> build
+    List<Map> build
     private List jobTriggers
     private String buildDaysToKeep
     private String buildNumToKeep
@@ -51,10 +54,11 @@ class Config implements Serializable {
     Map jenkinsContainer
     Map slaveConfiguration
     Map<String, String> extraEnvs
-    Boolean isJobHasDependencies
+    Boolean isJobHasDependencies = false
     Map<String, String> dependencies
     Map<String, String> kubeupConfig
     List<Environment> environments
+    DeploymentType deploymentType
 
     private ToolFactory toolFactory = new ToolFactory()
     private Logger logger = new Logger(this)
@@ -62,6 +66,10 @@ class Config implements Serializable {
 
     // ===== Singleton Details ========================================================================================
     private static Config singleInstance = null
+
+    void setSingleInstance(Config newSingleInstance) {
+        this.@singleInstance = newSingleInstance
+    }
 
     private Config() {}
 
@@ -118,7 +126,6 @@ class Config implements Serializable {
         this.@jenkinsContainer = pipelineConfig.jenkinsContainer
         this.@slaveConfiguration = pipelineConfig.slaveConfiguration
         this.@extraEnvs = pipelineConfig.extraEnvs
-        this.@isJobHasDependencies = pipelineConfig.isJobHasDependencies
         this.@dependencies = pipelineConfig.dependencies
         this.@kubeupConfig = pipelineConfig.kubeupConfig
         environments = pipelineConfig.environments.collect { it as Environment }
@@ -159,7 +166,15 @@ class Config implements Serializable {
         logger.debug("start setDefaults()")
         branchName = script.env.BRANCH_NAME
 
-        isIntegrationTestEnabled = build.any { buildTool, toolConfiguration ->
+        if (deploymentType == null) {
+            if ([GitFlow.feature, TrunkBased.feature].contains(branchingModel.getBranchType(branchName))) {
+                deploymentType = DeploymentType.DEV
+            } else {
+                deploymentType = DeploymentType.RELEASE
+            }
+        }
+
+        isIntegrationTestEnabled = build.any { toolConfiguration ->
             toolConfiguration.containsKey("integrationTestCommands")
         }
 
@@ -237,11 +252,12 @@ class Config implements Serializable {
     @PackageScope
     void configureBuildTools() {
         logger.debug("start configureBuildTools()")
-        build.each { tool, toolConfig ->
-            logger.debug("got build tool $tool")
-            toolConfig.put("name", tool)
+        build.each { toolConfig ->
+            toolConfig.pipIndex = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
+                    PIP_EXTRA_INDEX_URL_PROD
+            logger.debug("got build tool $toolConfig")
             toolFactory.mergeWithDefaults(toolConfig)
-            putSlaveContainerResource(tool, toolConfig)
+            putSlaveContainerResource(toolConfig.name, toolConfig)
             Tool instance = toolFactory.build(toolConfig)
             // TODO get rid of map put
             toolConfig.put("instance", instance)
@@ -393,7 +409,7 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    Map<String, Map> getBuild() {
+    List<Map> getBuild() {
         return this.@build
     }
 
@@ -450,11 +466,6 @@ class Config implements Serializable {
     @NonCPS
     Map<String, String> getExtraEnvs() {
         return this.@extraEnvs
-    }
-
-    @NonCPS
-    Boolean getIsJobHasDependencies() {
-        return this.@isJobHasDependencies
     }
 
     @NonCPS

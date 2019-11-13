@@ -1,5 +1,7 @@
 package com.nextiva.tools.build
 
+import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.config.DeploymentType
 import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
@@ -8,10 +10,13 @@ import static com.nextiva.utils.Utils.getPropertyFromFile
 import static com.nextiva.utils.Utils.setPropertyToFile
 import static com.nextiva.utils.Utils.shWithOutput
 
-class Pip extends BuildTool {
+class Python extends BuildTool {
+
+    String pipIndex
 
     def defaultCommands = [
             unitTest: """\
+                export PIP_INDEX="$pipIndex"
                 pip install -r requirements.txt
                 pip install -r requirements-test.txt
                 python setup.py test
@@ -28,8 +33,11 @@ class Pip extends BuildTool {
             build   : 'pip install -r requirements.txt'
     ]
 
-    Pip(Map toolConfiguration) {
+    Python(Map toolConfiguration) {
         super(toolConfiguration)
+
+        this.pipIndex = toolConfiguration.pipIndex
+
         if (unitTestCommands == null) {
             unitTestCommands = defaultCommands.unitTest
         }
