@@ -31,7 +31,6 @@ class PythonTest extends BasePipelineTest implements JenkinsScriptsHelper {
     @Test
     void testGetUnitTestCommands() {
         def defaultUnitTestCommands = """\
-                                      export PIP_INDEX="null"
                                       pip install -r requirements.txt
                                       pip install -r requirements-test.txt
                                       python setup.py test

@@ -173,6 +173,7 @@ class Config implements Serializable {
                 deploymentType = DeploymentType.RELEASE
             }
         }
+        logger.trace("deploymentType", deploymentType)
 
         isIntegrationTestEnabled = build.any { toolConfiguration ->
             toolConfiguration.containsKey("integrationTestCommands")
@@ -225,6 +226,8 @@ class Config implements Serializable {
     @PackageScope
     void setExtraEnvVariables() {
         logger.debug("start setExtraEnvVariables() complete")
+        script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
+                PIP_EXTRA_INDEX_URL_PROD
         if (extraEnvs) {
             logger.debug("Adding extra envVars")
             extraEnvs.each { k, v ->
@@ -232,6 +235,7 @@ class Config implements Serializable {
                 script.env[k] = v
             }
         }
+        logger.trace("Env vars", script.env.getEnvironment())
         logger.debug("complete setExtraEnvVariables() complete")
     }
 
@@ -253,8 +257,6 @@ class Config implements Serializable {
     void configureBuildTools() {
         logger.debug("start configureBuildTools()")
         build.each { toolConfig ->
-            toolConfig.pipIndex = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
-                    PIP_EXTRA_INDEX_URL_PROD
             logger.debug("got build tool $toolConfig")
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(toolConfig.name, toolConfig)

@@ -69,6 +69,7 @@ trait JenkinsScriptsHelper implements BasePipelineAccessor, Mocks {
 //        basePipelineTest.helper.registerAllowedMethod 'withNamespace', [String, Object], { s,c -> return c.call()}
 //        basePipelineTest.helper.registerAllowedMethod 'createNamespace', [Object.class], { return it }
 //        basePipelineTest.helper.registerAllowedMethod 'deleteNamespace', [Object.class], { return 'true'}
+        LinkedHashMap.getMetaClass().getEnvironment { script.env }
         return script
     }
 
@@ -77,3 +78,4 @@ trait JenkinsScriptsHelper implements BasePipelineAccessor, Mocks {
         return this
     }
 }
+

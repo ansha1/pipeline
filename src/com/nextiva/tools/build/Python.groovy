@@ -15,12 +15,11 @@ class Python extends BuildTool {
     String pipIndex
 
     def defaultCommands = [
-            unitTest: """\
-                export PIP_INDEX="$pipIndex"
+            unitTest: '''\
                 pip install -r requirements.txt
                 pip install -r requirements-test.txt
                 python setup.py test
-            """.stripIndent(),
+            '''.stripIndent(),
             publish : {
                 config.script.container(name) {
                     def command = 'pip install twine'
@@ -35,8 +34,6 @@ class Python extends BuildTool {
 
     Python(Map toolConfiguration) {
         super(toolConfiguration)
-
-        this.pipIndex = toolConfiguration.pipIndex
 
         if (unitTestCommands == null) {
             unitTestCommands = defaultCommands.unitTest

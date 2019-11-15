@@ -23,8 +23,8 @@ class SharedJobsStaticVars {
     static final NPM_NEXTIVA_REGISTRY = "https://nexus.nextiva.xyz/repository/npm/"
     static final NPM_NEXTIVA_PRIVATE_REGISTRY = "https://nexus.nextiva.xyz/repository/npm-hosted-nextiva-release/"
     static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
-    static final PIP_EXTRA_INDEX_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-dev/pypi'
-    static final PIP_EXTRA_INDEX_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-production/pypi'
+    static final PIP_EXTRA_INDEX_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-dev/simple'
+    static final PIP_EXTRA_INDEX_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-production/simple'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
