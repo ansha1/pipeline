@@ -68,16 +68,18 @@ JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examp
     #!groovy
     @Library('pipeline') _
     
-    //noinspection GroovyAssignabilityCheck
     nextivaPipeline {
         appName = "nextiva-openjdk"
         channelToNotify = "cloud-engineering"
         branchingModel = "gitflow"
-        isSonarEnabled = false
+        isSonarAnalysisEnabled = false
         isDeployEnabled = false
     
-        build = ["docker": ["publishArtifact": true,
-                            "buildCommands": "docker build ."]]
+        build = [
+            ["name":"docker",
+             publishArtifact": true,
+             "buildCommands": "docker build ."]
+        ]
     }
 
 <a name="samples-python-application-builds"></a>
@@ -88,13 +90,12 @@ Minimally viable python build
     #!groovy
     @Library('pipeline') _
     
-    //noinspection GroovyAssignabilityCheck
     nextivaPipeline {
         appName = "myapp"
         channelToNotify = "mychannel"
     
-        build = ["pip"   : ["image": "python:3.6"],
-                 "docker": ["publishArtifact": true,]]
+        build = [["name": "python", image": "python:3.6"],
+                 ["name": "docker", "publishArtifact": true]]
     }
 
 All available build options in a single file
@@ -102,28 +103,29 @@ All available build options in a single file
     #!groovy
     @Library('pipeline') _
     
-    //noinspection GroovyAssignabilityCheck
     nextivaPipeline {
         appName = "myapp"
         channelToNotify = "testchannel"
     
         build = [
-                "pip"   : [
-                        "buildCommands"              : "build commands",
-                        "postBuildCommands"          : "post Build command",
-                        "unitTestCommands"           : "unit test commands",
-                        "postUnitTestCommands"       : "post unit test command",
-                        "integrationTestCommands"    : "integration test command",
-                        "postIntegrationTestCommands": "post integration test commands",
-                        "postDeployCommands"         : "post deploy commands",
-                        "image"                      : "python:3.6",
-                        "resourceRequestCpu"         : "1",
-                        "resourceLimitCpu"           : "1",
-                        "buildDocker"                : true,
-                        "resourceRequestMemory"      : "1Gi",
-                        "resourceLimitMemory"        : "1Gi",
-                ],
-                "docker": ["publishArtifact": true,]]
+            [
+              "name"                       : "python",
+              "buildCommands"              : "build commands",
+              "postBuildCommands"          : "post Build command",
+              "unitTestCommands"           : "unit test commands",
+              "postUnitTestCommands"       : "post unit test command",
+              "integrationTestCommands"    : "integration test command",
+              "postIntegrationTestCommands": "post integration test commands",
+              "postDeployCommands"         : "post deploy commands",
+              "image"                      : "python:3.6",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "buildDocker"                : true,
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",
+            ],
+            ["name": "docker", publishArtifact": true]
+        ]
     
         deployTool = "kubeup"
     
@@ -133,27 +135,19 @@ All available build options in a single file
                         "rules-engine-core"         : "latest",
                         "rules-engine-orchestration": "latest",]
     
-        environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                       "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                      "ansibleInventory": "rc"],
-                       "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                       "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                      "branchPattern": /^master$/,]
+        environment = [
+            ["name": "sales-demo", "branchPattern": /^master$/]
         ]
-    
-        branchPermissions = [:]
     }
 
 <a name="build-tools"></a>
 # Supported Build Tools
 
 Build tools are defined in `build` parameter. You can have more that one
-build tool used in your Jenkinsfile, however you cannot have two of the
-same kinds. For example you can have pip and docker, but you cannot have
-pip and pip.
+build tool used in your Jenkinsfile.
 
-<a name="pip"></a>
-## PIP
+<a name="python"></a>
+## Python
 
   - Python build tool.
 
@@ -216,34 +210,38 @@ Even nextivaPipeline does not have direct build tool implementation for
 this language, you can use any other build tool and customize its steps.
 Below is an example of Erlang application build.
 
-Building Erlang application (Ejabberd) by overriding pip tool commands
+Building Erlang application (Ejabberd) by overriding python tool commands
 
     #!groovy
     @Library('pipeline@feature/dockerTemplate') _
     
     nextivaPipeline {
-        appName = "chat-ejabberd"
-        channelToNotify = "chat_alerts"
+      appName = "chat-ejabberd"
+      channelToNotify = "chat_alerts"
+      isUnitTestEnabled = true
     
-        build = ["pip"   : ["buildCommands"        : """
-                                                        mix local.hex --force
-                                                        modulesToCompile="ejabberd_auth_nextiva mod_provisioning_nextiva"
-                                                        
-                                                        for module in \${modulesToCompile} ; do
-                                                          cd \${module}
-                                                          rebar3 compile
-                                                          cd ..
-                                                        done
-                                                      """,
-                            "image"                : "docker.nextiva.xyz/chat-ejabberd-ci:1.0.0",
-                            "resourceRequestCpu"   : "1",
-                            "resourceLimitCpu"     : "1",
-                            "publishArtifact"      : false,
-                            "resourceRequestMemory": "1Gi",
-                            "resourceLimitMemory"  : "1Gi",],
-                 "docker": ["publishArtifact": true,]]
-    
-        deployTool = "kubeup"
+      build = [
+        [
+          "name"                 : "python",
+          "buildCommands"        : '''mix local.hex-- force
+                                      modulesToCompile = "ejabberd_auth_nextiva mod_provisioning_nextiva"
+                                      for module in ${modulesToCompile};
+                                      do
+                                          cd ${module}
+                                          rebar3 compile
+                                          cd ..
+                                      done
+                                  ''',
+          "image"                : "docker.nextiva.xyz/chat-ejabberd-ci:1.0.0",
+          "resourceRequestCpu"   : "1",
+          "resourceLimitCpu"     : "1",
+          "publishArtifact"      : false,
+          "resourceRequestMemory": "1Gi",
+          "resourceLimitMemory"  : "1Gi",
+        ],
+        ["name": "docker", "publishArtifact": true]
+      ]
+      deployTool = "kubeup"
     }
 
 <a name="how-does-it-work"></a>
@@ -420,7 +418,8 @@ Two build tools
     nextivaPipeline {
       // ...
       build = [
-        "pip": [
+        [
+          "name"         : "python", 
           // install gcc and build-essential system packages before
           // installing python dependencies.
           "buildCommands": """
@@ -429,7 +428,8 @@ Two build tools
                 && pip install -r requirements.txt""",
           "image"        : "python:3.6",
         ],
-        "npm": [
+        [
+          "name"             : "npm"
           // send email message after default build commands for npm
           // would be completed
           "postBuildCommands": """
@@ -462,17 +462,19 @@ Two build tools
     nextivaPipeline {
         // ...
         build = [
-            "pip": [
-                // Skip unit tests stage for pip
-                "unitTestCommands"    : "",
-                // This step would be skipped too
-                "postUnitTestCommands": "rm -rf *",
-                "image"               : "python:3.6",
+            [
+              "name"                : "python"
+              // Skip unit tests stage for python
+              "unitTestCommands"    : "",
+              // This step would be skipped too
+              "postUnitTestCommands": "rm -rf *",
+              "image"               : "python:3.6",
             ],
-            "npm": [
-                // All steps are executed with their default npm
-                // implementations
-                "image": "node:10-alpine",
+            [
+              "name" : "npm"
+              // All steps are executed with their default npm
+              // implementations
+              "image": "node:10-alpine",
             ],
         // ...
     }
@@ -484,10 +486,12 @@ Disable Unit Tests for all build tools
         isUnitTestEnabled = false
         
         build = [
-            "pip": [
+            [
+              "name": "python",
               // ...
             ],
-            "npm": [
+            [
+              "name": "npm",
               // ...
             ],
         // ...
@@ -527,16 +531,18 @@ Executes `integrationTestCommands` followed by
 
 #### Examples
 
-Two build tools, integration testing is enabled for pip, but disabled for npm
+Two build tools, integration testing is enabled for python, but disabled for npm
 
     nextivaPipeline {
       // ...
       build = [
-        "pip": [
+        [
+          "name"                   :"python"
           "integrationTestCommands": "./run_integration_tests.sh",
           "image"                  : "python:3.6",
         ],
-        "npm": [
+        [
+          "name" :"npm"
           "image": "node:10-alpine",
         ],
       // ...
@@ -547,15 +553,17 @@ Two build tools, integration testing stage is skipped
     nextivaPipeline {
       // ...
       build = [
-        "pip": [
-          // Skip integration tests stage for pip because
+        [
+          "name"                      :"python"
+          // Skip integration tests stage for python because
           // "integrationTestCommands" is not set
           // "postIntegrationTestCommands" would be skipped for the
           // same reason too
           "postIntegrationTestCommands": "rm -rf *",
           "image"                      : "python:3.6",
         ],
-        "npm": [
+        [
+          "name"                   : "npm"
           // Alternative way to disable integrations steps for the
           // build tool
           "integrationTestCommands": "",
@@ -581,8 +589,8 @@ Publish python package; assemble docker image but do not publish it
     nextivaPipeline {
         // ...
         build = [
-            "pip": ["image": "python:3.6"],
-            "docker": ["publishArtifact": false]
+            ["name": "python",    "image": "python:3.6"],
+            ["name": "docker", "publishArtifact": false]
         ]
     }
 
@@ -635,7 +643,8 @@ Deploy master branch to sandbox
         // "branchPattern" for sales-demo matches master
         // branch too, resulting build would be deployed to
         // both prod and sales-demo
-        "sales-demo": [
+        [
+          "name"         :"sales-demo"
           "branchPattern": /^master$/
         ]
       ]
@@ -657,7 +666,8 @@ Deploy feature branch to sandbox
       // be deployed to sandbox environment at
       // "nextiva-pipeline-sandbox.nextiva.io" Kubernetes cluster
       environment = [
-        "sandbox"   : [
+        [
+          "name"             :"sandbox"   
           "branchPattern"    : '^feature/my-precious$',
           "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"
         ]
@@ -728,36 +738,38 @@ be implemented this way:
         appName = "myapp"
         channelToNotify = "testchannel"
     
-        build = ["pip"   : ["buildCommands"              : sample_closure,
-                            "postBuildCommands"          : """pwd""",
-                            "unitTestCommands"           : """cat file.txt""",
-                            "postUnitTestCommands"       : """pwd""",
-                            "integrationTestCommands"    : """pwd""",
-                            "postIntegrationTestCommands": {
-                                build job: "/bar/${getGlobal().branchName}", parameters: [
-                                        string(name: "version", value: getGlobalVersion()),
-                                        string(name: "appName", value: getGlobal().appName)]
-                            },
-                            "postDeployCommands"         : """pwd""",
-                            "image"                      : "maven:3.6.1-jdk-8",
-                            "resourceRequestCpu"         : "1",
-                            "resourceLimitCpu"           : "1",
-                            "buildDocker"                : true,
-                            "resourceRequestMemory"      : "1Gi",
-                            "resourceLimitMemory"        : "1Gi",],
-                 "docker": ["publishArtifact": true,]]
+        build = [
+          [
+            "name"                       : "python"   
+            "buildCommands"              : sample_closure,
+            "postBuildCommands"          : """pwd""",
+            "unitTestCommands"           : """cat file.txt""",
+            "postUnitTestCommands"       : """pwd""",
+            "integrationTestCommands"    : """pwd""",
+            "postIntegrationTestCommands": {
+                build job: "/bar/${getGlobal().branchName}", parameters: [
+                        string(name: "version", value: getGlobalVersion()),
+                        string(name: "appName", value: getGlobal().appName)]
+            },
+            "postDeployCommands"         : """pwd""",
+            "image"                      : "maven:3.6.1-jdk-8",
+            "resourceRequestCpu"         : "1",
+            "resourceLimitCpu"           : "1",
+            "buildDocker"                : true,
+            "resourceRequestMemory"      : "1Gi",
+            "resourceLimitMemory"        : "1Gi",
+          ],
+          [
+            "name"           : "docker",
+            "publishArtifact": true
+          ]
+        ]
     
         deployTool = "kubeup"
     
-        environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
-                       "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
-                                      "ansibleInventory": "rc"],
-                       "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
-                       "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
-                                      "branchPattern": /^master$/,]
+        environment = [
+          [ "name": "sales-demo", "branchPattern": /^master$/ ]
         ]
-    
-        branchPermissions = [:]
     }
 
 ## Configuring Jenkins slave in Kubernetes
@@ -770,24 +782,25 @@ Normally there is no need to change default values, however you can do so the sa
  build commands:
 
     build = [
-        "pip": [
-            "image"                : "python:3.7-alpine",
-            "resourceRequestCpu"   : "100m",
-            "resourceLimitCpu"     : "300m",
-            "resourceRequestMemory": "256Mi",
-            "resourceLimitMemory"  : "512Mi",
-            "rawYaml"              : """\
-                                         spec:
-                                           securityContext:
-                                             runAsUser: 1000
-                                             runAsGroup: 1000
-                                             fsGroup: 1000
-                                           tolerations:
-                                           - key: tooling.nextiva.io
-                                             operator: Equal
-                                             value: jenkins
-                                             effect: NoSchedule
-                                     """.stripIndent())
+        [
+          "name"                 : "python"
+          "image"                : "python:3.7-alpine",
+          "resourceRequestCpu"   : "100m",
+          "resourceLimitCpu"     : "300m",
+          "resourceRequestMemory": "256Mi",
+          "resourceLimitMemory"  : "512Mi",
+          "rawYaml"              : """\
+                                       spec:
+                                         securityContext:
+                                           runAsUser: 1000
+                                           runAsGroup: 1000
+                                           fsGroup: 1000
+                                         tolerations:
+                                         - key: tooling.nextiva.io
+                                           operator: Equal
+                                           value: jenkins
+                                           effect: NoSchedule
+                                   """.stripIndent())
          ]
     ]
 
