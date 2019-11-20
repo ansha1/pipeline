@@ -1,6 +1,8 @@
 package utils
 
 import com.lesfurets.jenkins.unit.BasePipelineTest
+import org.springframework.security.access.method.P
+
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
 import com.nextiva.utils.LogLevel
 
@@ -10,7 +12,8 @@ import static com.lesfurets.jenkins.unit.global.lib.LocalSource.localSource
 trait JenkinsScriptsHelper implements BasePipelineAccessor, Mocks {
 
     void prepareSharedLib() {
-        def scriptsFolder = 'build/classes/groovy/test'
+        def pathPrefix = System.getenv("WORKSPACE")
+        def scriptsFolder = (pathPrefix) ? "$pathPrefix/build/classes/groovy/test" : 'build/classes/groovy/test'
         basePipelineTest.helper.registerSharedLibrary(library()
                 .name('pipeline')
                 .retriever(localSource(scriptsFolder))

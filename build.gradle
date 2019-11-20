@@ -50,11 +50,12 @@ sourceSets {
 
 defaultTasks 'test'
 
-task initLibraries(type: Exec) {
-    commandLine 'sh', '-c', 'rm -rf build/classes/groovy/test/pipeline@master && ' +
-            'mkdir -p build/classes/groovy/test/pipeline@master && ' +
-            'ln -s $PWD/src build/classes/groovy/test/pipeline@master && ' +
-            'ln -s $PWD/vars build/classes/groovy/test/pipeline@master'
+task initLibraries(type: Copy) {
+    from("./") {
+        include "src/**", "vars/**"
+        exclude "src/test", "src/pipeline.gdsl"
+    }
+    into 'build/classes/groovy/test/pipeline@master'
 }
 
 test.dependsOn initLibraries
