@@ -6,20 +6,20 @@ An efficient software development process is vital for success in building
 business applications we keen on to use a shared library for all builds in Nextiva.
 
 ## Confluence pages
-[CI\CD page](https://confluence.nextiva.xyz/pages/viewpage.action?pageId=24871188)   
-[Nextiva Pipeline FAQ](https://confluence.nextiva.xyz/display/DP/Nextiva+Pipeline+FAQ)   
-[Nextiva pipeline integration instructions](https://confluence.nextiva.xyz/display/DP/Nextiva+pipeline+integration+instructions)  
+[CI\CD page](https://confluence.nextiva.xyz/pages/viewpage.action?pageId=24871188)
+[Nextiva Pipeline FAQ](https://confluence.nextiva.xyz/display/DP/Nextiva+Pipeline+FAQ)
+[Nextiva pipeline integration instructions](https://confluence.nextiva.xyz/display/DP/Nextiva+pipeline+integration+instructions)
 [Jenkins multibranch pipeline usage](https://confluence.nextiva.xyz/display/DP/Jenkins+multibranch+pipeline+usage)
 
 ## List of all available parameters for Nextiva Pipeline - jobTemplate
-https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-docs  
+https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-docs
 
 ## Examples of Jenkinsfile
-Java app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-app  
-Java lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-lib  
-Python app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-app  
-Python lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-lib  
-JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-js-app  
+Java app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-app
+Java lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-java-lib
+Python app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-app
+Python lib https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-python-lib
+JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examples/Jenkinsfile-js-app
 
 ## Repository tree
 `````
@@ -67,14 +67,14 @@ JavaScript app https://git.nextiva.xyz/projects/REL/repos/pipelines/browse/examp
 
     #!groovy
     @Library('pipeline') _
-    
+
     nextivaPipeline {
         appName = "nextiva-openjdk"
         channelToNotify = "cloud-engineering"
         branchingModel = "gitflow"
         isSonarAnalysisEnabled = false
         isDeployEnabled = false
-    
+
         build = [
             ["name":"docker",
              publishArtifact": true,
@@ -89,11 +89,11 @@ Minimally viable python build
 
     #!groovy
     @Library('pipeline') _
-    
+
     nextivaPipeline {
         appName = "myapp"
         channelToNotify = "mychannel"
-    
+
         build = [["name": "python", image": "python:3.6"],
                  ["name": "docker", "publishArtifact": true]]
     }
@@ -102,11 +102,11 @@ All available build options in a single file
 
     #!groovy
     @Library('pipeline') _
-    
+
     nextivaPipeline {
         appName = "myapp"
         channelToNotify = "testchannel"
-    
+
         build = [
             [
               "name"                       : "python",
@@ -126,15 +126,15 @@ All available build options in a single file
             ],
             ["name": "docker", publishArtifact": true]
         ]
-    
+
         deployTool = "kubeup"
-    
+
         dependencies = ["postgres"                  : "latest",
                         "rabbitmq-ha"               : "latest",
                         "redis-ha"                  : "latest",
                         "rules-engine-core"         : "latest",
                         "rules-engine-orchestration": "latest",]
-    
+
         environment = [
             ["name": "sales-demo", "branchPattern": /^master$/]
         ]
@@ -169,7 +169,7 @@ Default unitTestCommands
 ## NPM
 
   - Nodejs build tool.
-  
+
   - Deployed as a static asset by Ansible playbook into Nginx
 
   - [Registry details](https://confluence.nextiva.xyz/display/DP/Nexus+NPM+Repositories)
@@ -214,12 +214,12 @@ Building Erlang application (Ejabberd) by overriding python tool commands
 
     #!groovy
     @Library('pipeline@feature/dockerTemplate') _
-    
+
     nextivaPipeline {
       appName = "chat-ejabberd"
       channelToNotify = "chat_alerts"
       isUnitTestEnabled = true
-    
+
       build = [
         [
           "name"                 : "python",
@@ -419,7 +419,7 @@ Two build tools
       // ...
       build = [
         [
-          "name"         : "python", 
+          "name"         : "python",
           // install gcc and build-essential system packages before
           // installing python dependencies.
           "buildCommands": """
@@ -478,13 +478,13 @@ Two build tools
             ],
         // ...
     }
-    
+
 Disable Unit Tests for all build tools
 
     nextivaPipeline {
         // ...
         isUnitTestEnabled = false
-        
+
         build = [
             [
               "name": "python",
@@ -511,7 +511,7 @@ Disable Sonar scanning
 
     nextivaPipeline {
         isSonarAnalysisEnabled = false
-    
+
         // ...
         build = [
            // ...
@@ -631,12 +631,12 @@ Deploy master branch to sandbox
     nextivaPipeline {
       // branchingModel is not defined explicitly, therefore
       // gitflow model will be used
-    
+
       // ...
       build = [
         // ...
       ]
-    
+
       environment = [
         // Because this build uses gitlow model, master branch would
         // be always deployed to prod. However, because
@@ -656,18 +656,18 @@ Deploy feature branch to sandbox
     // deployed automatically.
     nextivaPipeline {
       branchingModel = "trunkbased"
-    
+
       // ...
       build = [
         // ...
       ]
-    
+
       // Here we are forcing feature/my-precious branch builds to
       // be deployed to sandbox environment at
       // "nextiva-pipeline-sandbox.nextiva.io" Kubernetes cluster
       environment = [
         [
-          "name"             :"sandbox"   
+          "name"             :"sandbox"
           "branchPattern"    : '^feature/my-precious$',
           "kubernetesCluster": "nextiva-pipeline-sandbox.nextiva.io"
         ]
@@ -689,7 +689,7 @@ Disable Qa Core Team Tests
     nextivaPipeline {
         // ...
         isQACoreTeamTestEnabled = false
-    
+
         build = [
            // ...
         ]
@@ -724,23 +724,23 @@ be implemented this way:
 
     #!groovy
     @Library('pipeline') _
-    
-    
+
+
     def sample_closure = {
         stage("foobar") {
             echo("Hello world: " + GroovySystem.version)
             return "Returned from foobar"
         }
     }
-    
+
     //noinspection GroovyAssignabilityCheck
     nextivaPipeline {
         appName = "myapp"
         channelToNotify = "testchannel"
-    
+
         build = [
           [
-            "name"                       : "python"   
+            "name"                       : "python"
             "buildCommands"              : sample_closure,
             "postBuildCommands"          : """pwd""",
             "unitTestCommands"           : """cat file.txt""",
@@ -764,9 +764,9 @@ be implemented this way:
             "publishArtifact": true
           ]
         ]
-    
+
         deployTool = "kubeup"
-    
+
         environment = [
           [ "name": "sales-demo", "branchPattern": /^master$/ ]
         ]

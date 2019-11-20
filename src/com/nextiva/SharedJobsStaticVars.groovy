@@ -79,9 +79,9 @@ class SharedJobsStaticVars {
     static final BITBUCKET_SECTION_MARKER = '###### '
     static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = 'sales-demo'
     static final DEFAULT_KUBERNETES_CLUSTER_SALES_DEMO = 'sales-demo.nextiva.io'
+    static final VAULT_URL = 'https://vault.tooling.nextiva.io'
     static final PUBLISH_STATIC_ASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
-    static final VAULT_URL = "https://vault.tooling.nextiva.io"
     static final KUBEUP_VERSION = '1.0.0'
     static final KUBEDOG_VERSION = '0.3.3'
     static final VAULT_CLIENT_VERSION = '1.1.0'

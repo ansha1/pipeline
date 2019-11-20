@@ -31,4 +31,3 @@ jobTemplate {
                             qa        : ["first_user", "second_user"],
                             production: ["first_user", "second_user"]]
 }
-
