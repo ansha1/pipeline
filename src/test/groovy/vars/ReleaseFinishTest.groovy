@@ -62,7 +62,7 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                 }
             }
             if (map.get('script') ==~ 'git config remote.origin.url') {
-                return 'ssh://git@git.nextiva.xyz:7999/rel/pipelines.git'
+                return 'git@bitbucket.org:nextiva/pipelines.git'
             }
             return 'sh command output'
         }
@@ -140,7 +140,7 @@ class ReleaseFinishTest extends BasePipelineTest implements Validator, Mocks {
                 }
             }
             if (map.get('script') ==~ 'git config remote.origin.url') {
-                return 'ssh://git@git.nextiva.xyz:7999/rel/pipelines.git'
+                return 'git@bitbucket.org:nextiva/pipelines.git'
             }
             return 'sh command output'
         }

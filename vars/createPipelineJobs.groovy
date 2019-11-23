@@ -45,7 +45,7 @@ def call(body) {
             stage('Checkout') {
                 steps {
                     cleanWs()
-                    git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: 'ssh://git@git.nextiva.xyz:7999/ops/jenkins-jobdsl.git'
+                    git branch: 'master', credentialsId: GIT_CHECKOUT_CREDENTIALS, url: 'git@bitbucket.org:nextiva/jenkins-jobdsl.git'
                 }
             }
 

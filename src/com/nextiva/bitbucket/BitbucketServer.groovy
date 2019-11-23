@@ -77,7 +77,7 @@ class BitbucketServer extends Bitbucket {
             // example: https://git.nextiva.xyz/scm/cloud/cloud-apps.git
             return tokens[3]
         } else {
-            // example: ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git
+            // example: git@bitbucket.org:nextiva/cloud-apps.git
             return tokens[2]
         }
     }
@@ -91,7 +91,7 @@ class BitbucketServer extends Bitbucket {
             // example: https://git.nextiva.xyz/scm/cloud/cloud-apps.git
             return tokens[4].replace('.git', '')
         } else {
-            // example: ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git
+            // example: git@bitbucket.org:nextiva/cloud-apps.git
             return tokens[3].replace('.git', '')
         }
     }

@@ -4,7 +4,7 @@ import static com.nextiva.SharedJobsStaticVars.*
 def call(String repo, String branch, String sharedLibraryRepoDir=SHARED_LIBRARY_REPO_DIR) {
 
     // get exact repo name from the full URL
-    // ssh://git@git.nextiva.xyz:7999/rel/release-management.git -> release-management
+    // git@bitbucket.org:nextiva/release-management.git -> release-management
     def formattedRepo = common.getRepositoryNameFromUrl(repo)
 
     // replace trailing slash in branch name to underscore
