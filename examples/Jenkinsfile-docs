@@ -1,7 +1,7 @@
 #!groovy
 /*
 * To access Nextiva pipeline shared libraries, the Jenkinsfile needs to use the @Library annotation,
-* specifying the library's name 'pipelines'(SCM - ssh://git@git.nextiva.xyz:7999/rel/pipelines.git)
+* specifying the library's name 'pipelines'(SCM - git@bitbucket.org:nextiva/pipelines.git)
 *
 * More info about Jenkins Shared Library can be found here: https://jenkins.io/doc/book/pipeline/shared-libraries/
 */
@@ -34,7 +34,7 @@ jobTemplate {
     * ANSIBLE_REPO - A repo that contains ansible playbook to deploy an application. 
     * If the parameter is ommited the default ansible repo that will be used is https://git.nextiva.xyz/projects/REL/repos/release-management/browse/ansible/role-based_playbooks
     */
-    // ANSIBLE_REPO = 'ssh://git@git.nextiva.xyz:7999/rel/ansible.git' 
+    // ANSIBLE_REPO = 'git@bitbucket.org:nextiva/ansible.git'
 
     /*
     * ANSIBLE_REPO_BRANCH  - defines a branch name that will be used for ANSIBLE_REPO checkout. 
