@@ -29,15 +29,15 @@ class BitbucketCloud extends Bitbucket {
      * @param diff the git diff file
      * @return list of affected files
      */
-    private List<String> getFileListFromDiff(String diff) {
+    static List<String> getFileListFromDiff(String diff) {
         if (!diff?.trim()) {
             return []
         }
 
         return diff.tokenize("\n")
                 .findAll { it.startsWith("diff --git") }
-                .collect { it =~ /^diff --git a\/(.*) b\/(.*)/ }
-                .collect { [it.group(1), it.group(2)] }
+                .collect { it =~ /^diff --git a\/([^\s]+) b\/([^\s]+).*/ }
+                .collect { [it[0][1], it[0][2]] }
                 .flatten()
                 .unique()
                 .collect { it.toString() }
@@ -259,7 +259,13 @@ class BitbucketCloud extends Bitbucket {
     @Override
     List<String> getPullRequestChangedFiles(Map pr) {
         String diff = getPullRequestDiff(pr)
-        return getFileListFromDiff(diff)
+        def list = []
+        try {
+            list = getFileListFromDiff(diff)
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+        return list
     }
 
     /**
