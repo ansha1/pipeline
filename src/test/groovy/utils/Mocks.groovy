@@ -27,7 +27,7 @@ trait Mocks implements BasePipelineAccessor {
                 BUILD_URL  : 'https://jenkins.nextiva.xyz/jenkins/',
                 BRANCH_NAME: 'dev',
                 NODE_NAME  : 'Debian Slave 3',
-                GIT_URL    : 'ssh://git@git.nextiva.xyz:7999/KEY/repository.git'
+                GIT_URL    : 'git@bitbucket.org:nextiva/repository.git'
         ]
     }
 
@@ -43,7 +43,7 @@ trait Mocks implements BasePipelineAccessor {
         basePipelineTest.helper.registerAllowedMethod 'getSlackUserIdByEmail', [String], { return 'testuser' }
         basePipelineTest.helper.registerAllowedMethod 'sh', [Map], { Map map ->
             if (map.get('script') ==~ 'git config remote.origin.url') {
-                return 'ssh://git@git.nextiva.xyz:7999/rel/pipelines.git'
+                return 'git@bitbucket.org:nextiva/pipelines.git'
             }
             return 'sh command output'
         }
