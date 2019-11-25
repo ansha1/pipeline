@@ -223,19 +223,19 @@ class Config implements Serializable {
         logger.debug("complete configureSlave()")
     }
 
+    @NonCPS
     @PackageScope
     void setExtraEnvVariables() {
         logger.debug("start setExtraEnvVariables() complete")
-        script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
+        this.@script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
                 PIP_EXTRA_INDEX_URL_PROD
         if (extraEnvs) {
             logger.debug("Adding extra envVars")
             extraEnvs.each { k, v ->
                 logger.debug("[$k]=$v")
-                script.env[k] = v
+                this.@script.env[k] = v
             }
         }
-        logger.trace("Env vars", script.env.getEnvironment())
         logger.debug("complete setExtraEnvVariables() complete")
     }
 
