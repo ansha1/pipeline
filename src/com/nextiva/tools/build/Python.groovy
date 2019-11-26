@@ -22,14 +22,16 @@ class Python extends BuildTool {
             '''.stripIndent(),
             publish : {
                 config.script.container(name) {
-                    def command = 'pip install twine'
-                    def output = shWithOutput(config.script, command)
+                    logger.trace("Installing twine")
+                    def output = config.script.sh(script: 'pip install twine 2>&1', returnStdout: true)
+                    logger.trace("Twine installed")
                     logger.info("$output")
-                    return output
                 }
                 config.script.buildPublishPypiPackage(pathToSrc, null, 'python')
             },
-            build   : 'pip install -r requirements.txt'
+            build   : """pip install -r requirements.txt
+                         pip install -U wheel
+                         python setup.py sdist bdist bdist_egg bdist_wheel"""
     ]
 
     Python(Map toolConfiguration) {
@@ -84,6 +86,23 @@ class Python extends BuildTool {
     Boolean isArtifactAvailableInRepo() {
         execute {
             return config.script.nexus.isPypiPackageExists(appName, getVersion(), "pypi-production")
+        }
+    }
+
+    @Override
+    void publish() {
+        config.script.container(name) {
+            logger.trace("Installing twine")
+            def output = config.script.sh(script: 'pip install twine 2>&1', returnStdout: true)
+            logger.trace("Twine installed")
+            logger.info("$output")
+            config.script.withCredentials([config.script.usernamePassword(
+                    credentialsId: '13901a38-4279-4ee5-bfe6-f33e41d0a1ee',
+                    usernameVariable: 'TWINE_USERNAME',
+                    passwordVariable: 'TWINE_PASSWORD')
+            ]) {
+                output = config.script.sh(script: "twine upload dist/* 2>&1", returnStdout: true)
+            }
         }
     }
 }

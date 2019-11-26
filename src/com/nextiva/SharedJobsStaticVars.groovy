@@ -21,12 +21,13 @@ class SharedJobsStaticVars {
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
     static final NPM_NEXTIVA_REGISTRY = "https://nexus.nextiva.xyz/repository/npm/"
-    static final NPM_NEXTIVA_PRIVATE_REGISTRY = "https://nexus.nextiva.xyz/repository/npm-hosted-nextiva-release/"
     static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
     static final PIP_EXTRA_INDEX_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-dev/simple'
     static final PIP_EXTRA_INDEX_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-production/simple'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
+    static final TWINE_REPOSITORY_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-hosted-nextiva-dev/'
+    static final TWINE_REPOSITORY_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-hosted-nextiva-production/'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'
     static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'

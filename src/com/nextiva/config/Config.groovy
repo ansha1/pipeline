@@ -14,6 +14,8 @@ import hudson.AbortException
 
 import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_DEV
 import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_PROD
+import static com.nextiva.SharedJobsStaticVars.TWINE_REPOSITORY_URL_DEV
+import static com.nextiva.SharedJobsStaticVars.TWINE_REPOSITORY_URL_PROD
 
 
 /**
@@ -229,6 +231,8 @@ class Config implements Serializable {
         logger.debug("start setExtraEnvVariables() complete")
         this.@script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
                 PIP_EXTRA_INDEX_URL_PROD
+        this.@script.env['TWINE_REPOSITORY_URL'] = (deploymentType == DeploymentType.DEV) ? TWINE_REPOSITORY_URL_DEV :
+                TWINE_REPOSITORY_URL_PROD
         if (extraEnvs) {
             logger.debug("Adding extra envVars")
             extraEnvs.each { k, v ->
