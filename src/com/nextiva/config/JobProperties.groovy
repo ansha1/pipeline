@@ -30,6 +30,8 @@ class JobProperties {
 
     @NonCPS
     private List generateParamList(Script script, String branchName, BranchingModel branchingModel, List<String> environmentsToDeploy) {
+        // TODO if deployDst is empty, it makes Jenkins go oops. When built against master branch this parameter is
+        //  deployDst is used somewhere if we are on master branch only for trunkbased
         List paramlist = []
 
         // TODO environmentsToDeploy is always empty here, becasue it is set later inside Config.configure()
@@ -37,6 +39,7 @@ class JobProperties {
             //workaround to avoid deployment on qa env from hotfix branch on the first execution
             environmentsToDeploy.add(0, "")
         }
+        environmentsToDeploy.add(0, "none")
 
         List jobParameters = [
                 ["parameter"     : script.string(name: 'deployVersion', defaultValue: '',
