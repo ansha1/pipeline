@@ -29,8 +29,7 @@ class Python extends BuildTool {
                 }
                 config.script.buildPublishPypiPackage(pathToSrc, null, 'python')
             },
-            build   : """pip install -r requirements.txt
-                         pip install -U wheel
+            build   : """pip install -U wheel
                          python setup.py sdist bdist bdist_egg bdist_wheel"""
     ]
 
