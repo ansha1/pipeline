@@ -31,7 +31,7 @@ class SharedJobsStaticVars {
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'
     static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'
-    static final RELEASE_MANAGEMENT_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/rel/release-management.git'
+    static final RELEASE_MANAGEMENT_REPO_URL = 'git@bitbucket.org:nextiva/release-management.git'
     static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
     static final MAVEN_RELEASE_REPO = "maven-hosted-nextiva-release"
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
@@ -42,7 +42,7 @@ class SharedJobsStaticVars {
     static final ANSIBLE_PASSWORD_PATH = '/etc/ansible_password'
     static final KUBERNETES_REPO_BRANCH = 'master'
     static final KUBERNETES_NODE_LABEL = 'kubernetes'
-    static final KUBERNETES_REPO_URL = 'ssh://git@git.nextiva.xyz:7999/cloud/cloud-apps.git'
+    static final KUBERNETES_REPO_URL = 'git@bitbucket.org:nextiva/cloud-apps.git'
     static final KUBERNETES_KUBELOGIN_DEFAULT_VERSION = '1.4.0'
     static final SONAR_QUBE_SCANNER = 'SonarQube Scanner'
     static final SONAR_QUBE_ENV = 'SonarQube'
