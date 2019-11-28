@@ -15,9 +15,10 @@ def call(body) {
             PipelineConfig pipelineConfig = new PipelineConfig()
             body.resolveStrategy = Closure.DELEGATE_ONLY
             body.delegate = pipelineConfig
+            pipelineConfig.script = this
+            pipelineConfig.env = env
             body()
             logger.info("Starting Nextiva Pipeline")
-            pipelineConfig.script = this
 
             Config config = new Config().getInstance()
             config.configure(pipelineConfig)

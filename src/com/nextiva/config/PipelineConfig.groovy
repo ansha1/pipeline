@@ -22,6 +22,7 @@ import static com.nextiva.utils.Utils.*
  */
 class PipelineConfig {
     Script script
+    Map env
 
     /**
      * Application name
