@@ -5,6 +5,7 @@ import com.lesfurets.jenkins.unit.MethodCall
 import com.nextiva.config.Config
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import utils.JenkinsScriptsHelper
 import utils.Mocks
@@ -195,6 +196,7 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
     }
 
     @Test
+    @Ignore
     void nodejsStaticBuild() {
         Script script = loadScriptHelper("nodejs_static.jenkins")
         helper.registerAllowedMethod 'readJSON', [Map], { Map m ->
