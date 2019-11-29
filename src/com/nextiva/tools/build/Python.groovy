@@ -90,17 +90,19 @@ class Python extends BuildTool {
 
     @Override
     void publish() {
-        config.script.container(name) {
-            logger.trace("Installing twine")
-            def output = config.script.sh(script: 'pip install twine 2>&1', returnStdout: true)
-            logger.trace("Twine installed")
-            logger.info("$output")
-            config.script.withCredentials([config.script.usernamePassword(
-                    credentialsId: '13901a38-4279-4ee5-bfe6-f33e41d0a1ee',
-                    usernameVariable: 'TWINE_USERNAME',
-                    passwordVariable: 'TWINE_PASSWORD')
-            ]) {
-                output = config.script.sh(script: "twine upload dist/* 2>&1", returnStdout: true)
+        config.script.stage("python: publishArtifact") {
+            config.script.container(name) {
+                logger.trace("Installing twine")
+                def output = config.script.sh(script: 'pip install twine 2>&1', returnStdout: true)
+                logger.trace("Twine installed")
+                logger.info("$output")
+                config.script.withCredentials([config.script.usernamePassword(
+                        credentialsId: '13901a38-4279-4ee5-bfe6-f33e41d0a1ee',
+                        usernameVariable: 'TWINE_USERNAME',
+                        passwordVariable: 'TWINE_PASSWORD')
+                ]) {
+                    output = config.script.sh(script: "twine upload dist/* 2>&1", returnStdout: true)
+                }
             }
         }
     }
