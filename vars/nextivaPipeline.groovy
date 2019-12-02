@@ -16,7 +16,6 @@ def call(body) {
             body.resolveStrategy = Closure.DELEGATE_ONLY
             body.delegate = pipelineConfig
             pipelineConfig.script = this
-            pipelineConfig.env = env
             body()
             logger.info("Starting Nextiva Pipeline")
 
