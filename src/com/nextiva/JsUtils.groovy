@@ -67,7 +67,7 @@ def buildAssets(Map projectFlow) {
 
 def publishAssets(String appName, String buildVersion, String environment, Map projectFlow) {
     def distPath = projectFlow.get('distPath', 'dist/static')
-    Boolean publishToS3 = projectFlow.get('publishStaticAssetsToS3', PUBLISH_STATICASSETS_TO_S3_DEFAULT)
+    Boolean publishToS3 = projectFlow.get('publishStaticAssetsToS3', PUBLISH_STATIC_ASSETS_TO_S3_DEFAULT)
     log.info("publishStaticAssetsToS3: ${publishToS3}")
 
     dir(pathToSrc) {

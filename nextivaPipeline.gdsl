@@ -1,0 +1,56 @@
+def ctx = context(scope: scriptScope())
+
+contributor(ctx) {
+    method(name: '@Library', type: Object.name, params: [name: 'java.lang.String'], doc: 'Load a shared library')
+    method(name: '@Library', type: 'Object', params: [names: 'Map'], doc: 'Load a shared library')
+    method(name: "nextivaPipeline", type: Object.name, params: [body: Closure])
+}
+
+def closures = context(scope: closureScope())
+contributor(closures) {
+    if (enclosingCall("nextivaPipeline")) {
+        property(name: 'appName', type: String.name, doc: 'Application name')
+        property(name: 'channelToNotify', type: String.name, doc: 'Slack channel to send notifications')
+        property(name: 'version', type: String.name, doc: '''Override application version for deployment.<br>
+Setting this property would force 'Deploy only' mode, where all stages up until Deploy are skipped.''')
+        property(name: 'branchName', type: String.name, doc: 'Force specified branch instead of branch name obtained from VCS')
+        property(name: 'branchingModel', type: String.name, doc: '''Branching model to use.
+<br>Possible values are "gitflow" and "trunkbased".<br>Default value is "gitflow"''')
+        property(name: 'deployTool', type: String.name, doc: '''Deployment tool.<br>Possible values are "kubeup", 
+"ansible", or "static". <br>Default value is "kubeup"''')
+        property(name: 'isDeployEnabled', type: Boolean.name, doc: """Whether deployment stage is enabled or not.
+<br>Default value is true""")
+        property(name: 'jobTimeoutMinutes', type: String.name, doc: '''Time in minutes, after which the job will be 
+terminated.<br>Default value is "60"''')
+        property(name: 'isUnitTestEnabled', type: Boolean.name, doc: '''Whether unit test stage is enabled or not.
+<br>Default value is true''')
+        property(name: 'isSecurityScanEnabled', type: Boolean.name, doc: '''Whether security scan stage is enabled or
+ not. Default value is true''')
+        property(name: 'isSonarAnalysisEnabled', type: Boolean.name, doc: '''Whether sonar scan stage is enabled or
+ not. Default value is true''')
+        property(name: 'isQACoreTeamTestEnabled', type: Boolean.name, doc: '''Whether QA Core Team Tests stage is 
+enabled or not. Default value is true''')
+        property(name: 'isIntegrationTestEnabled', type: Boolean.name, doc: '''Whether Integration tests stage is 
+enabled or not. Default value is false''')
+        property(name: 'build', type: Map.name, doc: '''Build tools definition map.''')
+        property(name: 'jobTriggers', type: List.name, doc: '''List of job triggers.''')
+        property(name: 'buildDaysToKeep', type: String.name, doc: '''Jenkins buildDaysToKeep property. Default value is 
+"30"''')
+        property(name: 'buildNumToKeep', type: String.name, doc: '''Jenkins buildNumToKeep property. Default value is 
+"50"''')
+        property(name: 'buildArtifactDaysToKeep', type: String.name, doc: '''Jenkins buildArtifactDaysToKeep property. 
+Default value is "10"''')
+        property(name: 'buildArtifactNumToKeep', type: String.name, doc: '''Jenkins buildArtifactNumToKeep property. 
+Default value is "10"''')
+        property(name: 'auth', type: Map.name, doc: '''Authorization matrix definitions.''')
+        property(name: 'deployOnly', type: Boolean.name, doc: '''Start from deploy stage. Default value is false''')
+        property(name: 'jenkinsContainer', type: Map.name, doc: '''Jenkins slave container customization.''')
+        property(name: 'slaveConfiguration', type: Map.name, doc: '''Additional slaves customization.''')
+        property(name: 'extraEnvs', type: Map.name, doc: '''Map of extra environment variables.''')
+        property(name: 'dependencies', type: Map.name, doc: '''Map of cloud-app and cloud-platform dependencies 
+for integration tests.''')
+        property(name: 'kubeupConfig', type: Map.name, doc: '''Additional kubeup configuration''')
+        property(name: 'environments', type: List.name, doc: '''Additional environments definition.''')
+        property(name: 'branchPermissions', type: Map.name, doc: '''Authorization matrix definitions.''')
+    }
+}

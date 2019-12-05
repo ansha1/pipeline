@@ -1,0 +1,29 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "nextiva-openjdk"
+    channelToNotify = "cloud-engineering"
+    branchingModel = "trunkbased"
+
+    build = [["name"                       : "docker",
+              "publishArtifact"            : true,
+              "buildCommands"              : "build commands",
+              "postBuildCommands"          : "post Build command",
+              "unitTestCommands"           : "unit test commands",
+              "postUnitTestCommands"       : "post unit test command",
+              "integrationTestCommands"    : "integration test command",
+              "postIntegrationTestCommands": "post integration test commands",
+              "postDeployCommands"         : "post deploy commands",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",]]
+    dependencies = ["postgres"                  : "latest",
+                    "rabbitmq-ha"               : "latest",
+                    "redis-ha"                  : "latest",
+                    "rules-engine-core"         : "latest",
+                    "rules-engine-orchestration": "latest",]
+    branchPermissions = [:]
+}

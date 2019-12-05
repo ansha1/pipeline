@@ -3,17 +3,9 @@ kind: Pod
 metadata:
   labels:
     name: default
-  namespace: jenkins
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: false
 spec:
-  hostAliases:
-  - ip: "192.168.103.218"
-    hostnames:
-    - "quote.rc.nextiva.xyz"
-  - ip: "10.80.10.13"
-    hostnames:
-    - "jira.nextiva.xyz"
   imagePullSecrets:
   - name: regsecret
   tolerations:

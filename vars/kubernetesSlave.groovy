@@ -1,142 +1,190 @@
+import com.cloudbees.groovy.cps.NonCPS
+import com.nextiva.utils.Logger
+import io.fabric8.kubernetes.api.model.Secret
 import io.fabric8.kubernetes.client.KubernetesClient
-import static com.nextiva.SharedJobsStaticVars.*
-import org.csanchez.jenkins.plugins.kubernetes.*
+import jenkins.model.Jenkins
+import org.csanchez.jenkins.plugins.kubernetes.KubernetesClientProvider
+
+import static com.nextiva.SharedJobsStaticVars.LIST_OF_BOOKED_NAMESPACES
+import static com.nextiva.utils.Utils.buildID
 
 def call(Map slaveConfig, body) {
+    Logger logger = new Logger(this)
+    logger.debug("Got slaveConfig", slaveConfig)
 
-    //Always generating namespace from JOB_NAME
-    def namespaceName = getNamespaceNameFromString(JOB_NAME)
-    def slaveName = slaveConfig.get("slaveName", "slave")
-    def image = slaveConfig.get("image")
-    if (image == null) {
-        error "Slave image is not defined, please define it in the your slaveConfig"
+    String iD = buildID(env.JOB_NAME, env.BUILD_NUMBER)
+
+    if (slaveConfig.containsKey("jobProperties")) {
+        jobWithProperties(slaveConfig.get("jobProperties"))
     }
-    def resourceRequestCpu = slaveConfig.get("resourceRequestCpu", "250m")
-    def resourceRequestMemory = slaveConfig.get("resourceRequestMemory", "1Gi")
-    def buildDaysToKeepStr = slaveConfig.get("buildDaysToKeepStr", "3")
-    def buildNumToKeepStr = slaveConfig.get("buildNumToKeepStr", "5")
-    def jobTimeoutMinutes = slaveConfig.get("jobTimeoutMinutes", "60")
-    def paramlist = slaveConfig.get("paramlist", []) + [booleanParam(name: 'DEBUG', description: 'Enable DEBUG mode with extended output', defaultValue: false)]
 
-    /*jobTriggers could be
-    cron('H/15 * * * *')
-    upstream(threshold: hudson.model.Result.SUCCESS, upstreamProjects: "surveys-server/dev")
-    */
-    def jobTriggers = slaveConfig.get("jobTriggers", [])
-    def authMap = slaveConfig.get("auth", [:])
-    def allowedUsers = authMap.get(env.BRANCH_NAME, ["authenticated"])
-    def securityPermissions = generateSecurityPermissions(allowedUsers)
-    def propertiesList = [parameters(paramlist),
-                          buildDiscarder(logRotator(daysToKeepStr: buildDaysToKeepStr, numToKeepStr: buildNumToKeepStr)),
-                          authorizationMatrix(inheritanceStrategy: nonInheriting(), permissions: securityPermissions),
-                          disableConcurrentBuilds(),
-                          pipelineTriggers(jobTriggers)]
+    Map<String, Map> containerResources = slaveConfig.get("containerResources")
+    if (!containerResources) {
+        error "ContainerResources is not defined, please define it in your slaveConfig: $slaveConfig"
+    }
 
-    def label = "${slaveName}-${UUID.randomUUID().toString()}"
-    def parentPodtemplateYaml = libraryResource 'podtemplate/default.yaml'
-
-    //Executing every Jenkins slave in the dedicated namespace
-    withNamespace(namespaceName) {
-        podTemplate(label: "parent-$label", yaml: parentPodtemplateYaml) {
-            podTemplate(label: label, workingDir: '/home/jenkins', namespace: namespaceName,
-                    containers: [
-                            containerTemplate(name: 'jnlp', image: "jenkinsci/jnlp-slave:3.27-1-alpine", args: '${computer.jnlpmac} ${computer.name}'),
-                            containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
-                                    resourceRequestCpu: resourceRequestCpu,
-                                    resourceRequestMemory: resourceRequestMemory,
-                                    envVars: [
-                                            envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
-                                            envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
-                                            envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
-                                            envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
-                                            envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo')
-                                    ],)],
-                    volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-                              hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
-                              hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
-                              hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
-                              hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
-//                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {  //TODO: add this secret as shared secret file in all k8s namespaces
-                    ]) {
-
-                timestamps {
-                    ansiColor('xterm') {
-                        timeout(time: jobTimeoutMinutes, unit: 'MINUTES') {
-                            node(label) {
-                                properties(propertiesList)
-                                body.call()
-                            }
-                        }
-                    }
-                }
+    def rawYaml = slaveConfig.get("rawYaml", """\
+        spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          tolerations:
+          - key: tooling.nextiva.io
+            operator: Equal
+            value: jenkins
+            effect: NoSchedule
+    """.stripIndent())
+    withNamespace(iD) {
+        podTemplate(label: iD, namespace: iD, showRawYaml: false, slaveConnectTimeout: 300,
+                nodeSelector: 'dedicatedgroup=jenkins-slave', imagePullSecrets: ['regsecret'],
+                annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
+                containers: containers(containerResources), volumes: volumes(), yaml: rawYaml) {
+            node(iD) {
+                body()
             }
         }
     }
 }
 
 
-List<String> generateSecurityPermissions(List<String> allowedUsers) {
-    List<String> basicList = ['hudson.model.Item.Read:authenticated']
-    allowedUsers.each {
-        basicList.add("hudson.model.Item.Build:${it}")
-        basicList.add("hudson.model.Item.Cancel:${it}")
-        basicList.add("hudson.model.Item.Workspace:${it}")
+List containers(Map<String, Map> containerResources) {
+    List result = []
+    containerResources.each { k, v ->
+        v.put("name", k)
+        result << containerInstance(v)
     }
-    return basicList
+    return result
 }
 
-/*
-This method allow us to run pods in the dedicated namespace.
-The namespace will be deleted after execution
- */
+def containerInstance(Map containerConfig) {
+    def name = containerConfig.get("name")
+    if (!name) {
+        error("Cannot create container instance from config: \n $containerConfig \nThe name of container is undefined")
+    }
+    def image = containerConfig.get("image")
+    if (!image) {
+        error("Cannot create container instance from config: \n $containerConfig \nThe image of container is undefined")
+    }
+    def command = containerConfig.get("command", "cat")
+    def ttyEnabled = containerConfig.get("ttyEnabled", true)
+    def privileged = containerConfig.get("privileged", true)
+    def alwaysPullImage = containerConfig.get("alwaysPullImage", true)
+    def workingDir = containerConfig.get("workingDir", "/home/jenkins")
+    def resourceRequestCpu = containerConfig.get("resourceRequestCpu", "50m")
+    def resourceLimitCpu = containerConfig.get("resourceLimitCpu", "3000m")
+    def resourceRequestMemory = containerConfig.get("resourceRequestMemory", "128Mi")
+    def resourceLimitMemory = containerConfig.get("resourceLimitMemory", "6144Mi")
+    def envVars = containerConfig.get("envVars", [:])
 
+    return containerTemplate(name: name, image: image, command: command, ttyEnabled: ttyEnabled, privileged: privileged,
+            alwaysPullImage: alwaysPullImage, workingDir: workingDir,
+            resourceRequestCpu: resourceRequestCpu, resourceLimitCpu: resourceLimitCpu,
+            resourceRequestMemory: resourceRequestMemory, resourceLimitMemory: resourceLimitMemory,
+            envVars: processEnvVars(envVars))
+}
+
+def volumes() {
+    [
+            hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+            hostPathVolume(hostPath: '/opt/shared_repos', mountPath: 'opt/shared_repos'),
+            hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
+            hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
+            hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
+            hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
+            secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret'),
+    ]
+}
+
+List processEnvVars(Map extraEnv) {
+    envVars = [envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
+               envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
+               envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
+               envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo'),
+               envVar(key: 'MAVEN_CONFIG', value: '/home/jenkins/.m2repo'),
+               envVar(key: 'MAVEN_OPTS', value: '-Duser.home=/home/jenkins')]
+    extraEnv.each { e -> envVars << envVar(key: "${e.key}", value: "${e.value}") }
+    return envVars
+}
+
+/**
+ * This method allow us to run pods in the dedicated namespace.
+ * The namespace will be deleted after execution
+ * @param namespaceName usually buildID
+ * @param body Closure which will be executed
+ * */
 def withNamespace(String namespaceName, body) {
+    Logger logger = new Logger(this)
     try {
         def ns = createNamespace(namespaceName)
-        log.info("Created namespace ${ns}")
+        logger.trace("Created namespace ${ns}")
         body()  //execute closure body
     } catch (e) {
-        log.error("There is error in withNamespace method ${e}")
+        currentBuild.result = "FAILURE"
+        logger.error("There is error in withNamespace method ${e}:  ${e.stackTrace}")
     } finally {
         String isNamespaceDeleted = deleteNamespace(namespaceName)
-        log.info("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
+        logger.trace("Deleted namespace ${namespaceName} ${isNamespaceDeleted}")
     }
 }
 
-String getNamespaceNameFromString(String rawNamespaceName) {
-    //By convention, the names of Kubernetes resources should be up to maximum length of 253 characters and consist of lower case alphanumeric characters, -
-    return rawNamespaceName.trim().replaceAll('[^a-zA-Z\\d]', '-')
-            .toLowerCase().take(253)
-}
-
 
 @NonCPS
-def getKubernetesClient() {
-    return KubernetesClientProvider.createClient(Jenkins.instance.clouds.get(0))
+KubernetesClient getKubernetesClient() {
+    return KubernetesClientProvider.createClient(Jenkins.get().clouds.get(0))
 }
 
-@NonCPS
 def createNamespace(String namespaceName) {
+    Logger logger = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
-        error("Can't create ${namespaceName}, this namespace is already booked")
+        logger.info("Running build in the already created namespace")
+        return true
     }
-
-    def kubernetesClient = getKubernetesClient()
+    KubernetesClient kubernetesClient = getKubernetesClient()
+    //Create namespace
     def namespace = kubernetesClient.namespaces().createNew().withNewMetadata().withName(namespaceName).endMetadata().done()
+    logger.trace("created namespace: $namespace")
+    //Create mandatory secrets in the namespace
+    def mvnSecret = createResourceFromLibrary("kubernetes/maven-secret.yaml", "Secret", namespaceName)
+    logger.trace("created resource  $mvnSecret")
+    def regSecret = createResourceFromLibrary("kubernetes/regsecret.yaml", "Secret", namespaceName)
+    logger.trace("created resource $regSecret")
+
     kubernetesClient = null
     return namespace
 }
 
-
-@NonCPS
 Boolean deleteNamespace(String namespaceName) {
+    Logger logger = new Logger(this)
     List listOfBookedNamespaces = LIST_OF_BOOKED_NAMESPACES
     if (listOfBookedNamespaces.contains(namespaceName)) {
-        error("Can't delete ${namespaceName}, this namespace is already booked")
+        logger.info("Namespace ${namespaceName} can't be deleted because it is persistent")
+        return false
     }
-    def kubernetesClient = getKubernetesClient()
+    KubernetesClient kubernetesClient = getKubernetesClient()
     Boolean result = kubernetesClient.namespaces().withName(namespaceName).delete()
     kubernetesClient = null
     return result
+}
+
+def createResourceFromLibrary(String resourcePath, String kind, String namespaceName) {
+    Logger logger = new Logger(this)
+    logger.debug("Method createResourceFromLibrary, input: resourcePath:$resourcePath, kind: $kind, namespaceName: $namespaceName")
+    String libraryResource = libraryResource resourcePath
+    logger.trace("libraryResource:$libraryResource")
+    KubernetesClient kubernetesClient = getKubernetesClient()
+    switch (kind) {
+        case "Secret":
+            Secret secret = kubernetesClient.secrets().load(new ByteArrayInputStream(libraryResource.getBytes())).get()
+            secret.metadata.namespace = namespaceName
+            def result = kubernetesClient.secrets().inNamespace(namespaceName).create(secret)
+            kubernetesClient = null
+            logger.trace("created resource $result")
+            return result
+            break
+        default:
+            kubernetesClient = null
+            error("This resource kind: $kind, resourcePath: $resourcePath is not supported")
+    }
 }

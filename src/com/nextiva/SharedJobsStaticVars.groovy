@@ -17,16 +17,23 @@ class SharedJobsStaticVars {
     static final TENABLE_DOCKER_REGISTRY = 'registry.cloud.tenable.com'
     static final NEXTIVA_DOCKER_REGISTRY_URL = 'https://docker.nextiva.xyz'
     static final TENABLE_DOCKER_REGISTRY_URL = 'https://registry.cloud.tenable.com'
+    static final NEXTIVA_DOCKER_TEST_REGISTRY_URL = 'https://docker.nextiva.xyz'
     static final NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID = 'nextivaRegistry'
     static final TENABLE_DOCKER_REGISTRY_CREDENTIALS_ID = 'tenableRegistry'
+    static final NPM_NEXTIVA_REGISTRY = "https://nexus.nextiva.xyz/repository/npm/"
     static final PIP_EXTRA_INDEX_URL = 'https://nexus.nextiva.xyz/repository/pypi-'
+    static final PIP_EXTRA_INDEX_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-dev/simple'
+    static final PIP_EXTRA_INDEX_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-production/simple'
     static final PIP_EXTRA_INDEX_URL_SUFFIX = '/simple'
     static final PIP_EXTRA_INDEX_DEFAULT_REPO = 'dev'
+    static final TWINE_REPOSITORY_URL_DEV = 'https://nexus.nextiva.xyz/repository/pypi-hosted-nextiva-dev/'
+    static final TWINE_REPOSITORY_URL_PROD = 'https://nexus.nextiva.xyz/repository/pypi-hosted-nextiva-production/'
     static final DEB_PKG_CONTENT_TYPE_PUBLISH = 'Content-Type:multipart/form-data'
     static final JENKINS_AUTH_CREDENTIALS = 'jenkinsbitbucket'
     static final SHARED_LIBRARY_REPO_DIR = '/opt/shared_repos'
     static final RELEASE_MANAGEMENT_REPO_URL = 'git@bitbucket.org:nextiva/release-management.git'
     static final RELEASE_MANAGEMENT_REPO_BRANCH = 'dev'
+    static final MAVEN_RELEASE_REPO = "maven-hosted-nextiva-release"
     static final GIT_CHECKOUT_CREDENTIALS = 'jenkins-in-bitbucket'
     static final BITBUCKET_JENKINS_AUTH = 'jenkins-user-in-bitbucket'
     static final DEFAULT_NODE_LABEL = 'debian'
@@ -72,9 +79,9 @@ class SharedJobsStaticVars {
     static final TEST_REPORTS_URL = 'https://test-reports.tooling.nextiva.io'
     static final BITBUCKET_SECTION_MARKER = '###### '
     static final DEFAULT_INVENTORY_DIRECTORY_SALES_DEMO = 'sales-demo'
-    static final DEFAULT_KUBERNETES_CLUSETER_SALES_DEMO = 'sales-demo.nextiva.io'
+    static final DEFAULT_KUBERNETES_CLUSTER_SALES_DEMO = 'sales-demo.nextiva.io'
     static final VAULT_URL = 'https://vault.tooling.nextiva.io'
-    static final PUBLISH_STATICASSETS_TO_S3_DEFAULT = true
+    static final PUBLISH_STATIC_ASSETS_TO_S3_DEFAULT = true
     static final PUBLIC_STATIC_ASSETS_ADDRESS = 'public-static.nextos.com'
     static final KUBEUP_VERSION = '1.0.0'
     static final KUBEDOG_VERSION = '0.3.3'
@@ -88,4 +95,51 @@ class SharedJobsStaticVars {
      */
     static final JENKINS_BOT_ENABLE = false
     static final JENKINS_BOT_URL = 'https://jenkins-bot.tooling.nextiva.io'
+    static final JENKINS_KUBERNETES_CLUSTER_DOMAIN = "tooling.nextiva.io"
+
+    static final Map DEFAULT_TOOL_CONFIGURATION = ["jnlp"   : ["image"                : "jenkins/jnlp-slave:3.29-1-alpine",
+                                                               "command"              : "/usr/local/bin/jenkins-slave",
+                                                               "resourceRequestCpu"   : "100m",
+                                                               "resourceLimitCpu"     : "300m",
+                                                               "resourceRequestMemory": "256Mi",
+                                                               "resourceLimitMemory"  : "512Mi"],
+                                                   "kubeup" : ["image"                  : "docker.nextiva.xyz/kubeup:latest",
+                                                               "resourceRequestMemory"  : "64Mi",
+                                                               "resourceLimitMemory"    : "256Mi",
+                                                               "resourceRequestCpu"     : "100m",
+                                                               "resourceLimitCpu"       : "100m",
+                                                               "repository"             : "ssh://git@bitbucket.org/nextiva/kubeup.git",
+                                                               "branch"                 : "develop",
+                                                               "cloudAppsRepository"    : "ssh://git@bitbucket.org/nextiva/cloud-apps.git",
+                                                               "cloudAppsBranch"        : "master",
+                                                               "cloudPlatformRepository": "ssh://git@bitbucket.org/nextiva/cloud-platform.git",
+                                                               "cloudPlatformBranch"    : "dev"],
+                                                   "ansible": ["image"                : "ansible/ansible-runner:1.3.4",
+                                                               "resourceRequestMemory": "128Mi",
+                                                               "resourceLimitMemory"  : "512Mi",
+                                                               "repository"           : "ssh://git@bitbucket.org/nextiva/release-management.git",
+                                                               "branch"               : "dev",],
+                                                   "static" : ["image"                : "ansible/ansible-runner:1.3.4",
+                                                               "resourceRequestMemory": "128Mi",
+                                                               "resourceLimitMemory"  : "512Mi",
+                                                               "repository"           : "ssh://git@bitbucket.org/nextiva/release-management.git",
+                                                               "branch"               : "dev",],
+                                                   "docker" : ["dockerfileName"       : "Dockerfile",
+                                                               "buildLocation"        : ".",
+                                                               "image"                : "docker:stable-git",
+                                                               "resourceRequestMemory": "128Mi",
+                                                               "resourceLimitMemory"  : "256Mi"],
+                                                   "maven"  : ["image"                : "maven:3.6.1-jdk-8",
+                                                               "resourceRequestCpu"   : "500m",
+                                                               "resourceRequestMemory": "1Gi",
+                                                               "resourceLimitMemory"  : "2Gi"],
+                                                   "python" : ["image"                : "python:3.7-alpine",
+                                                               "resourceRequestCpu"   : "500m",
+                                                               "resourceRequestMemory": "1Gi",
+                                                               "resourceLimitMemory"  : "2Gi"],
+                                                   "npm"    : ["image"                : "node:lts-alpine",
+                                                               "resourceRequestCpu"   : "500m",
+                                                               "resourceRequestMemory": "1Gi",
+                                                               "resourceLimitMemory"  : "2Gi"],
+    ]
 }

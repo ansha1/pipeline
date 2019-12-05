@@ -3,7 +3,7 @@ def call(body) {
     parentPodtemplate = libraryResource 'podtemplate/default.yaml'
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
-        podTemplate(label: label, workingDir: '/home/jenkins',
+        podTemplate(label: label, workingDir: '/home/jenkins', namespace: buildNamespace,
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
                         resourceRequestCpu: resourceRequestCpu,
                         resourceRequestMemory: resourceRequestMemory,
@@ -19,7 +19,8 @@ def call(body) {
                           hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
                           hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
                           hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
-                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {
+//                          secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret')]) {
+                          ]) {
 
             timestamps {
                 ansiColor('xterm') {
@@ -39,6 +40,7 @@ def call(body) {
 def build(Map podTemplateConfiguration) {
 
     this.slaveName = podTemplateConfiguration.get("slaveName", "slave")
+    this.buildNamespace = podTemplateConfiguration.get("buildNamespace", "jenkins")
     this.image = podTemplateConfiguration.get("image")
     this.resourceRequestCpu = podTemplateConfiguration.get("resourceRequestCpu", "250m")
     this.resourceRequestMemory = podTemplateConfiguration.get("resourceRequestMemory", "1Gi")

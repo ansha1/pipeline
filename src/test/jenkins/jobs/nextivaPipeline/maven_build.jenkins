@@ -1,0 +1,13 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "test-java-pipeline"
+
+    channelToNotify = "testchannel"
+
+    build = [["name": "maven", "integrationTestCommands": "curl http://test-java-pipeline:8080/health"],
+             ["name": "docker", "publishArtifact": true]]
+}
+

@@ -1,0 +1,48 @@
+#!groovy
+@Library('pipeline') _
+
+nextivaPipeline {
+    appName = "myapp"                       //mandatory
+    channelToNotify = "testchannel"         //mandatory
+    branchingModel = "gitflow"              //optional
+    language = "java"                       //only for ansible deployment
+    isSonarEnabled = fasle
+
+    build = ["maven" : ["pathToSrc"                  : ".",
+                        "buildCommands"              : """pwd""",
+                        "postBuildCommands"          : """pwd""",
+                        "unitTestCommands"           : """pwd""",
+                        "postUnitTestCommands"       : """pwd""",
+                        "integrationTestCommands:"   : """pwd""",
+                        "postIntegrationTestCommands": """pwd""",
+                        "publishArtifact"            : true,
+                        "image"                      : "maven:3.6.1-jdk-8",
+                        "resourceRequestCpu"         : "1",
+                        "resourceLimitCpu"           : "1",
+                        "resourceRequestMemory"      : "1Gi",
+                        "resourceLimitMemory"        : "1Gi",],
+             "docker": ["publishArtifact": true,]]
+
+    dependencies = ["postgres"   : "",
+                    "rabbitmq-ha": "",
+                    "interaction": "latest",]
+
+    deploy = ["kubeup" : ["cloudApp"          : "$appName",
+                          "image"             : "kubeprovisioning:2.7",
+                          "repostiory"        : "ssh git nextiva xyz",
+                          "branch"            : "master",
+                          "postDeployCommands": "pwd",],
+              "ansible": [:]
+    ]
+
+    environment = ["dev"       : ["healthChecks": ["https://myapp.dev.nextiva.io"]],
+                   "qa"        : ["healthChecks"    : ["https://myapp.qa.nextiva.io"],
+                                  "ansibleInventory": "rc"],
+                   "production": ["healthChecks": ["https://myapp.qa.nextiva.io"]],
+                   "sales-demo": ["healthChecks" : ["https://myapp.sales-demo.nextiva.io"],
+                                  "branchPattern": /^master$/,]
+    ]
+
+    branchPermissions = [:]
+
+}

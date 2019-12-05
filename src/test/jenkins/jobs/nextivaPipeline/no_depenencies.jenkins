@@ -1,0 +1,33 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "myapp"
+    channelToNotify = "testchannel"
+
+    build = [["name"                       : "python",
+              "buildCommands"              : """pwd""",
+              "postBuildCommands"          : """pwd""",
+              "unitTestCommands"           : """cat file.txt""",
+              "postUnitTestCommands"       : """pwd""",
+              "integrationTestCommands"    : """pwd""",
+              "postIntegrationTestCommands": """pwd""",
+              "postDeployCommands"         : """pwd""",
+              "image"                      : "maven:3.6.1-jdk-8",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "buildDocker"                : true,
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",],
+             ["name": "docker", "publishArtifact": true,]]
+
+    deployTool = "kubeup"
+
+    environments = [
+            ["name": "dev", "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name": "qa", "healthChecks": ["https://myapp.qa.nextiva.io"], "ansibleInventory": "rc"],
+            ["name": "production", "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name": "sales-demo", "healthChecks": ["https://myapp.sales-demo.nextiva.io"], "branchPattern": /^master$/]
+    ]
+}

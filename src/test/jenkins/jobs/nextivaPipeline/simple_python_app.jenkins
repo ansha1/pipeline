@@ -1,0 +1,42 @@
+#!groovy
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "myapp"
+    channelToNotify = "testchannel"
+
+    build = [["name"                       : "python",
+              "buildCommands"              : "build commands",
+              "postBuildCommands"          : "post Build command",
+              "unitTestCommands"           : "unit test commands",
+              "postUnitTestCommands"       : "post unit test command",
+              "integrationTestCommands"    : "integration test command",
+              "postIntegrationTestCommands": "post integration test commands",
+              "postDeployCommands"         : "post deploy commands",
+              "image"                      : "python:3.6",
+              "resourceRequestCpu"         : "1",
+              "resourceLimitCpu"           : "1",
+              "buildDocker"                : true,
+              "resourceRequestMemory"      : "1Gi",
+              "resourceLimitMemory"        : "1Gi",
+             ],
+             ["name": "docker", "publishArtifact": true,]]
+
+    deployTool = "kubeup"
+
+    dependencies = ["postgres"                  : "latest",
+                    "rabbitmq-ha"               : "latest",
+                    "redis-ha"                  : "latest",
+                    "rules-engine-core"         : "latest",
+                    "rules-engine-orchestration": "latest",]
+
+    environments = [
+            ["name": "dev", "healthChecks": ["https://myapp.dev.nextiva.io"]],
+            ["name": "qa", "healthChecks": ["https://myapp.qa.nextiva.io"], "ansibleInventory": "rc"],
+            ["name": "production", "healthChecks": ["https://myapp.qa.nextiva.io"]],
+            ["name": "sales-demo", "healthChecks": ["https://myapp.sales-demo.nextiva.io"], "branchPattern": /^master$/]
+    ]
+
+    branchPermissions = [:]
+}
