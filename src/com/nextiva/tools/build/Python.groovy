@@ -90,6 +90,10 @@ class Python extends BuildTool {
 
     @Override
     void publish() {
+        if (!publishArtifact) {
+            logger.info("Skipping publish, because publishArtifact is set to false")
+            return
+        }
         config.script.stage("python: publishArtifact") {
             config.script.container(name) {
                 logger.trace("Installing twine")
