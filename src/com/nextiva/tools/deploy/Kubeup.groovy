@@ -88,6 +88,7 @@ class Kubeup extends DeployTool implements Serializable {
         config.script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
         config.script.env.KUBECONFIG = "${toolHome}/kubeconfig"
         config.script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
+        def output = ""
         config.script.withCredentials([config.script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
             output = shWithOutput(config.script, """
             unset KUBERNETES_SERVICE_HOST
