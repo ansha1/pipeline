@@ -130,7 +130,7 @@ class Kubeup extends DeployTool implements Serializable {
                     [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
                     ${unsetEnvServiceDiscovery()}
-                    BUILD_VERSION=$version
+                    export BUILD_VERSION=$version
                     kubeup --yes --no-color $dryRunParam --namespace $namespace --configset $configset $application 2>&1
                     """)
                     if (!dryRun) {
