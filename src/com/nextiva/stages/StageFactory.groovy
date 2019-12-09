@@ -32,8 +32,7 @@ class StageFactory {
             ],
             (ConfigureProjectVersion.class)     : [
                     "deployOnly"    : false,
-                    "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.notMaster,
-                                       (TrunkBased.class): BranchingModelRegexps.any]
+                    "version"       : null
             ],
             (Build.class)                       : [
                     "deployOnly"    : false,
