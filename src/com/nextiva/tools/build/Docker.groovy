@@ -1,10 +1,8 @@
 package com.nextiva.tools.build
 
-import com.nextiva.config.Config
 import com.nextiva.config.GitFlow
 import com.nextiva.config.TrunkBased
 import hudson.AbortException
-
 import java.util.regex.Pattern
 
 import static com.nextiva.SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
@@ -119,9 +117,9 @@ class Docker extends BuildTool {
     }
 
     Boolean isTagLatest() {
-        logger.trace("Getting branch name from Global")
+        logger.trace("Getting branch name from Config")
         logger.trace("branchName: $config.branchName")
-        logger.trace("Getting branching model from Global")
+        logger.trace("Getting branching model from Config")
         logger.trace("branchModel:  $config.branchingModel")
         Map chooser = [(GitFlow.class)   : /^(dev|develop)$/,
                        (TrunkBased.class): /^master$/]
