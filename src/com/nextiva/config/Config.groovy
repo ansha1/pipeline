@@ -16,6 +16,8 @@ import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_DEV
 import static com.nextiva.SharedJobsStaticVars.PIP_EXTRA_INDEX_URL_PROD
 import static com.nextiva.SharedJobsStaticVars.TWINE_REPOSITORY_URL_DEV
 import static com.nextiva.SharedJobsStaticVars.TWINE_REPOSITORY_URL_PROD
+import static com.nextiva.SharedJobsStaticVars.JENKINS_KUBERNETES_CLUSTER_DOMAIN
+import static com.nextiva.utils.Utils.buildID
 
 
 /**
@@ -61,6 +63,8 @@ class Config implements Serializable {
     Map<String, String> kubeupConfig
     List<Environment> environments
     DeploymentType deploymentType
+    String namespace
+    String ciClusterDomain
 
     private ToolFactory toolFactory = new ToolFactory()
     private Logger logger = new Logger(this)
@@ -168,6 +172,8 @@ class Config implements Serializable {
         logger.debug("start setDefaults()")
         branchName = script.env.BRANCH_NAME
 
+        namespace = buildID(this.@script.env.JOB_NAME, this.@script.env.BUILD_ID)
+        ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
         if (deploymentType == null) {
             if ([GitFlow.feature, TrunkBased.feature].contains(branchingModel.getBranchType(branchName))) {
                 deploymentType = DeploymentType.DEV

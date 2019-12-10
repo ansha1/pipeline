@@ -47,10 +47,8 @@ class ConfigTest extends BasePipelineTest implements JenkinsScriptsHelper {
         scriptRoots += "src/test/jenkins/jobs/nextivaPipeline"
         super.setUp()
         prepareSharedLib()
-        Script script = loadScript("simple_python_app.jenkins")
-        binding.setVariable 'env', [
-                BRANCH_NAME: 'feature/foo'
-        ]
+        Script script = loadScriptHelper("simple_python_app.jenkins")
+        script.env.BRANCH_NAME = 'feature/foo'
         pipelineConfig.script = script
     }
 
