@@ -32,7 +32,7 @@ import static com.nextiva.utils.Utils.buildID
 class Config implements Serializable {
     @Delegate PipelineConfig pipelineConfig
     private BranchingModel branchingModel
-    private Tool deployTool
+    private DeployTool deployTool
     List<Environment> environmentsToDeploy
     Map slaveConfiguration
     Boolean isJobHasDependencies = false
@@ -305,7 +305,7 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    Tool getDeployTool() {
+    DeployTool getDeployTool() {
         return this.@deployTool
     }
 
