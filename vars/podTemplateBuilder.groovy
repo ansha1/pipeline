@@ -4,6 +4,9 @@ def call(body) {
 
     podTemplate(label: 'parent', yaml: parentPodtemplate) {
         podTemplate(label: label, workingDir: '/home/jenkins', namespace: buildNamespace,
+                slaveConnectTimeout: 1200,
+                activeDeadlineSeconds: 1200,
+                idleMinutes: 240,
                 containers: [containerTemplate(name: 'build', image: image, command: 'cat', ttyEnabled: true,
                         resourceRequestCpu: resourceRequestCpu,
                         resourceRequestMemory: resourceRequestMemory,

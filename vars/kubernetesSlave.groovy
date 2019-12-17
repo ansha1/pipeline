@@ -36,7 +36,8 @@ def call(Map slaveConfig, body) {
             effect: NoSchedule
     """.stripIndent())
     withNamespace(iD) {
-        podTemplate(label: iD, namespace: iD, showRawYaml: false, slaveConnectTimeout: 300,
+        podTemplate(label: iD, namespace: iD, showRawYaml: false,
+                slaveConnectTimeout: 1200, activeDeadlineSeconds: 1200, idleMinutes: 240,
                 nodeSelector: 'dedicatedgroup=jenkins-slave', imagePullSecrets: ['regsecret'],
                 annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
                 containers: containers(containerResources), volumes: volumes(), yaml: rawYaml) {
