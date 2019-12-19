@@ -36,7 +36,8 @@ def call(Map slaveConfig, body) {
             effect: NoSchedule
     """.stripIndent())
     withNamespace(iD) {
-        podTemplate(label: iD, namespace: iD, showRawYaml: false, slaveConnectTimeout: 300,
+        podTemplate(label: iD, namespace: iD, showRawYaml: false,
+                slaveConnectTimeout: 1200, activeDeadlineSeconds: 1200, idleMinutes: 240,
                 nodeSelector: 'dedicatedgroup=jenkins-slave', imagePullSecrets: ['regsecret'],
                 annotations: [podAnnotation(key: 'cluster-autoscaler.kubernetes.io/safe-to-evict', value: 'false')],
                 containers: containers(containerResources), volumes: volumes(), yaml: rawYaml) {
@@ -92,7 +93,7 @@ def volumes() {
             hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
             hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
             hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
-            secretVolume(mountPath: '/root/.m2', secretName: 'maven-secret'),
+            secretVolume(mountPath: '/home/jenkins/.m2', secretName: 'maven-secret'),
     ]
 }
 
