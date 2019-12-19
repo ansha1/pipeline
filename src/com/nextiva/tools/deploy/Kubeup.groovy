@@ -77,80 +77,18 @@ class Kubeup extends DeployTool implements Serializable {
         logger.debug("clone complete")
         def home = toolHome
         config.script.container(name) {
-            config.script.dir(home) {
-                config.script.env.PATH = "${config.script.env.PATH}:${home}"
-                kubectlInstall()
-                kubeupInstall()
-                kubedogInstall()
-                jqInstall()
-                vaultInstall()
-                vaultLogin(VAULT_URL)
-            }
+            vaultLogin(VAULT_URL)
             kubeLogin(clusterDomain)
         }
         logger.debug("init complete")
         initialized = true
     }
 
-    def kubeupInstall() {
-        logger.debug("kubeupInstall start")
-        try {
-            config.script.sh "kubeup --version"
-        } catch (e) {
-            throw new AbortException("kubeup is not installed, aborting... $e")
-        }
-        logger.debug("kubeupInstall complete")
-    }
-
-    def kubedogInstall() {
-        logger.debug("kubedogInstall start")
-        try {
-            String output = shWithOutput(config.script, "kubedog version")
-            logger.debug("$output")
-        } catch (e) {
-            logger.warn("kubedog is not installed, going to install kubedog...")
-            String out = shWithOutput(config.script, """
-            mkdir -p ${toolHome}
-            curl -L https://dl.bintray.com/flant/kubedog/v0.2.0/kubedog-linux-amd64-v0.2.0 -o $toolHome/kubedog
-            chmod +x $toolHome/kubedog
-            kubedog version""")
-            logger.debug("$out")
-            config.script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
-        }
-        logger.debug("kubedogInstall complete")
-    }
-
-    def kubectlInstall() {
-        logger.debug("kubectlInstall start")
-        config.script.kubernetes.kubectlInstall()
-        logger.debug("kubectlInstall complete")
-    }
-
-    def vaultInstall() {
-        logger.debug("vaultInstall start")
-        config.script.kubernetes.vaultInstall()
-        logger.debug("vaultInstall complete")
-    }
-
-    def jqInstall() {
-        logger.debug("jqInstall start")
-        config.script.kubernetes.jqInstall()
-        logger.debug("jqInstall complete")
-    }
-
-    def kubeloginInstall() {
-        logger.debug("going to install kubelogin")
-        //TODO: add kubelogin install method
-//            script.kubernetes.kubeloginInstall()
-        logger.debug("kubelogin complete")
-        logger.debug("setting env variables")
+    def kubeLogin(String clusterDomain) {
         config.script.env.KUBELOGIN_CONFIG = "${toolHome}/.kubelogin"
         config.script.env.KUBECONFIG = "${toolHome}/kubeconfig"
-    }
-
-    def kubeLogin(String clusterDomain) {
-        kubeloginInstall()
-        String output
+        config.script.env.KUBEDOG_KUBE_CONFIG = "${toolHome}/kubeconfig"
+        def output = ""
         config.script.withCredentials([config.script.usernamePassword(credentialsId: 'jenkinsbitbucket', usernameVariable: 'KUBELOGIN_USERNAME', passwordVariable: 'KUBELOGIN_PASSWORD')]) {
             output = shWithOutput(config.script, """
             unset KUBERNETES_SERVICE_HOST
@@ -162,7 +100,7 @@ class Kubeup extends DeployTool implements Serializable {
     }
 
     def vaultLogin(String vaultUrl) {
-        logger.debug("trying to login in the Vault")
+        logger.debug("trying to login into the Vault")
         String output
         config.script.withCredentials([config.script.usernamePassword(credentialsId: "vault-ro-access", usernameVariable: 'VAULT_RO_USER', passwordVariable: 'VAULT_RO_PASSWORD')]) {
             try {
@@ -192,7 +130,7 @@ class Kubeup extends DeployTool implements Serializable {
                     [ "\$PWD" = "/" ] && { echo '$application was not found'; exit 1; }
                     # fix for builds running in kubernetes, clean up predefined variables.
                     ${unsetEnvServiceDiscovery()}
-                    BUILD_VERSION=$version
+                    export BUILD_VERSION=$version
                     kubeup --yes --no-color $dryRunParam --namespace $namespace --configset $configset $application 2>&1
                     """)
                     if (!dryRun) {

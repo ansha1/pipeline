@@ -132,8 +132,8 @@ class Utils {
     }
 
     /**
-     * Gets Global singleton
-     * @return Global singleton
+     * Gets Config singleton
+     * @return Config singleton
      */
     static Config getConfig() {
         return Config.getInstance()

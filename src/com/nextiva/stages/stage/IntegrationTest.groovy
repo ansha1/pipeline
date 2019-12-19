@@ -9,7 +9,6 @@ import hudson.AbortException
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_TEST_REGISTRY_URL
 import static com.nextiva.SharedJobsStaticVars.NEXTIVA_DOCKER_REGISTRY_CREDENTIALS_ID
 import static com.nextiva.SharedJobsStaticVars.JENKINS_KUBERNETES_CLUSTER_DOMAIN
-import static com.nextiva.utils.Utils.buildID
 import static com.nextiva.config.Config.instance as config
 
 class IntegrationTest extends Stage {
@@ -39,13 +38,10 @@ class IntegrationTest extends Stage {
         Map toolMap = ["name": "kubeup"]
         toolFactory.mergeWithDefaults(toolMap)
         Kubeup kubeup = toolFactory.build(toolMap)
-        String clusterDomain = JENKINS_KUBERNETES_CLUSTER_DOMAIN
-        kubeup.init(clusterDomain)
-        String namespace = buildID(config.script.env.JOB_NAME, config.script.env.BUILD_ID)
+        kubeup.init(JENKINS_KUBERNETES_CLUSTER_DOMAIN)
         String configset = "test"
-        String ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
-        config.script.withEnv(["CLUSTER_DOMAIN=$ciClusterDomain"]) {
-            kubeup.install(config.appName, config.version, namespace, configset, false)
+        config.script.withEnv(["CLUSTER_DOMAIN=${config.ciClusterDomain}"]) {
+            kubeup.install(config.appName, config.version, config.namespace, configset, false)
         }
 
         build.each { toolConfiguration ->

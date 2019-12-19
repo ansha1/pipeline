@@ -6,8 +6,6 @@ import com.nextiva.config.TrunkBased
 import com.nextiva.stages.stage.*
 import com.nextiva.utils.Logger
 
-import java.util.regex.Pattern
-
 import static com.nextiva.config.Config.instance as config
 
 
@@ -32,8 +30,7 @@ class StageFactory {
             ],
             (ConfigureProjectVersion.class)     : [
                     "deployOnly"    : false,
-                    "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.notMaster,
-                                       (TrunkBased.class): BranchingModelRegexps.any]
+                    "version"       : null
             ],
             (Build.class)                       : [
                     "deployOnly"    : false,
