@@ -26,7 +26,7 @@ class PipelineConfig {
     /**
      * Application name
      */
-    String appName //TODO: add default appName generation based on the repository name
+    String appName
 
     /**
      * Slack channel to send notifications
