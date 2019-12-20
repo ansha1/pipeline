@@ -30,12 +30,37 @@ import static com.nextiva.utils.Utils.buildID
  * @see com.nextiva.config.PipelineConfig
  */
 class Config implements Serializable {
-    @Delegate PipelineConfig pipelineConfig
+    private Script script
+    private String appName //TODO: add default appName generation based on the repository name
+    private String channelToNotify
+    String version
+    private String branchName
     private BranchingModel branchingModel
-    private DeployTool deployTool
+    private String deployToolName
+    private Tool deployTool
+    private Boolean isDeployEnabled = true
     List<Environment> environmentsToDeploy
+    private String jobTimeoutMinutes
+    private Boolean isUnitTestEnabled = true
+    private Boolean isSecurityScanEnabled = true
+    private Boolean isSonarAnalysisEnabled = true
+    private Boolean isQACoreTeamTestEnabled = true
+    private Boolean isIntegrationTestEnabled = false
+    List<Map> build
+    private List jobTriggers
+    private String buildDaysToKeep
+    private String buildNumToKeep
+    private String buildArtifactDaysToKeep
+    private String buildArtifactNumToKeep
+    private Map auth
+    private Map jobProperties
+    private Boolean deployOnly
+    Map jenkinsContainer
     Map slaveConfiguration
+    Map<String, String> extraEnvs
     Boolean isJobHasDependencies = false
+    Map<String, String> dependencies
+    Map<String, String> kubeupConfig
     List<Environment> environments
     DeploymentType deploymentType
     String namespace
@@ -80,9 +105,35 @@ class Config implements Serializable {
 
 
     void copyProperties(PipelineConfig pipelineConfig) {
-        this.pipelineConfig = pipelineConfig
+        this.@script = pipelineConfig.script
+        this.@appName = pipelineConfig.appName
+        this.@channelToNotify = pipelineConfig.channelToNotify
+        this.@version = pipelineConfig.version
+        this.@branchName = pipelineConfig.branchName
         this.setBranchingModel(pipelineConfig.branchingModel)
         this.@logger.trace("Branching model is ${this.@branchingModel.class.simpleName}")
+        this.@isDeployEnabled = pipelineConfig.isDeployEnabled
+        this.@deployToolName = pipelineConfig.deployTool
+        this.@jobTimeoutMinutes = pipelineConfig.jobTimeoutMinutes
+        this.@isUnitTestEnabled = pipelineConfig.isUnitTestEnabled
+        this.@isSecurityScanEnabled = pipelineConfig.isSecurityScanEnabled
+        this.@isSonarAnalysisEnabled = pipelineConfig.isSonarAnalysisEnabled
+        this.@isQACoreTeamTestEnabled = pipelineConfig.isQACoreTeamTestEnabled
+        this.@isIntegrationTestEnabled = pipelineConfig.isIntegrationTestEnabled
+        this.@build = pipelineConfig.build
+        this.@jobTriggers = pipelineConfig.jobTriggers
+        this.@buildDaysToKeep = pipelineConfig.buildDaysToKeep
+        this.@buildNumToKeep = pipelineConfig.buildNumToKeep
+        this.@buildArtifactDaysToKeep = pipelineConfig.buildArtifactDaysToKeep
+        this.@buildArtifactNumToKeep = pipelineConfig.buildArtifactNumToKeep
+        this.@auth = pipelineConfig.auth
+        this.@jobProperties = pipelineConfig.jobProperties
+        this.@deployOnly = pipelineConfig.deployOnly
+        this.@jenkinsContainer = pipelineConfig.jenkinsContainer
+        this.@slaveConfiguration = pipelineConfig.slaveConfiguration
+        this.@extraEnvs = pipelineConfig.extraEnvs
+        this.@dependencies = pipelineConfig.dependencies
+        this.@kubeupConfig = pipelineConfig.kubeupConfig
         environments = pipelineConfig.environments.collect { it as Environment }
     }
 
@@ -121,7 +172,7 @@ class Config implements Serializable {
         logger.debug("start setDefaults()")
         branchName = script.env.BRANCH_NAME
 
-        namespace = buildID(script.env.JOB_NAME, script.env.BUILD_ID)
+        namespace = buildID(this.@script.env.JOB_NAME, this.@script.env.BUILD_ID)
         ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
         if (deploymentType == null) {
             if ([GitFlow.feature, TrunkBased.feature].contains(branchingModel.getBranchType(branchName))) {
@@ -184,15 +235,15 @@ class Config implements Serializable {
     @PackageScope
     void setExtraEnvVariables() {
         logger.debug("start setExtraEnvVariables() complete")
-        script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
+        this.@script.env['PIP_INDEX_URL'] = (deploymentType == DeploymentType.DEV) ? PIP_EXTRA_INDEX_URL_DEV :
                 PIP_EXTRA_INDEX_URL_PROD
-        script.env['TWINE_REPOSITORY_URL'] = (deploymentType == DeploymentType.DEV) ? TWINE_REPOSITORY_URL_DEV :
+        this.@script.env['TWINE_REPOSITORY_URL'] = (deploymentType == DeploymentType.DEV) ? TWINE_REPOSITORY_URL_DEV :
                 TWINE_REPOSITORY_URL_PROD
         if (extraEnvs) {
             logger.debug("Adding extra envVars")
             extraEnvs.each { k, v ->
                 logger.debug("[$k]=$v")
-                script.env[k] = v
+                this.@script.env[k] = v
             }
         }
         logger.debug("complete setExtraEnvVariables() complete")
@@ -232,13 +283,13 @@ class Config implements Serializable {
         logger.debug("start configureDeployTools()")
 
         if (isDeployEnabled) {
-            logger.debug("Deploy tool is $pipelineConfig.deployTool")
+            logger.debug("Deploy tool is $deployToolName")
 
-            def toolConfig = ["name": pipelineConfig.deployTool]
+            def toolConfig = ["name": deployToolName]
             toolFactory.mergeWithDefaults(toolConfig)
-            putSlaveContainerResource(pipelineConfig.deployTool, toolConfig)
+            putSlaveContainerResource(deployToolName, toolConfig)
 
-            this.@deployTool = toolFactory.build(toolConfig)
+            deployTool = toolFactory.build(toolConfig)
 
             logger.trace("Deploy tool after configuration: ${deployTool.toString()}")
         } else {
@@ -305,12 +356,142 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    DeployTool getDeployTool() {
+    Tool getDeployTool() {
         return this.@deployTool
+    }
+
+    @NonCPS
+    Script getScript() {
+        return this.@script
+    }
+
+    @NonCPS
+    String getAppName() {
+        return this.@appName
+    }
+
+    @NonCPS
+    String getChannelToNotify() {
+        return this.@channelToNotify
+    }
+
+    @NonCPS
+    String getBranchName() {
+        return this.@branchName
+    }
+
+    @NonCPS
+    Boolean getIsDeployEnabled() {
+        return this.@isDeployEnabled
+    }
+
+    @NonCPS
+    List<Environment> getEnvironmentsToDeploy() {
+        return this.@environmentsToDeploy
+    }
+
+    @NonCPS
+    String getJobTimeoutMinutes() {
+        return this.@jobTimeoutMinutes
+    }
+
+    @NonCPS
+    Boolean getIsUnitTestEnabled() {
+        return this.@isUnitTestEnabled
+    }
+
+    @NonCPS
+    Boolean getIsSecurityScanEnabled() {
+        return this.@isSecurityScanEnabled
+    }
+
+    @NonCPS
+    Boolean getIsSonarAnalysisEnabled() {
+        return this.@isSonarAnalysisEnabled
+    }
+
+    @NonCPS
+    Boolean getIsQACoreTeamTestEnabled() {
+        return this.@isQACoreTeamTestEnabled
+    }
+
+    @NonCPS
+    Boolean getIsIntegrationTestEnabled() {
+        return this.@isIntegrationTestEnabled
+    }
+
+    @NonCPS
+    List<Map> getBuild() {
+        return this.@build
+    }
+
+    @NonCPS
+    List getJobTriggers() {
+        return this.@jobTriggers
+    }
+
+    @NonCPS
+    String getBuildDaysToKeep() {
+        return this.@buildDaysToKeep
+    }
+
+    @NonCPS
+    String getBuildNumToKeep() {
+        return this.@buildNumToKeep
+    }
+
+    @NonCPS
+    String getBuildArtifactDaysToKeep() {
+        return this.@buildArtifactDaysToKeep
+    }
+
+    @NonCPS
+    String getBuildArtifactNumToKeep() {
+        return this.@buildArtifactNumToKeep
+    }
+
+    @NonCPS
+    Map getAuth() {
+        return this.@auth
+    }
+
+    @NonCPS
+    Map getJobProperties() {
+        return this.@jobProperties
+    }
+
+    @NonCPS
+    Boolean getDeployOnly() {
+        return this.@deployOnly
+    }
+
+    @NonCPS
+    Map getJenkinsContainer() {
+        return this.jenkinsContainer
+    }
+
+    @NonCPS
+    Map getSlaveConfiguration() {
+        return this.@slaveConfiguration
+    }
+
+    @NonCPS
+    Map<String, String> getExtraEnvs() {
+        return this.@extraEnvs
+    }
+
+    @NonCPS
+    Map<String, String> getDependencies() {
+        return this.@dependencies
     }
 
     @NonCPS
     List<Stage> getStages() {
         return this.@stages
+    }
+
+    @NonCPS
+    Map<String, String> getKubeupConfig() {
+        return this.@kubeupConfig
     }
 }
