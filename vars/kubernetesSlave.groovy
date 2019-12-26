@@ -88,7 +88,7 @@ def volumes() {
     [
             hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
             hostPathVolume(hostPath: '/opt/shared_repos', mountPath: 'opt/shared_repos'),
-            hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/home/jenkins/.m2repo'),
+            hostPathVolume(hostPath: '/opt/m2cache', mountPath: '/root/.m2repo'),
             hostPathVolume(hostPath: '/opt/npmcache', mountPath: '/opt/npmcache'),
             hostPathVolume(hostPath: '/opt/cypress_cache', mountPath: '/opt/cypress_cache'),
             hostPathVolume(hostPath: '/opt/yarncache', mountPath: '/opt/yarncache'),
@@ -100,9 +100,9 @@ List processEnvVars(Map extraEnv) {
     envVars = [envVar(key: 'YARN_CACHE_FOLDER', value: '/opt/yarn_cache'),
                envVar(key: 'CYPRESS_CACHE_FOLDER', value: '/opt/cypress_cache'),
                envVar(key: 'npm_config_cache', value: '/opt/npmcache'),
-               envVar(key: 'M2_LOCAL_REPO', value: '/home/jenkins/.m2repo'),
-               envVar(key: 'MAVEN_CONFIG', value: '/home/jenkins/.m2repo'),
-               envVar(key: 'MAVEN_OPTS', value: '-Duser.home=/home/jenkins')]
+               envVar(key: 'M2_LOCAL_REPO', value: '/root/.m2repo'),
+               envVar(key: 'MAVEN_CONFIG', value: '/root/.m2repo'),
+               envVar(key: 'MAVEN_OPTS', value: '-Duser.home=/root')]
     extraEnv.each { e -> envVars << envVar(key: "${e.key}", value: "${e.value}") }
     return envVars
 }
