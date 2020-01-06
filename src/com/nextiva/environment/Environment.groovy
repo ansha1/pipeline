@@ -18,8 +18,6 @@ class Environment {
     String kubernetesConfigSet
     String kubernetesNamespace = "default"
 
-    String ansiblePlaybookPath
-    String ansibleInventoryPath
     String ansibleInventory
 
     List<String> healthChecks = []

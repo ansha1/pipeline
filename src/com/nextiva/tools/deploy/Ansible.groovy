@@ -1,24 +1,28 @@
 package com.nextiva.tools.deploy
 
 import com.nextiva.environment.Environment
+import com.nextiva.tools.build.*
 
+import static com.nextiva.SharedJobsStaticVars.ANSIBLE_PASSWORD_PATH
+import static com.nextiva.SharedJobsStaticVars.GIT_CHECKOUT_CREDENTIALS
 import static com.nextiva.config.Config.instance as config
 import static com.nextiva.utils.GitUtils.clone
 
 class Ansible extends DeployTool {
 
-    Ansible(Map configuration) {
+    String inventoryPath
+    String playbookPath
+
+    Ansible(Map<String, String> configuration) {
         super(configuration)
+        inventoryPath = configuration.get('inventoryPath').trim().replaceAll(/\/$/, "")
+        playbookPath = configuration.get('playbookPath').trim()
     }
 
-//    Map deployment = ["name"         : "Ansible",
-//                      "image"        : "ansibleimage",
-//                      "repository"   : "repo",
-//                      "branch"       : "master",
-//                      "inventoryPath": 'ansible/role-based_playbooks/inventory/java-app/dev',
-//                      "playbookPath" : 'ansible/role-based_playbooks/java-app.yml',
-//                      "ansibleArgs"  : 'args']
     void init() {
+        if (isInitialized()) {
+            return
+        }
         logger.debug("start init $name tool")
         logger.debug("Clonning repository $repository branch $branch in toolHome $toolHome")
         clone(config.script, repository, branch, toolHome)
@@ -29,32 +33,44 @@ class Ansible extends DeployTool {
 
     @Override
     void deploy(Environment environment) {
-        config.script.stage("ansible: $it.environmentName") {
-            config.script.container(getName()) {
-                config.script.runAnsiblePlaybook(repoDir, "$it.ansibleInventoryPath/$it.ansibleInventory", it.ansiblePlaybookPath, getAnsibleExtraVars(configuration))
+        Script s = config.script
+        s.container(name) {
+            init()
+            s.stage("ansible: ${environment.name}") {
+                s.withCredentials([s.file(credentialsId: 'ansible-vault-password-release-management',
+                        variable: 'ANSIBLE_PASSWORD_PATH')]) {
+                    s.sh "ln -s \$ANSIBLE_PASSWORD_PATH ${ANSIBLE_PASSWORD_PATH}"
+                    s.sshagent(credentials: [GIT_CHECKOUT_CREDENTIALS]) {
+                        s.runAnsiblePlaybook(toolHome, "${inventoryPath}/${environment.ansibleInventory}",
+                                playbookPath, getAnsibleExtraVars())
+                    }
+                }
             }
-        }
-        config.script.stage("healthcheck: $it.environmentName") {
-            health(it.healthChecks)
+            if (environment.healthChecks) {
+                s.stage("healthcheck: $environment.name") {
+                    health(environment.healthChecks)
+                }
+            }
         }
     }
 
 
-    Map getAnsibleExtraVars(Map configuration) {
+    Map getAnsibleExtraVars() {
 
         Map vars = [:]
-        switch (configuration.get('language')) {
-            case 'java':
-                vars = ['application_version': configuration.get("buildVersion"),
-                        'maven_repo'         : configuration.get("version").contains('SNAPSHOT') ? 'snapshots' : 'releases']
+        BuildTool buildTool = config.build[0].instance
+        switch (buildTool.class) {
+            case Maven:
+                vars = ['application_version': config.version,
+                        'maven_repo'         : config.version.contains('SNAPSHOT') ? 'snapshots' : 'releases']
                 break
-            case 'python':
-                vars = ['version': configuration.get("buildVersion")]
+            case Python:
+                vars = ['version': config.version]
                 break
-            case 'js':
-                vars = ['version'            : configuration.get("buildVersion"),
-                        'component_name'     : configuration.get("appName"),
-                        'static_assets_files': configuration.get("appName")]
+            case Npm:
+                vars = ['version'            : config.version,
+                        'component_name'     : config.appName,
+                        'static_assets_files': config.appName]
                 break
             default:
                 error("Incorrect programming language, please set one of the supported languages: java, python, js")

@@ -8,13 +8,13 @@ import static com.nextiva.config.Config.instance as config
 
 abstract class DeployTool implements Serializable, Tool {
 
-    String name
-    Logger logger
-    String toolHome
-    Boolean initialized = false
+    public String name
+    public Logger logger
+    public String toolHome
+    public Boolean initialized = false
 
-    String repository
-    String branch
+    public String repository
+    public String branch
 
     DeployTool(Map deployToolConfig) {
         this.name = deployToolConfig.get("name")
@@ -26,7 +26,7 @@ abstract class DeployTool implements Serializable, Tool {
     }
 
     Boolean isInitialized(){
-        return initialized
+        return this.@initialized
     }
 
     Boolean health() {
