@@ -60,7 +60,7 @@ class Config implements Serializable {
     Map<String, String> extraEnvs
     Boolean isJobHasDependencies = false
     Map<String, String> dependencies
-    Map<String, String> kubeupConfig
+    Map<String, String> deployToolConfig
     List<Environment> environments
     DeploymentType deploymentType
     String namespace
@@ -135,7 +135,7 @@ class Config implements Serializable {
         this.@slaveConfiguration = pipelineConfig.slaveConfiguration
         this.@extraEnvs = pipelineConfig.extraEnvs
         this.@dependencies = pipelineConfig.dependencies
-        this.@kubeupConfig = pipelineConfig.kubeupConfig
+        this.@deployToolConfig = pipelineConfig.deployToolConfig
         this.@newRelicAppIdMap = pipelineConfig.newRelicAppIdMap
         this.@newRelicAppName = pipelineConfig.newRelicAppName
         environments = pipelineConfig.environments.collect { it as Environment }
@@ -258,7 +258,7 @@ class Config implements Serializable {
         logger.debug("start configuring build dependency provisioning")
         if (dependencies) {
             logger.debug("Job has dependencies, configuraitng kubeup")
-            Map kubeup = ["name": "kubeup"]
+            Map kubeup = ["name": "kubeup"] + deployToolConfig
             toolFactory.mergeWithDefaults(kubeup)
             //TODO get rid of map put
             putSlaveContainerResource("kubeup", kubeup)
@@ -289,7 +289,7 @@ class Config implements Serializable {
         if (isDeployEnabled) {
             logger.debug("Deploy tool is $deployToolName")
 
-            def toolConfig = ["name": deployToolName]
+            def toolConfig = ["name": deployToolName] + deployToolConfig
             toolFactory.mergeWithDefaults(toolConfig)
             putSlaveContainerResource(deployToolName, toolConfig)
 
@@ -495,7 +495,7 @@ class Config implements Serializable {
     }
 
     @NonCPS
-    Map<String, String> getKubeupConfig() {
-        return this.@kubeupConfig
+    Map<String, String> getDeployToolConfig() {
+        return this.@deployToolConfig
     }
 }
