@@ -65,6 +65,8 @@ class Config implements Serializable {
     DeploymentType deploymentType
     String namespace
     String ciClusterDomain
+    Map newRelicAppIdMap = [:]
+    String newRelicAppName
 
     private ToolFactory toolFactory = new ToolFactory()
     private Logger logger = new Logger(this)
@@ -134,6 +136,8 @@ class Config implements Serializable {
         this.@extraEnvs = pipelineConfig.extraEnvs
         this.@dependencies = pipelineConfig.dependencies
         this.@kubeupConfig = pipelineConfig.kubeupConfig
+        this.@newRelicAppIdMap = pipelineConfig.newRelicAppIdMap
+        this.@newRelicAppName = pipelineConfig.newRelicAppName
         environments = pipelineConfig.environments.collect { it as Environment }
     }
 

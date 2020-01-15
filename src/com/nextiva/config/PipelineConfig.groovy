@@ -180,6 +180,9 @@ class PipelineConfig {
      */
     Map branchPermissions = [:]
 
+    Map newRelicAppIdMap = [:]
+    String newRelicAppName
+
     @NonCPS
     List<Environment> getEnvironments() {
         return this.@environments
