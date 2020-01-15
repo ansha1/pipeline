@@ -13,7 +13,7 @@ def call(body) {
         ansiColor('xterm') {
             // evaluate the body block, and collect configuration into the object
             PipelineConfig pipelineConfig = new PipelineConfig()
-            body.resolveStrategy = Closure.DELEGATE_ONLY
+            body.resolveStrategy = Closure.DELEGATE_FIRST
             body.delegate = pipelineConfig
             pipelineConfig.script = this
             body()
