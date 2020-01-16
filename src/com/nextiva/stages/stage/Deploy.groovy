@@ -13,8 +13,14 @@ class Deploy extends Stage {
 
     @Override
     def stageBody() {
+        def m = [
+                "NEW_RELIC_APP_ID"  : config.newRelicAppIdMap,
+                "NEW_RELIC_APP_NAME": config.newRelicAppName,
+                "BUILD_VERSION"     : config.version
+        ]
         config.environmentsToDeploy.each {
             doDeploy(config.deployTool, it)
+            config.script.newrelic.postDeployment(m, it.name)
         }
         doPostDeploy()
     }
