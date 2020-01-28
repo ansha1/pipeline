@@ -15,7 +15,7 @@ class StartBuildDependencies extends Stage {
     @Override
     def stageBody() {
         ToolFactory toolFactory = new ToolFactory()
-        Map toolMap = ["name": "kubeup"] + config.kubeupConfig
+        Map toolMap = ["name": "kubeup"] + config.deployToolConfig
         toolFactory.mergeWithDefaults(toolMap)
         Kubeup kubeup = toolFactory.build(toolMap)
         kubeup.init(JENKINS_KUBERNETES_CLUSTER_DOMAIN)

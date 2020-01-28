@@ -16,7 +16,6 @@ import static com.nextiva.SharedJobsStaticVars.ANSIBLE_NODE_LABEL
 import static org.assertj.core.api.Assertions.assertThat
 
 
-
 class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, JenkinsScriptsHelper {
 
     @Override
@@ -193,6 +192,34 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
                                             "CollectBuildResults",
                                             "SendNotifications"]
                 )
+    }
+
+    @Test
+    void ansibleDeploy() {
+        Script script = loadScriptHelper("ansible_deploy.jenkins")
+        helper.registerAllowedMethod 'file', [Map], { Map m ->
+            if(m.containsKey('credentialsId') && m.credentialsId == "ansible-vault-password-release-management" &&
+                    m.containsKey("variable") && m.credentialsId == "ANSIBLE_PASSWORD_PATH") {
+                return "ANSIBLE_PASSWORD_PATH"
+            }
+        }
+        runScript(script)
+
+        assertJobStatusSuccess()
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Ensure that ansible deploy step exists")
+                .contains("ansible Deploy: Deploy to dev")
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "runAnsiblePlaybook"
+        }.collect {
+            it.argsToString()
+        }).describedAs("Ensure that runAnsiblePlaybook receives correct parameters")
+                .contains("deploy/ansible, analytics_standalone/inventory/analytics/dev, analytics_standalone/api-server.yml, {version=1.0.1}")
     }
 
     @Test

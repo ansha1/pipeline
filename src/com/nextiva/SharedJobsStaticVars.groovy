@@ -118,7 +118,11 @@ class SharedJobsStaticVars {
                                                                "resourceRequestMemory": "128Mi",
                                                                "resourceLimitMemory"  : "512Mi",
                                                                "repository"           : "ssh://git@bitbucket.org/nextiva/release-management.git",
-                                                               "branch"               : "dev",],
+                                                               "branch"               : "dev",
+                                                               "envVars"              : [
+                                                                       "ANSIBLE_HOST_KEY_CHECKING": "False",
+                                                                       "ANSIBLE_REMOTE_USER"      : "jenkins",
+                                                               ]],
                                                    "static" : ["image"                : "ansible/ansible-runner:1.3.4",
                                                                "resourceRequestMemory": "128Mi",
                                                                "resourceLimitMemory"  : "512Mi",

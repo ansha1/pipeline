@@ -1,0 +1,15 @@
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = "ansible-deployment-example"
+    channelToNotify = "testchannel"
+
+    build = [["name": "python", "image": "python:3.6"]]
+
+    deployTool = "ansible"
+    deployToolConfig = [
+            'inventoryPath': 'analytics_standalone/inventory/analytics/',
+            'playbookPath': 'analytics_standalone/api-server.yml'
+    ]
+}

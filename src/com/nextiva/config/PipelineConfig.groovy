@@ -168,7 +168,7 @@ class PipelineConfig {
     /**
      * Additional kubeup configuration
      */
-    Map<String, String> kubeupConfig = [:]
+    Map<String, String> deployToolConfig = [:]
 
     /**
      * Additional environments definition.
