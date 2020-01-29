@@ -12,7 +12,9 @@ import static com.nextiva.config.Config.instance as config
 class StageFactory {
     Logger logger = new Logger(this)
 
-    StageFactory() {}
+    Map configProperties
+
+    StageFactory() { }
 
     static final Map<Class, Map> stages = [
             (Checkout.class)                    : [:],
@@ -86,6 +88,7 @@ class StageFactory {
     }
 
     List<Stage> getStagesFromConfiguration() {
+        configProperties = config.properties
         logger.debug("Check what steps are allowed to perform with this configuration")
         List<Stage> flow = []
 
@@ -123,8 +126,8 @@ class StageFactory {
                     return result
                     break
                 default:
-                    if (config.properties.containsKey(key)) {
-                        def configurationValue = config.properties.get(key)
+                    if (configProperties.containsKey(key)) {
+                        def configurationValue = configProperties.get(key)
                         logger.debug("Comparing configuration value: $configurationValue and definition value: $value")
                         Boolean result = configurationValue == value
                         logger.debug("result: $result")
