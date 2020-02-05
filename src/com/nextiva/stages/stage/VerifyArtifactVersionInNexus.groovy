@@ -49,7 +49,7 @@ class VerifyArtifactVersionInNexus extends Stage {
                         logger.info("Current artifact version does not exist in Nexus, continue...")
                     }
                 } catch (e) {
-                    logger.error("Error when executing ${toolName} ${stageName}:", e)
+                    logger.error("Error when executing ${tool.name} ${stageName}:", e)
                     throw e
                 }
             }

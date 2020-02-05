@@ -14,7 +14,7 @@ class StageFactory {
 
     Map configProperties
 
-    StageFactory() { }
+    StageFactory() {}
 
     static final Map<Class, Map> stages = [
             (Checkout.class)                    : [:],
@@ -25,14 +25,14 @@ class StageFactory {
                     "branchingModel"      : [(GitFlow.class)   : BranchingModelRegexps.notMaster,
                                              (TrunkBased.class): BranchingModelRegexps.any]
             ],
+            (ConfigureProjectVersion.class)     : [
+                    "deployOnly": false,
+                    "version"   : null
+            ],
             (VerifyArtifactVersionInNexus.class): [
                     "deployOnly"    : false,
                     "branchingModel": [(GitFlow.class)   : BranchingModelRegexps.releaseOrHotfix,
                                        (TrunkBased.class): BranchingModelRegexps.master]
-            ],
-            (ConfigureProjectVersion.class)     : [
-                    "deployOnly"    : false,
-                    "version"       : null
             ],
             (Build.class)                       : [
                     "deployOnly"    : false,
