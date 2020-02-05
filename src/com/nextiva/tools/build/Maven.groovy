@@ -64,10 +64,12 @@ class Maven extends BuildTool {
 
     @Override
     Boolean isArtifactAvailableInRepo() {
-        def status = config.script.sh(
-                script: "mvn org.honton.chas:exists-maven-plugin:0.2.0:remote -Dexists.failIfExists=true -Dexists.skipIfSnapshot=true",
-                returnStatus: true
-        )
-        return status == 0
+        config.script.container(name) {
+            def exitCode = config.script.sh(
+                    script: "mvn org.honton.chas:exists-maven-plugin:0.2.0:remote -Dexists.failIfExists=true -Dexists.skipIfSnapshot=true",
+                    returnStatus: true
+            )
+            return exitCode != 0
+        }
     }
 }
