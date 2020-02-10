@@ -45,7 +45,7 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
                 ["release", BranchNames.release.toList(),
                  ["Checkout", "StartBuildDependencies", "ConfigureProjectVersion", "VerifyArtifactVersionInNexus",
                   "python VerifyArtifactVersionInNexus", "docker VerifyArtifactVersionInNexus",
-                  "Build", "python: build", "UnitTest", "python: unitTest", "IntegrationTest", "python: integrationTest",
+                  "Build", "python: build", "UnitTest", "python: unitTest", "SonarScan", "IntegrationTest", "python: integrationTest",
                   "Publish", "python: publishArtifact", "SecurityScan", "Deploy", "kubeup Deploy: Deploy to qa",
                   "python: postDeploy", "QACoreTeamTest", "QA Core Team Tests", "CollectBuildResults",
                   "SendNotifications"]],
