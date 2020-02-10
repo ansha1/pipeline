@@ -72,7 +72,7 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        helper.registerAllowedMethod 'isPypiPackageExists', [String, String, String], { return true }
+        helper.registerAllowedMethod 'isPypiPackageExists', [String, String, String], { return false }
     }
 
     @Test
