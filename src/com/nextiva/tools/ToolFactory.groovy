@@ -1,6 +1,7 @@
 package com.nextiva.tools
 
 import com.nextiva.tools.build.Docker
+import com.nextiva.tools.build.Make
 import com.nextiva.tools.build.Maven
 import com.nextiva.tools.build.Npm
 import com.nextiva.tools.build.Python
@@ -43,6 +44,9 @@ class ToolFactory {
                 StaticDeploy staticDeploy = new StaticDeploy(toolConfig)
                 logger.trace("Created tool StaticDeploy", staticDeploy)
                 return staticDeploy
+                break
+            case "make":
+                return new Make(toolConfig)
                 break
             default:
                 logger.error("Can't create tool from", toolConfig)
