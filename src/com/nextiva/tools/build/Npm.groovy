@@ -1,10 +1,13 @@
 package com.nextiva.tools.build
 
+import com.nextiva.config.DeploymentType
+
 import static com.nextiva.config.Config.instance as config
 import static com.nextiva.SharedJobsStaticVars.NPM_NEXTIVA_REGISTRY
-import static com.nextiva.SharedJobsStaticVars.NPM_NEXTIVA_PRIVATE_REGISTRY
 
 class Npm extends BuildTool {
+
+    Map <String, String> assetDirs = [:]
 
     def defaultCommands = [
             unitTest: """\
@@ -12,17 +15,25 @@ class Npm extends BuildTool {
                 npm run lint
             """.stripIndent(),
             publish : {
-                config.script.withCredentials([config.script.string(credentialsId: 'jenkins-npm-auth',
-                        variable: 'NPM_CONFIG__AUTH')
-                ]) {
-                    config.script.sh "npm publish -g --scope '@nextiva' --registry='$NPM_NEXTIVA_PRIVATE_REGISTRY'"
+                String repositoryType = "dev"
+                if (config.deploymentType == DeploymentType.RELEASE) {
+                    repositoryType = "production"
+                }
+                def nexus = config.script.nexus
+                assetDirs.each {
+                    String assetName = it.key
+                    String assetDir = it.value
+                    nexus.uploadStaticAssets(repositoryType, assetDir, config.version, assetName)
                 }
             },
             build   : "npm ci --registry='$NPM_NEXTIVA_REGISTRY'"
     ]
 
+    File packageJsonFile
+
     Npm(Map toolConfiguration) {
         super(toolConfiguration)
+        assetDirs = toolConfiguration.assetDirs
         if (unitTestCommands == null) {
             unitTestCommands = defaultCommands.unitTest
         }
@@ -32,6 +43,7 @@ class Npm extends BuildTool {
         if (buildCommands == null) {
             buildCommands = defaultCommands.build
         }
+        packageJsonFile = new File(toolConfiguration.get("packageJson", "./package.json"))
     }
 
     @Override
@@ -42,7 +54,7 @@ class Npm extends BuildTool {
     @Override
     String getVersion() {
         execute {
-            def packageJson = config.script.readJSON file: "package.json"
+            def packageJson = config.script.readJSON file: packageJsonFile.path
             return packageJson.version
         }
     }

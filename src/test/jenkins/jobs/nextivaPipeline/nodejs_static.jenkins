@@ -5,7 +5,9 @@ nextivaPipeline {
     appName = "test-js-pipeline"
     channelToNotify = "testchannel"
 
-    build = [["name": "npm", "image": "node:lts-alpine"]]
+    build = [["name"      : "npm",
+              "assetsDirs": ["packages/spa1/dist", "packages/spa2/dist"]
+             ]]
 
     deployTool = "static"
 }

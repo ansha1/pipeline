@@ -1,0 +1,51 @@
+@Library('pipeline') _
+
+//noinspection GroovyAssignabilityCheck
+nextivaPipeline {
+    appName = 'analytics-spa'
+
+    switch (BRANCH_NAME) {
+        case "develop":
+            DEPLOY_ENV = 'dev'
+            channelToNotify = 'analytics-ci'
+            break
+        case ~/(release|hotfix)\/.+/:
+            DEPLOY_ENV = 'rc'
+            channelToNotify = 'analytics'
+            break
+        case "master":
+            DEPLOY_ENV = 'production'
+            channelToNotify = 'analytics'
+            break
+        default:
+            channelToNotify = 'analytics-ci'
+            DEPLOY_ENV = null
+    }
+
+    build = [
+            ["name"                 : "npm",
+             "image"                : "node:8.15",
+             "resourceRequestCpu"   : "1000m",
+             "resourceRequestMemory": "3000Mi",
+             "packageJson"          : "packages/spa/package.json",
+             "buildCommands"        : """yarn run clean-nm
+                                         yarn install --frozen-lockfile  --no-progress  --non-interactive
+                                         yarn run build
+                                         yarn run build-packages""",
+             "unitTestCommands"     : """yarn run lint
+                                         yarn run test""",
+             "assetDirs": ["analytics-spa": "packages/spa/dist"]
+            ]
+    ]
+
+    deployTool = "static"
+
+    environments = [
+            ["name": "sales-demo", "branchPattern": ~/^master$/]
+    ]
+
+    extraEnvs = [
+            "CI"     : "true",
+            "APP_ENV": DEPLOY_ENV,
+    ]
+}

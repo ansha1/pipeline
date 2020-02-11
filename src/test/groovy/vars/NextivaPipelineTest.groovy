@@ -264,4 +264,128 @@ class NextivaPipelineTest extends BasePipelineTest implements Validator, Mocks, 
                                             "SendNotifications"]
                 )
     }
+
+    @Test
+    void analyticsSpaDev() {
+        analyticsSpaTest("develop",
+                ["dev, packages/spa/dist, 1.0.1, analytics-spa"],
+                ["Checkout",
+                 "ConfigureProjectVersion",
+                 "Build",
+                 "npm: build",
+                 "UnitTest",
+                 "npm: unitTest",
+                 "SonarScan",
+                 "Publish",
+                 "npm: publishArtifact",
+                 "Deploy",
+                 "static Deploy: Deploy to dev",
+                 "Run ansible playbook ansible/role-based_playbooks/static-deploy.yml",
+                 "QACoreTeamTest",
+                 "QA Core Team Tests",
+                 "CollectBuildResults",
+                 "SendNotifications"]
+        )
+    }
+
+    @Test
+    void analyticsSpaQA() {
+        analyticsSpaTest("release/1.0.1",
+                ["production, packages/spa/dist, 1.0.1, analytics-spa"],
+                ["Checkout",
+                 "ConfigureProjectVersion",
+                 "VerifyArtifactVersionInNexus",
+                 "npm VerifyArtifactVersionInNexus",
+                 "Build",
+                 "npm: build",
+                 "UnitTest",
+                 "npm: unitTest",
+                 "SonarScan",
+                 "Publish",
+                 "npm: publishArtifact",
+                 "SecurityScan",
+                 "Deploy",
+                 "static Deploy: Deploy to qa",
+                 "Run ansible playbook ansible/role-based_playbooks/static-deploy.yml",
+                 "QACoreTeamTest",
+                 "QA Core Team Tests",
+                 "CollectBuildResults",
+                 "SendNotifications"]
+        )
+    }
+
+    @Test
+    void analyticsSpaProd() {
+        analyticsSpaTest("master",
+                [],
+                ["Checkout",
+                 "ConfigureProjectVersion",
+                 "Deploy",
+                 "static Deploy: Deploy to production",
+                 "Run ansible playbook ansible/role-based_playbooks/static-deploy.yml",
+                 "static Deploy: Deploy to sales-demo",
+                 "Run ansible playbook ansible/role-based_playbooks/static-deploy.yml",
+                 "QACoreTeamTest",
+                 "QA Core Team Tests",
+                 "CollectBuildResults",
+                 "SendNotifications"]
+        )
+    }
+
+    void analyticsSpaTest(String branch, List<String> expectedUploadStaticAssetsArgs, List<String> expectedStages) {
+        Script script = loadScriptHelper("analytics-spa.jenkins")
+        script.env.BRANCH_NAME = branch
+        script.binding.BRANCH_NAME = branch
+        helper.registerAllowedMethod 'readJSON', [Map], { Map m ->
+            if (m.containsKey("file") && m.get("file").endsWith("package.json"))
+                return ["version": "1.0.1"]
+            else
+                return null
+        }
+        helper.registerAllowedMethod "uploadStaticAssets", [String, String, String, String], { return null }
+        binding.setVariable 'NODE_NAME', ANSIBLE_NODE_LABEL
+        runScript(script)
+
+        def DEPLOY_ENV = null
+        def channelToNotify = null
+        switch (branch) {
+            case "develop":
+                DEPLOY_ENV = 'dev'
+                channelToNotify = 'analytics-ci'
+                break
+            case ~/(release|hotfix)\/.+/:
+                DEPLOY_ENV = 'rc'
+                channelToNotify = 'analytics'
+                break
+            case "master":
+                DEPLOY_ENV = 'production'
+                channelToNotify = 'analytics'
+                break
+            default:
+                channelToNotify = 'analytics-ci'
+                DEPLOY_ENV = null
+        }
+        assertThat(helper.callStack.find{ (it.methodName == "sendBuildStatus") }.argsToString()).isEqualTo(channelToNotify)
+        assertThat(script.binding.variables.env).containsAllEntriesOf([
+                "CI"     : "true",
+                "APP_ENV": DEPLOY_ENV,
+        ])
+
+        assertJobStatusSuccess()
+        printCallStack()
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "uploadStaticAssets"
+        }.collect {
+            it.argsToString()
+        }).describedAs("Ensure nexus.uploadStaticAssets arguments are correct")
+                .isEqualTo(expectedUploadStaticAssetsArgs)
+
+        assertThat(helper.callStack.findAll {
+            call -> call.methodName == "stage"
+        }.collect {
+            it.args.first().toString()
+        }).describedAs("Check that minimum viable Jenkinsfile generates correct steps")
+                .containsExactlyElementsOf(expectedStages)
+    }
 }
