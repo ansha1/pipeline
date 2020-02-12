@@ -48,7 +48,7 @@ class StageFactory {
             (SonarScan.class)                   : [
                     "deployOnly"            : false,
                     "isSonarAnalysisEnabled": true,
-                    "branchingModel"        : [(GitFlow.class)   : BranchingModelRegexps.develop,
+                    "branchingModel"        : [(GitFlow.class)   : BranchingModelRegexps.mainline,
                                                (TrunkBased.class): BranchingModelRegexps.master]
             ],
             (IntegrationTest.class)             : [

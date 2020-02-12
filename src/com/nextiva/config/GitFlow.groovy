@@ -24,18 +24,18 @@ class GitFlow implements BranchingModel {
     }
 
     static boolean isDevelop(String branchName) {
-        return develop.branchPattern ==~ branchName
+        return branchName ==~ develop.branchPattern
     }
 
     static boolean isMaster(String branchName) {
-        return master.branchPattern ==~ branchName
+        return branchName ==~ master.branchPattern
     }
 
     static boolean isRelease(String branchName) {
-        return release.branchPattern ==~ branchName
+        return branchName ==~ release.branchPattern
     }
 
     static boolean isHotfix(String branchName) {
-        return hotfix.branchPattern ==~ branchName
+        return branchName ==~ hotfix.branchPattern
     }
 }

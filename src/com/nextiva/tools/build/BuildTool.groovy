@@ -8,20 +8,20 @@ import static com.nextiva.utils.Utils.shOrClosure
 
 abstract class BuildTool implements Serializable, Tool {
 
-    String name
-    String appName
-    Logger logger
+    public String name
+    public String appName
+    public Logger logger
 
-    String pathToSrc = "."
-    def buildCommands
-    def postBuildCommands
-    def unitTestCommands
-    def postUnitTestCommands
-    def integrationTestCommands
-    def postIntegrationTestCommands
-    def postDeployCommands
-    def publishCommands
-    Boolean publishArtifact = true
+    public String pathToSrc = "."
+    public def buildCommands
+    public def postBuildCommands
+    public def unitTestCommands
+    public def postUnitTestCommands
+    public def integrationTestCommands
+    public def postIntegrationTestCommands
+    public def postDeployCommands
+    public def publishCommands
+    public Boolean publishArtifact = true
 
     BuildTool(Map buildToolConfig) {
         //Try to get sh command or closure from configuration and replace in with default commands if exist

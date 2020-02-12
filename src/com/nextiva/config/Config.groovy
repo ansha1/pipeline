@@ -179,7 +179,7 @@ class Config implements Serializable {
         namespace = buildID(this.@script.env.JOB_NAME, this.@script.env.BUILD_ID)
         ciClusterDomain = "$namespace-$JENKINS_KUBERNETES_CLUSTER_DOMAIN"
         if (deploymentType == null) {
-            if ([GitFlow.feature, TrunkBased.feature].contains(branchingModel.getBranchType(branchName))) {
+            if ([GitFlow.feature, GitFlow.develop, TrunkBased.feature].contains(branchingModel.getBranchType(branchName))) {
                 deploymentType = DeploymentType.DEV
             } else {
                 deploymentType = DeploymentType.RELEASE

@@ -45,7 +45,7 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
                 ["release", BranchNames.release.toList(),
                  ["Checkout", "StartBuildDependencies", "ConfigureProjectVersion", "VerifyArtifactVersionInNexus",
                   "python VerifyArtifactVersionInNexus", "docker VerifyArtifactVersionInNexus",
-                  "Build", "python: build", "UnitTest", "python: unitTest", "IntegrationTest", "python: integrationTest",
+                  "Build", "python: build", "UnitTest", "python: unitTest", "SonarScan", "IntegrationTest", "python: integrationTest",
                   "Publish", "python: publishArtifact", "SecurityScan", "Deploy", "kubeup Deploy: Deploy to qa",
                   "python: postDeploy", "QACoreTeamTest", "QA Core Team Tests", "CollectBuildResults",
                   "SendNotifications"]],
@@ -72,7 +72,7 @@ class GitflowProcessTest extends BasePipelineTest implements Validator, Mocks, J
         helper.registerAllowedMethod 'fileExists', [String], { s ->
             return s == SharedJobsStaticVars.BUILD_PROPERTIES_FILENAME
         }
-        helper.registerAllowedMethod 'isPypiPackageExists', [String, String, String], { return true }
+        helper.registerAllowedMethod 'isPypiPackageExists', [String, String, String], { return false }
     }
 
     @Test

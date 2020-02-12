@@ -11,7 +11,7 @@ class StaticDeploy extends DeployTool {
 
     @Override
     void deploy(Environment environment) {
-        logger.info('Deploying using Ansible Static Deploy playbook')
+        logger.info('Deploying using Ansible Static-Deploy playbook')
         config.script.staticDeploy(config.appName, environment.name, config.version)
     }
 }
