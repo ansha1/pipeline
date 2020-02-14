@@ -1,5 +1,7 @@
 package com.nextiva.stages.stage
 
+import com.nextiva.config.BranchingModelRegexps
+
 import static com.nextiva.config.Config.instance as config
 
 class SendNotifications extends Stage {
@@ -9,11 +11,16 @@ class SendNotifications extends Stage {
 
     @Override
     def stageBody() {
-        config.script.container("jnlp") {
+        def script = config.script
+        script.container("jnlp") {
             //TODO: refactor for the native class usage
-            config.script.slack.sendBuildStatus(config.channelToNotify)
+            script.slack.sendBuildStatus(config.channelToNotify)
+
             if (config.branchName ==~ /^(PR.+)$/) {
-                config.script.slack.prOwnerPrivateMessage(config.script.env.CHANGE_URL)
+                script.slack.prOwnerPrivateMessage(script.env.CHANGE_URL)
+                script.jiraSendBuildInfo site: 'nextiva.atlassian.net', branch: script.env.CHANGE_BRANCH
+            } else if (config.branchName ==~ BranchingModelRegexps.notMainline) {
+                script.jiraSendBuildInfo site: 'nextiva.atlassian.net'
             }
 //            if (branchName ==~ /^(release\/.+)$/) {
 //                String appName = configuration.get("appName")

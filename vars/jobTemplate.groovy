@@ -417,7 +417,11 @@ def call(body) {
                     }
                     if (env.BRANCH_NAME ==~ /^(PR.+)$/) {
                         slack.prOwnerPrivateMessage(env.CHANGE_URL)
+                        jiraSendBuildInfo site: 'nextiva.atlassian.net', branch: env.CHANGE_BRANCH
+                    } else if (env.BRANCH_NAME ==~ /^(?!(dev|develop|master)$|(hotfix|release)\/).+/) {
+                        jiraSendBuildInfo site: 'nextiva.atlassian.net'
                     }
+
                     if (env.BRANCH_NAME ==~ /^(master|release\/.+)$/) {
                         deployEnv = jobConfig.ANSIBLE_ENV
                         if (params.stack == "a") {
@@ -426,6 +430,7 @@ def call(body) {
                             deployEnv = "SALES-DEMO"
                         }
                         slack.deployFinish(jobConfig.APP_NAME, jobConfig.BUILD_VERSION, deployEnv, jobConfig.slackStatusReportChannel)
+                        jiraSendDeploymentInfo environmentId: deployEnv, environmentName: deployEnv, environmentType: deployEnv, site: 'nextiva.atlassian.net'
                     }
                 }
             }

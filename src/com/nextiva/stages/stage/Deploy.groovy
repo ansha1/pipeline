@@ -18,9 +18,12 @@ class Deploy extends Stage {
                 "NEW_RELIC_APP_NAME": config.newRelicAppName,
                 "BUILD_VERSION"     : config.version
         ]
+        def script = config.script
         config.environmentsToDeploy.each {
             doDeploy(config.deployTool, it)
-            config.script.newrelic.postDeployment(m, it.name)
+            script.newrelic.postDeployment(m, it.name)
+            script.jiraSendDeploymentInfo(environmentId: it.name, environmentName: it.name, environmentType: it.name,
+                    site: 'nextiva.atlassian.net')
         }
         doPostDeploy()
     }

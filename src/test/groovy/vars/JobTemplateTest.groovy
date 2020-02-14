@@ -23,7 +23,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         branchPermissionsMap = [dev       : ["authenticated"],
                                 qa        : ["first_user", "second_user"],
                                 production: ["first_user", "second_user"]]
-        
+
     }
 
     static final def JENKINS_FILE_JS = {
@@ -80,7 +80,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         binding.setVariable 'GIT_URL', 'ssh://git@git.nextiva.xyz:7999/~oleksandr.kramarenko/qa_integration.git'
         binding.setVariable 'params', [
                 deploy_version: '1.0',
-                stack: 'a'
+                stack         : 'a'
         ]
         attachScript 'jobConfig', 'kubernetes', 'prepareRepoDir', 'runAnsiblePlaybook', 'prepareRepoDir',
                 'runAnsiblePlaybook', 'isRCLocked', 'healthCheck', 'slack', 'log', 'prometheus', 'common',
@@ -89,7 +89,7 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         helper.registerAllowedMethod 'getUtils', [String, String], { loadScript('src/com/nextiva/JavaUtils.groovy') }
         helper.registerAllowedMethod 'waitForQualityGate', [], { [status: 'OK'] }
         helper.registerAllowedMethod 'readProperties', [Map], { [:] }
-        helper.registerAllowedMethod 'readMavenPom', [Map], { ['version':'1.0.1'] }
+        helper.registerAllowedMethod 'readMavenPom', [Map], { ['version': '1.0.1'] }
         helper.registerAllowedMethod "choice", [LinkedHashMap], { c -> 'a' }
 
         mockEnv()
@@ -102,7 +102,8 @@ class JobTemplateTest extends BasePipelineTest implements Mocks, Validator {
         mockStringStringString 'buildPublishDockerImage'
         mockNoArgs 'timestamps', 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
-                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile', 's3Upload'
+                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile', 's3Upload', 'jiraSendBuildInfo',
+                'jiraSendDeploymentInfo'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'
