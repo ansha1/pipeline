@@ -45,7 +45,8 @@ trait JenkinsScriptsHelper implements BasePipelineAccessor, Mocks {
         mockStringStringString 'buildPublishDockerImage', 'buildPublishPypiPackage'
         mockNoArgs 'nonInheriting'
         mockMap 'authorizationMatrix', 'timeout', 'checkstyle', 'git', 'build', 'slackSend', 'junit',
-                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile'
+                'httpRequest', 'booleanParam', 'usernamePassword', 'writeFile', 'jiraSendBuildInfo',
+                'jiraSendDeploymentInfo'
         mockStringClosure 'dir', 'withSonarQubeEnv', 'lock', 'ansicolor', 'container'
         mockStringStringClosure 'withRegistry'
         mockList 'parameters'
